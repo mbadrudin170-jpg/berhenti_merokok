@@ -1,4 +1,5 @@
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
+import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
 import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
@@ -12,15 +13,24 @@ part 'impian_notifier.g.dart';
 @Riverpod(keepAlive: true)
 class ImpianNotifier extends _$ImpianNotifier {
   @override
-  Future<List<ImpianModel>> build() async {
+  Future<ImpianState> build() async {
     return await _ambilSemua();
   }
 
-  Future<List<ImpianModel>> _ambilSemua() async {
+  Future<ImpianState> _ambilSemua() async {
     try {
       final op = const SqfliteOp();
       final rows = await op.ambilSemua(NamaTabel.impian);
-      return rows.map(ImpianModel.fromSqflite).toList();
+      final daftar = rows.map(ImpianModel.fromSqflite).toList();
+      final totalJumlah = daftar.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      return ImpianState(
+        listImpian: daftar,
+        jumlahImpian: daftar.length,
+        totalJumlah: totalJumlah,
+      );
     } on Exception catch (e, s) {
       L.e('Gagal mengambil data impian: $e $s');
       rethrow;
@@ -36,7 +46,13 @@ class ImpianNotifier extends _$ImpianNotifier {
         impian.toSqflite(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      state = AsyncValue.data([...dataLama, impian]);
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: [...dataLama.listImpian, impian],
+          jumlahImpian: dataLama.jumlahImpian + 1,
+          totalJumlah: dataLama.totalJumlah + impian.jumlah,
+        ),
+      );
       L.s('Impian berhasil disimpan');
     } on Exception catch (e, s) {
       L.e('Gagal menyimpan impian: $e $s');
@@ -58,7 +74,17 @@ class ImpianNotifier extends _$ImpianNotifier {
           );
         }
       });
-      state = AsyncValue.data([...dataLama, ...daftarImpian]);
+      final tambahanJumlah = daftarImpian.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: [...dataLama.listImpian, ...daftarImpian],
+          jumlahImpian: dataLama.jumlahImpian + daftarImpian.length,
+          totalJumlah: dataLama.totalJumlah + tambahanJumlah,
+        ),
+      );
       L.s('Impian berhasil disimpan (batch)');
     } on Exception catch (e, s) {
       L.e('Gagal menyimpan impian (batch): $e $s');
@@ -76,8 +102,19 @@ class ImpianNotifier extends _$ImpianNotifier {
         where: '${NamaKolom.id} = ?',
         whereArgs: [impian.id],
       );
+      final baru = dataLama.listImpian
+          .map((e) => e.id == impian.id ? impian : e)
+          .toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
       state = AsyncValue.data(
-        dataLama.map((e) => e.id == impian.id ? impian : e).toList(),
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
       );
       L.s('Impian berhasil diubah');
     } on Exception catch (e, s) {
@@ -95,7 +132,18 @@ class ImpianNotifier extends _$ImpianNotifier {
         where: '${NamaKolom.id} = ?',
         whereArgs: [id],
       );
-      state = AsyncValue.data(dataLama.where((e) => e.id != id).toList());
+      final baru = dataLama.listImpian.where((e) => e.id != id).toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
+      );
       L.s('Impian berhasil dihapus');
     } on Exception catch (e, s) {
       L.e('Gagal menghapus impian: $e $s');
@@ -117,8 +165,19 @@ class ImpianNotifier extends _$ImpianNotifier {
           );
         }
       });
+      final baru = dataLama.listImpian
+          .where((e) => !daftarId.contains(e.id))
+          .toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
       state = AsyncValue.data(
-        dataLama.where((e) => !daftarId.contains(e.id)).toList(),
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
       );
       L.s('Impian berhasil dihapus (batch)');
     } on Exception catch (e, s) {
@@ -142,13 +201,22 @@ class ImpianNotifier extends _$ImpianNotifier {
           );
         }
       });
+      final baru = dataLama.listImpian.map((e) {
+        final pengganti = daftarImpian.firstWhereOrNull(
+          (item) => item.id == e.id,
+        );
+        return pengganti ?? e;
+      }).toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
       state = AsyncValue.data(
-        dataLama.map((e) {
-          final pengganti = daftarImpian.firstWhereOrNull(
-            (item) => item.id == e.id,
-          );
-          return pengganti ?? e;
-        }).toList(),
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
       );
       L.s('Impian berhasil diubah (batch)');
     } on Exception catch (e, s) {

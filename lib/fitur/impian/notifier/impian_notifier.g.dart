@@ -13,7 +13,7 @@ part of 'impian_notifier.dart';
 final impianProvider = ImpianNotifierProvider._();
 
 final class ImpianNotifierProvider
-    extends $AsyncNotifierProvider<ImpianNotifier, List<ImpianModel>> {
+    extends $AsyncNotifierProvider<ImpianNotifier, ImpianState> {
   ImpianNotifierProvider._()
     : super(
         from: null,
@@ -33,20 +33,19 @@ final class ImpianNotifierProvider
   ImpianNotifier create() => ImpianNotifier();
 }
 
-String _$impianNotifierHash() => r'1544e6276b4c16dac9e05ea1bd024cbb91674e90';
+String _$impianNotifierHash() => r'52fb1ecddc9e3743506b7ec6b553987a70c55903';
 
-abstract class _$ImpianNotifier extends $AsyncNotifier<List<ImpianModel>> {
-  FutureOr<List<ImpianModel>> build();
+abstract class _$ImpianNotifier extends $AsyncNotifier<ImpianState> {
+  FutureOr<ImpianState> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<List<ImpianModel>>, List<ImpianModel>>;
+    final ref = this.ref as $Ref<AsyncValue<ImpianState>, ImpianState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<List<ImpianModel>>, List<ImpianModel>>,
-              AsyncValue<List<ImpianModel>>,
+              AnyNotifier<AsyncValue<ImpianState>, ImpianState>,
+              AsyncValue<ImpianState>,
               Object?,
               Object?
             >;
