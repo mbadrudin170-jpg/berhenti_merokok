@@ -1,6 +1,9 @@
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
+import 'package:uuid/uuid.dart';
 
 class FormBiodata extends ConsumerStatefulWidget {
   const FormBiodata({super.key});
@@ -11,9 +14,19 @@ class FormBiodata extends ConsumerStatefulWidget {
 
 class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _namaController = TextEditingController();
+  final _jumlahRokokController = TextEditingController();
+  final _hargaRokokController = TextEditingController();
+
   final _namaFocusNode = FocusNode();
+  final _jumlahRokokFocusNode = FocusNode();
+  final _hargaRokokFocusNode = FocusNode();
+
+  DateTime? _tanggalLahir;
+  DateTime? _tanggalMulaiMerokok;
 
   bool _isLoading = false;
+  bool _sudahDiisi = false;
+
   @override
   void initState() {
     super.initState();
@@ -22,43 +35,189 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   @override
   void dispose() {
     _namaController.dispose();
+    _jumlahRokokController.dispose();
+    _hargaRokokController.dispose();
     _namaFocusNode.dispose();
+    _jumlahRokokFocusNode.dispose();
+    _hargaRokokFocusNode.dispose();
     super.dispose();
   }
 
-  void _simpan() {
-    if (_isLoading) return;
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _pilihTanggalLahir() async {
+    final awal = _tanggalLahir ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && mounted) {
+      setState(() => _tanggalLahir = picked);
+    }
+  }
+
+  Future<void> _pilihTanggalMulaiMerokok() async {
+    final awal = _tanggalMulaiMerokok ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && mounted) {
+      setState(() => _tanggalMulaiMerokok = picked);
+    }
+  }
+
+  Future<void> _simpan() async {
+    if (_isLoading) {
+      L.w('Form biodata masih loading, simpan diabaikan');
+      return;
+    }
+    setState(() => _isLoading = true);
     try {
+      final existing = ref.read(biodataProvider).asData?.value;
+      final model = BiodataModel(
+        id: existing?.id ?? const Uuid().v4(),
+        nama: _namaController.text.trim(),
+        tanggalLahir: _tanggalLahir,
+        jumlahRokokPerHari: int.tryParse(_jumlahRokokController.text.trim()),
+        hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
+            ? null
+            : InputRupiah.parse(_hargaRokokController.text),
+        tanggalMulaiMerokok: _tanggalMulaiMerokok,
+      );
+      await ref.read(biodataProvider.notifier).simpan(model);
+      if (!mounted) return;
       Nav.pop(context);
-    } catch (e) {
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan biodata: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menyimpan biodata');
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('data')),
-      body: Column(
-        children: [
-          InputTeks(
-            controller: _namaController,
-            label: 'Label',
-            hintText: 'Hint',
-            validator: (value) {
-              return null;
-            },
-            focusNode: null,
-            nextFocusNode: null,
+    final biodataAsync = ref.watch(biodataProvider);
+
+    biodataAsync.whenData((biodata) {
+      if (biodata != null && !_sudahDiisi) {
+        _sudahDiisi = true;
+        _namaController.text = biodata.nama;
+        _jumlahRokokController.text =
+            biodata.jumlahRokokPerHari?.toString() ?? '';
+        _hargaRokokController.text =
+            biodata.hargaRokokPerBungkus?.toString() ?? '';
+        _tanggalLahir = biodata.tanggalLahir;
+        _tanggalMulaiMerokok = biodata.tanggalMulaiMerokok;
+      }
+    });
+
+    if (biodataAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Biodata')),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Gagal memuat data'),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () => ref.refresh(biodataProvider),
+                child: const Text('Coba lagi'),
+              ),
+            ],
           ),
-          OutlinedButton(onPressed: () => _simpan(), child: Text('Simpan')),
-        ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Biodata')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              InputTeks(
+                controller: _namaController,
+                label: 'Nama',
+                hintText: 'Masukkan nama',
+                focusNode: _namaFocusNode,
+                nextFocusNode: _jumlahRokokFocusNode,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Nama wajib diisi';
+                  }
+                  return null;
+                },
+              ),
+              InputAngka(
+                controller: _jumlahRokokController,
+                label: 'Jumlah rokok per hari',
+                hintText: 'Masukkan jumlah rokok per hari',
+                focusNode: _jumlahRokokFocusNode,
+                nextFocusNode: _hargaRokokFocusNode,
+              ),
+              InputRupiah(
+                controller: _hargaRokokController,
+                label: 'Harga rokok per bungkus',
+                hintText: 'Masukkan harga rokok per bungkus',
+                focusNode: _hargaRokokFocusNode,
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.cake_outlined),
+                title: const Text('Tanggal lahir'),
+                subtitle: Text(
+                  _tanggalLahir == null
+                      ? 'Belum dipilih'
+                      : FormatTanggal.formatDasar(_tanggalLahir!),
+                ),
+                trailing: TextButton(
+                  onPressed: _pilihTanggalLahir,
+                  child: const Text('Pilih'),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.smoking_rooms_outlined),
+                title: const Text('Tanggal mulai merokok'),
+                subtitle: Text(
+                  _tanggalMulaiMerokok == null
+                      ? 'Belum dipilih'
+                      : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
+                ),
+                trailing: TextButton(
+                  onPressed: _pilihTanggalMulaiMerokok,
+                  child: const Text('Pilih'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: _isLoading ? null : _simpan,
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Simpan'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

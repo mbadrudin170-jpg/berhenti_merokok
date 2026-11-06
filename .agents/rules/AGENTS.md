@@ -3847,6 +3847,89 @@ import 'package:share_global_saya/core_shared.dart';
 Commit `e451a54` menambahkan layar biodata yang menggunakan `InputTeks` dari `share_global_saya`; commit `f596872` menambahkan impor `core_shared`. Pola ini menjaga konsistensi dengan shared library.
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Manfaatkan widget dan helper reusable dari paket shared yang tersedia sebelum membuat implementasi sendiri.
+## Persistensi Biodata via sqflite pada `BiodataNotifier`
+**Tujuan:**
+Menstandarkan cara memuat dan menyimpan data biodata ke SQLite agar konsisten dengan pola notifier asynchronous proyek.
+**Cakupan:**
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `BiodataNotifier.build`, `_ambilData`, dan `simpan`.
+- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase.database`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`.
+**Aturan:**
+1. `BiodataNotifier` menggunakan `AsyncNotifier<BiodataModel?>` dengan `build()` mengembalikan `Future<BiodataModel?>`.
+2. Pemuatan data dilakukan melalui `AppDatabase.database`, lalu `db.query('biodata', limit: 1)`. Jika kosong, kembalikan `null`.
+3. Parsing nilai `dynamic` dari baris database wajib menggunakan `ParserUtil` (`parseDateTime`, `parseIntOrNull`, `parseDoubleOrNull`), bukan cast langsung.
+4. Konversi tanggal dari UTC (string ISO8601 di database) ke waktu lokal menggunakan `.toLocal()` setelah parsing.
+5. Penyimpanan menggunakan `db.insert('biodata', ..., conflictAlgorithm: ConflictAlgorithm.replace)` untuk upsert berdasarkan primary key.
+6. Tanggal disimpan sebagai UTC ISO8601 string (`tanggal?.toUtc().toIso8601String()`).
+7. Perbarui `state` menjadi `AsyncValue.data(biodata)` hanya setelah operasi database berhasil.
+8. Bungkus operasi database dengan `try/catch`, catat error menggunakan `L.e`, dan teruskan menggunakan `rethrow`.
+9. Catat keberhasilan penyimpanan menggunakan `L.s`.
+**Contoh benar:**
+```dart
+@riverpod
+class BiodataNotifier extends _$BiodataNotifier {
+  @override
+  Future<BiodataModel?> build() async {
+    return await _ambilData();
+  }
+  Future<BiodataModel?> _ambilData() async {
+    try {
+      final db = await AppDatabase.database;
+      final rows = await db.query('biodata', limit: 1);
+      if (rows.isEmpty) {
+        return null;
+      }
+      final row = rows.first;
+      return BiodataModel(
+        id: row['id'] as String,
+        nama: row['nama'] as String,
+        tanggalLahir: ParserUtil.parseDateTime(
+          row['tanggal_lahir'],
+        )?.toLocal(),
+      );
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data biodata: $e $s');
+      rethrow;
+    }
+  }
+  Future<void> simpan(BiodataModel biodata) async {
+    try {
+      final db = await AppDatabase.database;
+      await db.insert('biodata', <String, Object?>{
+        'id': biodata.id,
+        'nama': biodata.nama,
+        'tanggal_lahir': biodata.tanggalLahir?.toUtc().toIso8601String(),
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+      state = AsyncValue.data(biodata);
+      L.s('Biodata berhasil disimpan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan biodata: $e $s');
+      rethrow;
+    }
+  }
+}
+```
+**Contoh salah:**
+```dart
+@riverpod
+class BiodataNotifier extends _$BiodataNotifier {
+  @override
+  String build() {
+    return '';
+  }
+  Future<void> simpan(BiodataModel biodata) async {
+    final db = await AppDatabase.database;
+    await db.insert('biodata', <String, Object?>{
+      'tanggal_lahir': biodata.tanggalLahir?.toIso8601String(), // tanpa UTC
+    });
+    state = AsyncValue.data(biodata); // state diperbarui tanpa jaminan DB sukses
+  }
+}
+```
+**Alasan:**
+Commit `398993d` mengonversi `BiodataNotifier` dari placeholder `String` menjadi `AsyncNotifier<BiodataModel?>` dengan persistensi sqflite. Pola ini memastikan data biodata persisten antar sesi, aman terhadap nilai null, dan konsisten dengan aturan penanganan error serta penyimpanan waktu UTC.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Prinsip umum (AsyncNotifier, UTC storage, ParserUtil, try/catch, rethrow) sudah tercakup pada aturan bersama yang ada; detail implementasi (AppDatabase, ConflictAlgorithm.replace, skema tabel biodata) bersifat khusus proyek.
 
 
 // ============================================================
