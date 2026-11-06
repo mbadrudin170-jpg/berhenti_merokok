@@ -1,3 +1,6 @@
+import 'package:berhenti_merokok/fitur/dashboard/screens/dashboard_screen.dart';
+import 'package:berhenti_merokok/lainnya_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,15 +12,17 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [const DashboardScreen(), const LainnyaScreen()];
+
   @override
   void initState() {
     super.initState();
-    // TODO: implement initState
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -25,7 +30,25 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('data')),
-      body: Center(child: Text('Home')),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(CupertinoIcons.home),
+            label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: const Icon(CupertinoIcons.ellipsis),
+            label: 'Lainnya',
+          ),
+        ],
+      ),
     );
   }
 }

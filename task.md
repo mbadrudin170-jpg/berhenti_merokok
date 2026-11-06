@@ -19,6 +19,12 @@ Tidak ada temuan.
 - File terkait: [home.dart#L15](lib/home.dart#L15), [home.dart#L20](lib/home.dart#L20)
 
 - Status: Belum dikerjakan
+- Masalah: Metode `initState()` dan `dispose()` pada `_DashboardScreenState` (`lib/fitur/dashboard/screens/dashboard_screen.dart`) masih mengandung komentar `// TODO: implement initState` dan `// TODO: implement dispose`, menandakan implementasi siklus hidup belum selesai.
+- Solusi: Hapus komentar TODO setelah implementasi selesai, atau implementasikan logika yang diperlukan. Jika tidak ada logika tambahan, cukup hapus komentar TODO.
+- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Layar dengan Siklus Hidup Menggunakan ConsumerStatefulWidget" poin 3.
+- File terkait: [dashboard_screen.dart#L15](lib/fitur/dashboard/screens/dashboard_screen.dart#L15), [dashboard_screen.dart#L20](lib/fitur/dashboard/screens/dashboard_screen.dart#L20)
+
+- Status: Belum dikerjakan
 - Masalah: `BiodataNotifier` (`lib/fitur/biodata/notifier/biodata_notifier.dart`) belum mengelola data biodata: metode `build()` mengembalikan string kosong (`""`) dan tidak ada state/model Freezed yang merepresentasikan data biodata. State notifier seharusnya bertipe model Freezed, bukan `String` mentah.
 - Solusi: Implementasikan `BiodataNotifier` dengan state berbasis `BiodataModel` (atau Freezed state khusus) sesuai pola provider proyek, termasuk pemuatan dan penyimpanan data. Pastikan file `.g.dart` dan `.freezed.dart` diregenerasi setelah perubahan.
 - Aturan dilanggar: `.agents/rules/global/optimasi_boilerplate.md` — poin 1 "State dan Model" (wajib Freezed). `.agents/rules/global/aturan_riverpod.md` — poin 1 "Penggunaan riverpod_generator".
@@ -29,12 +35,6 @@ Tidak ada temuan.
 - Solusi: Pertimbangkan pembuatan state Freezed untuk tema (mis. `TemaState` dengan field `TemaEnum mode`) jika konsistensi dengan aturan boilerplate diperlukan; atau dokumentasikan pengecualian karena state tema sederhana. Verifikasi apakah aturan Freezed berlaku untuk state sederhana berbasis enum.
 - Aturan dilanggar: `.agents/rules/global/optimasi_boilerplate.md` — poin 1 "State dan Model".
 - File terkait: [tema_notifier.dart#L9](lib/fitur/tema/notifier/tema_notifier.dart#L9), [tema_notifier.dart#L10](lib/fitur/tema/notifier/tema_notifier.dart#L10)
-
-- Status: Belum dikerjakan
-- Masalah: `SharedKeys.tema` (kunci penyimpanan preferensi tema) sudah didefinisikan di `lib/shared/helper/shared_keys.dart`, namun `TemaNotifier` tidak membaca maupun menyimpan nilai preferensi tema menggunakan kunci tersebut. State tema tidak persisten antar sesi aplikasi.
-- Solusi: Integrasikan `SharedKeys.tema` ke dalam `TemaNotifier` agar preferensi tema dibaca saat `build()` dan disimpan setiap kali tema diubah, menggunakan `SharedPreferences` sesuai pola proyek.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Sentralisasi Kunci Penyimpanan di SharedKeys" poin 1 dan 2.
-- File terkait: [tema_notifier.dart#L5](lib/fitur/tema/notifier/tema_notifier.dart#L5), [shared_keys.dart#L9](lib/shared/helper/shared_keys.dart#L9)
 
 ## Rendah
 
@@ -49,11 +49,6 @@ Tidak ada temuan.
 - Solusi: Tambahkan `supportedLocales: const [Locale('id', 'ID')]` dan `localizationsDelegates` yang mencakup `GlobalMaterialLocalizations.delegate`, `GlobalWidgetsLocalizations.delegate`, `GlobalCupertinoLocalizations.delegate`, dan `_MaterialUiLocalizationsDelegate()` pada `MaterialApp`. Impor `flutter_localizations` dari Flutter SDK dan buat kelas `_MaterialUiLocalizationsDelegate` dengan `isSupported => true`.
 - Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 33 "Lokalisasi Aplikasi". `.agents/rules/proyek/aturan_khusus.md` — bagian "Registrasi Delegate Lokalisasi `material_ui` untuk `adaptive_dialog`".
 - File terkait: [app.dart#L27](lib/app.dart#L27), [app.dart#L22](lib/app.dart#L22)
-
-- Status: Belum dikerjakan
-- Masalah: `MaterialApp` pada `lib/app.dart` tidak mendeklarasikan `supportedLocales` maupun `localizationsDelegates`. Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit agar teks sistem (dialog, date picker, toolbar pemilihan teks) mengikuti locale yang didukung.
-- Solusi: Tambahkan `supportedLocales: const [Locale('id', 'ID')]` dan `localizationsDelegates` yang mencakup `GlobalMaterialLocalizations.delegate`, `GlobalWidgetsLocalizations.delegate`, `GlobalCupertinoLocalizations.delegate` pada `MaterialApp`. Impor `flutter_localizations` dari Flutter SDK.
-- Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 33 "Lokalisasi Aplikasi".
 
 ## Sedang
 
@@ -116,13 +111,13 @@ Tidak ada temuan.
 - File terkait: [form_biodata.dart#L29](lib/fitur/biodata/screens/form_biodata.dart#L29), [form_biodata.dart#L31](lib/fitur/biodata/screens/form_biodata.dart#L31), [form_biodata.dart#L33](lib/fitur/biodata/screens/form_biodata.dart#L33)
 
 - Status: Belum dikerjakan
+- Masalah: `Text('Home')` pada body Home dan `Text('Simpan')` pada `OutlinedButton` FormBiodata tidak menggunakan konstruktor `const`, padahal nilai teksnya statis. (`Text('data')` pada `AppBar` Home sudah menggunakan `const`.)
+- Solusi: Tambahkan keyword `const` pada kedua widget `Text` untuk meningkatkan efisiensi rebuild.
+- Atura dilanggar: Bukan pelanggaran aturan tertulis — praktik terbaik performa Flutter (linter `prefer_const_constructors`).
+- File terkait: [home.dart#L28](lib/home.dart#L28), [form_biodata.dart#L60](lib/fitur/biodata/screens/form_biodata.dart#L60)
+
+- Status: Belum dikerjakan
 - Masalah: `FormBiodata` menggunakan `Column` langsung sebagai body `Scaffold` tanpa `SingleChildScrollView`/`ListView`, sehingga konten dapat terpotong pada layar kecil atau saat keyboard muncul.
 - Solusi: Bungkus konten dengan `SingleChildScrollView` (atau gunakan `ListView`) dan pertahankan `SafeArea` + padding pada lapisan container.
 - Atura dilanggar: Bukan pelanggaran aturan tertulis — penanganan overflow layout (`.agents/rules/global/optimasi_ui.md` bagian 3 "Penanganan Text Overflow" dan praktik layout).
 - File terkait: [form_biodata.dart#L48](lib/fitur/biodata/screens/form_biodata.dart#L48), [form_biodata.dart#L62](lib/fitur/biodata/screens/form_biodata.dart#L62)
-
-- Status: Belum dikerjakan
-- Masalah: `Text('data')` pada `AppBar` Home, `Text('Home')` pada body Home, dan `Text('Simpan')` pada `OutlinedButton` FormBiodata tidak menggunakan konstruktor `const`, padahal nilai teksnya statis.
-- Solusi: Tambahkan keyword `const` pada ketiga widget `Text` untuk meningkatkan efisiensi rebuild.
-- Atura dilanggar: Bukan pelanggaran aturan tertulis — praktik terbaik performa Flutter (linter `prefer_const_constructors`).
-- File terkait: [home.dart#L27](lib/home.dart#L27), [home.dart#L28](lib/home.dart#L28), [form_biodata.dart#L60](lib/fitur/biodata/screens/form_biodata.dart#L60)
