@@ -24,9 +24,7 @@ class BiodataNotifier extends _$BiodataNotifier {
       return BiodataModel(
         id: row['id'] as String,
         nama: row['nama'] as String,
-        tanggalLahir: ParserUtil.parseDateTime(
-          row['tanggal_lahir'],
-        )?.toLocal(),
+        tanggalLahir: ParserUtil.parseDateTime(row['tanggal_lahir'])?.toLocal(),
         jumlahRokokPerHari: ParserUtil.parseIntOrNull(
           row['jumlah_rokok_per_hari'],
         ),
@@ -52,7 +50,9 @@ class BiodataNotifier extends _$BiodataNotifier {
         'tanggal_lahir': biodata.tanggalLahir?.toUtc().toIso8601String(),
         'jumlah_rokok_per_hari': biodata.jumlahRokokPerHari,
         'harga_rokok_per_bungkus': biodata.hargaRokokPerBungkus,
-        'tanggal_mulai_merokok': biodata.tanggalMulaiMerokok?.toUtc().toIso8601String(),
+        'tanggal_mulai_merokok': biodata.tanggalMulaiMerokok
+            ?.toUtc()
+            .toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
       state = AsyncValue.data(biodata);
       L.s('Biodata berhasil disimpan');
