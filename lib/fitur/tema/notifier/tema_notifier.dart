@@ -1,13 +1,25 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
+import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
 
 part 'tema_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class TemaNotifier extends _$TemaNotifier {
   @override
-  String build() {
-    return "";
+  Future<TemaEnum> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(SharedKeys.tema);
+    return TemaEnum.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => TemaEnum.sistem,
+    );
   }
 
-  void set() {}
+  Future<void> set(TemaEnum tema) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(SharedKeys.tema, tema.name);
+    state = AsyncValue.data(tema);
+  }
 }

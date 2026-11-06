@@ -13,7 +13,7 @@ part of 'tema_notifier.dart';
 final temaProvider = TemaNotifierProvider._();
 
 final class TemaNotifierProvider
-    extends $NotifierProvider<TemaNotifier, String> {
+    extends $AsyncNotifierProvider<TemaNotifier, TemaEnum> {
   TemaNotifierProvider._()
     : super(
         from: null,
@@ -31,29 +31,21 @@ final class TemaNotifierProvider
   @$internal
   @override
   TemaNotifier create() => TemaNotifier();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
-    );
-  }
 }
 
-String _$temaNotifierHash() => r'23304f72993749e4e65ba22e9be587904cd0a52f';
+String _$temaNotifierHash() => r'6bb757a58340c3035c51e50d00183f6c2fe561ec';
 
-abstract class _$TemaNotifier extends $Notifier<String> {
-  String build();
+abstract class _$TemaNotifier extends $AsyncNotifier<TemaEnum> {
+  FutureOr<TemaEnum> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<String, String>;
+    final ref = this.ref as $Ref<AsyncValue<TemaEnum>, TemaEnum>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<String, String>,
-              String,
+              AnyNotifier<AsyncValue<TemaEnum>, TemaEnum>,
+              AsyncValue<TemaEnum>,
               Object?,
               Object?
             >;
