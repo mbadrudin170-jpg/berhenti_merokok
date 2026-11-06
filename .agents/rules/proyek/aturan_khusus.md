@@ -1519,3 +1519,57 @@ Commit `e38d1c0` menerapkan mode tema dinamis dari `TemaNotifier` ke `MaterialAp
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Saat mengamati state async di widget, gunakan `.asData?.value` untuk membaca nilai dengan aman; sediakan `theme`, `darkTheme`, dan `themeMode` agar tema dapat berubah dinamis.
+
+## Validasi Form Mengembalikan `String?`
+
+**Tujuan:**
+Memastikan validator input form mengembalikan nilai yang sesuai dengan kontrak `FormFieldValidator` (`String?`).
+
+**Aturan:**
+1. Validator wajib mengembalikan `String?` (null berarti valid, string berarti pesan error).
+2. Jangan menggunakan `() {}` (void) sebagai validator.
+3. Gunakan `() { return null; }` atau ekspresi yang mengembalikan `String?`.
+
+**Contoh benar:**
+```dart
+validator: (value) {
+  return null;
+},
+```
+
+**Contoh salah:**
+```dart
+validator: (value) {},
+```
+
+**Alasan:**
+Commit `f596872` memperbaiki validator dari `() {}` (void) menjadi `{ return null; }` (String?). Pola ini mencegah type mismatch pada `InputTeks`/`FormField`.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Validator form harus mengembalikan `String?` sesuai kontrak `FormFieldValidator`; null berarti valid.
+
+## Penggunaan Paket Lokal `share_global_saya`
+
+**Tujuan:**
+Memastikan widget dan helper reusable dari paket lokal `share_global_saya` digunakan secara konsisten.
+
+**Aturan:**
+1. Impor `package:share_global_saya/core_shared.dart` untuk mengakses `InputTeks`, `Nav`, `SharedKeys`-serupa, dan helper lainnya.
+2. Gunakan widget reusable dari `core_shared` alih-alih membuat ulang.
+3. Dependensi dideklarasikan sebagai path dependency: `share_global_saya: path: ../share_global_saya`.
+
+**Contoh benar:**
+```dart
+import 'package:share_global_saya/core_shared.dart';
+```
+
+**Contoh salah:**
+```dart
+// Membuat InputTeks sendiri padahal sudah tersedia di core_shared.
+```
+
+**Alasan:**
+Commit `e451a54` menambahkan layar biodata yang menggunakan `InputTeks` dari `share_global_saya`; commit `f596872` menambahkan impor `core_shared`. Pola ini menjaga konsistensi dengan shared library.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Manfaatkan widget dan helper reusable dari paket shared yang tersedia sebelum membuat implementasi sendiri.

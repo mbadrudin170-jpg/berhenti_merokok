@@ -645,3 +645,51 @@ MaterialApp(
 
 **Alasan:**
 Pola ini menjaga konsistensi tampilan pada mode terang/gelap/sistem dan menghindari null error.
+
+## Validasi Form Mengembalikan `String?`
+
+Validator form harus mengembalikan `String?` sesuai kontrak `FormFieldValidator`; null berarti valid.
+
+**Aturan:**
+
+1. Validator wajib mengembalikan `String?` (null berarti valid, string berarti pesan error).
+2. Jangan menggunakan `() {}` (void) sebagai validator.
+3. Gunakan `() { return null; }` atau ekspresi yang mengembalikan `String?`.
+
+**Contoh benar:**
+```dart
+validator: (value) {
+  return null;
+},
+```
+
+**Contoh salah:**
+```dart
+validator: (value) {},
+```
+
+**Alasan:**
+Pola ini mencegah type mismatch pada `FormField`/widget input.
+
+## Manfaatkan Widget dan Helper Reusable dari Paket Shared
+
+Manfaatkan widget dan helper reusable dari paket shared yang tersedia sebelum membuat implementasi sendiri.
+
+**Aturan:**
+
+1. Periksa apakah widget/helper yang dibutuhkan sudah tersedia di paket shared (mis. `core_shared`).
+2. Gunakan widget reusable tersebut alih-alih membuat ulang.
+3. Jangan menduplikasi implementasi yang sudah tersedia.
+
+**Contoh benar:**
+```dart
+import 'package:share_global_saya/core_shared.dart';
+```
+
+**Contoh salah:**
+```dart
+// Membuat InputTeks sendiri padahal sudah tersedia di core_shared.
+```
+
+**Alasan:**
+Menggunakan widget reusable menjaga konsistensi dan mengurangi duplikasi.

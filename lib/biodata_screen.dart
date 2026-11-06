@@ -10,15 +10,17 @@ class BiodataScreen extends ConsumerStatefulWidget {
 }
 
 class _BiodataScreenState extends ConsumerState<BiodataScreen> {
+  final _namaController = TextEditingController();
+  final _namaFocusNode = FocusNode();
   @override
   void initState() {
     super.initState();
-    // TODO: implement initState
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _namaController.dispose();
+    _namaFocusNode.dispose();
     super.dispose();
   }
 
@@ -29,7 +31,7 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
       body: Column(
         children: [
           InputTeks(
-            controller: _controller,
+            controller: _namaController,
             label: 'Label',
             hintText: 'Hint',
             validator: (value) {
