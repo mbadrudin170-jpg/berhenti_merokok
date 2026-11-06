@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/dummy/helper/dummy_helper.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,6 +41,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     unawaited(EasyLoading.show(status: 'Menyimpan...'));
     try {
       await DummyHelper.insert();
+      await _refreshProvider();
       if (context.mounted) {
         AppToast.sukses(context, 'Dummy berhasil dimasukkan');
       }
@@ -78,6 +81,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     unawaited(EasyLoading.show(status: 'Menghapus...'));
     try {
       await DummyHelper.delete();
+      await _refreshProvider();
       if (context.mounted) {
         AppToast.sukses(context, 'Dummy berhasil dihapus');
       }
@@ -103,8 +107,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     final konfirmasi = await showOkCancelAlertDialog(
       context: context,
       title: 'Reset Dummy',
-      message:
-          'Apakah Anda yakin ingin mereset data dummy? Data dummy akan dihapus lalu dimasukkan ulang.',
+      message: 'Apakah Anda yakin ingin mereset data dummy? Data dummy akan dihapus lalu dimasukkan ulang.',
       okLabel: 'Reset',
       cancelLabel: 'Batal',
       isDestructiveAction: true,
@@ -119,6 +122,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     try {
       await DummyHelper.delete();
       await DummyHelper.insert();
+      await _refreshProvider();
       if (context.mounted) {
         AppToast.sukses(context, 'Dummy berhasil direset');
       }
@@ -135,6 +139,12 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     }
   }
 
+  Future<void> _refreshProvider() async {
+    // Perbarui state agar UI memuat data dummy terbaru.
+    final _ = ref.refresh(impianProvider);
+    final _ = ref.refresh(biodataProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,14 +157,8 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
               () => unawaited(_masukkanDummy(context)),
               'insert',
             ),
-            _buildTombolCustom(
-              () => unawaited(_hapusDummy(context)),
-              'hapus',
-            ),
-            _buildTombolCustom(
-              () => unawaited(_reset(context)),
-              'reset',
-            ),
+            _buildTombolCustom(() => unawaited(_hapusDummy(context)), 'hapus'),
+            _buildTombolCustom(() => unawaited(_reset(context)), 'reset'),
           ],
         ),
       ),

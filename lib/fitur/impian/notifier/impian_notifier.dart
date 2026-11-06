@@ -1,8 +1,8 @@
-import 'package:collection/collection.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:collection/collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:share_global_saya/core_shared.dart';
 import 'package:sqflite/sqflite.dart';
@@ -28,6 +28,7 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> tambah(ImpianModel impian) async {
+    final dataLama = await future;
     try {
       final op = const SqfliteOp();
       await op.tambah(
@@ -35,7 +36,6 @@ class ImpianNotifier extends _$ImpianNotifier {
         impian.toSqflite(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      final dataLama = state.asData?.value ?? <ImpianModel>[];
       state = AsyncValue.data([...dataLama, impian]);
       L.s('Impian berhasil disimpan');
     } on Exception catch (e, s) {
@@ -46,6 +46,7 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Menambahkan banyak impian sekaligus menggunakan operasi batch.
   Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
+    final dataLama = await future;
     try {
       final op = const SqfliteOp();
       await op.batch((batch) {
@@ -57,7 +58,6 @@ class ImpianNotifier extends _$ImpianNotifier {
           );
         }
       });
-      final dataLama = state.asData?.value ?? <ImpianModel>[];
       state = AsyncValue.data([...dataLama, ...daftarImpian]);
       L.s('Impian berhasil disimpan (batch)');
     } on Exception catch (e, s) {
@@ -67,6 +67,7 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> ubah(ImpianModel impian) async {
+    final dataLama = await future;
     try {
       final op = const SqfliteOp();
       await op.ubah(
@@ -75,7 +76,6 @@ class ImpianNotifier extends _$ImpianNotifier {
         where: '${NamaKolom.id} = ?',
         whereArgs: [impian.id],
       );
-      final dataLama = state.asData?.value ?? <ImpianModel>[];
       state = AsyncValue.data(
         dataLama.map((e) => e.id == impian.id ? impian : e).toList(),
       );
@@ -87,6 +87,7 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> hapus(String id) async {
+    final dataLama = await future;
     try {
       final op = const SqfliteOp();
       await op.hapus(
@@ -94,7 +95,6 @@ class ImpianNotifier extends _$ImpianNotifier {
         where: '${NamaKolom.id} = ?',
         whereArgs: [id],
       );
-      final dataLama = state.asData?.value ?? <ImpianModel>[];
       state = AsyncValue.data(dataLama.where((e) => e.id != id).toList());
       L.s('Impian berhasil dihapus');
     } on Exception catch (e, s) {
@@ -105,6 +105,7 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Menghapus banyak impian sekaligus menggunakan operasi batch.
   Future<void> hapusBanyak(List<String> daftarId) async {
+    final dataLama = await future;
     try {
       final op = const SqfliteOp();
       await op.batch((batch) {
@@ -116,7 +117,6 @@ class ImpianNotifier extends _$ImpianNotifier {
           );
         }
       });
-      final dataLama = state.asData?.value ?? <ImpianModel>[];
       state = AsyncValue.data(
         dataLama.where((e) => !daftarId.contains(e.id)).toList(),
       );
@@ -129,6 +129,7 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Mengubah banyak impian sekaligus menggunakan operasi batch.
   Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
+    final dataLama = await future;
     try {
       final op = const SqfliteOp();
       await op.batch((batch) {
@@ -141,7 +142,6 @@ class ImpianNotifier extends _$ImpianNotifier {
           );
         }
       });
-      final dataLama = state.asData?.value ?? <ImpianModel>[];
       state = AsyncValue.data(
         dataLama.map((e) {
           final pengganti = daftarImpian.firstWhereOrNull(
