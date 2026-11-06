@@ -2,7 +2,6 @@
 set -euo pipefail
 
 OUTPUT_FILES=(
-    .agents/rules/AGENTS.md
 AGENTS.md
 )
 
