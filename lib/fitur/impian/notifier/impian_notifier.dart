@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
@@ -49,7 +50,7 @@ class ImpianNotifier extends _$ImpianNotifier {
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final impian in daftarImpian) {
-          batch.insert(
+          batch.update(
             NamaTabel.impian,
             impian.toSqflite(),
             conflictAlgorithm: ConflictAlgorithm.replace,
@@ -98,6 +99,60 @@ class ImpianNotifier extends _$ImpianNotifier {
       L.s('Impian berhasil dihapus');
     } on Exception catch (e, s) {
       L.e('Gagal menghapus impian: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menghapus banyak impian sekaligus menggunakan operasi batch.
+  Future<void> hapusBanyak(List<String> daftarId) async {
+    try {
+      final op = const SqfliteOp();
+      await op.batch((batch) {
+        for (final id in daftarId) {
+          batch.delete(
+            NamaTabel.impian,
+            where: '${NamaKolom.id} = ?',
+            whereArgs: [id],
+          );
+        }
+      });
+      final dataLama = state.asData?.value ?? <ImpianModel>[];
+      state = AsyncValue.data(
+        dataLama.where((e) => !daftarId.contains(e.id)).toList(),
+      );
+      L.s('Impian berhasil dihapus (batch)');
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus impian (batch): $e $s');
+      rethrow;
+    }
+  }
+
+  /// Mengubah banyak impian sekaligus menggunakan operasi batch.
+  Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
+    try {
+      final op = const SqfliteOp();
+      await op.batch((batch) {
+        for (final impian in daftarImpian) {
+          batch.update(
+            NamaTabel.impian,
+            impian.toSqflite(),
+            where: '${NamaKolom.id} = ?',
+            whereArgs: [impian.id],
+          );
+        }
+      });
+      final dataLama = state.asData?.value ?? <ImpianModel>[];
+      state = AsyncValue.data(
+        dataLama.map((e) {
+          final pengganti = daftarImpian.firstWhereOrNull(
+            (item) => item.id == e.id,
+          );
+          return pengganti ?? e;
+        }).toList(),
+      );
+      L.s('Impian berhasil diubah (batch)');
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah impian (batch): $e $s');
       rethrow;
     }
   }

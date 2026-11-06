@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +29,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
       appBar: AppBar(title: const Text('Impian')),
       body: Center(child: Text('ImpianScreen')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Nav.to(context, FormImpian()),
+        onPressed: () => unawaited(Nav.to(context, FormImpian())),
       ),
     );
   }

@@ -586,6 +586,32 @@ Memusatkan parsing dan serialisasi di model menjaga konsistensi konversi tipe da
 **Sumber evaluasi:**
 Commit: `01e6f20a0442e809a6c936391b2fa9fd37ceda6d`
 File: `lib/fitur/biodata/model/biodata_model.dart`
+## Migrasi Skema Database SQLite
+Perubahan skema database (penambahan tabel/kolom) wajib disertai mekanisme migrasi agar data pengguna pada perangkat yang sudah terpasang tetap konsisten.
+**Aturan:**
+1. Setiap perubahan skema wajib menaikkan versi database.
+2. Sediakan callback migrasi (`onUpgrade`/mekanisme setara) yang berjalan berdasarkan versi lama ke versi baru.
+3. Migrasi harus idempoten dan menggunakan guard versi (`if (oldVersion < N)`).
+4. Skema untuk instalasi baru dan migrasi untuk instalasi lama harus menghasilkan struktur yang sama.
+5. Gunakan nama tabel/kolom dari konstanta terpusat, bukan string literal.
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 2;
+return await openDatabase(
+  path,
+  version: _versiDatabase,
+  onCreate: _buatTabel,
+  onUpgrade: _onUpgrade,
+);
+```
+**Contoh salah:**
+```dart
+// Menambah tabel pada onCreate saja, tanpa onUpgrade.
+// Database lama di perangkat pengguna tidak akan mendapatkan tabel baru.
+```
+**Sumber evaluasi:**
+- Commit: `822e2f94b3bdc7c2a460c01b48c3902a96fa0bf9`
+- File: `lib/shared/db/sqflite/sqflite.dart`
 
 // ============================================================
 // FILE: .agents/rules/global/aturan_global.md
@@ -4268,6 +4294,63 @@ Widget build(BuildContext context) {
 **Sumber evaluasi:**
 Commit: `791e578a7d4fb4d436908afb06423ed930915ca9`
 File: `lib/fitur/biodata/screens/form_biodata.dart`
+## Migrasi Skema SQLite saat Penambahan Tabel atau Kolom
+**Cakupan:**
+- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase` (`_versiDatabase`, `_buatTabel`, `_onUpgrade`).
+- `lib/shared/konstanta/nama_tabel.dart` — `NamaTabel`.
+- `lib/shared/konstanta/nama_kolom.dart` — `NamaKolom`.
+**Aturan wajib:**
+1. Setiap penambahan tabel atau kolom baru wajib menaikkan nilai `_versiDatabase`.
+2. Registrasi callback `onUpgrade: _onUpgrade` pada `openDatabase` wajib ada agar skema lama dapat dimigrasikan.
+3. Pada `_onUpgrade`, gunakan guard versi (`if (oldVersion < N)`) untuk setiap perubahan skema, sehingga migrasi dapat berjalan bertahap dan aman.
+4. Tabel baru pada `_buatTabel` (untuk database baru) wajib juga dibuat pada `_onUpgrade` (untuk database lama) agar skema konsisten antara instalasi baru dan lama.
+5. Gunakan `CREATE TABLE IF NOT EXISTS` pada `_onUpgrade` untuk mencegah error apabila tabel sudah ada.
+6. Nama tabel dan kolom baru wajib menggunakan konstanta `NamaTabel`/`NamaKolom`, bukan string literal.
+7. Jangan mengandalkan `onCreate` saja untuk database yang sudah terpasang di perangkat pengguna.
+**Larangan:**
+- Jangan menambah tabel/kolom tanpa menaikkan versi database.
+- Jangan menghapus callback `onUpgrade` dari `openDatabase`.
+- Jangan melakukan migrasi destruktif (drop tabel) tanpa alasan dan penanganan data yang jelas.
+- Jangan menulis DDL migrasi dengan string literal nama tabel/kolom.
+**Alasan:**
+Commit `822e2f9` menambah tabel `impian` dengan menaikkan `_versiDatabase` dari 1 ke 2, menambahkan `_onUpgrade` dengan guard `if (oldVersion < 2)`, serta memastikan `_buatTabel` dan `_onUpgrade` sama-sama membuat tabel `impian`. Pola ini menjaga konsistensi skema antara instalasi baru dan perangkat yang sudah memiliki database versi lama.
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 2;
+static Future<Database> _inisialisasiDatabase() async {
+  final pathDatabase = await getDatabasesPath();
+  final path = join(pathDatabase, _namaDatabase);
+  return await openDatabase(
+    path,
+    version: _versiDatabase,
+    onCreate: _buatTabel,
+    onUpgrade: _onUpgrade,
+  );
+}
+static Future<void> _onUpgrade(
+  Database db,
+  int oldVersion,
+  int newVersion,
+) async {
+  if (oldVersion < 2) {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.nama} TEXT NOT NULL
+      )
+    ''');
+  }
+}
+```
+**Contoh salah:**
+```dart
+static const int _versiDatabase = 1; // tidak dinaikkan
+// Hanya menambah tabel pada _buatTabel, tanpa onUpgrade.
+// Database lama di perangkat pengguna tidak akan memiliki tabel baru.
+```
+**Sumber evaluasi:**
+Commit: `822e2f94b3bdc7c2a460c01b48c3902a96fa0bf9`
+File: `lib/shared/db/sqflite/sqflite.dart`
 
 
 // ============================================================

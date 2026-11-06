@@ -7,10 +7,22 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 
-class DummyScreen extends ConsumerWidget {
+class DummyScreen extends ConsumerStatefulWidget {
   const DummyScreen({super.key});
 
+  @override
+  ConsumerState<DummyScreen> createState() => _DummyScreenState();
+}
+
+class _DummyScreenState extends ConsumerState<DummyScreen> {
+  bool _sedangMemuat = false;
+
   Future<void> _masukkanDummy(BuildContext context) async {
+    if (_sedangMemuat) {
+      L.w('Dummy masih diproses, aksi diabaikan');
+      return;
+    }
+
     final konfirmasi = await showOkCancelAlertDialog(
       context: context,
       title: 'Masukkan Dummy',
@@ -22,6 +34,8 @@ class DummyScreen extends ConsumerWidget {
       return;
     }
     if (!context.mounted) return;
+
+    setState(() => _sedangMemuat = true);
     unawaited(EasyLoading.show(status: 'Menyimpan...'));
     try {
       await DummyHelper.insert();
@@ -34,11 +48,19 @@ class DummyScreen extends ConsumerWidget {
         AppToast.gagal(context, 'Gagal memasukkan dummy');
       }
     } finally {
-      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        unawaited(EasyLoading.dismiss());
+        setState(() => _sedangMemuat = false);
+      }
     }
   }
 
   Future<void> _hapusDummy(BuildContext context) async {
+    if (_sedangMemuat) {
+      L.w('Dummy masih diproses, aksi diabaikan');
+      return;
+    }
+
     final konfirmasi = await showOkCancelAlertDialog(
       context: context,
       title: 'Hapus Dummy',
@@ -51,6 +73,8 @@ class DummyScreen extends ConsumerWidget {
       return;
     }
     if (!context.mounted) return;
+
+    setState(() => _sedangMemuat = true);
     unawaited(EasyLoading.show(status: 'Menghapus...'));
     try {
       await DummyHelper.delete();
@@ -63,15 +87,24 @@ class DummyScreen extends ConsumerWidget {
         AppToast.gagal(context, 'Gagal menghapus dummy');
       }
     } finally {
-      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        unawaited(EasyLoading.dismiss());
+        setState(() => _sedangMemuat = false);
+      }
     }
   }
 
   Future<void> _reset(BuildContext context) async {
+    if (_sedangMemuat) {
+      L.w('Dummy masih diproses, aksi diabaikan');
+      return;
+    }
+
     final konfirmasi = await showOkCancelAlertDialog(
       context: context,
       title: 'Reset Dummy',
-      message: 'Apakah Anda yakin ingin mereset data dummy? Data dummy akan dihapus lalu dimasukkan ulang.',
+      message:
+          'Apakah Anda yakin ingin mereset data dummy? Data dummy akan dihapus lalu dimasukkan ulang.',
       okLabel: 'Reset',
       cancelLabel: 'Batal',
       isDestructiveAction: true,
@@ -80,6 +113,8 @@ class DummyScreen extends ConsumerWidget {
       return;
     }
     if (!context.mounted) return;
+
+    setState(() => _sedangMemuat = true);
     unawaited(EasyLoading.show(status: 'Memproses...'));
     try {
       await DummyHelper.delete();
@@ -93,12 +128,15 @@ class DummyScreen extends ConsumerWidget {
         AppToast.gagal(context, 'Gagal mereset dummy');
       }
     } finally {
-      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        unawaited(EasyLoading.dismiss());
+        setState(() => _sedangMemuat = false);
+      }
     }
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('data')),
       body: Padding(
@@ -109,8 +147,14 @@ class DummyScreen extends ConsumerWidget {
               () => unawaited(_masukkanDummy(context)),
               'insert',
             ),
-            _buildTombolCustom(() => unawaited(_hapusDummy(context)), 'hapus'),
-            _buildTombolCustom(() => unawaited(_reset(context)), 'reset'),
+            _buildTombolCustom(
+              () => unawaited(_hapusDummy(context)),
+              'hapus',
+            ),
+            _buildTombolCustom(
+              () => unawaited(_reset(context)),
+              'reset',
+            ),
           ],
         ),
       ),

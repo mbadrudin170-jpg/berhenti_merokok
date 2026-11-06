@@ -800,3 +800,35 @@ Memusatkan parsing dan serialisasi di model menjaga konsistensi konversi tipe da
 **Sumber evaluasi:**
 Commit: `01e6f20a0442e809a6c936391b2fa9fd37ceda6d`
 File: `lib/fitur/biodata/model/biodata_model.dart`
+
+## Migrasi Skema Database SQLite
+
+Perubahan skema database (penambahan tabel/kolom) wajib disertai mekanisme migrasi agar data pengguna pada perangkat yang sudah terpasang tetap konsisten.
+
+**Aturan:**
+1. Setiap perubahan skema wajib menaikkan versi database.
+2. Sediakan callback migrasi (`onUpgrade`/mekanisme setara) yang berjalan berdasarkan versi lama ke versi baru.
+3. Migrasi harus idempoten dan menggunakan guard versi (`if (oldVersion < N)`).
+4. Skema untuk instalasi baru dan migrasi untuk instalasi lama harus menghasilkan struktur yang sama.
+5. Gunakan nama tabel/kolom dari konstanta terpusat, bukan string literal.
+
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 2;
+return await openDatabase(
+  path,
+  version: _versiDatabase,
+  onCreate: _buatTabel,
+  onUpgrade: _onUpgrade,
+);
+```
+
+**Contoh salah:**
+```dart
+// Menambah tabel pada onCreate saja, tanpa onUpgrade.
+// Database lama di perangkat pengguna tidak akan mendapatkan tabel baru.
+```
+
+**Sumber evaluasi:**
+- Commit: `822e2f94b3bdc7c2a460c01b48c3902a96fa0bf9`
+- File: `lib/shared/db/sqflite/sqflite.dart`
