@@ -2,21 +2,15 @@
 
 ## Tinggi
 
-Tidak ada temuan.
+- Status: Belum dikerjakan
+- Masalah: File generated `lib/fitur/tema/notifier/tema_notifier.g.dart` tidak sinkron dengan source `lib/fitur/tema/notifier/tema_notifier.dart`. Source telah diubah untuk menggunakan `Future<TemaEnum>` sebagai tipe pengembalian `build()`, namun file generated masih menggunakan tipe `String` (kelas `_$TemaNotifier extends $Notifier<String>` dan `TemaNotifierProvider extends $NotifierProvider<TemaNotifier, String>`). Ketidaksesuaian ini menyebabkan kegagalan kompilasi karena tipe state yang diharapkan tidak cocok.
+- Solusi: Jalankan generator Riverpod (`dart run build_runner build --delete-conflicting-outputs`) untuk meregenerasi file `tema_notifier.g.dart` agar sinkron dengan source yang menggunakan `Future<TemaEnum>`. Pastikan file generated menggunakan tipe `TemaEnum`/`AsyncValue<TemaEnum>` sesuai source.
+- Aturan dilanggar: `.agents/rules/global/aturan_riverpod.md` — bagian 1 "Penggunaan riverpod_generator" (file `.g.dart` harus dihasilkan ulang setelah perubahan tipe `build`). `.agents/rules/global/aturan_lainnya.md` — poin 8 "File Hasil Generator" (jangan mengedit file hasil generator secara langsung; ubah file sumber lalu jalankan generator).
+- File terkait: [tema_notifier.dart#L12](lib/fitur/tema/notifier/tema_notifier.dart#L12), [tema_notifier.g.dart#L16](lib/fitur/tema/notifier/tema_notifier.g.dart#L16), [tema_notifier.g.dart#L46](lib/fitur/tema/notifier/tema_notifier.g.dart#L46)
 
 ## Sedang
 
-- Status: Belum dikerjakan
-- Masalah: `TemaNotifier` mengembalikan `String` kosong (`""`) alih-alih menggunakan `TemaEnum` yang sudah didefinisikan di `lib/fitur/tema/enum/tema_enum.dart`. Enum `TemaEnum` (dengan nilai `sistem`, `terang`, `gelap`) tidak digunakan di mana pun, sehingga tipe state notifier tidak konsisten dengan model enum yang tersedia.
-- Solusi: Ubah tipe pengembalian `build()` pada `TemaNotifier` dari `String` ke `TemaEnum` (misalnya `TemaEnum.sistem` sebagai nilai awal), dan pastikan enum `TemaEnum` digunakan sebagai sumber kebenaran tipe tema.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Pengelolaan Tema melalui TemaNotifier (Riverpod Generator)" poin 1 dan 2.
-- File terkait: [tema_notifier.dart#L5](lib/fitur/tema/notifier/tema_notifier.dart#L5), [tema_notifier.dart#L8](lib/fitur/tema/notifier/tema_notifier.dart#L8), [tema_enum.dart#L1](lib/fitur/tema/enum/tema_enum.dart#L1)
-
-- Status: Belum dikerjakan
-- Masalah: `SharedKeys.tema` (kunci penyimpanan preferensi tema) sudah didefinisikan di `lib/shared/helper/shared_keys.dart`, namun `TemaNotifier` tidak membaca maupun menyimpan nilai preferensi tema menggunakan kunci tersebut. State tema tidak persisten antar sesi aplikasi.
-- Solusi: Integrasikan `SharedKeys.tema` ke dalam `TemaNotifier` agar preferensi tema dibaca saat `build()` dan disimpan setiap kali tema diubah, menggunakan `SharedPreferences` sesuai pola proyek.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Sentralisasi Kunci Penyimpanan di SharedKeys" poin 1 dan 2.
-- File terkait: [tema_notifier.dart#L5](lib/fitur/tema/notifier/tema_notifier.dart#L5), [shared_keys.dart#L9](lib/shared/helper/shared_keys.dart#L9)
+Tidak ada temuan.
 
 ## Rendah
 
@@ -32,12 +26,6 @@ Tidak ada temuan.
 - Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Root App Widget sebagai ConsumerStatefulWidget" poin 3.
 - File terkait: [app.dart#L5](lib/app.dart#L5), [app.dart#L12](lib/app.dart#L12)
 
-- Status: Belum dikerjakan
-- Masalah: Enum `TemaEnum` tidak memiliki getter `label` melalui extension. Jika nilai enum ini ditampilkan kepada pengguna (misalnya pada pengaturan tema), representasi teksnya tidak dapat dikelola secara terpusat.
-- Solusi: Tambahkan extension pada `TemaEnum` dengan getter `label` (dan `icon` jika diperlukan) sesuai aturan. Terapkan hanya jika enum ini akan ditampilkan kepada pengguna.
-- Aturan dilanggar: `.agents/rules/global/optimasi_boilerplate.md` — bagian 9 "Enum yang Ditampilkan kepada Pengguna".
-- File terkait: [tema_enum.dart#L1](lib/fitur/tema/enum/tema_enum.dart#L1)
-
 # UX
 
 ## Tinggi
@@ -47,9 +35,9 @@ Tidak ada temuan.
 ## Sedang
 
 - Status: Belum dikerjakan
-- Masalah: `MaterialApp` pada `lib/app.dart` tidak mendeklarasikan `supportedLocales` maupun `localizationsDelegates`. Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit agar teks sistem (dialog, date picker, toolbar pemilihan teks) mengikuti locale yang didukung.
-- Solusi: Tambahkan `supportedLocales: const [Locale('id', 'ID')]` dan `localizationsDelegates` yang mencakup `GlobalMaterialLocalizations.delegate`, `GlobalWidgetsLocalizations.delegate`, dan `GlobalCupertinoLocalizations.delegate` pada `MaterialApp`. Impor `flutter_localizations` dari Flutter SDK.
-- Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 33 "Lokalisasi Aplikasi".
+- Masalah: `MaterialApp` pada `lib/app.dart` tidak mendeklarasikan `supportedLocales` maupun `localizationsDelegates`. Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit agar teks sistem (dialog, date picker, toolbar pemilihan teks) mengikuti locale yang didukung. Selain itu, delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations` (diperlukan oleh `adaptive_dialog`) juga tidak terdaftar, yang dapat menyebabkan `Null check operator used on a null value` saat dialog ditampilkan.
+- Solusi: Tambahkan `supportedLocales: const [Locale('id', 'ID')]` dan `localizationsDelegates` yang mencakup `GlobalMaterialLocalizations.delegate`, `GlobalWidgetsLocalizations.delegate`, `GlobalCupertinoLocalizations.delegate`, dan `_MaterialUiLocalizationsDelegate()` pada `MaterialApp`. Impor `flutter_localizations` dari Flutter SDK dan buat kelas `_MaterialUiLocalizationsDelegate` dengan `isSupported => true`.
+- Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 33 "Lokalisasi Aplikasi". `.agents/rules/proyek/aturan_khusus.md` — bagian "Registrasi Delegate Lokalisasi `material_ui` untuk `adaptive_dialog`".
 - File terkait: [app.dart#L16](lib/app.dart#L16), [app.dart#L22](lib/app.dart#L22)
 
 ## Rendah

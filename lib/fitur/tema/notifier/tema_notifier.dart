@@ -17,9 +17,10 @@ class TemaNotifier extends _$TemaNotifier {
     );
   }
 
-  Future<void> set(TemaEnum tema) async {
+  Future<void> set([TemaEnum? tema]) async {
+    final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(SharedKeys.tema, tema.name);
-    state = AsyncValue.data(tema);
+    await prefs.setString(SharedKeys.tema, nilai.name);
+    state = AsyncValue.data(nilai);
   }
 }
