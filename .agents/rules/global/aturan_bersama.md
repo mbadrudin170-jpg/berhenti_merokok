@@ -436,3 +436,94 @@ MaterialApp(theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple
 
 **Alasan:**
 Memisahkan pengelolaan tema dari widget presentasi memungkinkan tema diubah dan diamati secara terpusat.
+
+## Penyediaan ProviderScope pada Titik Masuk
+
+Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.
+
+**Aturan:**
+
+1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
+2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
+3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
+
+**Contoh benar:**
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+void main() {
+  runApp(const ProviderScope(child: MyApp()));
+}
+```
+
+**Contoh salah:**
+```dart
+void main() {
+  runApp(const MyApp()); // Tidak ada ProviderScope
+}
+```
+
+**Alasan:**
+Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
+
+## Sentralisasi Kunci Penyimpanan
+
+Sentralisasikan kunci penyimpanan lokal dalam satu kelas dengan konstruktor privat dan konstanta `static const`, hindari string literal yang tersebar.
+
+**Aturan:**
+
+1. Definisikan seluruh kunci penyimpanan (mis. `SharedPreferences`) dalam kelas khusus dengan konstruktor privat.
+2. Gunakan konstanta `static const String` untuk setiap kunci.
+3. Jangan menulis string kunci langsung di berbagai tempat.
+
+**Contoh benar:**
+```dart
+class SharedKeys {
+  SharedKeys._();
+
+  static const String tema = 'tema';
+}
+```
+
+**Contoh salah:**
+```dart
+await prefs.setString('tema', value); // string literal tersebar
+```
+
+**Alasan:**
+Sentralisasi menjaga konsistensi dan memudahkan pemeliharaan.
+
+## Pertahankan State Persisten dengan `keepAlive`
+
+Gunakan `keepAlive: true` pada provider yang state-nya harus persisten sepanjang siklus hidup aplikasi, dan auto-dispose untuk state sementara.
+
+**Aturan:**
+
+1. Gunakan `@Riverpod(keepAlive: true)` untuk state yang harus tetap hidup (misalnya tema).
+2. Gunakan `@riverpod` (auto-dispose) untuk state sementara.
+3. Jangan menggunakan auto-dispose untuk state yang harus persisten.
+
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+
+**Alasan:**
+Auto-dispose akan menghapus state ketika tidak ada listener, yang tidak diinginkan untuk state persisten seperti tema.

@@ -1153,7 +1153,7 @@ class MyApp extends StatelessWidget {
 ```
 
 **Alasan:**
-Perubahan pada working tree (staged) mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
+Commit `38219ec` mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema/locale); pertahankan `debugShowCheckedModeBanner: false` pada build pengembangan.
@@ -1251,3 +1251,102 @@ Commit `4498593` menambahkan `TemaNotifier` menggunakan `riverpod_generator`. Po
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Kelola state tema aplikasi melalui Notifier (Riverpod Generator) agar tema dapat diubah dan diamati secara terpusat, bukan di-hardcode di widget.
+
+## Penyediaan ProviderScope pada `main()`
+
+**Tujuan:**
+Memastikan root widget memiliki scope Riverpod yang valid sehingga provider dapat diakses dari seluruh aplikasi.
+
+**Aturan:**
+1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
+2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
+3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
+
+**Contoh benar:**
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+void main() {
+  runApp(const ProviderScope(child: MyApp()));
+}
+```
+
+**Contoh salah:**
+```dart
+void main() {
+  runApp(const MyApp()); // Tidak ada ProviderScope
+}
+```
+
+**Alasan:**
+Commit `38219ec` mengubah `runApp(const MyApp())` menjadi `runApp(const ProviderScope(child: MyApp()))`. Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.
+
+## Sentralisasi Kunci Penyimpanan di `SharedKeys`
+
+**Tujuan:**
+Menghindari penggunaan string literal yang tersebar untuk kunci penyimpanan lokal.
+
+**Aturan:**
+1. Definisikan seluruh kunci penyimpanan (mis. `SharedPreferences`) dalam kelas `SharedKeys` dengan konstruktor privat.
+2. Gunakan konstanta `static const String` untuk setiap kunci.
+3. Jangan menulis string kunci langsung di berbagai tempat.
+
+**Contoh benar:**
+```dart
+class SharedKeys {
+  SharedKeys._();
+
+  static const String tema = 'tema';
+}
+```
+
+**Contoh salah:**
+```dart
+await prefs.setString('tema', value); // string literal tersebar
+```
+
+**Alasan:**
+Commit `fd2a129` menambahkan `SharedKeys` dengan kunci `tema`. Sentralisasi ini menjaga konsistensi dan memudahkan pemeliharaan.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Sentralisasikan kunci penyimpanan lokal dalam satu kelas dengan konstruktor privat dan konstanta `static const`, hindari string literal yang tersebar.
+
+## Pertahankan State Tema dengan `keepAlive`
+
+**Tujuan:**
+Memastikan state tema tetap hidup selama aplikasi berjalan dan tidak di-dispose otomatis.
+
+**Aturan:**
+1. Gunakan `@Riverpod(keepAlive: true)` pada `TemaNotifier` agar state tema tidak hilang.
+2. Jangan menggunakan `@riverpod` (auto-dispose) untuk state yang harus persisten sepanjang siklus hidup aplikasi.
+
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+
+**Alasan:**
+Commit `14ee623` mengubah anotasi menjadi `@Riverpod(keepAlive: true)` agar `TemaNotifier` tetap hidup. Auto-dispose akan menghapus state tema ketika tidak ada listener.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Gunakan `keepAlive: true` pada provider yang state-nya harus persisten sepanjang siklus hidup aplikasi (misalnya tema), dan auto-dispose untuk state sementara.
