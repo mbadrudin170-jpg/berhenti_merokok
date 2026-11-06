@@ -33,7 +33,7 @@ final class ImpianNotifierProvider
   ImpianNotifier create() => ImpianNotifier();
 }
 
-String _$impianNotifierHash() => r'effd4c0e49aba1730435d514f08be3fd98081ac6';
+String _$impianNotifierHash() => r'1544e6276b4c16dac9e05ea1bd024cbb91674e90';
 
 abstract class _$ImpianNotifier extends $AsyncNotifier<List<ImpianModel>> {
   FutureOr<List<ImpianModel>> build();

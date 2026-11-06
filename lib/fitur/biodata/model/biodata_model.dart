@@ -15,6 +15,7 @@ abstract class BiodataModel with _$BiodataModel {
     int? jumlahRokokPerHari,
     double? hargaRokokPerBungkus,
     DateTime? tanggalMulaiMerokok,
+    DateTime? tanggalMulaiBerhentiMerokok,
   }) = _BiodataModel;
 
   /// Membuat [BiodataModel] dari baris database SQLite.
@@ -33,6 +34,9 @@ abstract class BiodataModel with _$BiodataModel {
       tanggalMulaiMerokok: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiMerokok],
       )?.toLocal(),
+      tanggalMulaiBerhentiMerokok: ParserUtil.parseDateTime(
+        row[NamaKolom.tanggalMulaiBerhentiMerokok],
+      )?.toLocal(),
     );
   }
 
@@ -45,6 +49,9 @@ abstract class BiodataModel with _$BiodataModel {
       NamaKolom.jumlahRokokPerHari: jumlahRokokPerHari,
       NamaKolom.hargaRokokPerBungkus: hargaRokokPerBungkus,
       NamaKolom.tanggalMulaiMerokok: tanggalMulaiMerokok
+          ?.toUtc()
+          .toIso8601String(),
+      NamaKolom.tanggalMulaiBerhentiMerokok: tanggalMulaiBerhentiMerokok
           ?.toUtc()
           .toIso8601String(),
     };

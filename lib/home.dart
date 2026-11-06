@@ -1,3 +1,4 @@
+import 'package:berhenti_merokok/fitur/biodata/screens/biodata_screen.dart';
 import 'package:berhenti_merokok/fitur/dashboard/screens/dashboard_screen.dart';
 import 'package:berhenti_merokok/lainnya_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +22,7 @@ class _HomeState extends ConsumerState<Home> {
   // fitur scroll-to-top setelah tab dibuka. LainnyaScreen adalah
   // StatelessWidget sehingga key-nya tidak bertipe State.
   final GlobalKey _kunciDashboard = GlobalKey();
+  final GlobalKey _kunciBiodata = GlobalKey();
   final GlobalKey _kunciLainnya = GlobalKey();
 
   // Waktu tap terakhir untuk deteksi double-tap pada tab aktif.
@@ -63,6 +65,7 @@ class _HomeState extends ConsumerState<Home> {
     // Periksa state == null terlebih dahulu (tab belum dibuka) agar tidak crash.
     final state = switch (i) {
       0 => _kunciDashboard.currentState,
+      1 => _kunciBiodata.currentState,
       _ => _kunciLainnya.currentState,
     };
     if (state == null) {
@@ -77,12 +80,13 @@ class _HomeState extends ConsumerState<Home> {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: List<Widget>.generate(2, (i) {
+        children: List<Widget>.generate(3, (i) {
           if (!_tabTerbuka.contains(i)) {
             return const SizedBox.shrink();
           }
           return switch (i) {
             0 => DashboardScreen(key: _kunciDashboard),
+            1 => BiodataScreen(key: _kunciBiodata),
             _ => LainnyaScreen(key: _kunciLainnya),
           };
         }),
@@ -94,6 +98,10 @@ class _HomeState extends ConsumerState<Home> {
           NavigationDestination(
             icon: const Icon(CupertinoIcons.home),
             label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: const Icon(CupertinoIcons.person),
+            label: 'Biodata',
           ),
           NavigationDestination(
             icon: const Icon(CupertinoIcons.ellipsis),

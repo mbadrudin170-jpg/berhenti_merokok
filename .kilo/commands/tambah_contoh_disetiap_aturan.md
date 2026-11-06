@@ -1,4 +1,3 @@
-
 ---
 description: Audit seluruh file aturan dan tambahkan contoh benar serta salah yang didasarkan pada SDK atau implementasi proyek yang terverifikasi.
 agent: code
@@ -13,6 +12,7 @@ Saya ingin setiap aturan dalam proyek memiliki contoh yang mempermudah AI memaha
 Tugas Anda adalah membaca seluruh file aturan yang berlaku di proyek, mengevaluasi apakah setiap aturan membutuhkan contoh, kemudian menambahkan contoh benar dan salah berdasarkan sumber teknis yang benar-benar tersedia.
 
 Contoh harus membantu AI memahami:
+
 - Seperti apa penerapan aturan yang benar.
 - Seperti apa penerapan aturan yang salah.
 - Mengapa penerapan pertama dianggap benar.
@@ -238,6 +238,7 @@ Gunakan format berikut apabila sesuai dengan jenis aturan:
 **Kesalahan:** Penjelasan bagian yang melanggar aturan dan alasannya.
 
 **Rujukan teknis:**
+
 - `path/ke/file_referensi.dart` — `NamaClass` atau `namaMethod`.
 - `path/ke/source_sdk.dart` — API atau implementasi SDK yang diverifikasi.
 
@@ -320,6 +321,7 @@ Tuliskan aturan yang tidak membutuhkan contoh beserta alasannya.
 ### D. Kendala dan Temuan
 
 Laporkan:
+
 - Sumber SDK atau paket yang tidak ditemukan.
 - File custom yang tidak dapat diakses.
 - Aturan yang ambigu.

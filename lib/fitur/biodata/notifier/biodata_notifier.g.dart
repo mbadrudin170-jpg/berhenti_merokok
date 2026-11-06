@@ -33,7 +33,7 @@ final class BiodataNotifierProvider
   BiodataNotifier create() => BiodataNotifier();
 }
 
-String _$biodataNotifierHash() => r'2c679875c31189b52a061d43415bc1d8d4ef5a09';
+String _$biodataNotifierHash() => r'f63d30cd5d65a1ed93470309297987f47af9793f';
 
 abstract class _$BiodataNotifier extends $AsyncNotifier<BiodataModel?> {
   FutureOr<BiodataModel?> build();

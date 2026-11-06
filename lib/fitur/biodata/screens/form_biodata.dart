@@ -29,6 +29,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
 
   DateTime? _tanggalLahir;
   DateTime? _tanggalMulaiMerokok;
+  DateTime? _tanggalMulaiBerhentiMerokok;
 
   bool _isLoading = false;
   bool _sudahDiisi = false;
@@ -49,6 +50,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
               biodata.hargaRokokPerBungkus?.toString() ?? '';
           _tanggalLahir = biodata.tanggalLahir;
           _tanggalMulaiMerokok = biodata.tanggalMulaiMerokok;
+          _tanggalMulaiBerhentiMerokok = biodata.tanggalMulaiBerhentiMerokok;
         }
       });
     });
@@ -92,6 +94,19 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     }
   }
 
+  Future<void> _pilihTanggalMulaiBerhentiMerokok() async {
+    final awal = _tanggalMulaiBerhentiMerokok ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && mounted) {
+      setState(() => _tanggalMulaiBerhentiMerokok = picked);
+    }
+  }
+
   Future<void> _simpan() async {
     if (_isLoading) {
       L.w('Form biodata masih loading, simpan diabaikan');
@@ -121,6 +136,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             ? null
             : InputRupiah.parse(_hargaRokokController.text),
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
+        tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
       );
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
@@ -230,6 +246,22 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                 ),
                 trailing: TextButton(
                   onPressed: _pilihTanggalMulaiMerokok,
+                  child: const Text('Pilih'),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.event_available_outlined),
+                title: const Text('Tanggal mulai berhenti merokok'),
+                subtitle: Text(
+                  _tanggalMulaiBerhentiMerokok == null
+                      ? 'Belum dipilih'
+                      : FormatTanggal.formatDasar(
+                          _tanggalMulaiBerhentiMerokok!,
+                        ),
+                ),
+                trailing: TextButton(
+                  onPressed: _pilihTanggalMulaiBerhentiMerokok,
                   child: const Text('Pilih'),
                 ),
               ),
