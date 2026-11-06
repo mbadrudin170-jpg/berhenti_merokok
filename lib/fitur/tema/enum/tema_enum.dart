@@ -1,3 +1,1 @@
-enum TemaEnum {
-  sistem,terang,gelap
-}
+enum TemaEnum { sistem, terang, gelap }

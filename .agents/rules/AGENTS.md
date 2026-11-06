@@ -1,4 +1,379 @@
 // ============================================================
+// FILE: .agents/rules/global/aturan_bersama.md
+// ============================================================
+
+# Aturan Bersama Seluruh Proyek Flutter
+File ini menyimpan standar implementasi yang berlaku lintas proyek Flutter pengguna. Aturan di sini tidak bergantung pada kebutuhan bisnis satu proyek dan dapat digunakan kembali pada berbagai proyek.
+## Penanganan AsyncValue (Riverpod) untuk ID Terpilih
+Ketentuan berikut wajib diterapkan agar kesalahan runtime terkait `selectedId`/ID terpilih tidak terulang:
+1. **Jangan gunakan `.value` atau `.valueOrNull` pada `AsyncValue` hasil `ref.watch(...)` di dalam `build` maupun di dalam builder widget (mis. `itemBuilder` `ListView.builder`).**
+   - Gunakan `.asData?.value` atau `.maybeWhen(data: (id) => id, orElse: () => null)` untuk membaca nilai dengan aman terhadap status loading/error.
+   - Contoh benar: `ref.watch(selectedKendaraanIdProvider).asData?.value`
+   - Contoh salah: `ref.watch(selectedKendaraanIdProvider).value`
+2. **Setiap `AsyncValue` yang di-`watch` wajib diperiksa statusnya dengan urutan: `.isLoading` terlebih dahulu, lalu `.hasError`, baru `.requireValue`.**
+   - Gabungkan pemeriksaan loading/error untuk semua provider yang digunakan di `build`.
+3. **Jangan memanggil `ref.watch(...)` di dalam `itemBuilder`, `builder`, atau callback widget.**
+   - Baca `AsyncValue` sekali di awal `build`, lalu teruskan nilainya melalui parameter ke widget/fungsi builder.
+4. **Gunakan `ref.read(...)` (bukan `ref.watch`) di dalam callback aksi (mis. `onTap`) ketika hanya membutuhkan nilai sekali.**
+5. **Pastikan `flutter analyze` bersih sebelum menyatakan perubahan selesai.**
+## Registrasi Delegate Lokalisasi `material_ui` untuk `adaptive_dialog`
+Proyek yang menggunakan paket `adaptive_dialog` (yang secara internal bergantung pada paket `material_ui`) wajib mendaftarkan delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations` selain tiga delegate global Flutter.
+**Aturan wajib:**
+1. `MaterialApp` wajib mendaftarkan delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations`.
+2. Delegate khusus tersebut wajib memiliki `isSupported` yang mengembalikan `true` untuk locale yang didukung aplikasi, karena delegate bawaan `material_ui` (`DefaultMaterialLocalizations.delegate`) hanya mendukung `locale.languageCode == 'en'`.
+3. Metode `load` delegate khusus wajib memanggil `material_ui.DefaultMaterialLocalizations.load(locale)`.
+4. Jangan menghapus delegate khusus ini meskipun tidak ada error analyzer, karena error hanya muncul pada runtime saat dialog ditampilkan.
+**Larangan:**
+- Jangan mengandalkan `material_ui.DefaultMaterialLocalizations.delegate` langsung pada `MaterialApp.localizationsDelegates`.
+- Jangan mengganti delegate khusus dengan delegate Flutter bawaan.
+## Padding Tepi Layar
+Seluruh konten utama halaman wajib memiliki jarak yang sesuai dari tepi layar. Padding tepi layar merupakan tanggung jawab container pada tingkat halaman atau parent yang menyusun konten halaman.
+**Aturan wajib:**
+1. Terapkan padding pada container yang menjadi batas utama konten halaman.
+2. Widget reusable/shared tidak boleh memasukkan padding tepi layar ke dalam dirinya sendiri.
+3. Widget reusable tetap boleh mempunyai padding internal untuk kebutuhan desain komponennya sendiri.
+4. Apabila parent sudah memberikan padding tepi layar, jangan menambahkan padding tepi layar yang sama lagi pada setiap anak.
+5. Nilai padding wajib mengikuti referensi desain. Dilarang menentukan nilai sendiri tanpa dasar referensi desain.
+**Larangan:**
+- Jangan menempatkan widget reusable langsung di dalam `Column`/`Row` halaman tanpa pembungkus `Padding` (jika widget tidak menyertakan padding tepi layar).
+- Jangan memodifikasi widget reusable untuk menambahkan padding tepi layar, karena akan menyebabkan padding ganda.
+## Navigasi Tab Utama — Inisialisasi Lazy dan Retensi State
+Gunakan `IndexedStack` dengan daftar yang dibangun secara lazy: tab hanya dibuat saat pertama kali dipilih, lalu tetap dipertahankan (state tidak dibuang).
+**Aturan wajib:**
+1. Simpan tab yang sudah pernah dibuka dalam `Set<int> _tabTerbuka` (awalnya `{0}`).
+2. Setiap tab yang belum pernah dibuka direpresentasikan sebagai `SizedBox.shrink()` pada slot IndexedStack-nya.
+3. Pertahankan `GlobalKey<State<...>>` per tab agar `currentState` tetap dapat diakses untuk fitur scroll-to-top.
+4. Deteksi double-tap pada tab yang sedang aktif dengan jendela waktu `<= 500ms`, lalu panggil scroll-to-top dan reset waktu tap.
+5. Pada scroll-to-top, periksa `state == null` terlebih dahulu (tab belum dibuka) dan log + return (jangan crash).
+6. Hanya panggil `scrollToTop()` apabila state mengimplementasikan `ScrollKeAtas`.
+**Larangan:**
+- Jangan membangun semua tab sekaligus sejak awal.
+- Jangan menghapus `_tabTerbuka` / lazy loading.
+- Jangan menghapus `GlobalKey` per tab.
+- Jangan memanggil `scrollToTop()` tanpa memeriksa `state == null` dan tipe `ScrollKeAtas`.
+## Kelengkapan Refresh pada `_buildError` (Halaman Multi-Provider)
+Setiap provider yang di-`watch` di `build` (dan diperiksa loading/error-nya) wajib ikut di-`refresh` pada handler retry di `_buildError`.
+**Aturan wajib:**
+1. Refresh seluruh provider yang di-`watch`, termasuk provider sekunder.
+2. Jangan melewatkan provider hanya karena tidak menjadi fokus utama halaman.
+3. Urutan pemeriksaan `AsyncValue` tetap loading → error → data.
+**Larangan:**
+- Jangan refresh sebagian provider saja di `_buildError`.
+- Jangan menambah provider baru ke `build` tanpa menambahkan refresh-nya di `_buildError`.
+## Penempatan Metode `_buildLoading` dan `_buildError` di Bagian Bawah Kelas State
+Tempatkan metode `_buildLoading()` dan `_buildError()` di bagian paling bawah kelas State, setelah metode-metode lain.
+**Aturan wajib:**
+1. Urutan internal: `_buildLoading()` terlebih dahulu, kemudian `_buildError()`, sebelum penutup kelas `}`.
+2. Pastikan metode tetap berada pada level anggota kelas (bukan metode lokal/nested).
+3. Setelah memindahkan metode, jalankan `dart format` dan `flutter analyze`.
+**Larangan:**
+- Jangan menempatkan `_buildLoading()`/`_buildError()` tepat setelah `build()` atau di tengah metode lain.
+- Jangan memindahkan metode tanpa memeriksa penutupan kurung kurawal (`}`).
+## Penempatan Metode `scrollToTop` pada Kelas State
+Tempatkan metode `scrollToTop()` (implementasi interface `ScrollKeAtas`) di bagian atas kelas State, sebelum metode `build()`.
+**Aturan wajib:**
+1. Metode interface dipanggil dari luar (via `GlobalKey.currentState`), bukan dari dalam `build()`.
+2. Berbeda dari `_buildLoading`/`_buildError` yang ditempatkan di bawah.
+**Larangan:**
+- Jangan menempatkan `scrollToTop()` di bagian bawah kelas State.
+## Family Provider (Riverpod)
+Gunakan family provider (`@Riverpod` dengan parameter pada `build`) ketika provider bergantung pada parameter eksternal.
+**Aturan wajib:**
+1. Pastikan file `.g.dart` dihasilkan ulang setelah menambah/mengubah parameter `build`.
+2. Berikan nama kelas Notifier yang konsisten (mis. `DashboardNotifier`, bukan `Dashboard`).
+3. Gunakan `keepAlive: true` jika state perlu dipertahankan.
+4. Gunakan `@Riverpod()` (auto-dispose) jika state tidak perlu dipertahankan.
+5. Jangan menggunakan functional provider jika state perlu dimutasi melalui metode.
+## Penggunaan EasyLoading Overlay pada Aksi Simpan
+Gunakan `flutter_easyloading` untuk loading overlay pada aksi simpan sesuai pola implementasi proyek.
+**Aturan wajib:**
+1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...'))` segera setelah flag `_isLoading` diaktifkan.
+2. Sembunyikan overlay melalui `unawaited(EasyLoading.dismiss())` di dalam blok `finally`.
+3. Pertahankan guard double-submit di awal metode: `if (_isLoading) { L.w(...); return; }`.
+4. Tombol simpan tidak perlu menampilkan spinner sendiri maupun dinonaktifkan; cukup panggil `_simpanForm` langsung.
+5. Pastikan `_isLoading` dikembalikan ke `false` pada semua jalur, dengan pemeriksaan `mounted` sebelum `setState`.
+**Larangan:**
+- Jangan menampilkan spinner di dalam tombol sekaligus overlay EasyLoading untuk aksi yang sama.
+- Jangan menghilangkan guard `_isLoading` di awal metode.
+- Jangan memanggil `EasyLoading.dismiss()` tanpa `unawaited` atau di luar `finally`.
+## Preferensi State Lokal daripada Re-watch Provider pada Halaman
+Jika nilai yang dibutuhkan sudah tersedia dalam state lokal widget, gunakan nilai tersebut langsung sebagai argumen provider, tanpa me-`watch` provider async yang menyediakan nilai yang sama.
+**Aturan wajib:**
+1. Jangan menambahkan pemeriksaan `isLoading`/`hasError`/`requireValue` untuk provider yang tidak lagi di-`watch`.
+2. Jika sebuah provider dihapus dari `build`, pastikan juga dihapus dari daftar refresh pada `_buildError`.
+**Larangan:**
+- Jangan me-`watch` provider async yang nilainya sudah tersedia di state lokal.
+## Pengurutan Koleksi dengan `sorted`
+Gunakan `list.sorted(...)` langsung dari `package:collection`, karena `sorted` sudah mengembalikan list baru tanpa memutasi list asli.
+**Larangan:**
+- Jangan menulis `[...list].sorted(...)`.
+## Penggunaan `maxBy` untuk Nilai Maksimum
+Gunakan `maxBy` dari `package:collection` untuk mengambil item dengan nilai maksimum berdasarkan kriteria.
+**Larangan:**
+- Jangan menggunakan `firstWhereOrNull` atau loop manual untuk kebutuhan ini.
+## Ekstraksi Fungsi ke Helper untuk Menghilangkan Duplikasi
+Pindahkan fungsi/logika yang digunakan di banyak tempat ke file helper khusus. Gunakan fungsi helper tersebut di semua tempat yang membutuhkan.
+**Larangan:**
+- Jangan menyalin logika yang sama ke beberapa file.
+- Jangan membuat fungsi duplikat dengan nama berbeda.
+## Anotasi Tipe Eksplisit pada Variabel State dan List
+Gunakan anotasi tipe eksplisit pada variabel yang menyimpan state atau list. Ini meningkatkan type safety dan keterbacaan kode.
+**Larangan:**
+- Jangan menggunakan `var` atau `final` tanpa anotasi tipe untuk variabel state/list jika tipe dapat ditentukan secara jelas.
+## Penanganan Async di Luar Build (Riverpod)
+Untuk mengambil hasil provider asynchronous di luar `build`, gunakan `.future` dan `await`. Jangan menangani status `.isLoading` dan `.hasError` secara manual.
+**Aturan wajib:**
+1. Gunakan `await ref.read(provider.future)` untuk mengambil nilai.
+2. Tangani error dengan try/catch.
+3. Pastikan flag loading direset di blok `finally`.
+**Larangan:**
+- Jangan menggunakan `ref.read(provider)` tanpa `.future` untuk provider asynchronous.
+## Filter Data Berdasarkan Rentang Tanggal
+Gunakan fungsi filter yang konsisten untuk memfilter data berdasarkan rentang tanggal. Ekstrak logika filter ke helper jika digunakan di banyak tempat.
+**Aturan wajib:**
+1. Gunakan `maxBy` dari `package:collection` untuk menentukan item dengan nilai maksimum dalam rentang.
+2. Gunakan `fold` untuk agregasi data.
+3. Gunakan `sorted` dari `package:collection` untuk pengurutan sebelum perhitungan.
+## Hierarki Tipografi pada Tabel
+Pada tabel yang menyajikan informasi berjenjang, gunakan hierarki tipografi yang jelas:
+1. Header kolom menggunakan `Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)`.
+2. Label baris menggunakan `Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)`.
+3. Nilai data cell menggunakan `Theme.of(context).textTheme.bodySmall`.
+**Larangan:**
+- Jangan menggunakan ukuran yang sama untuk header, label, dan nilai.
+- Jangan menggunakan `const TextStyle(fontWeight: FontWeight.bold)` tanpa acuan tema.
+## Penyusunan Dependensi pada `pubspec.yaml`
+Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` agar perubahan lebih mudah ditinjau.
+**Aturan:**
+1. Susun nama paket pada kelompok `dependencies` secara konsisten (misalnya alfabetis A–Z).
+2. Susun nama paket pada kelompok `dev_dependencies` secara konsisten (misalnya alfabetis A–Z), terpisah dari `dependencies`.
+3. Pertahankan kelompok dependensi asal setiap paket; jangan memindahkan paket antar kelompok.
+4. Pertahankan sumber dan versi dependensi yang sudah ditetapkan; penyusunan ulang urutan tidak boleh mengubah konfigurasi dependensi.
+**Contoh benar:**
+```yaml
+dependencies:
+  cupertino_icons: ^2.0.0
+  flutter:
+    sdk: flutter
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+```
+**Contoh salah:**
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^2.0.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+```
+**Alasan:**
+Urutan yang konsisten memudahkan peninjauan diff pada `pubspec.yaml` dan mencegah perubahan urutan yang tidak perlu saat instalasi ulang paket.
+## Pemisahan Titik Masuk dan Widget Aplikasi
+Jaga agar entry point aplikasi (`main()`) tetap minimal dan pisahkan definisi widget root (`MyApp`) ke file tersendiri.
+**Aturan:**
+1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export file yang memuat `MyApp`.
+2. Definisi kelas `MyApp` dan logika widget root ditempatkan di file terpisah (mis. `app.dart`).
+3. Jangan menempatkan logika UI, state, atau konfigurasi yang kompleks di dalam `main()`.
+**Contoh benar:**
+```dart
+// main.dart
+import 'package:aplikasi/app.dart';
+import 'package:flutter/material.dart';
+export 'package:aplikasi/app.dart';
+void main() {
+  runApp(const MyApp());
+}
+```
+**Contoh salah:**
+```dart
+// main.dart berisi seluruh definisi MyApp dan logika UI.
+class MyApp extends StatelessWidget { ... }
+void main() => runApp(const MyApp());
+```
+**Alasan:**
+Pemisahan ini menjaga entry point tetap minimal dan memudahkan pengujian serta pemeliharaan.
+## Root Widget sebagai ConsumerStatefulWidget ketika Membutuhkan Provider
+Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema atau locale).
+**Aturan:**
+1. Jika `MyApp` perlu mengamati provider, gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
+2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
+3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
+**Contoh benar:**
+```dart
+class MyApp extends ConsumerStatefulWidget {
+  const MyApp({super.key});
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Aplikasi',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const Home(),
+    );
+  }
+}
+```
+**Contoh salah:**
+```dart
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: true,
+      home: const Home(),
+    );
+  }
+}
+```
+**Alasan:**
+Menggunakan `ConsumerStatefulWidget` pada root hanya saat dibutuhkan menjaga widget tetap sederhana, sementara `debugShowCheckedModeBanner: false` menjaga tampilan pengembangan tetap bersih.
+## Layar dengan Siklus Hidup Menggunakan ConsumerStatefulWidget
+Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan akses provider dan pengelolaan siklus hidup (`initState`/`dispose`).
+**Aturan:**
+1. Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan `ref` dan pengelolaan siklus hidup widget.
+2. Implementasikan `initState` dan `dispose` sesuai kebutuhan, dengan pemanggilan `super` yang benar.
+3. Hindari meninggalkan `TODO` pada `initState`/`dispose` setelah implementasi selesai.
+**Contoh benar:**
+```dart
+class Home extends ConsumerStatefulWidget {
+  const Home({super.key});
+  @override
+  ConsumerState<Home> createState() => _HomeState();
+}
+class _HomeState extends ConsumerState<Home> {
+  @override
+  void initState() {
+    super.initState();
+  }
+  @override
+  void dispose() {
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: Text('Home')));
+  }
+}
+```
+**Contoh salah:**
+```dart
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Tidak dapat mengakses ref atau lifecycle.
+    return const Scaffold(body: Center(child: Text('Home')));
+  }
+}
+```
+**Alasan:**
+Pola ini mempersiapkan layar untuk integrasi provider dan pengelolaan resource dengan lifecycle yang benar.
+## Pengelolaan Tema melalui Notifier (Riverpod)
+Kelola state tema aplikasi melalui Notifier yang dibuat dengan `riverpod_generator`, bukan nilai hardcode di widget.
+**Aturan:**
+1. Buat Notifier tema sebagai kelas dengan anotasi `@riverpod`.
+2. Gunakan `build()` untuk mengembalikan nilai tema awal.
+3. Jangan meng-hardcode tema final di widget; biarkan Notifier menjadi sumber kebenaran.
+**Contoh benar:**
+```dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'tema_notifier.g.dart';
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Tema ditentukan langsung di widget tanpa Notifier.
+MaterialApp(theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)));
+```
+**Alasan:**
+Memisahkan pengelolaan tema dari widget presentasi memungkinkan tema diubah dan diamati secara terpusat.
+## Penyediaan ProviderScope pada Titik Masuk
+Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.
+**Aturan:**
+1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
+2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
+3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
+**Contoh benar:**
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+void main() {
+  runApp(const ProviderScope(child: MyApp()));
+}
+```
+**Contoh salah:**
+```dart
+void main() {
+  runApp(const MyApp()); // Tidak ada ProviderScope
+}
+```
+**Alasan:**
+Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
+## Sentralisasi Kunci Penyimpanan
+Sentralisasikan kunci penyimpanan lokal dalam satu kelas dengan konstruktor privat dan konstanta `static const`, hindari string literal yang tersebar.
+**Aturan:**
+1. Definisikan seluruh kunci penyimpanan (mis. `SharedPreferences`) dalam kelas khusus dengan konstruktor privat.
+2. Gunakan konstanta `static const String` untuk setiap kunci.
+3. Jangan menulis string kunci langsung di berbagai tempat.
+**Contoh benar:**
+```dart
+class SharedKeys {
+  SharedKeys._();
+  static const String tema = 'tema';
+}
+```
+**Contoh salah:**
+```dart
+await prefs.setString('tema', value); // string literal tersebar
+```
+**Alasan:**
+Sentralisasi menjaga konsistensi dan memudahkan pemeliharaan.
+## Pertahankan State Persisten dengan `keepAlive`
+Gunakan `keepAlive: true` pada provider yang state-nya harus persisten sepanjang siklus hidup aplikasi, dan auto-dispose untuk state sementara.
+**Aturan:**
+1. Gunakan `@Riverpod(keepAlive: true)` untuk state yang harus tetap hidup (misalnya tema).
+2. Gunakan `@riverpod` (auto-dispose) untuk state sementara.
+3. Jangan menggunakan auto-dispose untuk state yang harus persisten.
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+**Contoh salah:**
+```dart
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+**Alasan:**
+Auto-dispose akan menghapus state ketika tidak ada listener, yang tidak diinginkan untuk state persisten seperti tema.
+
+
+// ============================================================
 // FILE: .agents/rules/global/aturan_global.md
 // ============================================================
 
@@ -2731,19 +3106,21 @@ Contoh benar menempatkan `scrollToTop()` di atas `build()` sehingga metode inter
 ## Nonaktifkan Konfigurasi Linter pada analysis_options.yaml
 **Cakupan:**
 - `analysis_options.yaml` — seluruh konfigurasi linter dan analyzer.
-**Status:** Temuan/kendala yang perlu dilaporkan, bukan aturan wajib.
+**Status:** Keputusan pengguna (sementara), bukan aturan wajib.
 **Temuan:**
-Pada commit `4cfa0c83`, seluruh konfigurasi linter dan analyzer pada `analysis_options.yaml` di-comment out (termasuk `include: package:flutter_lints/flutter.yaml`, rules linter, plugins riverpod_lint, dan analyzer exclude/language). Hal ini bertentangan dengan aturan global yang mewajibkan kode bersih dari temuan analyzer (`flutter analyze`).
+Pada commit `4cfa0c83`, seluruh konfigurasi linter dan analyzer pada `analysis_options.yaml` di-comment out (termasuk `include: package:flutter_lints/flutter.yaml`, rules linter, plugins riverpod_lint, dan analyzer exclude/language).
+**Alasan pengguna:**
+Linter dinonaktifkan untuk sementara karena berat ke device. Ini adalah keputusan pengguna yang perlu dihormati selama pengembangan.
 **Dampak:**
 - Analyzer tidak lagi melaporkan error/warning/info pada kode.
 - Temuan potensial bug (null safety, unawaited futures, dll.) tidak terdeteksi.
 - Kode dapat memiliki masalah yang tidak terdeteksi.
-**Rekomendasi:**
+**Rekomendasi (ketika linter diaktifkan kembali):**
 - Aktifkan kembali konfigurasi linter dan analyzer.
 - Jika terdapat konflik dengan kode yang ada, perbaiki kode agar sesuai dengan rules, bukan menonaktifkan rules.
 - Jika rules tertentu memang tidak sesuai, nonaktifkan secara selektif dengan alasan yang jelas, bukan seluruhnya.
 **Catatan:**
-Ini adalah temuan dari evaluasi commit, bukan aturan baru. AI harus melaporkan temuan ini kepada pengguna dan tidak boleh mengubah `analysis_options.yaml` melalui command ini.
+Keputusan ini bersifat sementara. Ketika device sudah mampu menangani analyzer, linter sebaiknya diaktifkan kembali untuk mendeteksi potensi bug. AI tidak boleh mengubah `analysis_options.yaml` melalui command ini tanpa persetujuan pengguna.
 ## Penggunaan EasyLoading Overlay pada Aksi Simpan (Form Jadwal Service)
 **Cakupan:**
 - `lib/fitur/jadwal_service/page/form_jadwal_service.dart` — `_FormJadwalServiceState._simpanForm` dan `_buildTombolSimpan`.
@@ -2820,75 +3197,353 @@ Future<void> _simpanForm() async {
 ```
 **Penjelasan perbedaan:**
 Contoh benar menggunakan guard `_isLoading` di awal metode, overlay EasyLoading dengan `unawaited`, dan `EasyLoading.dismiss()` di `finally`, sehingga loading selalu dihentikan meskipun terjadi exception. Contoh salah menampilkan loading ganda, menghilangkan guard, dan tidak menjamin dismiss overlay.
-## Preferensi State Lokal daripada Re-watch Provider pada Halaman
+## Hierarki Tipografi pada Tabel Perbandingan Kendaraan
 **Cakupan:**
-- Halaman yang sudah menyimpan nilai terpilih dalam state lokal (`StatefulWidget`/`ConsumerState`), khususnya `DashboardPage` (`lib/fitur/dashboard/page/dashboard_page.dart`) dengan `_kendaraanTerpilih`.
-- Provider yang menyediakan nilai terpilih secara asynchronous (mis. `selectedKendaraanIdProvider`).
+- `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` — DataTable dengan header kolom, label baris, dan nilai data.
 **Aturan wajib:**
-1. Jika nilai yang dibutuhkan sudah tersedia dalam state lokal widget (mis. `_kendaraanTerpilih?.id`), gunakan nilai tersebut langsung sebagai argumen provider, tanpa me-`watch` provider async yang menyediakan nilai yang sama.
-2. Jangan menambahkan pemeriksaan `isLoading`/`hasError`/`requireValue` untuk provider yang tidak lagi di-`watch`.
-3. Jika sebuah provider dihapus dari `build`, pastikan juga dihapus dari daftar refresh pada `_buildError` (lihat aturan "Kelengkapan Refresh pada `_buildError`").
+1. Header kolom (nama kendaraan dan 'Metrik') menggunakan `Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)`.
+2. Label baris menggunakan `Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)`.
+3. Nilai data cell menggunakan `Theme.of(context).textTheme.bodySmall`.
+4. Hierarki ukuran: header (bodyLarge) > label (bodyMedium) > nilai (bodySmall).
 **Larangan:**
-- Jangan me-`watch` provider async yang nilainya sudah tersedia di state lokal, hanya untuk meneruskannya ke provider lain.
-- Jangan mempertahankan pemeriksaan `AsyncValue` untuk provider yang sudah tidak di-`watch`.
+- Jangan menggunakan ukuran yang sama untuk header, label, dan nilai, karena hierarki visual tidak terlihat.
+- Jangan menggunakan `const TextStyle(fontWeight: FontWeight.bold)` tanpa acuan tema untuk warna dan ukuran.
 **Alasan:**
-`DashboardPage` sebelumnya me-`watch` `selectedKendaraanIdProvider` dan menanganinya (`isLoading`/`hasError`/`requireValue`) hanya untuk meneruskan nilainya ke `dashboardProvider(selectedKendaraanIdState)`. Karena nilai tersebut sudah tersedia sebagai `_kendaraanTerpilih?.id` (state lokal), re-watch provider async menambah kompleksitas penanganan `AsyncValue` tanpa manfaat. Penggunaan state lokal menyederhanakan `build` dan menghindari rebuild tambahan.
+Pada tabel perbandingan kendaraan, header kolom paling besar (bodyLarge bold), label baris sedang (bodyMedium bold), nilai data terkecil (bodySmall). Ini memberikan hierarki visual yang jelas sesuai aturan tipografi (hierarki visual label, sub-label, dan nilai).
 **Dampak apabila dilanggar:**
-- `build` menjadi lebih kompleks karena harus menangani `AsyncValue` tambahan.
-- Risiko state tidak konsisten antara state lokal dan provider.
-- Rebuild yang tidak perlu saat provider async berubah.
+- Hierarki visual tidak terlihat, pengguna sulit membedakan header, label, dan nilai.
+- Tidak konsisten dengan standar tipografi proyek.
 **Rujukan implementasi:**
-- `lib/fitur/dashboard/page/dashboard_page.dart` — `build` menggunakan `dashboardProvider(_kendaraanTerpilih?.id)`.
+- `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` — DataTable dengan tipografi hierarkis.
 **Contoh benar:**
 ```dart
-// Nilai sudah tersedia di state lokal; gunakan langsung.
-final dashboardAsync = ref.watch(dashboardProvider(_kendaraanTerpilih?.id));
-if (dashboardAsync.isLoading) return _buildLoading();
-if (dashboardAsync.hasError) return _buildError();
-final dashboardState = dashboardAsync.requireValue;
+DataTable(
+  columns: [
+    DataColumn(
+      label: Text(
+        'Metrik',
+        style: Theme.of(context).textTheme.bodyLarge
+            ?.copyWith(fontWeight: FontWeight.bold),
+      ),
+    ),
+    ...data.map(
+      (d) => DataColumn(
+        label: Text(
+          d.kendaraan.nama,
+          style: Theme.of(context).textTheme.bodyLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ),
+  ],
+  rows: rows.map((r) {
+    return DataRow(
+      cells: [
+        DataCell(
+          Text(
+            r.label,
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        ...data.map(
+          (d) => DataCell(
+            Text(
+              r.nilai(d),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ),
+      ],
+    );
+  }).toList(),
+);
 ```
 **Contoh salah:**
 ```dart
-// Re-watch provider async yang nilainya sudah ada di state lokal.
-final selectedKendaraanId = ref.watch(selectedKendaraanIdProvider);
-if (selectedKendaraanId.isLoading) return _buildLoading();
-if (selectedKendaraanId.hasError) return _buildError();
-final selectedKendaraanIdState = selectedKendaraanId.requireValue;
-final dashboardAsync = ref.watch(dashboardProvider(selectedKendaraanIdState));
+DataTable(
+  columns: [
+    const DataColumn(label: Text('Metrik')),
+    ...data.map(
+      (d) => DataColumn(
+        label: Text(d.kendaraan.nama, overflow: TextOverflow.ellipsis),
+      ),
+    ),
+  ],
+  rows: rows.map((r) {
+    return DataRow(
+      cells: [
+        DataCell(Text(r.label)),
+        ...data.map((d) => DataCell(Text(r.nilai(d)))),
+      ],
+    );
+  }).toList(),
+);
 ```
 **Penjelasan perbedaan:**
-Contoh benar menggunakan state lokal yang sudah tersedia, sehingga `build` hanya menangani `AsyncValue` dari `dashboardProvider`. Contoh salah menambahkan penanganan `AsyncValue` untuk `selectedKendaraanIdProvider` yang redundan, karena nilainya sudah ada di `_kendaraanTerpilih`.
-## Pengurutan Koleksi dengan `sorted` Tanpa Spread Berlebih
-**Cakupan:**
-- Kode yang mengurutkan koleksi menggunakan `sorted` dari `package:collection`, khususnya pada provider/notifier seperti `DashboardNotifier._jadwalTerdekat`.
-**Aturan wajib:**
-1. Gunakan `list.sorted(...)` langsung, karena `sorted` sudah mengembalikan list baru tanpa memutasi list asli.
-2. Jangan menambahkan spread `[...list]` sebelum `.sorted(...)` karena menghasilkan salinan ganda yang tidak diperlukan.
-**Larangan:**
-- Jangan menulis `[...list].sorted(...)`.
+Contoh benar menggunakan hierarki tipografi yang jelas: header (bodyLarge bold), label (bodyMedium bold), nilai (bodySmall). Contoh salah menggunakan ukuran default yang sama untuk semua, sehingga hierarki visual tidak terlihat.
+## Rujukan Implementasi Khusus Proyek
+Aturan berikut merupakan penerapan dari aturan bersama (`aturan_bersama.md`) pada proyek ini. Prinsip umum tersimpan di aturan bersama; detail implementasi dan rujukan file tersimpan di sini.
+- **Pengurutan Koleksi dengan `sorted`** — Rujukan: `lib/fitur/dashboard/provider/dashboard_provider.dart` (`_jadwalTerdekat`).
+- **Penggunaan `maxBy`** — Rujukan: `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` (`maxBy(kmList, (km) => km.tanggal)`).
+- **Ekstraksi Fungsi ke Helper** — Rujukan: `lib/fitur/bahan_bakar/helper/filter_bahan_bakar.dart` (`hitungJarakTempuh`), `lib/fitur/bahan_bakar/state/bahan_bakar_state.dart` (`_hitungSelisihKm`), `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart`.
+- **Anotasi Tipe Eksplisit** — Rujukan: `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` (`final BahanBakarState bahanBakarState = ...`, `final List<BahanBakarModel> bahanBakarList = ...`).
+## Penyusunan Abjad Dependensi pada `pubspec.yaml`
+**Tujuan:**
+Menjaga konsistensi urutan dependensi agar perubahan pada `pubspec.yaml` mudah ditinjau dan dibandingkan.
+**Aturan:**
+1. Susun nama paket pada kelompok `dependencies` secara alfabetis (A–Z).
+2. Susun nama paket pada kelompok `dev_dependencies` secara alfabetis (A–Z), terpisah dari `dependencies`.
+3. Pertahankan kelompok dependensi asal setiap paket; jangan memindahkan paket dari `dependencies` ke `dev_dependencies` atau sebaliknya.
+4. Penyusunan alfabetis hanya dilakukan setelah seluruh proses instalasi paket selesai.
+**Contoh benar:**
+```yaml
+dependencies:
+  cupertino_icons: ^2.0.0
+  flutter:
+    sdk: flutter
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+```
+**Contoh salah:**
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+```
 **Alasan:**
-Extension `sorted` dari `package:collection` sudah mengembalikan list baru, sehingga spread `[...list]` hanya membuat salinan tambahan yang tidak diperlukan dan menambah overhead memori/performa tanpa perubahan perilaku.
-**Dampak apabila dilanggar:**
-- Overhead memori dan waktu pemrosesan tambahan (kecil, tetapi tidak perlu).
-- Kode kurang efisien tanpa manfaat.
-**Rujukan implementasi:**
-- `lib/fitur/dashboard/provider/dashboard_provider.dart` — `_jadwalTerdekat`.
+Commit `e8b8ace` menyusun ulang dependensi `pubspec.yaml` secara alfabetis, dan perintah `install_ulang_paket.md` mewajibkan penyusunan alfabetis setelah instalasi. Pengurutan yang konsisten memudahkan peninjauan diff dan mencegah perubahan urutan yang tidak perlu.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` (misalnya alfabetis) agar perubahan lebih mudah ditinjau, tanpa mengubah kelompok atau sumber dependensi yang sudah ditetapkan.
+## Pemisahan Titik Masuk (main.dart) dan Widget Aplikasi (app.dart)
+**Tujuan:**
+Menjaga entry point aplikasi tetap minimal dan memisahkan tanggung jawab antara peluncuran aplikasi (`main()`) dan definisi widget root (`MyApp`).
+**Aturan:**
+1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export `app.dart` agar `MyApp` tetap dapat diimpor dari entry point.
+2. Definisi kelas `MyApp` dan logika widget root ditempatkan di `app.dart`.
+3. Jangan menempatkan logika UI, state, atau konfigurasi tema yang kompleks di dalam `main()`.
 **Contoh benar:**
 ```dart
-import 'package:collection/collection.dart';
-final sorted = list.sorted(
-  (a, b) => _skorUrgensi(a, kmTerbaru).compareTo(_skorUrgensi(b, kmTerbaru)),
-);
-return sorted.first;
+// main.dart
+import 'package:berhenti_merokok/app.dart';
+import 'package:flutter/material.dart';
+export 'package:berhenti_merokok/app.dart';
+void main() {
+  runApp(const MyApp());
+}
 ```
 **Contoh salah:**
 ```dart
-final sorted = [...list].sorted(
-  (a, b) => _skorUrgensi(a, kmTerbaru).compareTo(_skorUrgensi(b, kmTerbaru)),
-);
+// main.dart berisi seluruh definisi MyApp dan logika UI.
+class MyApp extends StatelessWidget { ... }
+void main() => runApp(const MyApp());
 ```
-**Penjelasan perbedaan:**
-Contoh benar memanggil `sorted` langsung pada list, menghasilkan list baru tanpa salinan perantara. Contoh salah menambahkan spread yang membuat salinan list terlebih dahulu, padahal `sorted` sudah tidak memutasi list asli.
+**Alasan:**
+Commit `32967bb` memindahkan definisi `MyApp` dari `main.dart` ke `app.dart` dan menyisakan `main()` di `main.dart` dengan re-export. Pemisahan ini memudahkan pengujian dan pemeliharaan entry point.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari definisi widget root (`MyApp`) agar tanggung jawab setiap file jelas dan entry point tetap minimal.
+## Root App Widget sebagai ConsumerStatefulWidget
+**Tujuan:**
+Memungkinkan widget root mengakses dan mengamati provider (misalnya tema) melalui Riverpod, serta menyembunyikan banner debug pada build non-debug.
+**Aturan:**
+1. Jika `MyApp` perlu mengamati provider (misalnya `TemaNotifier`), gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
+2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
+3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
+**Contoh benar:**
+```dart
+class MyApp extends ConsumerStatefulWidget {
+  const MyApp({super.key});
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const Home(),
+    );
+  }
+}
+```
+**Contoh salah:**
+```dart
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: true,
+      home: const Home(),
+    );
+  }
+}
+```
+**Alasan:**
+Commit `38219ec` mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema/locale); pertahankan `debugShowCheckedModeBanner: false` pada build pengembangan.
+## Layar Home sebagai ConsumerStatefulWidget dengan Siklus Hidup
+**Tujuan:**
+Memastikan layar utama yang membutuhkan akses provider dan pengelolaan siklus hidup (`initState`/`dispose`) menggunakan `ConsumerStatefulWidget`.
+**Aturan:**
+1. Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan `ref` dan pengelolaan siklus hidup widget.
+2. Implementasikan `initState` dan `dispose` sesuai kebutuhan, dengan pemanggilan `super` yang benar.
+3. Hindari meninggalkan `TODO` pada `initState`/`dispose` setelah implementasi selesai.
+**Contoh benar:**
+```dart
+class Home extends ConsumerStatefulWidget {
+  const Home({super.key});
+  @override
+  ConsumerState<Home> createState() => _HomeState();
+}
+class _HomeState extends ConsumerState<Home> {
+  @override
+  void initState() {
+    super.initState();
+  }
+  @override
+  void dispose() {
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('data')),
+      body: const Center(child: Text('Home')),
+    );
+  }
+}
+```
+**Contoh salah:**
+```dart
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Tidak dapat mengakses ref atau lifecycle.
+    return const Scaffold(body: Center(child: Text('Home')));
+  }
+}
+```
+**Alasan:**
+Commit `0a6e373` menambahkan `Home` sebagai `ConsumerStatefulWidget` dengan `initState` dan `dispose`. Pola ini mempersiapkan layar untuk integrasi provider dan pengelolaan resource.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan akses provider dan pengelolaan siklus hidup; pastikan `initState`/`dispose` memanggil `super` dengan benar.
+## Pengelolaan Tema melalui TemaNotifier (Riverpod Generator)
+**Tujuan:**
+Mengelola state tema aplikasi melalui Notifier yang dibuat dengan `riverpod_generator`, bukan nilai hardcode di widget.
+**Aturan:**
+1. Buat `TemaNotifier` sebagai kelas `Notifier` dengan anotasi `@riverpod`.
+2. Gunakan `build()` untuk mengembalikan nilai tema awal.
+3. Jangan meng-hardcode tema final di widget; biarkan Notifier menjadi sumber kebenaran.
+**Contoh benar:**
+```dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'tema_notifier.g.dart';
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Tema ditentukan langsung di widget tanpa Notifier.
+MaterialApp(theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)));
+```
+**Alasan:**
+Commit `4498593` menambahkan `TemaNotifier` menggunakan `riverpod_generator`. Pola ini memisahkan pengelolaan tema dari widget presentasi.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Kelola state tema aplikasi melalui Notifier (Riverpod Generator) agar tema dapat diubah dan diamati secara terpusat, bukan di-hardcode di widget.
+## Penyediaan ProviderScope pada `main()`
+**Tujuan:**
+Memastikan root widget memiliki scope Riverpod yang valid sehingga provider dapat diakses dari seluruh aplikasi.
+**Aturan:**
+1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
+2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
+3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
+**Contoh benar:**
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+void main() {
+  runApp(const ProviderScope(child: MyApp()));
+}
+```
+**Contoh salah:**
+```dart
+void main() {
+  runApp(const MyApp()); // Tidak ada ProviderScope
+}
+```
+**Alasan:**
+Commit `38219ec` mengubah `runApp(const MyApp())` menjadi `runApp(const ProviderScope(child: MyApp()))`. Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.
+## Sentralisasi Kunci Penyimpanan di `SharedKeys`
+**Tujuan:**
+Menghindari penggunaan string literal yang tersebar untuk kunci penyimpanan lokal.
+**Aturan:**
+1. Definisikan seluruh kunci penyimpanan (mis. `SharedPreferences`) dalam kelas `SharedKeys` dengan konstruktor privat.
+2. Gunakan konstanta `static const String` untuk setiap kunci.
+3. Jangan menulis string kunci langsung di berbagai tempat.
+**Contoh benar:**
+```dart
+class SharedKeys {
+  SharedKeys._();
+  static const String tema = 'tema';
+}
+```
+**Contoh salah:**
+```dart
+await prefs.setString('tema', value); // string literal tersebar
+```
+**Alasan:**
+Commit `fd2a129` menambahkan `SharedKeys` dengan kunci `tema`. Sentralisasi ini menjaga konsistensi dan memudahkan pemeliharaan.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Sentralisasikan kunci penyimpanan lokal dalam satu kelas dengan konstruktor privat dan konstanta `static const`, hindari string literal yang tersebar.
+## Pertahankan State Tema dengan `keepAlive`
+**Tujuan:**
+Memastikan state tema tetap hidup selama aplikasi berjalan dan tidak di-dispose otomatis.
+**Aturan:**
+1. Gunakan `@Riverpod(keepAlive: true)` pada `TemaNotifier` agar state tema tidak hilang.
+2. Jangan menggunakan `@riverpod` (auto-dispose) untuk state yang harus persisten sepanjang siklus hidup aplikasi.
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+**Contoh salah:**
+```dart
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+**Alasan:**
+Commit `14ee623` mengubah anotasi menjadi `@Riverpod(keepAlive: true)` agar `TemaNotifier` tetap hidup. Auto-dispose akan menghapus state tema ketika tidak ada listener.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Gunakan `keepAlive: true` pada provider yang state-nya harus persisten sepanjang siklus hidup aplikasi (misalnya tema), dan auto-dispose untuk state sementara.
 
 
 // ============================================================
