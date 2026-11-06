@@ -207,6 +207,69 @@ Untuk mengambil hasil provider asynchronous di luar `build`, gunakan `.future` d
 
 - Jangan menggunakan `ref.read(provider)` tanpa `.future` untuk provider asynchronous.
 
+## Sinkronkan State dari Future Sebelum Mutasi pada Notifier
+
+Pada metode mutasi `AsyncNotifier`, ambil data lama melalui `await future` sebelum blok `try`, agar data yang digunakan untuk pembaruan state adalah data terbaru yang sudah resolved.
+
+**Aturan wajib:**
+
+1. Ambil data lama melalui `final dataLama = await future;` (atau `final existing = await future;`) sebelum blok `try`.
+2. Gunakan nilai tersebut untuk membangun state baru setelah operasi database berhasil.
+3. Jangan membaca data lama melalui `state.asData?.value` atau `state.asData?.value ?? <Model>[]` di dalam blok `try` setelah operasi database.
+4. Pada operasi upsert, pertahankan ID yang sudah tersimpan bila tersedia (`existing?.id`); buat ID baru hanya jika `existing?.id` null dan id input kosong.
+
+**Larangan:**
+
+- Jangan menggunakan `state.asData?.value` untuk mendapatkan data lama di metode mutasi, karena nilainya dapat stale atau null jika state belum resolved.
+- Jangan mengambil data lama setelah operasi database berhasil.
+- Jangan mengabaikan ID yang sudah tersimpan hanya karena id input kosong.
+
+**Alasan:**
+
+`state.asData?.value` dapat mengembalikan data stale atau null jika state belum resolved. `await future` menunggu state resolved sehingga data yang digunakan untuk optimistic update selalu data terbaru. Pola ini mencegah kehilangan data dan ID yang sudah ada.
+
+**Contoh benar:**
+
+```dart
+Future<void> tambah(ItemModel item) async {
+  final dataLama = await future;
+  try {
+    final op = const SqfliteOp();
+    await op.tambah(
+      NamaTabel.item,
+      item.toSqflite(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    state = AsyncValue.data([...dataLama, item]);
+    L.s('Item berhasil disimpan');
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan item: $e $s');
+    rethrow;
+  }
+}
+```
+
+**Contoh salah:**
+
+```dart
+Future<void> tambah(ItemModel item) async {
+  try {
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.item, item.toSqflite());
+    final dataLama = state.asData?.value ?? <ItemModel>[]; // stale/null
+    state = AsyncValue.data([...dataLama, item]);
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan item: $e $s');
+    rethrow;
+  }
+}
+```
+
+**Sumber evaluasi:**
+
+- Commit: `56d2ad1ee82fdd78e24a2d88874bccdf014be843`
+- File: `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`
+
 ## Filter Data Berdasarkan Rentang Tanggal
 
 Gunakan fungsi filter yang konsisten untuk memfilter data berdasarkan rentang tanggal. Ekstrak logika filter ke helper jika digunakan di banyak tempat.
@@ -851,6 +914,31 @@ Operasi batch mengurangi round-trip ke database dan menjaga konsistensi state. P
 **Contoh benar:**
 ```dart
 Future<void> hapusBanyak(List<String> daftarId) async {
+  final dataLama = await future;
+  try {
+    final op = const SqfliteOp();
+    await op.batch((batch) {
+      for (final id in daftarId) {
+        batch.delete(
+          NamaTabel.impian,
+          where: '${NamaKolom.id} = ?',
+          whereArgs: [id],
+        );
+      }
+    });
+    state = AsyncValue.data(
+      dataLama.where((e) => !daftarId.contains(e.id)).toList(),
+    );
+  } on Exception catch (e, s) {
+    L.e('Gagal menghapus: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Membaca data lama via state.asData?.value setelah operasi database (stale).
+Future<void> hapusBanyak(List<String> daftarId) async {
   try {
     final op = const SqfliteOp();
     await op.batch((batch) {
@@ -869,15 +957,6 @@ Future<void> hapusBanyak(List<String> daftarId) async {
   } on Exception catch (e, s) {
     L.e('Gagal menghapus: $e $s');
     rethrow;
-  }
-}
-```
-**Contoh salah:**
-```dart
-// Loop dengan await per item (tidak efisien).
-Future<void> hapusBanyak(List<String> daftarId) async {
-  for (final id in daftarId) {
-    await op.hapus(NamaTabel.impian, where: 'id = ?', whereArgs: [id]);
   }
 }
 ```

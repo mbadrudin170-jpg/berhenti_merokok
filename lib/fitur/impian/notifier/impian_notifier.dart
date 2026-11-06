@@ -28,8 +28,8 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> tambah(ImpianModel impian) async {
-    final dataLama = await future;
     try {
+      final dataLama = await future;
       final op = const SqfliteOp();
       await op.tambah(
         NamaTabel.impian,
@@ -46,8 +46,8 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Menambahkan banyak impian sekaligus menggunakan operasi batch.
   Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
-    final dataLama = await future;
     try {
+      final dataLama = await future;
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final impian in daftarImpian) {
@@ -67,8 +67,8 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> ubah(ImpianModel impian) async {
-    final dataLama = await future;
     try {
+      final dataLama = await future;
       final op = const SqfliteOp();
       await op.ubah(
         NamaTabel.impian,
@@ -87,8 +87,8 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> hapus(String id) async {
-    final dataLama = await future;
     try {
+      final dataLama = await future;
       final op = const SqfliteOp();
       await op.hapus(
         NamaTabel.impian,
@@ -105,8 +105,8 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Menghapus banyak impian sekaligus menggunakan operasi batch.
   Future<void> hapusBanyak(List<String> daftarId) async {
-    final dataLama = await future;
     try {
+      final dataLama = await future;
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final id in daftarId) {
@@ -129,8 +129,8 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Mengubah banyak impian sekaligus menggunakan operasi batch.
   Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
-    final dataLama = await future;
     try {
+      final dataLama = await future;
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final impian in daftarImpian) {

@@ -128,6 +128,55 @@ Untuk mengambil hasil provider asynchronous di luar `build`, gunakan `.future` d
 3. Pastikan flag loading direset di blok `finally`.
 **Larangan:**
 - Jangan menggunakan `ref.read(provider)` tanpa `.future` untuk provider asynchronous.
+## Sinkronkan State dari Future Sebelum Mutasi pada Notifier
+Pada metode mutasi `AsyncNotifier`, ambil data lama melalui `await future` sebelum blok `try`, agar data yang digunakan untuk pembaruan state adalah data terbaru yang sudah resolved.
+**Aturan wajib:**
+1. Ambil data lama melalui `final dataLama = await future;` (atau `final existing = await future;`) sebelum blok `try`.
+2. Gunakan nilai tersebut untuk membangun state baru setelah operasi database berhasil.
+3. Jangan membaca data lama melalui `state.asData?.value` atau `state.asData?.value ?? <Model>[]` di dalam blok `try` setelah operasi database.
+4. Pada operasi upsert, pertahankan ID yang sudah tersimpan bila tersedia (`existing?.id`); buat ID baru hanya jika `existing?.id` null dan id input kosong.
+**Larangan:**
+- Jangan menggunakan `state.asData?.value` untuk mendapatkan data lama di metode mutasi, karena nilainya dapat stale atau null jika state belum resolved.
+- Jangan mengambil data lama setelah operasi database berhasil.
+- Jangan mengabaikan ID yang sudah tersimpan hanya karena id input kosong.
+**Alasan:**
+`state.asData?.value` dapat mengembalikan data stale atau null jika state belum resolved. `await future` menunggu state resolved sehingga data yang digunakan untuk optimistic update selalu data terbaru. Pola ini mencegah kehilangan data dan ID yang sudah ada.
+**Contoh benar:**
+```dart
+Future<void> tambah(ItemModel item) async {
+  final dataLama = await future;
+  try {
+    final op = const SqfliteOp();
+    await op.tambah(
+      NamaTabel.item,
+      item.toSqflite(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    state = AsyncValue.data([...dataLama, item]);
+    L.s('Item berhasil disimpan');
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan item: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+Future<void> tambah(ItemModel item) async {
+  try {
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.item, item.toSqflite());
+    final dataLama = state.asData?.value ?? <ItemModel>[]; // stale/null
+    state = AsyncValue.data([...dataLama, item]);
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan item: $e $s');
+    rethrow;
+  }
+}
+```
+**Sumber evaluasi:**
+- Commit: `56d2ad1ee82fdd78e24a2d88874bccdf014be843`
+- File: `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`
 ## Filter Data Berdasarkan Rentang Tanggal
 Gunakan fungsi filter yang konsisten untuk memfilter data berdasarkan rentang tanggal. Ekstrak logika filter ke helper jika digunakan di banyak tempat.
 **Aturan wajib:**
@@ -631,6 +680,31 @@ Operasi batch mengurangi round-trip ke database dan menjaga konsistensi state. P
 **Contoh benar:**
 ```dart
 Future<void> hapusBanyak(List<String> daftarId) async {
+  final dataLama = await future;
+  try {
+    final op = const SqfliteOp();
+    await op.batch((batch) {
+      for (final id in daftarId) {
+        batch.delete(
+          NamaTabel.impian,
+          where: '${NamaKolom.id} = ?',
+          whereArgs: [id],
+        );
+      }
+    });
+    state = AsyncValue.data(
+      dataLama.where((e) => !daftarId.contains(e.id)).toList(),
+    );
+  } on Exception catch (e, s) {
+    L.e('Gagal menghapus: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Membaca data lama via state.asData?.value setelah operasi database (stale).
+Future<void> hapusBanyak(List<String> daftarId) async {
   try {
     final op = const SqfliteOp();
     await op.batch((batch) {
@@ -649,15 +723,6 @@ Future<void> hapusBanyak(List<String> daftarId) async {
   } on Exception catch (e, s) {
     L.e('Gagal menghapus: $e $s');
     rethrow;
-  }
-}
-```
-**Contoh salah:**
-```dart
-// Loop dengan await per item (tidak efisien).
-Future<void> hapusBanyak(List<String> daftarId) async {
-  for (final id in daftarId) {
-    await op.hapus(NamaTabel.impian, where: 'id = ?', whereArgs: [id]);
   }
 }
 ```
@@ -4053,7 +4118,7 @@ Menstandarkan cara memuat dan menyimpan data biodata ke SQLite agar konsisten de
 9. Perbarui `state` menjadi `AsyncValue.data(biodata)` hanya setelah operasi database berhasil.
 10. Bungkus operasi database dengan `try/catch`, catat error menggunakan `L.e`, dan teruskan menggunakan `rethrow`.
 11. Catat keberhasilan penyimpanan menggunakan `L.s`.
-12. Saat menyimpan, gunakan ID yang sudah ada jika data sudah tersimpan (`existing?.id`); buat ID baru dengan `const Uuid().v4()` hanya untuk data baru.
+12. Saat menyimpan, ambil data tersimpan melalui `final existing = await future;` sebelum operasi database; pertahankan ID yang sudah ada bila tersedia (`existing?.id`); buat ID baru dengan `const Uuid().v4()` hanya jika `existing?.id` null dan `biodata.id` kosong. Jangan selalu membuat ID baru pada setiap simpan.
 13. Setelah simpan berhasil dan sebelum navigasi kembali, periksa `Navigator.of(context).canPop()`; panggil `Nav.pop(context)` hanya jika dapat pop. Jangan memanggil `Nav.pop` tanpa guard ketika halaman mungkin menjadi root (misalnya setelah routing berbasis biodata).
 **Contoh benar:**
 ```dart
@@ -4078,9 +4143,9 @@ class BiodataNotifier extends _$BiodataNotifier {
   }
   Future<void> simpan(BiodataModel biodata) async {
     try {
-      final existing = state.asData?.value;
+      final existing = await future;
       final model = biodata.id.isEmpty
-          ? biodata.copyWith(id: const Uuid().v4())
+          ? biodata.copyWith(id: existing?.id ?? const Uuid().v4())
           : biodata;
       final op = const SqfliteOp();
       await op.tambah(
@@ -4416,30 +4481,31 @@ Menstandarkan operasi CRUD massal (tambah, ubah, hapus banyak) pada notifier aga
 6. Gunakan `firstWhereOrNull` dari `package:collection` untuk mencari item pengganti pada operasi ubah massal, bukan loop manual.
 7. Bungkus seluruh operasi dengan `try/catch`, catat error dengan `L.e`, dan teruskan dengan `rethrow`.
 8. Catat keberhasilan operasi dengan `L.s`.
-9. Gunakan `state.asData?.value ?? <Model>[]` sebagai fallback data lama sebelum memperbarui state.
+9. Ambil data lama melalui `await future` sebelum blok `try`, agar data yang digunakan untuk pembaruan state adalah data terbaru yang sudah resolved (bukan `state.asData?.value` yang berpotensi stale/null).
 **Larangan:**
 - Jangan menggunakan loop `for` dengan `await` per item untuk operasi massal; gunakan `batch` untuk efisiensi.
 - Jangan memperbarui state sebelum operasi database berhasil.
 - Jangan menggunakan `batch.insert` untuk operasi ubah massal; gunakan `batch.update` dengan `where`/`whereArgs`.
 - Jangan menggunakan loop manual untuk mencari item pengganti; gunakan `firstWhereOrNull`.
+- Jangan membaca data lama melalui `state.asData?.value` di dalam blok `try` setelah operasi database; ambil sebelumnya via `await future`.
 **Alasan:**
-Commit `bc75a4a` memperbaiki `tambahBanyak` dari `batch.insert` menjadi `batch.update` (karena data sudah ada dan perlu di-upsert), serta menambahkan `hapusBanyak` dan `ubahBanyak` yang menggunakan `batch.delete` dan `batch.update`. Pola ini menjaga konsistensi operasi massal dan efisiensi database.
+Commit `bc75a4a` memperbaiki `tambahBanyak` dari `batch.insert` menjadi `batch.update` (karena data sudah ada dan perlu di-upsert), serta menambahkan `hapusBanyak` dan `ubahBanyak` yang menggunakan `batch.delete` dan `batch.update`. Commit `56d2ad1` kemudian memindahkan pengambilan `dataLama` dari `state.asData?.value` (di dalam `try`) ke `await future` (sebelum `try`), agar data yang dipakai untuk optimistic update selalu data terbaru yang sudah resolved dan tidak stale. Pola ini menjaga konsistensi operasi massal dan efisiensi database.
 **Contoh benar:**
 ```dart
 /// Menambahkan banyak impian sekaligus menggunakan operasi batch (upsert).
 Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
+  final dataLama = await future;
   try {
     final op = const SqfliteOp();
     await op.batch((batch) {
       for (final impian in daftarImpian) {
-        batch.update(
+        batch.insert(
           NamaTabel.impian,
           impian.toSqflite(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
     });
-    final dataLama = state.asData?.value ?? <ImpianModel>[];
     state = AsyncValue.data([...dataLama, ...daftarImpian]);
     L.s('Impian berhasil disimpan (batch)');
   } on Exception catch (e, s) {
@@ -4449,6 +4515,7 @@ Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
 }
 /// Mengubah banyak impian sekaligus.
 Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
+  final dataLama = await future;
   try {
     final op = const SqfliteOp();
     await op.batch((batch) {
@@ -4461,7 +4528,6 @@ Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
         );
       }
     });
-    final dataLama = state.asData?.value ?? <ImpianModel>[];
     state = AsyncValue.data(
       dataLama.map((e) {
         final pengganti = daftarImpian.firstWhereOrNull(
@@ -4478,6 +4544,7 @@ Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
 }
 /// Menghapus banyak impian sekaligus.
 Future<void> hapusBanyak(List<String> daftarId) async {
+  final dataLama = await future;
   try {
     final op = const SqfliteOp();
     await op.batch((batch) {
@@ -4489,7 +4556,6 @@ Future<void> hapusBanyak(List<String> daftarId) async {
         );
       }
     });
-    final dataLama = state.asData?.value ?? <ImpianModel>[];
     state = AsyncValue.data(
       dataLama.where((e) => !daftarId.contains(e.id)).toList(),
     );
@@ -4524,6 +4590,145 @@ for (final e in dataLama) {
 **Sumber evaluasi:**
 - Commit: `bc75a4a098ae904736d8ef79e5277a7f6fae45bc`
 - File: `lib/fitur/impian/notifier/impian_notifier.dart`
+## Sinkronkan State dari Future Sebelum Mutasi pada Notifier
+**Tujuan:**
+Memastikan metode mutasi pada `AsyncNotifier` menggunakan data state terbaru yang sudah resolved, bukan data stale yang mungkin didapat dari `state.asData?.value`.
+**Cakupan:**
+- `lib/fitur/impian/notifier/impian_notifier.dart` — `tambah`, `tambahBanyak`, `ubah`, `hapus`, `hapusBanyak`, `ubahBanyak`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `simpan`.
+- Notifier lain yang melakukan mutasi state berbasis data lama.
+**Aturan:**
+1. Pada metode mutasi notifier async, ambil data lama melalui `final dataLama = await future;` (atau `final existing = await future;`) **sebelum** blok `try`.
+2. Gunakan `dataLama`/`existing` tersebut untuk membangun state baru setelah operasi database berhasil.
+3. Jangan membaca data lama melalui `state.asData?.value` atau `state.asData?.value ?? <Model>[]` di dalam blok `try` setelah operasi database.
+4. Pada `simpan` biodata, pertahankan ID yang sudah ada di database bila tersedia (`existing?.id`); buat ID baru dengan `const Uuid().v4()` hanya jika `existing?.id` null dan `biodata.id` kosong.
+5. Jika `biodata.id` sudah terisi, gunakan id tersebut apa adanya (jangan ditimpa).
+**Larangan:**
+- Jangan menggunakan `state.asData?.value` untuk mendapatkan data lama di metode mutasi, karena nilainya dapat stale atau null jika state belum resolved.
+- Jangan mengambil data lama setelah operasi database berhasil.
+- Jangan mengabaikan `existing?.id` yang sudah tersimpan hanya karena `biodata.id` kosong.
+**Alasan:**
+Sebelumnya metode mutasi membaca data lama via `state.asData?.value ?? <Model>[]` di dalam blok `try` setelah operasi database. Commit `56d2ad1` memindahkan pengambilan data lama ke `await future` sebelum blok `try`, agar data yang dipakai untuk optimistic update selalu data terbaru yang sudah resolved. Hal yang sama diterapkan pada `BiodataNotifier.simpan` dengan `final existing = await future;`, sehingga ID yang sudah tersimpan dipertahankan (`existing?.id`) alih-alih selalu membuat ID baru. Pola ini mencegah data stale dan kehilangan ID yang sudah ada.
+**Contoh benar:**
+```dart
+Future<void> tambah(ImpianModel impian) async {
+  final dataLama = await future;
+  try {
+    final op = const SqfliteOp();
+    await op.tambah(
+      NamaTabel.impian,
+      impian.toSqflite(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    state = AsyncValue.data([...dataLama, impian]);
+    L.s('Impian berhasil disimpan');
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan impian: $e $s');
+    rethrow;
+  }
+}
+Future<void> simpan(BiodataModel biodata) async {
+  try {
+    final existing = await future;
+    final model = biodata.id.isEmpty
+        ? biodata.copyWith(id: existing?.id ?? const Uuid().v4())
+        : biodata;
+    final op = const SqfliteOp();
+    await op.tambah(
+      NamaTabel.biodata,
+      model.toSqflite(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    state = AsyncValue.data(model);
+    L.s('Biodata berhasil disimpan');
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan biodata: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+Future<void> tambah(ImpianModel impian) async {
+  try {
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.impian, impian.toSqflite());
+    final dataLama = state.asData?.value ?? <ImpianModel>[]; // stale/null
+    state = AsyncValue.data([...dataLama, impian]);
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan impian: $e $s');
+    rethrow;
+  }
+}
+Future<void> simpan(BiodataModel biodata) async {
+  try {
+    final model = biodata.id.isEmpty
+        ? biodata.copyWith(id: const Uuid().v4()) // selalu buat ID baru
+        : biodata;
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.biodata, model.toSqflite());
+    state = AsyncValue.data(model);
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan biodata: $e $s');
+    rethrow;
+  }
+}
+```
+**Sumber evaluasi:**
+- Commit: `56d2ad1ee82fdd78e24a2d88874bccdf014be843`
+- File: `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`
+## Segarkan Provider Setelah Operasi Dummy
+**Tujuan:**
+Memastikan layar yang bergantung pada data dummy memperbarui state setelah operasi insert/delete/reset, agar UI menampilkan data terbaru.
+**Cakupan:**
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_DummyScreenState._masukkanDummy`, `_hapusDummy`, `_reset`, `_refreshProvider`.
+- `lib/fitur/dummy/helper/dummy_helper.dart` — `insert`, `delete`.
+**Aturan:**
+1. Setelah `DummyHelper.insert()`, `DummyHelper.delete()`, atau kombinasi reset berhasil, panggil `_refreshProvider()` (atau mekanisme refresh setara) yang me-refresh `impianProvider` dan `biodataProvider`.
+2. Gunakan `ref.refresh(provider)` (bukan `ref.invalidate`) agar provider langsung dievaluasi ulang.
+3. Bungkus operasi dummy dengan `try/catch`, catat error dengan `L.e`, tampilkan feedback dengan `AppToast`, dan sembunyikan overlay EasyLoading di `finally`.
+**Larangan:**
+- Jangan membiarkan UI menampilkan data lama setelah operasi dummy berhasil.
+- Jangan menggunakan `ref.invalidate` untuk refresh setelah operasi dummy.
+**Alasan:**
+Commit `56d2ad1` menambahkan `_refreshProvider()` pada `DummyScreen` yang memanggil `ref.refresh(impianProvider)` dan `ref.refresh(biodataProvider)` setelah insert/delete/reset dummy, agar UI langsung memuat data dummy terbaru. Pola ini menjaga konsistensi tampilan setelah perubahan data massal.
+**Contoh benar:**
+```dart
+Future<void> _refreshProvider() async {
+  final _ = ref.refresh(impianProvider);
+  final _ = ref.refresh(biodataProvider);
+}
+Future<void> _masukkanDummy(BuildContext context) async {
+  unawaited(EasyLoading.show(status: 'Menyimpan...'));
+  try {
+    await DummyHelper.insert();
+    await _refreshProvider();
+    if (context.mounted) {
+      AppToast.sukses(context, 'Dummy berhasil dimasukkan');
+    }
+  } on Exception catch (e, s) {
+    L.e('Gagal memasukkan dummy: $e $s');
+    if (context.mounted) {
+      AppToast.gagal(context, 'Gagal memasukkan dummy');
+    }
+  } finally {
+    if (context.mounted) {
+      unawaited(EasyLoading.dismiss());
+    }
+  }
+}
+```
+**Contoh salah:**
+```dart
+Future<void> _masukkanDummy(BuildContext context) async {
+  await DummyHelper.insert();
+  // Provider tidak direfresh -> UI menampilkan data lama.
+  AppToast.sukses(context, 'Dummy berhasil dimasukkan');
+}
+```
+**Sumber evaluasi:**
+- Commit: `56d2ad1ee82fdd78e24a2d88874bccdf014be843`
+- File: `lib/fitur/dummy/screens/dummy_screen.dart`
 ## Transaksi Multi-Tabel pada Helper
 **Tujuan:**
 Menstandarkan penggunaan transaksi SQLite untuk operasi yang melibatkan lebih dari satu tabel agar konsistensi data terjaga.
