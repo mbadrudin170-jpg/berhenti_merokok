@@ -1,73 +1,87 @@
 ---
-description: Audit perubahan Git yang belum di-commit terhadap AGENTS.md tanpa mengubah kode
+description: Audit perubahan kode Dart yang belum di-commit berdasarkan AGENTS.md tanpa mengubah file
 agent: ask
 ---
 
-# Audit Perubahan Sebelum Commit
+# Audit Perubahan Kode Dart Sebelum Commit
 
-## TUJUAN
+## 1. TUJUAN
 
-Saya ingin memastikan seluruh perubahan kode yang belum di-commit sudah sesuai dengan `AGENTS.md` dan aturan proyek yang berlaku.
+Saya ingin memastikan seluruh perubahan kode Dart yang belum di-commit sudah sesuai dengan `AGENTS.md` dan aturan proyek yang berlaku.
 
-Tugas Anda adalah melakukan code review terhadap seluruh perubahan yang masih berada di working tree Git, kemudian melaporkan temuan kepada saya.
+Tugas Anda adalah melakukan pemeriksaan terhadap perubahan kode Dart, menemukan pelanggaran aturan, serta mengidentifikasi potensi bug yang muncul akibat perubahan tersebut.
 
-Jika ditemukan pelanggaran aturan, cukup beritahukan kepada saya beserta bukti dan rekomendasi perbaikannya.
+Jika ditemukan masalah, cukup laporkan kepada saya beserta bukti dan rekomendasi perbaikannya.
 
-**Saya sendiri yang akan memutuskan apakah perubahan tersebut perlu diedit atau tidak.**
+**Saya sendiri yang akan memutuskan apakah suatu temuan perlu diperbaiki atau tidak.**
 
-Jangan memperbaiki kode secara otomatis.
+Jangan memperbaiki kode secara otomatis dan jangan mengubah keputusan saya.
 
-## ATURAN UTAMA
+## 2. BATASAN RUANG LINGKUP PEMERIKSAAN
 
-1. Audit seluruh perubahan yang belum di-commit, baik perubahan yang sudah di-stage maupun yang belum di-stage.
-2. Periksa juga file baru yang belum dilacak Git (untracked files).
-3. Bandingkan implementasi dengan `AGENTS.md` dan seluruh aturan tambahan yang berlaku.
-4. Periksa konteks kode agar tidak salah menyimpulkan pelanggaran.
-5. Laporkan hanya temuan yang mempunyai dasar dan bukti.
-6. Jangan mengubah file apa pun.
-7. Jangan mengambil keputusan untuk memperbaiki kode tanpa persetujuan saya.
+**HANYA PERIKSA FILE KODE DART (`.dart`).**
 
-**PRINSIP UTAMA: AUDIT DAN LAPORKAN, BUKAN MEMPERBAIKI.**
+Periksa seluruh perubahan file Dart yang belum di-commit, meliputi:
 
----
+1. File Dart yang sudah diubah tetapi belum di-stage (unstaged).
+2. File Dart yang sudah di-stage tetapi belum di-commit (staged).
+3. File Dart baru yang belum dilacak Git (untracked).
+4. File Dart yang dihapus atau dipindahkan.
+5. File Dart yang mengalami perubahan sebagian, baik staged maupun unstaged.
 
-# TAHAP 1 — MEMBACA ATURAN PROYEK
+Jangan memeriksa atau mengevaluasi perubahan pada file selain `.dart`.
 
-Sebelum memeriksa perubahan, lakukan langkah berikut:
+Contoh file yang tidak boleh menjadi objek pemeriksaan:
+
+- `pubspec.yaml`
+- `pubspec.lock`
+- `AGENTS.md`
+- File Markdown (`.md`)
+- File JSON (`.json`)
+- File YAML (`.yaml` atau `.yml`)
+- File konfigurasi lainnya.
+
+Pengecualian:
+
+`AGENTS.md`, aturan proyek, dan dokumentasi yang diwajibkan boleh dibaca sebagai referensi untuk memahami standar implementasi. Namun, file-file tersebut bukan objek audit dan jangan memberikan temuan mengenai perubahan di dalamnya.
+
+Jika diperlukan untuk memahami konteks kode Dart, Anda boleh membaca file Dart lain yang tidak mengalami perubahan.
+
+Akan tetapi, temuan harus berkaitan dengan perubahan Dart yang sedang diaudit, bukan masalah lama yang tidak berhubungan.
+
+**Jangan memperluas ruang lingkup pemeriksaan ke bahasa pemrograman atau jenis file lainnya.**
+
+## 3. TAHAP PERTAMA — MEMBACA ATURAN PROYEK
+
+Sebelum memeriksa kode, lakukan langkah berikut:
 
 1. Baca `AGENTS.md` pada root proyek.
-2. Identifikasi `AGENTS.md` tambahan pada direktori yang berhubungan dengan file yang berubah.
-3. Baca seluruh aturan tambahan yang berlaku untuk file yang sedang diperiksa.
-4. Baca dokumentasi atau skill yang secara eksplisit diwajibkan oleh aturan proyek sebelum mengevaluasi implementasi.
-5. Pahami aturan yang berlaku sebelum memberikan penilaian.
+2. Identifikasi `AGENTS.md` tambahan yang berlaku pada direktori file Dart yang berubah.
+3. Baca aturan tambahan yang secara eksplisit diwajibkan oleh `AGENTS.md`.
+4. Baca skill yang diwajibkan oleh aturan proyek sebelum melakukan evaluasi.
+5. Pahami ketentuan yang berkaitan dengan implementasi Dart.
 
 Ketentuan:
 
-- Jadikan `AGENTS.md` dan aturan turunannya sebagai standar utama evaluasi.
+- Gunakan `AGENTS.md` dan aturan turunannya sebagai standar utama evaluasi.
 - Jangan membuat standar baru berdasarkan asumsi pribadi.
-- Jangan mengabaikan aturan khusus untuk direktori tertentu.
-- Jangan menganggap suatu implementasi salah hanya karena Anda lebih menyukai pendekatan lain.
+- Jangan menganggap suatu pendekatan salah hanya karena Anda lebih menyukai pendekatan lain.
+- Jangan mengabaikan aturan khusus yang berlaku pada direktori tertentu.
+- Jangan mengubah atau memperbarui dokumen aturan.
 - Jika terdapat aturan yang saling bertentangan, jelaskan konflik tersebut dan jangan mengambil keputusan berdasarkan asumsi.
 
-Jika `AGENTS.md` atau dokumen aturan lainnya juga sedang mengalami perubahan yang belum di-commit:
+Jika ada perubahan pada dokumen aturan yang belum di-commit, gunakan isi aturan yang berlaku di working tree sebagai referensi audit. Namun, jangan mengevaluasi perubahan dokumen tersebut.
 
-- Baca versi yang sedang berlaku di working tree.
-- Periksa perbedaannya dengan versi yang tersimpan di Git.
-- Beritahukan jika perubahan aturan tersebut memengaruhi penilaian kode.
-- Jangan diam-diam mengabaikan perbedaan versi aturan.
+## 4. TAHAP KEDUA — MENGIDENTIFIKASI PERUBAHAN DART
 
----
+Periksa kondisi Git untuk mengidentifikasi seluruh perubahan Dart.
 
-# TAHAP 2 — MENGIDENTIFIKASI PERUBAHAN GIT
-
-Periksa kondisi Git saat ini.
-
-Gunakan perintah baca-saja seperti:
+Gunakan perintah baca-saja berikut:
 
 ```bash
-git status --short --branch --untracked-files=all
-git diff --stat
-git diff --cached --stat
-git diff --name-status
-git diff --cached --name-status
+git status --short --untracked-files=all
+git diff --cached -- '*.dart'
+git diff -- '*.dart'
+git diff HEAD -- '*.dart'
+git ls-files --others --exclude-standard -- '*.dart'
 ```

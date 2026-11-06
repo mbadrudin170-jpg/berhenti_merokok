@@ -2,6 +2,7 @@ import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart' as mui;
@@ -29,6 +30,7 @@ class _MyAppState extends ConsumerState<App> {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
+      builder: EasyLoading.init(),
       themeMode: themeMode,
       supportedLocales: const [Locale('id', 'ID')],
       localizationsDelegates: const [

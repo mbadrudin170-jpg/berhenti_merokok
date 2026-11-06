@@ -1,6 +1,10 @@
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 import 'package:uuid/uuid.dart';
@@ -74,7 +78,19 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       L.w('Form biodata masih loading, simpan diabaikan');
       return;
     }
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Simpan Biodata',
+      message: 'Apakah Anda yakin ingin menyimpan data biodata ini?',
+      okLabel: 'Simpan',
+      cancelLabel: 'Batal',
+    );
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!mounted) return;
     setState(() => _isLoading = true);
+    unawaited(EasyLoading.show(status: 'Menyimpan...'));
     try {
       final existing = ref.read(biodataProvider).asData?.value;
       final model = BiodataModel(
@@ -97,6 +113,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       }
     } finally {
       if (mounted) {
+        unawaited(EasyLoading.dismiss());
         setState(() => _isLoading = false);
       }
     }
@@ -205,16 +222,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                 ),
               ),
               const SizedBox(height: 8),
-              OutlinedButton(
-                onPressed: _isLoading ? null : _simpan,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 18,
-                        width: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Simpan'),
-              ),
+              OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
             ],
           ),
         ),
