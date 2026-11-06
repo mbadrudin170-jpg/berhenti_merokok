@@ -13,9 +13,14 @@ final List<BiodataModel> dummyBiodata = [
   BiodataModel(
     id: BiodataIdDummy.item1,
     nama: 'Budi Santoso',
-    tanggalLahir: DateTime(1990, 5, 15),
+    tanggalLahir: DateTime.now().subtract(const Duration(days: 365 * 36)),
     jumlahRokokPerHari: 12,
     hargaRokokPerBungkus: 35000.0,
-    tanggalMulaiMerokok: DateTime(2010, 1, 1),
+    tanggalMulaiMerokok: DateTime.now().subtract(
+      const Duration(days: 365 * 16),
+    ),
+    tanggalMulaiBerhentiMerokok: DateTime.now().subtract(
+      const Duration(days: 30),
+    ),
   ),
 ];
