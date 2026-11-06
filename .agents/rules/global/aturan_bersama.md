@@ -832,3 +832,52 @@ return await openDatabase(
 **Sumber evaluasi:**
 - Commit: `822e2f94b3bdc7c2a460c01b48c3902a96fa0bf9`
 - File: `lib/shared/db/sqflite/sqflite.dart`
+## Operasi Batch untuk CRUD Massal
+Gunakan operasi `batch` untuk melakukan banyak operasi insert/update/delete pada tabel yang sama secara efisien, alih-alih memanggil operasi per item.
+**Aturan wajib:**
+1. Gunakan `batch` untuk operasi massal pada satu tabel (tambah, ubah, hapus banyak).
+2. Gunakan `batch.insert` dengan `conflictAlgorithm: ConflictAlgorithm.replace` untuk upsert massal.
+3. Gunakan `batch.update` dengan `where` dan `whereArgs` untuk ubah massal.
+4. Gunakan `batch.delete` dengan `where` dan `whereArgs` untuk hapus massal.
+5. Perbarui state secara optimistic setelah operasi batch berhasil.
+6. Gunakan `firstWhereOrNull` dari `package:collection` untuk mencari item pengganti pada operasi ubah massal.
+7. Bungkus operasi batch dengan `try/catch`, catat error dengan logger, dan teruskan dengan `rethrow`.
+**Larangan:**
+- Jangan menggunakan loop dengan `await` per item untuk operasi massal; gunakan `batch`.
+- Jangan memperbarui state sebelum operasi database berhasil.
+- Jangan menggunakan `batch` untuk operasi yang melibatkan lebih dari satu tabel; gunakan transaksi.
+**Alasan:**
+Operasi batch mengurangi round-trip ke database dan menjaga konsistensi state. Penggunaan `batch` untuk operasi massal pada satu tabel lebih efisien daripada memanggil operasi per item.
+**Contoh benar:**
+```dart
+Future<void> hapusBanyak(List<String> daftarId) async {
+  try {
+    final op = const SqfliteOp();
+    await op.batch((batch) {
+      for (final id in daftarId) {
+        batch.delete(
+          NamaTabel.impian,
+          where: '${NamaKolom.id} = ?',
+          whereArgs: [id],
+        );
+      }
+    });
+    final dataLama = state.asData?.value ?? <ImpianModel>[];
+    state = AsyncValue.data(
+      dataLama.where((e) => !daftarId.contains(e.id)).toList(),
+    );
+  } on Exception catch (e, s) {
+    L.e('Gagal menghapus: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Loop dengan await per item (tidak efisien).
+Future<void> hapusBanyak(List<String> daftarId) async {
+  for (final id in daftarId) {
+    await op.hapus(NamaTabel.impian, where: 'id = ?', whereArgs: [id]);
+  }
+}
+```

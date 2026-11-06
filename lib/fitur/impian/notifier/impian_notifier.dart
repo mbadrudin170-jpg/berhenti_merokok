@@ -50,7 +50,7 @@ class ImpianNotifier extends _$ImpianNotifier {
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final impian in daftarImpian) {
-          batch.update(
+          batch.insert(
             NamaTabel.impian,
             impian.toSqflite(),
             conflictAlgorithm: ConflictAlgorithm.replace,

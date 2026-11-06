@@ -612,6 +612,56 @@ return await openDatabase(
 **Sumber evaluasi:**
 - Commit: `822e2f94b3bdc7c2a460c01b48c3902a96fa0bf9`
 - File: `lib/shared/db/sqflite/sqflite.dart`
+## Operasi Batch untuk CRUD Massal
+Gunakan operasi `batch` untuk melakukan banyak operasi insert/update/delete pada tabel yang sama secara efisien, alih-alih memanggil operasi per item.
+**Aturan wajib:**
+1. Gunakan `batch` untuk operasi massal pada satu tabel (tambah, ubah, hapus banyak).
+2. Gunakan `batch.insert` dengan `conflictAlgorithm: ConflictAlgorithm.replace` untuk upsert massal.
+3. Gunakan `batch.update` dengan `where` dan `whereArgs` untuk ubah massal.
+4. Gunakan `batch.delete` dengan `where` dan `whereArgs` untuk hapus massal.
+5. Perbarui state secara optimistic setelah operasi batch berhasil.
+6. Gunakan `firstWhereOrNull` dari `package:collection` untuk mencari item pengganti pada operasi ubah massal.
+7. Bungkus operasi batch dengan `try/catch`, catat error dengan logger, dan teruskan dengan `rethrow`.
+**Larangan:**
+- Jangan menggunakan loop dengan `await` per item untuk operasi massal; gunakan `batch`.
+- Jangan memperbarui state sebelum operasi database berhasil.
+- Jangan menggunakan `batch` untuk operasi yang melibatkan lebih dari satu tabel; gunakan transaksi.
+**Alasan:**
+Operasi batch mengurangi round-trip ke database dan menjaga konsistensi state. Penggunaan `batch` untuk operasi massal pada satu tabel lebih efisien daripada memanggil operasi per item.
+**Contoh benar:**
+```dart
+Future<void> hapusBanyak(List<String> daftarId) async {
+  try {
+    final op = const SqfliteOp();
+    await op.batch((batch) {
+      for (final id in daftarId) {
+        batch.delete(
+          NamaTabel.impian,
+          where: '${NamaKolom.id} = ?',
+          whereArgs: [id],
+        );
+      }
+    });
+    final dataLama = state.asData?.value ?? <ImpianModel>[];
+    state = AsyncValue.data(
+      dataLama.where((e) => !daftarId.contains(e.id)).toList(),
+    );
+  } on Exception catch (e, s) {
+    L.e('Gagal menghapus: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Loop dengan await per item (tidak efisien).
+Future<void> hapusBanyak(List<String> daftarId) async {
+  for (final id in daftarId) {
+    await op.hapus(NamaTabel.impian, where: 'id = ?', whereArgs: [id]);
+  }
+}
+```
+
 
 // ============================================================
 // FILE: .agents/rules/global/aturan_global.md
@@ -4351,6 +4401,186 @@ static const int _versiDatabase = 1; // tidak dinaikkan
 **Sumber evaluasi:**
 Commit: `822e2f94b3bdc7c2a460c01b48c3902a96fa0bf9`
 File: `lib/shared/db/sqflite/sqflite.dart`
+## Batch Operations pada Notifier (CRUD Massal)
+**Tujuan:**
+Menstandarkan operasi CRUD massal (tambah, ubah, hapus banyak) pada notifier agar konsisten dengan pola optimistic update dan penanganan error proyek.
+**Cakupan:**
+- `lib/fitur/impian/notifier/impian_notifier.dart` — `tambahBanyak`, `ubahBanyak`, `hapusBanyak`.
+- Notifier lain yang memerlukan operasi CRUD massal.
+**Aturan:**
+1. Operasi CRUD massal wajib menggunakan `SqfliteOp.batch(...)` agar seluruh perubahan berada dalam satu batch yang efisien.
+2. Gunakan `batch.insert` dengan `conflictAlgorithm: ConflictAlgorithm.replace` untuk operasi tambah massal (upsert).
+3. Gunakan `batch.update` dengan `where` dan `whereArgs` untuk operasi ubah massal, serta `conflictAlgorithm: ConflictAlgorithm.replace` apabila diperlukan.
+4. Gunakan `batch.delete` dengan `where` dan `whereArgs` untuk operasi hapus massal.
+5. Setelah operasi database berhasil, perbarui `state` secara optimistic dengan menggabungkan data lama dan data baru (tambah), memetakan pengganti (ubah), atau menyaring data yang dihapus (hapus).
+6. Gunakan `firstWhereOrNull` dari `package:collection` untuk mencari item pengganti pada operasi ubah massal, bukan loop manual.
+7. Bungkus seluruh operasi dengan `try/catch`, catat error dengan `L.e`, dan teruskan dengan `rethrow`.
+8. Catat keberhasilan operasi dengan `L.s`.
+9. Gunakan `state.asData?.value ?? <Model>[]` sebagai fallback data lama sebelum memperbarui state.
+**Larangan:**
+- Jangan menggunakan loop `for` dengan `await` per item untuk operasi massal; gunakan `batch` untuk efisiensi.
+- Jangan memperbarui state sebelum operasi database berhasil.
+- Jangan menggunakan `batch.insert` untuk operasi ubah massal; gunakan `batch.update` dengan `where`/`whereArgs`.
+- Jangan menggunakan loop manual untuk mencari item pengganti; gunakan `firstWhereOrNull`.
+**Alasan:**
+Commit `bc75a4a` memperbaiki `tambahBanyak` dari `batch.insert` menjadi `batch.update` (karena data sudah ada dan perlu di-upsert), serta menambahkan `hapusBanyak` dan `ubahBanyak` yang menggunakan `batch.delete` dan `batch.update`. Pola ini menjaga konsistensi operasi massal dan efisiensi database.
+**Contoh benar:**
+```dart
+/// Menambahkan banyak impian sekaligus menggunakan operasi batch (upsert).
+Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
+  try {
+    final op = const SqfliteOp();
+    await op.batch((batch) {
+      for (final impian in daftarImpian) {
+        batch.update(
+          NamaTabel.impian,
+          impian.toSqflite(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+    });
+    final dataLama = state.asData?.value ?? <ImpianModel>[];
+    state = AsyncValue.data([...dataLama, ...daftarImpian]);
+    L.s('Impian berhasil disimpan (batch)');
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan impian (batch): $e $s');
+    rethrow;
+  }
+}
+/// Mengubah banyak impian sekaligus.
+Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
+  try {
+    final op = const SqfliteOp();
+    await op.batch((batch) {
+      for (final impian in daftarImpian) {
+        batch.update(
+          NamaTabel.impian,
+          impian.toSqflite(),
+          where: '${NamaKolom.id} = ?',
+          whereArgs: [impian.id],
+        );
+      }
+    });
+    final dataLama = state.asData?.value ?? <ImpianModel>[];
+    state = AsyncValue.data(
+      dataLama.map((e) {
+        final pengganti = daftarImpian.firstWhereOrNull(
+          (item) => item.id == e.id,
+        );
+        return pengganti ?? e;
+      }).toList(),
+    );
+    L.s('Impian berhasil diubah (batch)');
+  } on Exception catch (e, s) {
+    L.e('Gagal mengubah impian (batch): $e $s');
+    rethrow;
+  }
+}
+/// Menghapus banyak impian sekaligus.
+Future<void> hapusBanyak(List<String> daftarId) async {
+  try {
+    final op = const SqfliteOp();
+    await op.batch((batch) {
+      for (final id in daftarId) {
+        batch.delete(
+          NamaTabel.impian,
+          where: '${NamaKolom.id} = ?',
+          whereArgs: [id],
+        );
+      }
+    });
+    final dataLama = state.asData?.value ?? <ImpianModel>[];
+    state = AsyncValue.data(
+      dataLama.where((e) => !daftarId.contains(e.id)).toList(),
+    );
+    L.s('Impian berhasil dihapus (batch)');
+  } on Exception catch (e, s) {
+    L.e('Gagal menghapus impian (batch): $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Menggunakan await per item (tidak efisien).
+Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
+  for (final impian in daftarImpian) {
+    await op.tambah(NamaTabel.impian, impian.toSqflite());
+  }
+  state = AsyncValue.data(daftarImpian); // state tidak menggabungkan data lama
+}
+// Loop manual untuk mencari pengganti (tidak konsisten).
+for (final e in dataLama) {
+  ImpianModel? pengganti;
+  for (final item in daftarImpian) {
+    if (item.id == e.id) {
+      pengganti = item;
+      break;
+    }
+  }
+  result.add(pengganti ?? e);
+}
+```
+**Sumber evaluasi:**
+- Commit: `bc75a4a098ae904736d8ef79e5277a7f6fae45bc`
+- File: `lib/fitur/impian/notifier/impian_notifier.dart`
+## Transaksi Multi-Tabel pada Helper
+**Tujuan:**
+Menstandarkan penggunaan transaksi SQLite untuk operasi yang melibatkan lebih dari satu tabel agar konsistensi data terjaga.
+**Cakupan:**
+- `lib/fitur/dummy/helper/dummy_helper.dart` — `insert()` dan `delete()`.
+- Helper lain yang melakukan operasi multi-tabel.
+**Aturan:**
+1. Operasi yang melibatkan lebih dari satu tabel wajib menggunakan `SqfliteOp.transaksi(...)` agar seluruh perubahan berada dalam satu transaksi (commit/rollback terpusat).
+2. Gunakan `txn.insert`, `txn.delete`, `txn.update` (bukan `batch`) di dalam callback transaksi, karena transaksi memerlukan await per operasi.
+3. Jika salah satu operasi gagal, seluruh transaksi di-rollback otomatis oleh Sqflite.
+4. Jangan menggunakan `batch` untuk operasi multi-tabel yang memerlukan konsistensi antar tabel; gunakan `transaksi`.
+5. Gunakan `batch` hanya untuk operasi massal pada satu tabel yang tidak memerlukan konsistensi antar tabel.
+**Larangan:**
+- Jangan melakukan insert/delete ke beberapa tabel secara terpisah tanpa transaksi.
+- Jangan mencampurkan `batch` dan `transaksi` untuk operasi yang sama.
+**Alasan:**
+Commit `bc75a4a` mengubah `DummyHelper.insert()` dan `delete()` dari `batch` ke `transaksi`, karena operasi tersebut melibatkan dua tabel (impian dan biodata) yang harus konsisten. Penggunaan `transaksi` memastikan jika insert ke tabel kedua gagal, insert ke tabel pertama di-rollback.
+**Contoh benar:**
+```dart
+static Future<void> insert() async {
+  final op = const SqfliteOp();
+  await op.transaksi((txn) async {
+    for (final impian in dummyImpian) {
+      await txn.insert(
+        NamaTabel.impian,
+        impian.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    for (final biodata in dummyBiodata) {
+      await txn.insert(
+        NamaTabel.biodata,
+        biodata.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  });
+}
+```
+**Contoh salah:**
+```dart
+// Menggunakan batch untuk operasi multi-tabel (tidak menjamin konsistensi antar tabel).
+static Future<void> insert() async {
+  final op = const SqfliteOp();
+  await op.batch((batch) {
+    for (final impian in dummyImpian) {
+      batch.insert(NamaTabel.impian, impian.toSqflite());
+    }
+    for (final biodata in dummyBiodata) {
+      batch.insert(NamaTabel.biodata, biodata.toSqflite());
+    }
+  });
+}
+```
+**Sumber evaluasi:**
+- Commit: `bc75a4a098ae904736d8ef79e5277a7f6fae45bc`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`
 
 
 // ============================================================
