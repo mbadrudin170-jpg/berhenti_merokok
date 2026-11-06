@@ -45,7 +45,7 @@ Tidak ada temuan.
 
 ## Tinggi
 
-- Status: Belum dikerjakan
+- Status: Selesai
 - Masalah: `MaterialApp` pada `lib/app.dart` tidak mendeklarasikan `supportedLocales` maupun `localizationsDelegates`. Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit agar teks sistem (dialog, date picker, toolbar pemilihan teks) mengikuti locale yang didukung. Selain itu, delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations` (diperlukan oleh `adaptive_dialog`) juga tidak terdaftar, yang dapat menyebabkan `Null check operator used on a null value` saat dialog ditampilkan.
 - Solusi: Tambahkan `supportedLocales: const [Locale('id', 'ID')]` dan `localizationsDelegates` yang mencakup `GlobalMaterialLocalizations.delegate`, `GlobalWidgetsLocalizations.delegate`, `GlobalCupertinoLocalizations.delegate`, dan `_MaterialUiLocalizationsDelegate()` pada `MaterialApp`. Impor `flutter_localizations` dari Flutter SDK dan buat kelas `_MaterialUiLocalizationsDelegate` dengan `isSupported => true`.
 - Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 33 "Lokalisasi Aplikasi". `.agents/rules/proyek/aturan_khusus.md` — bagian "Registrasi Delegate Lokalisasi `material_ui` untuk `adaptive_dialog`".
