@@ -1153,7 +1153,7 @@ class MyApp extends StatelessWidget {
 ```
 
 **Alasan:**
-Commit `38219ec` mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
+Commit `38219ec` mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Commit `e38d1c0` kemudian menerapkan mode tema dinamis: `ref.watch(temaProvider)` dibaca dengan `.asData?.value`, lalu `TemaEnum` dipetakan ke `ThemeMode` melalui switch expression, dan `MaterialApp` menyediakan `theme`, `darkTheme`, serta `themeMode`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema/locale); pertahankan `debugShowCheckedModeBanner: false` pada build pengembangan.
@@ -1473,3 +1473,49 @@ Commit `94ffb11` memperbaiki `set()` agar tidak gagal saat dipanggil tanpa argum
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Metode mutasi state yang menerima input opsional sebaiknya memiliki fallback ke state saat ini agar aman terhadap pemanggilan tanpa argumen.
+
+## Penerapan Mode Tema Dinamis pada MaterialApp
+
+**Tujuan:**
+Menerapkan mode tema (terang/gelap/sistem) secara dinamis dari `TemaNotifier` ke `MaterialApp`.
+
+**Aturan:**
+1. Baca `temaProvider` dengan `ref.watch` dan ambil nilai aman melalui `.asData?.value`.
+2. Petakan `TemaEnum` ke `ThemeMode` menggunakan switch expression.
+3. Sediakan `theme`, `darkTheme`, dan `themeMode` pada `MaterialApp`.
+4. Gunakan `.asData?.value` (bukan `.value`) untuk membaca `AsyncValue` secara aman.
+
+**Contoh benar:**
+```dart
+final temaAsync = ref.watch(temaProvider);
+final tema = temaAsync.asData?.value ?? TemaEnum.sistem;
+
+final themeMode = switch (tema) {
+  TemaEnum.terang => ThemeMode.light,
+  TemaEnum.gelap => ThemeMode.dark,
+  TemaEnum.sistem => ThemeMode.system,
+};
+
+MaterialApp(
+  themeMode: themeMode,
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+  darkTheme: ThemeData(
+    colorScheme: .fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
+  ),
+);
+```
+
+**Contoh salah:**
+```dart
+final tema = ref.watch(temaProvider).value; // unsafe
+MaterialApp(
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+  // tanpa darkTheme/themeMode
+);
+```
+
+**Alasan:**
+Commit `e38d1c0` menerapkan mode tema dinamis dari `TemaNotifier` ke `MaterialApp` dengan dukungan dark theme. Pola ini menjaga konsistensi tampilan pada mode terang/gelap/sistem.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Saat mengamati state async di widget, gunakan `.asData?.value` untuk membaca nilai dengan aman; sediakan `theme`, `darkTheme`, dan `themeMode` agar tema dapat berubah dinamis.

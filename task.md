@@ -2,15 +2,15 @@
 
 ## Tinggi
 
-- Status: Belum dikerjakan
-- Masalah: File generated `lib/fitur/tema/notifier/tema_notifier.g.dart` tidak sinkron dengan source `lib/fitur/tema/notifier/tema_notifier.dart`. Source telah diubah untuk menggunakan `Future<TemaEnum>` sebagai tipe pengembalian `build()`, namun file generated masih menggunakan tipe `String` (kelas `_$TemaNotifier extends $Notifier<String>` dan `TemaNotifierProvider extends $NotifierProvider<TemaNotifier, String>`). Ketidaksesuaian ini menyebabkan kegagalan kompilasi karena tipe state yang diharapkan tidak cocok.
-- Solusi: Jalankan generator Riverpod (`dart run build_runner build --delete-conflicting-outputs`) untuk meregenerasi file `tema_notifier.g.dart` agar sinkron dengan source yang menggunakan `Future<TemaEnum>`. Pastikan file generated menggunakan tipe `TemaEnum`/`AsyncValue<TemaEnum>` sesuai source.
-- Aturan dilanggar: `.agents/rules/global/aturan_riverpod.md` — bagian 1 "Penggunaan riverpod_generator" (file `.g.dart` harus dihasilkan ulang setelah perubahan tipe `build`). `.agents/rules/global/aturan_lainnya.md` — poin 8 "File Hasil Generator" (jangan mengedit file hasil generator secara langsung; ubah file sumber lalu jalankan generator).
-- File terkait: [tema_notifier.dart#L12](lib/fitur/tema/notifier/tema_notifier.dart#L12), [tema_notifier.g.dart#L16](lib/fitur/tema/notifier/tema_notifier.g.dart#L16), [tema_notifier.g.dart#L46](lib/fitur/tema/notifier/tema_notifier.g.dart#L46)
+Tidak ada temuan.
 
 ## Sedang
 
-Tidak ada temuan.
+- Status: impelemntasikan
+- Masalah: Metode `set` pada `TemaNotifier` (`lib/fitur/tema/notifier/tema_notifier.dart`) melakukan operasi `SharedPreferences.getInstance()` dan `prefs.setString()` tanpa penanganan error (try/catch). Operasi penyimpanan dapat menghasilkan error runtime (misalnya storage penuh atau izin ditolak), namun error tersebut tidak dicatat maupun diteruskan dengan benar ke pemanggil. Selain itu, kelas logger `L` yang dirujuk oleh aturan proyek belum tersedia di proyek ini, sehingga penanganan error juga memerlukan penambahan logger terlebih dahulu.
+- Solusi: Bungkus operasi `SharedPreferences` di dalam metode `set` dengan try/catch, catat error menggunakan `L.e` (setelah kelas logger `L` tersedia), dan teruskan error menggunakan `rethrow` agar lapisan pemanggil dapat menangani kegagalan. Jika kelas `L` belum tersedia, tambahkan terlebih dahulu sesuai pola proyek, atau gunakan mekanisme logging yang setara.
+- Aturan dilanggar: `.agents/rules/global/aturan_bug_runtime.md` — poin 6 "Try/Catch dan Penanganan Error" (operasi penyimpanan wajib memiliki penanganan error dengan try/catch, logger `L.e`, dan rethrow). `.agents/rules/global/aturan_lainnya.md` — poin 10 "Logging dan Larangan print" (gunakan logger dari class `L` yang tersedia di proyek).
+- File terkait: [tema_notifier.dart#L20](lib/fitur/tema/notifier/tema_notifier.dart#L20), [tema_notifier.dart#L23](lib/fitur/tema/notifier/tema_notifier.dart#L23)
 
 ## Rendah
 

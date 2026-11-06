@@ -603,3 +603,45 @@ Future<void> set(TemaEnum tema) async {
 
 **Alasan:**
 Fallback mencegah null error saat metode dipanggil tanpa argumen.
+
+## Penerapan Mode Tema Dinamis pada MaterialApp
+
+Saat mengamati state async di widget, gunakan `.asData?.value` untuk membaca nilai dengan aman; sediakan `theme`, `darkTheme`, dan `themeMode` agar tema dapat berubah dinamis.
+
+**Aturan:**
+
+1. Baca provider dengan `ref.watch` dan ambil nilai aman melalui `.asData?.value`.
+2. Petakan enum tema ke `ThemeMode` menggunakan switch expression.
+3. Sediakan `theme`, `darkTheme`, dan `themeMode` pada `MaterialApp`.
+4. Gunakan `.asData?.value` (bukan `.value`) untuk membaca `AsyncValue` secara aman.
+
+**Contoh benar:**
+```dart
+final temaAsync = ref.watch(temaProvider);
+final tema = temaAsync.asData?.value ?? TemaEnum.sistem;
+
+final themeMode = switch (tema) {
+  TemaEnum.terang => ThemeMode.light,
+  TemaEnum.gelap => ThemeMode.dark,
+  TemaEnum.sistem => ThemeMode.system,
+};
+
+MaterialApp(
+  themeMode: themeMode,
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+  darkTheme: ThemeData(
+    colorScheme: .fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
+  ),
+);
+```
+
+**Contoh salah:**
+```dart
+final tema = ref.watch(temaProvider).value; // unsafe
+MaterialApp(
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+);
+```
+
+**Alasan:**
+Pola ini menjaga konsistensi tampilan pada mode terang/gelap/sistem dan menghindari null error.
