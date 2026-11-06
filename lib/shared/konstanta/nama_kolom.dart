@@ -19,4 +19,14 @@ class NamaKolom {
 
   /// Kolom tanggal mulai merokok biodata.
   static const String tanggalMulaiMerokok = 'tanggal_mulai_merokok';
+
+  // Kolom tabel impian.
+  /// Kolom target tanggal impian.
+  static const String targetTanggal = 'target_tanggal';
+
+  /// Kolom tanggal dibuat impian.
+  static const String dibuat = 'dibuat';
+
+  /// Kolom jumlah impian.
+  static const String jumlah = 'jumlah';
 }

@@ -45,8 +45,8 @@ class _MyAppState extends ConsumerState<App> {
               const SizedBox(height: 8),
               OutlinedButton(
                 onPressed: () {
-                final _ = ref.refresh(biodataProvider);
-              },
+                  final _ = ref.refresh(biodataProvider);
+                },
                 child: const Text('Coba lagi'),
               ),
             ],
@@ -55,7 +55,9 @@ class _MyAppState extends ConsumerState<App> {
       );
     } else {
       final biodata = biodataAsync.asData?.value;
-      home = biodata == null ? const FormBiodata(buatPertama: true) : const Home();
+      home = biodata == null
+          ? const FormBiodata(buatPertama: true)
+          : const Home();
     }
 
     return MaterialApp(

@@ -122,13 +122,13 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             : InputRupiah.parse(_hargaRokokController.text),
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
       );
-       await ref.read(biodataProvider.notifier).simpan(model);
-       if (!mounted) return;
-       if (widget.buatPertama) {
-         unawaited(Nav.pushAndRemoveUntil(context, const Home()));
-       } else if (Navigator.of(context).canPop()) {
-         Nav.pop(context);
-       }
+      await ref.read(biodataProvider.notifier).simpan(model);
+      if (!mounted) return;
+      if (widget.buatPertama) {
+        unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+      } else if (Navigator.of(context).canPop()) {
+        Nav.pop(context);
+      }
     } on Exception catch (e, s) {
       L.e('Gagal menyimpan biodata: $e $s');
       if (mounted) {
@@ -160,8 +160,8 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
               const SizedBox(height: 8),
               OutlinedButton(
                 onPressed: () {
-                 final _ = ref.refresh(biodataProvider);
-               },
+                  final _ = ref.refresh(biodataProvider);
+                },
                 child: const Text('Coba lagi'),
               ),
             ],

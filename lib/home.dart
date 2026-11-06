@@ -42,7 +42,9 @@ class _HomeState extends ConsumerState<Home> {
     final lastTap = _lastTapTime;
     final tabSama = i == _selectedIndex;
     final doubleTap =
-        tabSama && lastTap != null && sekarang.difference(lastTap) <= _durasiDoubleTap;
+        tabSama &&
+        lastTap != null &&
+        sekarang.difference(lastTap) <= _durasiDoubleTap;
     if (doubleTap) {
       _scrollKeAtas(i);
       _lastTapTime = null;

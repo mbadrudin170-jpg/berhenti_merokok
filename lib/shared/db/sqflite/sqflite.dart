@@ -15,7 +15,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 1;
+  static const int _versiDatabase = 2;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -33,6 +33,7 @@ class AppDatabase {
       path,
       version: _versiDatabase,
       onCreate: _buatTabel,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -48,6 +49,35 @@ class AppDatabase {
         ${NamaKolom.tanggalMulaiMerokok} TEXT
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.nama} TEXT NOT NULL,
+        ${NamaKolom.targetTanggal} TEXT,
+        ${NamaKolom.dibuat} TEXT,
+        ${NamaKolom.jumlah} REAL
+      )
+    ''');
+  }
+
+  /// Memperbarui skema database saat versi meningkat.
+  static Future<void> _onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.nama} TEXT NOT NULL,
+          ${NamaKolom.targetTanggal} TEXT,
+          ${NamaKolom.dibuat} TEXT,
+          ${NamaKolom.jumlah} REAL
+        )
+      ''');
+    }
   }
 
   /// Menutup database jika sedang terbuka.

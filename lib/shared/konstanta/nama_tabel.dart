@@ -4,4 +4,7 @@ class NamaTabel {
 
   /// Tabel biodata.
   static const String biodata = 'biodata';
+
+  /// Tabel impian.
+  static const String impian = 'impian';
 }

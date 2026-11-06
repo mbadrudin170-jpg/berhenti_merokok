@@ -702,7 +702,8 @@ Hindari memutasi state, controller, atau data di dalam metode `build()`.
 1. Jangan memanggil `setState`, menulis ke `TextEditingController`, atau memutasi variabel state di dalam `build()`.
 2. Jangan menggunakan callback seperti `whenData`/`when` untuk menjalankan side effect (mis. mengisi controller) langsung di `build()`.
 3. Jika data async perlu disalin ke state lokal (mis. controller), lakukan pada `initState`, `ref.listen`, atau `addPostFrameCallback`, dengan pengecekan `mounted`.
-4. `build()` harus bersifat idempoten dan hanya membangun UI berdasarkan state yang sudah tersedia.
+4. Jika menggunakan `ref.listenManual` di luar `build`, simpan `ProviderSubscription` yang dikembalikannya dan panggil `close()` pada `dispose()` agar subscription tidak bocor.
+5. `build()` harus bersifat idempoten dan hanya membangun UI berdasarkan state yang sudah tersedia.
 
 **Contoh benar:**
 ```dart

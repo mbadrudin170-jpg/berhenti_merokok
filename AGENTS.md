@@ -504,7 +504,8 @@ Hindari memutasi state, controller, atau data di dalam metode `build()`.
 1. Jangan memanggil `setState`, menulis ke `TextEditingController`, atau memutasi variabel state di dalam `build()`.
 2. Jangan menggunakan callback seperti `whenData`/`when` untuk menjalankan side effect (mis. mengisi controller) langsung di `build()`.
 3. Jika data async perlu disalin ke state lokal (mis. controller), lakukan pada `initState`, `ref.listen`, atau `addPostFrameCallback`, dengan pengecekan `mounted`.
-4. `build()` harus bersifat idempoten dan hanya membangun UI berdasarkan state yang sudah tersedia.
+4. Jika menggunakan `ref.listenManual` di luar `build`, simpan `ProviderSubscription` yang dikembalikannya dan panggil `close()` pada `dispose()` agar subscription tidak bocor.
+5. `build()` harus bersifat idempoten dan hanya membangun UI berdasarkan state yang sudah tersedia.
 **Contoh benar:**
 ```dart
 @override
@@ -4180,6 +4181,93 @@ MaterialApp(
 **Sumber evaluasi:**
 Commit: `69715cd3b115a6ad9233e77881fe91f272b59dc1`
 File: `lib/app.dart`
+## Pengisian Form Biodata via Listener Manual dan Alur Simpan Awal vs Edit
+**Cakupan:**
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState`, khususnya `initState`, `dispose`, dan `_simpan`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
+**Aturan wajib:**
+1. Pengisian controller form dari data async wajib dilakukan melalui `ref.listenManual` di `initState`, bukan melalui `whenData`/`when` di dalam `build()`.
+2. Simpan `ProviderSubscription` yang dikembalikan `ref.listenManual` ke field state, lalu panggil `close()` pada `dispose()` agar subscription tidak bocor.
+3. Gunakan flag `_sudahDiisi` (atau sejenis) agar pengisian controller hanya terjadi sekali, meskipun listener menerima pembaruan berikutnya.
+4. Periksa `mounted` di dalam callback listener sebelum memutasi state/controller.
+5. FormBiodata menerima parameter `buatPertama` (wajib) untuk membedakan alur:
+   - `buatPertama == true` (pengguna baru, biodata belum ada): setelah simpan berhasil, navigasi dengan `Nav.pushAndRemoveUntil(context, const Home())` agar FormBiodata tidak dapat dikembalikan.
+   - `buatPertama == false` (edit biodata): setelah simpan berhasil, gunakan guard `Navigator.of(context).canPop()` lalu `Nav.pop(context)` bila dapat pop.
+6. Pada callback aksi (`_simpan`), baca nilai provider dengan `ref.read(biodataProvider).asData?.value` (bukan `ref.watch`), sesuai aturan AsyncValue.
+7. Saat menyimpan, gunakan ID yang sudah ada bila data tersimpan (`existing?.id`); buat ID baru dengan `const Uuid().v4()` hanya untuk data baru.
+8. Bungkus operasi simpan dengan `try/catch`, catat error dengan `L.e`, tampilkan feedback dengan `AppToast.gagal`, dan sembunyikan overlay EasyLoading di `finally`.
+**Larangan:**
+- Jangan memanggil `biodataAsync.whenData(...)` di dalam `build()` untuk mengisi controller (side effect di build).
+- Jangan membiarkan `ProviderSubscription` dari `ref.listenManual` tidak ditutup di `dispose()`.
+- Jangan memanggil `Nav.pop(context)` tanpa guard `canPop()` pada alur edit, karena halaman bisa menjadi root.
+- Jangan memanggil `Nav.pushAndRemoveUntil` pada alur edit, dan jangan memanggil `Nav.pop` pada alur simpan awal.
+**Alasan:**
+Sebelumnya form diisi melalui `biodataAsync.whenData(...)` di dalam `build()`, yang merupakan side effect di build dan dapat menyebabkan loop rebuild serta inkonsistensi state. Perubahan memindahkan pengisian ke `ref.listenManual` di `initState` dengan flag `_sudahDiisi` dan pengecekan `mounted`, serta menyimpan subscription untuk ditutup di `dispose()`. Alur navigasi pasca-simpan juga dibedakan: simpan awal mengarahkan ke `Home` dengan `pushAndRemoveUntil`, sedangkan edit kembali dengan `Nav.pop` yang di-guard `canPop()`.
+**Dampak apabila dilanggar:**
+- Side effect di `build()` menyebabkan loop rebuild dan controller tertimpa berulang.
+- Subscription yang tidak ditutup menyebabkan memory leak dan callback aktif setelah halaman ditutup.
+- Navigasi yang salah (pop pada root atau kembali ke form awal) merusak alur onboarding.
+**Rujukan implementasi:**
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState.initState`, `dispose`, `_simpan`, parameter `buatPertama`.
+- `.agents/rules/global/optimasi_bug_runtime.md` §4 (mounted) dan §6 (try/catch).
+- `.agents/rules/global/optimasi_ux.md` §5 (status operasi) dan §12 (loading).
+**Contoh benar:**
+```dart
+class FormBiodata extends ConsumerStatefulWidget {
+  final bool buatPertama;
+  const FormBiodata({super.key, required this.buatPertama});
+  // ...
+}
+class _BiodataScreenState extends ConsumerState<FormBiodata> {
+  bool _sudahDiisi = false;
+  ProviderSubscription<AsyncValue<BiodataModel?>>? _biodataSubscription;
+  @override
+  void initState() {
+    super.initState();
+    _biodataSubscription = ref.listenManual(biodataProvider, (previous, next) {
+      next.whenData((biodata) {
+        if (biodata != null && !_sudahDiisi && mounted) {
+          _sudahDiisi = true;
+          _namaController.text = biodata.nama;
+        }
+      });
+    });
+  }
+  @override
+  void dispose() {
+    _biodataSubscription?.close();
+    _namaController.dispose();
+    super.dispose();
+  }
+  Future<void> _simpan() async {
+    // ... guard, konfirmasi, EasyLoading.show ...
+    await ref.read(biodataProvider.notifier).simpan(model);
+    if (!mounted) return;
+    if (widget.buatPertama) {
+      unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+    } else if (Navigator.of(context).canPop()) {
+      Nav.pop(context);
+    }
+  }
+}
+```
+**Contoh salah:**
+```dart
+@override
+Widget build(BuildContext context) {
+  final biodataAsync = ref.watch(biodataProvider);
+  biodataAsync.whenData((biodata) {
+    if (biodata != null && !_sudahDiisi) {
+      _sudahDiisi = true;
+      _namaController.text = biodata.nama; // side effect di build
+    }
+  });
+  return Scaffold(/* ... */);
+}
+```
+**Sumber evaluasi:**
+Commit: `791e578a7d4fb4d436908afb06423ed930915ca9`
+File: `lib/fitur/biodata/screens/form_biodata.dart`
 
 
 // ============================================================
