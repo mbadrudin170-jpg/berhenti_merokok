@@ -1,0 +1,94 @@
+name: Build APK
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.5"
+          cache: true
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Clone share_global_saya
+        run: |
+          git clone https://x-access-token:${{ secrets.PAT_SHARE_GLOBAL }}@github.com/mbadrudin170-jpg/share_global_saya.git \
+            ${{ github.workspace }}/../share_global_saya
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=../keystore.jks
+          EOF
+
+      # 🔍 Tambahan: verifikasi file ikon ada di source sebelum build
+      - name: Verifikasi file ikon di source
+        run: |
+          echo "=== Cari semua ic_notifikasi di repo ==="
+          find . -iname '*ic_notifikasi*' -o -iname '*ic_notif*' || true
+          echo ""
+          echo "=== Isi folder res/drawable* ==="
+          find android/app/src/main/res -maxdepth 2 -type f | sort || true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK (release, arm64 only)
+        run: |
+          flutter clean
+          flutter pub get
+          flutter build apk --release --target-platform android-arm64
+
+      - name: Periksa resource ikon notifikasi
+        if: always()
+        run: |
+          APK="build/app/outputs/flutter-apk/app-release.apk"
+          AAPT2=$(find "$ANDROID_HOME/build-tools" -name aapt2 | sort -V | tail -1)
+
+          if [ ! -f "$APK" ]; then
+            echo "APK tidak ditemukan"; exit 0
+          fi
+
+          echo "=== Resource bernama ic_notifikasi (drawable & mipmap) ==="
+          "$AAPT2" dump resources "$APK" | grep -Ei -C 3 'ic_notif' || echo "TIDAK DITEMUKAN"
+
+          echo ""
+          echo "=== Semua drawable yang mengandung 'notif' ==="
+          "$AAPT2" dump resources "$APK" | grep -Ei 'drawable|mipmap' | grep -i notif || echo "TIDAK ADA"
+
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk

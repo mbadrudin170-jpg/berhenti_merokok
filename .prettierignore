@@ -1,0 +1,26 @@
+
+# Git dan dependensi JavaScript
+.git/
+node_modules/
+
+# Cache dan dependensi Flutter/Dart
+.dart_tool/
+.pub/
+.packages
+
+# Hasil build dan pengujian
+**/build/
+**/coverage/
+
+# File metadata hasil generate Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Kode Dart hasil generate
+**/*.g.dart
+**/*.freezed.dart
+
+# Hasil generate platform Android dan iOS
+**/.gradle/
+**/Pods/
+**/ephemeral/
