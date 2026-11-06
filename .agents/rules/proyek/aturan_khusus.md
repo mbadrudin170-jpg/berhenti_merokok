@@ -1390,3 +1390,86 @@ Commit `206deca` menambahkan `TemaEnum` dan `riverpod_generator`; commit `eb762f
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Tidak terdapat prinsip umum baru yang layak dijadikan aturan bersama; aturan enum yang ditampilkan ke pengguna sudah tercakup di `optimasi_boilerplate.md`.
+
+## Persistensi Tema melalui AsyncNotifier dan SharedPreferences
+
+**Tujuan:**
+Memuat preferensi tema tersimpan dari `SharedPreferences` saat inisialisasi dan menyimpannya setiap kali tema diubah.
+
+**Aturan:**
+1. `TemaNotifier` menggunakan `AsyncNotifier<TemaEnum>` dengan `build()` mengembalikan `Future<TemaEnum>`.
+2. Baca nilai tersimpan via `prefs.getString(SharedKeys.tema)` dan konversi ke `TemaEnum` dengan fallback `TemaEnum.sistem`.
+3. Metode `set([TemaEnum? tema])` menyimpan nilai ke `SharedPreferences` dan memperbarui `state` dengan `AsyncValue.data(...)`.
+4. Gunakan fallback `tema ?? state.asData?.value ?? TemaEnum.sistem` untuk parameter opsional.
+
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  Future<TemaEnum> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(SharedKeys.tema);
+    return TemaEnum.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => TemaEnum.sistem,
+    );
+  }
+
+  Future<void> set([TemaEnum? tema]) async {
+    final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(SharedKeys.tema, nilai.name);
+    state = AsyncValue.data(nilai);
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+
+  void set() {}
+}
+```
+
+**Alasan:**
+Commit `e61c6fb` memigrasikan `TemaNotifier` ke `AsyncNotifier` dan memuat tema tersimpan dari `SharedPreferences`; commit `94ffb11` membuat parameter `set` opsional dengan fallback ke state saat ini. Pola ini memastikan tema persisten antar sesi dan aman terhadap nilai null.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Saat state bergantung pada data asynchronous dari penyimpanan lokal, gunakan `AsyncNotifier` dan baca nilai dengan fallback yang aman; sediakan metode mutasi dengan parameter opsional yang fallback ke state saat ini.
+
+## Parameter Opsional dengan Fallback ke State Saat Ini
+
+**Tujuan:**
+Mencegah null error saat metode mutasi state dipanggil tanpa argumen.
+
+**Aturan:**
+1. Jadikan parameter mutasi opsional (`[TemaEnum? tema]`).
+2. Gunakan fallback `tema ?? state.asData?.value ?? nilaiDefault` sebelum memproses.
+
+**Contoh benar:**
+```dart
+Future<void> set([TemaEnum? tema]) async {
+  final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+  // gunakan nilai
+}
+```
+
+**Contoh salah:**
+```dart
+Future<void> set(TemaEnum tema) async {
+  // tema bisa null di runtime jika dipanggil tanpa argumen
+}
+```
+
+**Alasan:**
+Commit `94ffb11` memperbaiki `set()` agar tidak gagal saat dipanggil tanpa argumen dengan fallback ke state saat ini.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Metode mutasi state yang menerima input opsional sebaiknya memiliki fallback ke state saat ini agar aman terhadap pemanggilan tanpa argumen.

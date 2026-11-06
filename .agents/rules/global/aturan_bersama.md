@@ -527,3 +527,79 @@ class TemaNotifier extends _$TemaNotifier {
 
 **Alasan:**
 Auto-dispose akan menghapus state ketika tidak ada listener, yang tidak diinginkan untuk state persisten seperti tema.
+
+## Inisialisasi State dari Penyimpanan Lokal via AsyncNotifier
+
+Saat state bergantung pada data asynchronous dari penyimpanan lokal (mis. `SharedPreferences`), gunakan `AsyncNotifier` dan baca nilai dengan fallback yang aman.
+
+**Aturan:**
+
+1. Gunakan `AsyncNotifier<T>` dengan `build()` mengembalikan `Future<T>`.
+2. Baca nilai tersimpan dan konversi ke tipe state dengan fallback ke nilai default.
+3. Metode mutasi menyimpan ke penyimpanan lokal dan memperbarui `state` dengan `AsyncValue.data(...)`.
+4. Sediakan parameter opsional dengan fallback ke state saat ini.
+
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  Future<TemaEnum> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(SharedKeys.tema);
+    return TemaEnum.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => TemaEnum.sistem,
+    );
+  }
+
+  Future<void> set([TemaEnum? tema]) async {
+    final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(SharedKeys.tema, nilai.name);
+    state = AsyncValue.data(nilai);
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+
+  void set() {}
+}
+```
+
+**Alasan:**
+Pola ini memastikan state persisten antar sesi dan aman terhadap nilai null.
+
+## Parameter Opsional dengan Fallback ke State Saat Ini
+
+Metode mutasi state yang menerima input opsional sebaiknya memiliki fallback ke state saat ini agar aman terhadap pemanggilan tanpa argumen.
+
+**Aturan:**
+
+1. Jadikan parameter mutasi opsional (`[TemaEnum? tema]`).
+2. Gunakan fallback `tema ?? state.asData?.value ?? nilaiDefault` sebelum memproses.
+
+**Contoh benar:**
+```dart
+Future<void> set([TemaEnum? tema]) async {
+  final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+}
+```
+
+**Contoh salah:**
+```dart
+Future<void> set(TemaEnum tema) async {
+  // tema bisa null di runtime jika dipanggil tanpa argumen
+}
+```
+
+**Alasan:**
+Fallback mencegah null error saat metode dipanggil tanpa argumen.
