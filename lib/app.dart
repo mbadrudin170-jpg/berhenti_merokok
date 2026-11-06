@@ -17,7 +17,24 @@ class App extends ConsumerStatefulWidget {
   ConsumerState<App> createState() => _MyAppState();
 }
 
-class _MyAppState extends ConsumerState<App> {
+class _MyAppState extends ConsumerState<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    setState(() {});
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -60,26 +77,42 @@ class _MyAppState extends ConsumerState<App> {
           : const Home();
     }
 
-    return MaterialApp(
-      title: 'Berhenti Merokok',
-      debugShowCheckedModeBanner: false,
-      builder: EasyLoading.init(),
-      themeMode: themeMode,
-      supportedLocales: const [Locale('id', 'ID')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        _MaterialUiLocalizationsDelegate(),
-      ],
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      darkTheme: ThemeData(
-        colorScheme: .fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
+    final brightness = switch (themeMode) {
+      ThemeMode.light => Brightness.light,
+      ThemeMode.dark => Brightness.dark,
+      ThemeMode.system =>
+        WidgetsBinding.instance.platformDispatcher.platformBrightness,
+    };
+    final materialUiTheme = mui.ThemeData.from(
+      colorScheme: mui.ColorScheme.fromSeed(
+        seedColor: Colors.deepPurple,
+        brightness: brightness,
       ),
-      home: PengelolaOverlayLogDebug(child: home),
+    );
+
+    return mui.Theme(
+      data: materialUiTheme,
+      child: MaterialApp(
+        title: 'Berhenti Merokok',
+        debugShowCheckedModeBanner: false,
+        builder: EasyLoading.init(),
+        themeMode: themeMode,
+        supportedLocales: const [Locale('id', 'ID')],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          _MaterialUiLocalizationsDelegate(),
+        ],
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+        darkTheme: ThemeData(
+          colorScheme: .fromSeed(
+            seedColor: Colors.deepPurple,
+            brightness: Brightness.dark,
+          ),
+        ),
+        home: PengelolaOverlayLogDebug(child: home),
+      ),
     );
   }
 }
