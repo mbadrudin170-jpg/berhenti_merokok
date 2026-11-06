@@ -726,6 +726,20 @@ Future<void> hapusBanyak(List<String> daftarId) async {
   }
 }
 ```
+## Data Dummy Menggunakan Tanggal Relatif
+Data dummy yang memuat tanggal wajib menggunakan nilai relatif terhadap waktu sekarang, bukan tanggal statis, agar tetap realistis sepanjang waktu.
+**Aturan:**
+1. Gunakan `DateTime.now().subtract(...)` atau `DateTime.now().add(...)` untuk tanggal pada data dummy.
+2. Saat menambah field tanggal baru pada model, tambahkan nilai dummy yang sesuai.
+3. Nilai relatif wajib realistis (umur dalam tahun, durasi dalam hari/bulan).
+**Larangan:**
+- Jangan menggunakan tanggal statis (mis. `DateTime(1990, 5, 15)`) pada data dummy.
+- Jangan menambah field model baru tanpa menambahkan nilai dummy yang sesuai.
+**Alasan:**
+Tanggal statis membuat data dummy menjadi tidak realistis seiring waktu dan menyulitkan pengujian tampilan yang bergantung pada tanggal. Nilai relatif menjaga konsistensi data dummy dengan waktu eksekusi.
+**Sumber evaluasi:**
+- Commit: `f9af412cbd090ad4e6023298cc3b76ec42c80446`
+- File: `lib/fitur/dummy/dummy_data/dummy_biodata.dart`
 
 
 // ============================================================
@@ -5009,6 +5023,108 @@ static Future<void> insert() async {
 **Sumber evaluasi:**
 - Commit: `bc75a4a098ae904736d8ef79e5277a7f6fae45bc`
 - File: `lib/fitur/dummy/helper/dummy_helper.dart`
+## Penambahan Tab Baru pada Navigasi Lazy (Home)
+**Cakupan:**
+- `lib/home.dart` — `_HomeState` (GlobalKey, `_scrollKeAtas`, `IndexedStack`, `NavigationDestination`).
+- Tab aktual: Dashboard, Biodata, Lainnya (jumlah mengikuti tab yang terdaftar di `home.dart`).
+**Aturan wajib:**
+1. Saat menambah tab baru, tambahkan `GlobalKey` khusus untuk tab tersebut (mis. `_kunciBiodata`).
+2. Tambahkan entri pada `switch (i)` di `_scrollKeAtas` agar state tab baru dapat diakses untuk scroll-to-top.
+3. Tambahkan entri pada `switch (i)` di dalam `IndexedStack` (`List.generate(N, ...)`) untuk membangun widget tab baru secara lazy.
+4. Tambahkan `NavigationDestination` baru pada `NavigationBar`/`BottomNavigationBar` dengan ikon dan label yang sesuai.
+5. Sesuaikan jumlah `List.generate(N, ...)` dengan jumlah tab aktual.
+6. Pertahankan pola lazy: tab baru hanya dibangun saat pertama kali dipilih, dan state tetap dipertahankan.
+**Larangan:**
+- Jangan menambah tab tanpa menambah `GlobalKey`-nya, karena fitur scroll-to-top akan kehilangan referensi state.
+- Jangan membangun tab baru sekaligus sejak awal (melanggar lazy loading).
+- Jangan mengubah jumlah `List.generate` tanpa menambahkan entri `switch` yang sesuai.
+**Alasan:**
+Commit `9dd29089` menambahkan tab Biodata pada `Home` dengan menambahkan `_kunciBiodata`, entri `switch` pada `_scrollKeAtas` dan `IndexedStack`, serta `NavigationDestination` baru. Pola ini konsisten dengan aturan navigasi tab utama yang sudah ada, dan menjaga lazy loading tetap berlaku meskipun tab bertambah.
+**Dampak apabila dilanggar:**
+- State tab baru tidak dapat diakses untuk scroll-to-top (crash/null).
+- Tab baru dibangun sekaligus sejak awal (lag dan beban memori tinggi).
+- Inkonsistensi antara jumlah tab, `GlobalKey`, dan entri `switch`.
+**Rujukan implementasi:**
+- `lib/home.dart` — commit `9dd29089` (penambahan tab Biodata).
+- `.agents/rules/proyek/aturan_khusus.md` — aturan Navigasi Tab Utama (Home).
+**Contoh benar:**
+```dart
+final GlobalKey _kunciBiodata = GlobalKey();
+final state = switch (i) {
+  0 => _kunciDashboard.currentState,
+  1 => _kunciBiodata.currentState,
+  _ => _kunciLainnya.currentState,
+};
+children: List<Widget>.generate(3, (i) {
+  if (!_tabTerbuka.contains(i)) return const SizedBox.shrink();
+  return switch (i) {
+    0 => DashboardScreen(key: _kunciDashboard),
+    1 => BiodataScreen(key: _kunciBiodata),
+    _ => LainnyaScreen(key: _kunciLainnya),
+  };
+}),
+```
+**Contoh salah:**
+```dart
+// Tab baru ditambahkan tanpa GlobalKey dan tanpa entri switch.
+children: List<Widget>.generate(3, (i) {
+  if (!_tabTerbuka.contains(i)) return const SizedBox.shrink();
+  return switch (i) {
+    0 => DashboardScreen(key: _kunciDashboard),
+    // entri Biodata hilang -> tab tidak dibangun
+    _ => LainnyaScreen(key: _kunciLainnya),
+  };
+}),
+```
+**Sumber evaluasi:**
+- Commit: `9dd290894c133aed166035542a972bf696b7fd79`
+- File: `lib/home.dart`
+## Data Dummy dengan Tanggal Dinamis
+**Cakupan:**
+- `lib/fitur/dummy/dummy_data/dummy_biodata.dart` — data dummy biodata.
+**Aturan wajib:**
+1. Data dummy yang memuat tanggal wajib menggunakan nilai relatif terhadap waktu sekarang (`DateTime.now().subtract(...)` / `DateTime.now().add(...)`), bukan tanggal statis (mis. `DateTime(1990, 5, 15)`).
+2. Saat menambah field tanggal baru pada model (mis. `tanggalMulaiBerhentiMerokok`), tambahkan nilai dummy yang sesuai agar data dummy tetap lengkap dan konsisten.
+3. Nilai relatif wajib realistis (mis. umur dalam tahun, durasi merokok dalam tahun, durasi berhenti dalam hari/bulan).
+**Larangan:**
+- Jangan menggunakan tanggal statis pada data dummy, karena seiring waktu data menjadi tidak realistis (mis. tanggal lahir tetap 1990).
+- Jangan menambah field model baru tanpa menambahkan nilai dummy yang sesuai.
+**Alasan:**
+Commit `f9af412c` mengganti tanggal lahir dan mulai merokok dari nilai statis (`DateTime(1990, 5, 15)`, `DateTime(2010, 1, 1)`) ke nilai relatif terhadap waktu sekarang, serta menambahkan `tanggalMulaiBerhentiMerokok`. Pola ini menjaga data dummy tetap realistis sepanjang waktu dan konsisten dengan skema model terbaru.
+**Dampak apabila dilanggar:**
+- Data dummy menjadi tidak realistis seiring waktu (mis. umur pengguna dummy tidak berubah).
+- Data dummy tidak lengkap (field baru bernilai null) sehingga tampilan fitur tidak dapat diuji dengan baik.
+**Rujukan implementasi:**
+- `lib/fitur/dummy/dummy_data/dummy_biodata.dart` — commit `f9af412c`.
+**Contoh benar:**
+```dart
+BiodataModel(
+  id: BiodataIdDummy.item1,
+  nama: 'Budi Santoso',
+  tanggalLahir: DateTime.now().subtract(const Duration(days: 365 * 36)),
+  tanggalMulaiMerokok: DateTime.now().subtract(
+    const Duration(days: 365 * 16),
+  ),
+  tanggalMulaiBerhentiMerokok: DateTime.now().subtract(
+    const Duration(days: 30),
+  ),
+)
+```
+**Contoh salah:**
+```dart
+BiodataModel(
+  id: BiodataIdDummy.item1,
+  nama: 'Budi Santoso',
+  tanggalLahir: DateTime(1990, 5, 15), // statis
+  tanggalMulaiMerokok: DateTime(2010, 1, 1), // statis
+  // tanggalMulaiBerhentiMerokok tidak diisi -> null
+)
+```
+**Sumber evaluasi:**
+- Commit: `f9af412cbd090ad4e6023298cc3b76ec42c80446`
+- File: `lib/fitur/dummy/dummy_data/dummy_biodata.dart`
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Data dummy sebaiknya menggunakan nilai relatif terhadap waktu sekarang (bukan tanggal statis) agar tetap realistis sepanjang waktu; field baru pada model wajib diisi pada data dummy agar pengujian mencakup data lengkap.
 
 
 // ============================================================

@@ -9,15 +9,20 @@ class LainnyaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildTombolCustom(
-          () => Nav.to(context, const PengaturanScreen()),
-          'Pengaturan',
+    return Scaffold(
+      appBar: AppBar(title: const Text('Lainnya')),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildTombolCustom(
+              () => Nav.to(context, const PengaturanScreen()),
+              'Pengaturan',
+            ),
+            _buildTombolCustom(() => Nav.to(context, DummyScreen()), 'Dummy'),
+          ],
         ),
-        _buildTombolCustom(() => Nav.to(context, DummyScreen()), 'Dummy'),
-      ],
+      ),
     );
   }
 

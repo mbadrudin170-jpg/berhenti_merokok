@@ -960,3 +960,23 @@ Future<void> hapusBanyak(List<String> daftarId) async {
   }
 }
 ```
+
+## Data Dummy Menggunakan Tanggal Relatif
+
+Data dummy yang memuat tanggal wajib menggunakan nilai relatif terhadap waktu sekarang, bukan tanggal statis, agar tetap realistis sepanjang waktu.
+
+**Aturan:**
+1. Gunakan `DateTime.now().subtract(...)` atau `DateTime.now().add(...)` untuk tanggal pada data dummy.
+2. Saat menambah field tanggal baru pada model, tambahkan nilai dummy yang sesuai.
+3. Nilai relatif wajib realistis (umur dalam tahun, durasi dalam hari/bulan).
+
+**Larangan:**
+- Jangan menggunakan tanggal statis (mis. `DateTime(1990, 5, 15)`) pada data dummy.
+- Jangan menambah field model baru tanpa menambahkan nilai dummy yang sesuai.
+
+**Alasan:**
+Tanggal statis membuat data dummy menjadi tidak realistis seiring waktu dan menyulitkan pengujian tampilan yang bergantung pada tanggal. Nilai relatif menjaga konsistensi data dummy dengan waktu eksekusi.
+
+**Sumber evaluasi:**
+- Commit: `f9af412cbd090ad4e6023298cc3b76ec42c80446`
+- File: `lib/fitur/dummy/dummy_data/dummy_biodata.dart`
