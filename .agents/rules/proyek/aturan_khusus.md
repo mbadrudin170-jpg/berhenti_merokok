@@ -1072,11 +1072,11 @@ Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` (misalnya alfabetis
 ## Pemisahan Titik Masuk (main.dart) dan Widget Aplikasi (app.dart)
 
 **Tujuan:**
-Menjaga entry point aplikasi tetap minimal dan memisahkan tanggung jawab antara peluncuran aplikasi (`main()`) dan definisi widget root (`MyApp`).
+Menjaga entry point aplikasi tetap minimal dan memisahkan tanggung jawab antara peluncuran aplikasi (`main()`) dan definisi widget root (`App`).
 
 **Aturan:**
-1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export `app.dart` agar `MyApp` tetap dapat diimpor dari entry point.
-2. Definisi kelas `MyApp` dan logika widget root ditempatkan di `app.dart`.
+1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const App())`, serta re-export `app.dart` agar `App` tetap dapat diimpor dari entry point.
+2. Definisi kelas `App` dan logika widget root ditempatkan di `app.dart`.
 3. Jangan menempatkan logika UI, state, atau konfigurasi tema yang kompleks di dalam `main()`.
 
 **Contoh benar:**
@@ -1088,22 +1088,22 @@ import 'package:flutter/material.dart';
 export 'package:berhenti_merokok/app.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 ```
 
 **Contoh salah:**
 ```dart
-// main.dart berisi seluruh definisi MyApp dan logika UI.
-class MyApp extends StatelessWidget { ... }
-void main() => runApp(const MyApp());
+// main.dart berisi seluruh definisi App dan logika UI.
+class App extends StatelessWidget { ... }
+void main() => runApp(const App());
 ```
 
 **Alasan:**
-Commit `32967bb` memindahkan definisi `MyApp` dari `main.dart` ke `app.dart` dan menyisakan `main()` di `main.dart` dengan re-export. Pemisahan ini memudahkan pengujian dan pemeliharaan entry point.
+Commit `32967bb` memindahkan definisi `App` dari `main.dart` ke `app.dart` dan menyisakan `main()` di `main.dart` dengan re-export. Pemisahan ini memudahkan pengujian dan pemeliharaan entry point.
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari definisi widget root (`MyApp`) agar tanggung jawab setiap file jelas dan entry point tetap minimal.
+Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari definisi widget root (`App`) agar tanggung jawab setiap file jelas dan entry point tetap minimal.
 
 ## Root App Widget sebagai ConsumerStatefulWidget
 
@@ -1111,20 +1111,19 @@ Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari de
 Memungkinkan widget root mengakses dan mengamati provider (misalnya tema) melalui Riverpod, serta menyembunyikan banner debug pada build non-debug.
 
 **Aturan:**
-1. Jika `MyApp` perlu mengamati provider (misalnya `TemaNotifier`), gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
+1. Jika `App` perlu mengamati provider (misalnya `TemaNotifier`), gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
 2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
 3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
 
 **Contoh benar:**
 ```dart
-class MyApp extends ConsumerStatefulWidget {
-  const MyApp({super.key});
+class App extends ConsumerStatefulWidget {
+  const App({super.key});
 
   @override
-  ConsumerState<MyApp> createState() => _MyAppState();
+ConsumerState<App> createState() => _MyAppState();
 }
-
-class _MyAppState extends ConsumerState<MyApp> {
+class _MyAppState extends ConsumerState<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -1141,7 +1140,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
 **Contoh salah:**
 ```dart
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -1153,7 +1152,7 @@ class MyApp extends StatelessWidget {
 ```
 
 **Alasan:**
-Commit `38219ec` mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Commit `e38d1c0` kemudian menerapkan mode tema dinamis: `ref.watch(temaProvider)` dibaca dengan `.asData?.value`, lalu `TemaEnum` dipetakan ke `ThemeMode` melalui switch expression, dan `MaterialApp` menyediakan `theme`, `darkTheme`, serta `themeMode`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
+Commit `38219ec` mengonversi `App` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Commit `e38d1c0` kemudian menerapkan mode tema dinamis: `ref.watch(temaProvider)` dibaca dengan `.asData?.value`, lalu `TemaEnum` dipetakan ke `ThemeMode` melalui switch expression, dan `MaterialApp` menyediakan `theme`, `darkTheme`, serta `themeMode`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema/locale); pertahankan `debugShowCheckedModeBanner: false` pada build pengembangan.
@@ -1258,28 +1257,28 @@ Kelola state tema aplikasi melalui Notifier (Riverpod Generator) agar tema dapat
 Memastikan root widget memiliki scope Riverpod yang valid sehingga provider dapat diakses dari seluruh aplikasi.
 
 **Aturan:**
-1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
+1. Bungkus `App` dengan `ProviderScope` di dalam `main()`.
 2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
-3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
+3. Jangan memanggil `runApp(const App())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
 
 **Contoh benar:**
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: App()));
 }
 ```
 
 **Contoh salah:**
 ```dart
 void main() {
-  runApp(const MyApp()); // Tidak ada ProviderScope
+  runApp(const App()); // Tidak ada ProviderScope
 }
 ```
 
 **Alasan:**
-Commit `38219ec` mengubah `runApp(const MyApp())` menjadi `runApp(const ProviderScope(child: MyApp()))`. Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
+Commit `38219ec` mengubah `runApp(const App())` menjadi `runApp(const ProviderScope(child: App()))`. Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.

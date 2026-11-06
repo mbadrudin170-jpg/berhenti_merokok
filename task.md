@@ -6,7 +6,8 @@ Tidak ada temuan.
 
 ## Sedang
 
-- Status: impelemntasikan
+- Status: Dilewati
+- Alasan: File terkait `lib/fitur/tema/notifier/tema_notifier.dart` sedang terbuka di editor, sehingga tidak boleh diubah sesuai protokol. Selain itu, kelas logger `L` yang dirujuk belum tersedia di proyek dan belum ada pola implementasinya, sehingga solusi tidak dapat diterapkan dengan aman dalam sesi ini.
 - Masalah: Metode `set` pada `TemaNotifier` (`lib/fitur/tema/notifier/tema_notifier.dart`) melakukan operasi `SharedPreferences.getInstance()` dan `prefs.setString()` tanpa penanganan error (try/catch). Operasi penyimpanan dapat menghasilkan error runtime (misalnya storage penuh atau izin ditolak), namun error tersebut tidak dicatat maupun diteruskan dengan benar ke pemanggil. Selain itu, kelas logger `L` yang dirujuk oleh aturan proyek belum tersedia di proyek ini, sehingga penanganan error juga memerlukan penambahan logger terlebih dahulu.
 - Solusi: Bungkus operasi `SharedPreferences` di dalam metode `set` dengan try/catch, catat error menggunakan `L.e` (setelah kelas logger `L` tersedia), dan teruskan error menggunakan `rethrow` agar lapisan pemanggil dapat menangani kegagalan. Jika kelas `L` belum tersedia, tambahkan terlebih dahulu sesuai pola proyek, atau gunakan mekanisme logging yang setara.
 - Aturan dilanggar: `.agents/rules/global/aturan_bug_runtime.md` — poin 6 "Try/Catch dan Penanganan Error" (operasi penyimpanan wajib memiliki penanganan error dengan try/catch, logger `L.e`, dan rethrow). `.agents/rules/global/aturan_lainnya.md` — poin 10 "Logging dan Larangan print" (gunakan logger dari class `L` yang tersedia di proyek).

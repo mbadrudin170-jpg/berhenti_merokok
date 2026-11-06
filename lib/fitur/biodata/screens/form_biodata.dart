@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 
-class BiodataScreen extends ConsumerStatefulWidget {
-  const BiodataScreen({super.key});
+class FormBiodata extends ConsumerStatefulWidget {
+  const FormBiodata({super.key});
 
   @override
-  ConsumerState<BiodataScreen> createState() => _BiodataScreenState();
+  ConsumerState<FormBiodata> createState() => _BiodataScreenState();
 }
 
-class _BiodataScreenState extends ConsumerState<BiodataScreen> {
+class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _namaController = TextEditingController();
   final _namaFocusNode = FocusNode();
   @override

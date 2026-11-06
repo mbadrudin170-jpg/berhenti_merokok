@@ -371,6 +371,133 @@ class TemaNotifier extends _$TemaNotifier {
 ```
 **Alasan:**
 Auto-dispose akan menghapus state ketika tidak ada listener, yang tidak diinginkan untuk state persisten seperti tema.
+## Inisialisasi State dari Penyimpanan Lokal via AsyncNotifier
+Saat state bergantung pada data asynchronous dari penyimpanan lokal (mis. `SharedPreferences`), gunakan `AsyncNotifier` dan baca nilai dengan fallback yang aman.
+**Aturan:**
+1. Gunakan `AsyncNotifier<T>` dengan `build()` mengembalikan `Future<T>`.
+2. Baca nilai tersimpan dan konversi ke tipe state dengan fallback ke nilai default.
+3. Metode mutasi menyimpan ke penyimpanan lokal dan memperbarui `state` dengan `AsyncValue.data(...)`.
+4. Sediakan parameter opsional dengan fallback ke state saat ini.
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  Future<TemaEnum> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(SharedKeys.tema);
+    return TemaEnum.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => TemaEnum.sistem,
+    );
+  }
+  Future<void> set([TemaEnum? tema]) async {
+    final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(SharedKeys.tema, nilai.name);
+    state = AsyncValue.data(nilai);
+  }
+}
+```
+**Contoh salah:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+  void set() {}
+}
+```
+**Alasan:**
+Pola ini memastikan state persisten antar sesi dan aman terhadap nilai null.
+## Parameter Opsional dengan Fallback ke State Saat Ini
+Metode mutasi state yang menerima input opsional sebaiknya memiliki fallback ke state saat ini agar aman terhadap pemanggilan tanpa argumen.
+**Aturan:**
+1. Jadikan parameter mutasi opsional (`[TemaEnum? tema]`).
+2. Gunakan fallback `tema ?? state.asData?.value ?? nilaiDefault` sebelum memproses.
+**Contoh benar:**
+```dart
+Future<void> set([TemaEnum? tema]) async {
+  final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+}
+```
+**Contoh salah:**
+```dart
+Future<void> set(TemaEnum tema) async {
+  // tema bisa null di runtime jika dipanggil tanpa argumen
+}
+```
+**Alasan:**
+Fallback mencegah null error saat metode dipanggil tanpa argumen.
+## Penerapan Mode Tema Dinamis pada MaterialApp
+Saat mengamati state async di widget, gunakan `.asData?.value` untuk membaca nilai dengan aman; sediakan `theme`, `darkTheme`, dan `themeMode` agar tema dapat berubah dinamis.
+**Aturan:**
+1. Baca provider dengan `ref.watch` dan ambil nilai aman melalui `.asData?.value`.
+2. Petakan enum tema ke `ThemeMode` menggunakan switch expression.
+3. Sediakan `theme`, `darkTheme`, dan `themeMode` pada `MaterialApp`.
+4. Gunakan `.asData?.value` (bukan `.value`) untuk membaca `AsyncValue` secara aman.
+**Contoh benar:**
+```dart
+final temaAsync = ref.watch(temaProvider);
+final tema = temaAsync.asData?.value ?? TemaEnum.sistem;
+final themeMode = switch (tema) {
+  TemaEnum.terang => ThemeMode.light,
+  TemaEnum.gelap => ThemeMode.dark,
+  TemaEnum.sistem => ThemeMode.system,
+};
+MaterialApp(
+  themeMode: themeMode,
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+  darkTheme: ThemeData(
+    colorScheme: .fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
+  ),
+);
+```
+**Contoh salah:**
+```dart
+final tema = ref.watch(temaProvider).value; // unsafe
+MaterialApp(
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+);
+```
+**Alasan:**
+Pola ini menjaga konsistensi tampilan pada mode terang/gelap/sistem dan menghindari null error.
+## Validasi Form Mengembalikan `String?`
+Validator form harus mengembalikan `String?` sesuai kontrak `FormFieldValidator`; null berarti valid.
+**Aturan:**
+1. Validator wajib mengembalikan `String?` (null berarti valid, string berarti pesan error).
+2. Jangan menggunakan `() {}` (void) sebagai validator.
+3. Gunakan `() { return null; }` atau ekspresi yang mengembalikan `String?`.
+**Contoh benar:**
+```dart
+validator: (value) {
+  return null;
+},
+```
+**Contoh salah:**
+```dart
+validator: (value) {},
+```
+**Alasan:**
+Pola ini mencegah type mismatch pada `FormField`/widget input.
+## Manfaatkan Widget dan Helper Reusable dari Paket Shared
+Manfaatkan widget dan helper reusable dari paket shared yang tersedia sebelum membuat implementasi sendiri.
+**Aturan:**
+1. Periksa apakah widget/helper yang dibutuhkan sudah tersedia di paket shared (mis. `core_shared`).
+2. Gunakan widget reusable tersebut alih-alih membuat ulang.
+3. Jangan menduplikasi implementasi yang sudah tersedia.
+**Contoh benar:**
+```dart
+import 'package:share_global_saya/core_shared.dart';
+```
+**Contoh salah:**
+```dart
+// Membuat InputTeks sendiri padahal sudah tersedia di core_shared.
+```
+**Alasan:**
+Menggunakan widget reusable menjaga konsistensi dan mengurangi duplikasi.
 
 
 // ============================================================
@@ -3325,10 +3452,10 @@ Commit `e8b8ace` menyusun ulang dependensi `pubspec.yaml` secara alfabetis, dan 
 Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` (misalnya alfabetis) agar perubahan lebih mudah ditinjau, tanpa mengubah kelompok atau sumber dependensi yang sudah ditetapkan.
 ## Pemisahan Titik Masuk (main.dart) dan Widget Aplikasi (app.dart)
 **Tujuan:**
-Menjaga entry point aplikasi tetap minimal dan memisahkan tanggung jawab antara peluncuran aplikasi (`main()`) dan definisi widget root (`MyApp`).
+Menjaga entry point aplikasi tetap minimal dan memisahkan tanggung jawab antara peluncuran aplikasi (`main()`) dan definisi widget root (`App`).
 **Aturan:**
-1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export `app.dart` agar `MyApp` tetap dapat diimpor dari entry point.
-2. Definisi kelas `MyApp` dan logika widget root ditempatkan di `app.dart`.
+1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const App())`, serta re-export `app.dart` agar `App` tetap dapat diimpor dari entry point.
+2. Definisi kelas `App` dan logika widget root ditempatkan di `app.dart`.
 3. Jangan menempatkan logika UI, state, atau konfigurasi tema yang kompleks di dalam `main()`.
 **Contoh benar:**
 ```dart
@@ -3337,34 +3464,34 @@ import 'package:berhenti_merokok/app.dart';
 import 'package:flutter/material.dart';
 export 'package:berhenti_merokok/app.dart';
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 ```
 **Contoh salah:**
 ```dart
-// main.dart berisi seluruh definisi MyApp dan logika UI.
-class MyApp extends StatelessWidget { ... }
-void main() => runApp(const MyApp());
+// main.dart berisi seluruh definisi App dan logika UI.
+class App extends StatelessWidget { ... }
+void main() => runApp(const App());
 ```
 **Alasan:**
-Commit `32967bb` memindahkan definisi `MyApp` dari `main.dart` ke `app.dart` dan menyisakan `main()` di `main.dart` dengan re-export. Pemisahan ini memudahkan pengujian dan pemeliharaan entry point.
+Commit `32967bb` memindahkan definisi `App` dari `main.dart` ke `app.dart` dan menyisakan `main()` di `main.dart` dengan re-export. Pemisahan ini memudahkan pengujian dan pemeliharaan entry point.
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari definisi widget root (`MyApp`) agar tanggung jawab setiap file jelas dan entry point tetap minimal.
+Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari definisi widget root (`App`) agar tanggung jawab setiap file jelas dan entry point tetap minimal.
 ## Root App Widget sebagai ConsumerStatefulWidget
 **Tujuan:**
 Memungkinkan widget root mengakses dan mengamati provider (misalnya tema) melalui Riverpod, serta menyembunyikan banner debug pada build non-debug.
 **Aturan:**
-1. Jika `MyApp` perlu mengamati provider (misalnya `TemaNotifier`), gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
+1. Jika `App` perlu mengamati provider (misalnya `TemaNotifier`), gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
 2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
 3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
 **Contoh benar:**
 ```dart
-class MyApp extends ConsumerStatefulWidget {
-  const MyApp({super.key});
+class App extends ConsumerStatefulWidget {
+  const App({super.key});
   @override
-  ConsumerState<MyApp> createState() => _MyAppState();
+ConsumerState<App> createState() => _MyAppState();
 }
-class _MyAppState extends ConsumerState<MyApp> {
+class _MyAppState extends ConsumerState<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -3380,7 +3507,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 ```
 **Contoh salah:**
 ```dart
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -3391,7 +3518,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 **Alasan:**
-Commit `38219ec` mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
+Commit `38219ec` mengonversi `App` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Commit `e38d1c0` kemudian menerapkan mode tema dinamis: `ref.watch(temaProvider)` dibaca dengan `.asData?.value`, lalu `TemaEnum` dipetakan ke `ThemeMode` melalui switch expression, dan `MaterialApp` menyediakan `theme`, `darkTheme`, serta `themeMode`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema/locale); pertahankan `debugShowCheckedModeBanner: false` pada build pengembangan.
 ## Layar Home sebagai ConsumerStatefulWidget dengan Siklus Hidup
@@ -3472,24 +3599,24 @@ Kelola state tema aplikasi melalui Notifier (Riverpod Generator) agar tema dapat
 **Tujuan:**
 Memastikan root widget memiliki scope Riverpod yang valid sehingga provider dapat diakses dari seluruh aplikasi.
 **Aturan:**
-1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
+1. Bungkus `App` dengan `ProviderScope` di dalam `main()`.
 2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
-3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
+3. Jangan memanggil `runApp(const App())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
 **Contoh benar:**
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: App()));
 }
 ```
 **Contoh salah:**
 ```dart
 void main() {
-  runApp(const MyApp()); // Tidak ada ProviderScope
+  runApp(const App()); // Tidak ada ProviderScope
 }
 ```
 **Alasan:**
-Commit `38219ec` mengubah `runApp(const MyApp())` menjadi `runApp(const ProviderScope(child: MyApp()))`. Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
+Commit `38219ec` mengubah `runApp(const App())` menjadi `runApp(const ProviderScope(child: App()))`. Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.
 ## Sentralisasi Kunci Penyimpanan di `SharedKeys`
@@ -3576,6 +3703,150 @@ enum TemaEnum { sistem, terang, gelap } // tanpa extension label
 Commit `206deca` menambahkan `TemaEnum` dan `riverpod_generator`; commit `eb762fe` memformat ulang enum. Enum memberikan type safety dan konsistensi dengan aturan enum yang ditampilkan ke pengguna.
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Tidak terdapat prinsip umum baru yang layak dijadikan aturan bersama; aturan enum yang ditampilkan ke pengguna sudah tercakup di `optimasi_boilerplate.md`.
+## Persistensi Tema melalui AsyncNotifier dan SharedPreferences
+**Tujuan:**
+Memuat preferensi tema tersimpan dari `SharedPreferences` saat inisialisasi dan menyimpannya setiap kali tema diubah.
+**Aturan:**
+1. `TemaNotifier` menggunakan `AsyncNotifier<TemaEnum>` dengan `build()` mengembalikan `Future<TemaEnum>`.
+2. Baca nilai tersimpan via `prefs.getString(SharedKeys.tema)` dan konversi ke `TemaEnum` dengan fallback `TemaEnum.sistem`.
+3. Metode `set([TemaEnum? tema])` menyimpan nilai ke `SharedPreferences` dan memperbarui `state` dengan `AsyncValue.data(...)`.
+4. Gunakan fallback `tema ?? state.asData?.value ?? TemaEnum.sistem` untuk parameter opsional.
+**Contoh benar:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  Future<TemaEnum> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(SharedKeys.tema);
+    return TemaEnum.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => TemaEnum.sistem,
+    );
+  }
+  Future<void> set([TemaEnum? tema]) async {
+    final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(SharedKeys.tema, nilai.name);
+    state = AsyncValue.data(nilai);
+  }
+}
+```
+**Contoh salah:**
+```dart
+@Riverpod(keepAlive: true)
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+  void set() {}
+}
+```
+**Alasan:**
+Commit `e61c6fb` memigrasikan `TemaNotifier` ke `AsyncNotifier` dan memuat tema tersimpan dari `SharedPreferences`; commit `94ffb11` membuat parameter `set` opsional dengan fallback ke state saat ini. Pola ini memastikan tema persisten antar sesi dan aman terhadap nilai null.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Saat state bergantung pada data asynchronous dari penyimpanan lokal, gunakan `AsyncNotifier` dan baca nilai dengan fallback yang aman; sediakan metode mutasi dengan parameter opsional yang fallback ke state saat ini.
+## Parameter Opsional dengan Fallback ke State Saat Ini
+**Tujuan:**
+Mencegah null error saat metode mutasi state dipanggil tanpa argumen.
+**Aturan:**
+1. Jadikan parameter mutasi opsional (`[TemaEnum? tema]`).
+2. Gunakan fallback `tema ?? state.asData?.value ?? nilaiDefault` sebelum memproses.
+**Contoh benar:**
+```dart
+Future<void> set([TemaEnum? tema]) async {
+  final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+  // gunakan nilai
+}
+```
+**Contoh salah:**
+```dart
+Future<void> set(TemaEnum tema) async {
+  // tema bisa null di runtime jika dipanggil tanpa argumen
+}
+```
+**Alasan:**
+Commit `94ffb11` memperbaiki `set()` agar tidak gagal saat dipanggil tanpa argumen dengan fallback ke state saat ini.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Metode mutasi state yang menerima input opsional sebaiknya memiliki fallback ke state saat ini agar aman terhadap pemanggilan tanpa argumen.
+## Penerapan Mode Tema Dinamis pada MaterialApp
+**Tujuan:**
+Menerapkan mode tema (terang/gelap/sistem) secara dinamis dari `TemaNotifier` ke `MaterialApp`.
+**Aturan:**
+1. Baca `temaProvider` dengan `ref.watch` dan ambil nilai aman melalui `.asData?.value`.
+2. Petakan `TemaEnum` ke `ThemeMode` menggunakan switch expression.
+3. Sediakan `theme`, `darkTheme`, dan `themeMode` pada `MaterialApp`.
+4. Gunakan `.asData?.value` (bukan `.value`) untuk membaca `AsyncValue` secara aman.
+**Contoh benar:**
+```dart
+final temaAsync = ref.watch(temaProvider);
+final tema = temaAsync.asData?.value ?? TemaEnum.sistem;
+final themeMode = switch (tema) {
+  TemaEnum.terang => ThemeMode.light,
+  TemaEnum.gelap => ThemeMode.dark,
+  TemaEnum.sistem => ThemeMode.system,
+};
+MaterialApp(
+  themeMode: themeMode,
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+  darkTheme: ThemeData(
+    colorScheme: .fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
+  ),
+);
+```
+**Contoh salah:**
+```dart
+final tema = ref.watch(temaProvider).value; // unsafe
+MaterialApp(
+  theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+  // tanpa darkTheme/themeMode
+);
+```
+**Alasan:**
+Commit `e38d1c0` menerapkan mode tema dinamis dari `TemaNotifier` ke `MaterialApp` dengan dukungan dark theme. Pola ini menjaga konsistensi tampilan pada mode terang/gelap/sistem.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Saat mengamati state async di widget, gunakan `.asData?.value` untuk membaca nilai dengan aman; sediakan `theme`, `darkTheme`, dan `themeMode` agar tema dapat berubah dinamis.
+## Validasi Form Mengembalikan `String?`
+**Tujuan:**
+Memastikan validator input form mengembalikan nilai yang sesuai dengan kontrak `FormFieldValidator` (`String?`).
+**Aturan:**
+1. Validator wajib mengembalikan `String?` (null berarti valid, string berarti pesan error).
+2. Jangan menggunakan `() {}` (void) sebagai validator.
+3. Gunakan `() { return null; }` atau ekspresi yang mengembalikan `String?`.
+**Contoh benar:**
+```dart
+validator: (value) {
+  return null;
+},
+```
+**Contoh salah:**
+```dart
+validator: (value) {},
+```
+**Alasan:**
+Commit `f596872` memperbaiki validator dari `() {}` (void) menjadi `{ return null; }` (String?). Pola ini mencegah type mismatch pada `InputTeks`/`FormField`.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Validator form harus mengembalikan `String?` sesuai kontrak `FormFieldValidator`; null berarti valid.
+## Penggunaan Paket Lokal `share_global_saya`
+**Tujuan:**
+Memastikan widget dan helper reusable dari paket lokal `share_global_saya` digunakan secara konsisten.
+**Aturan:**
+1. Impor `package:share_global_saya/core_shared.dart` untuk mengakses `InputTeks`, `Nav`, `SharedKeys`-serupa, dan helper lainnya.
+2. Gunakan widget reusable dari `core_shared` alih-alih membuat ulang.
+3. Dependensi dideklarasikan sebagai path dependency: `share_global_saya: path: ../share_global_saya`.
+**Contoh benar:**
+```dart
+import 'package:share_global_saya/core_shared.dart';
+```
+**Contoh salah:**
+```dart
+// Membuat InputTeks sendiri padahal sudah tersedia di core_shared.
+```
+**Alasan:**
+Commit `e451a54` menambahkan layar biodata yang menggunakan `InputTeks` dari `share_global_saya`; commit `f596872` menambahkan impor `core_shared`. Pola ini menjaga konsistensi dengan shared library.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Manfaatkan widget dan helper reusable dari paket shared yang tersedia sebelum membuat implementasi sendiri.
 
 
 // ============================================================
