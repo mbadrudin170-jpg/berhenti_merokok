@@ -229,3 +229,42 @@ Pada tabel yang menyajikan informasi berjenjang, gunakan hierarki tipografi yang
 
 - Jangan menggunakan ukuran yang sama untuk header, label, dan nilai.
 - Jangan menggunakan `const TextStyle(fontWeight: FontWeight.bold)` tanpa acuan tema.
+## Penyusunan Dependensi pada `pubspec.yaml`
+
+Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` agar perubahan lebih mudah ditinjau.
+
+**Aturan:**
+
+1. Susun nama paket pada kelompok `dependencies` secara konsisten (misalnya alfabetis A–Z).
+2. Susun nama paket pada kelompok `dev_dependencies` secara konsisten (misalnya alfabetis A–Z), terpisah dari `dependencies`.
+3. Pertahankan kelompok dependensi asal setiap paket; jangan memindahkan paket antar kelompok.
+4. Pertahankan sumber dan versi dependensi yang sudah ditetapkan; penyusunan ulang urutan tidak boleh mengubah konfigurasi dependensi.
+
+**Contoh benar:**
+```yaml
+dependencies:
+  cupertino_icons: ^2.0.0
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+```
+
+**Contoh salah:**
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+```
+
+**Alasan:**
+Urutan yang konsisten memudahkan peninjauan diff pada `pubspec.yaml` dan mencegah perubahan urutan yang tidak perlu saat instalasi ulang paket.

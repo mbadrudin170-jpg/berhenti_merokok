@@ -1026,5 +1026,45 @@ Aturan berikut merupakan penerapan dari aturan bersama (`aturan_bersama.md`) pad
 - **Ekstraksi Fungsi ke Helper** — Rujukan: `lib/fitur/bahan_bakar/helper/filter_bahan_bakar.dart` (`hitungJarakTempuh`), `lib/fitur/bahan_bakar/state/bahan_bakar_state.dart` (`_hitungSelisihKm`), `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart`.
 - **Anotasi Tipe Eksplisit** — Rujukan: `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` (`final BahanBakarState bahanBakarState = ...`, `final List<BahanBakarModel> bahanBakarList = ...`).
 
-## Preferensi State Lokal daripada Re-watch Provider pada Halaman
+## Penyusunan Abjad Dependensi pada `pubspec.yaml`
 
+**Tujuan:**
+Menjaga konsistensi urutan dependensi agar perubahan pada `pubspec.yaml` mudah ditinjau dan dibandingkan.
+
+**Aturan:**
+1. Susun nama paket pada kelompok `dependencies` secara alfabetis (A–Z).
+2. Susun nama paket pada kelompok `dev_dependencies` secara alfabetis (A–Z), terpisah dari `dependencies`.
+3. Pertahankan kelompok dependensi asal setiap paket; jangan memindahkan paket dari `dependencies` ke `dev_dependencies` atau sebaliknya.
+4. Penyusunan alfabetis hanya dilakukan setelah seluruh proses instalasi paket selesai.
+
+**Contoh benar:**
+```yaml
+dependencies:
+  cupertino_icons: ^2.0.0
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+```
+
+**Contoh salah:**
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+```
+
+**Alasan:**
+Commit `e8b8ace` menyusun ulang dependensi `pubspec.yaml` secara alfabetis, dan perintah `install_ulang_paket.md` mewajibkan penyusunan alfabetis setelah instalasi. Pengurutan yang konsisten memudahkan peninjauan diff dan mencegah perubahan urutan yang tidak perlu.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` (misalnya alfabetis) agar perubahan lebih mudah ditinjau, tanpa mengubah kelompok atau sumber dependensi yang sudah ditetapkan.
