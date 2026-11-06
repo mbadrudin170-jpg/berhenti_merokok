@@ -1,3 +1,5 @@
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -37,13 +39,13 @@ class AppDatabase {
   /// Membuat tabel-tabel saat database pertama kali dibuat.
   static Future<void> _buatTabel(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE biodata(
-        id TEXT PRIMARY KEY,
-        nama TEXT NOT NULL,
-        tanggal_lahir TEXT,
-        jumlah_rokok_per_hari INTEGER,
-        harga_rokok_per_bungkus REAL,
-        tanggal_mulai_merokok TEXT
+      CREATE TABLE ${NamaTabel.biodata}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.nama} TEXT NOT NULL,
+        ${NamaKolom.tanggalLahir} TEXT,
+        ${NamaKolom.jumlahRokokPerHari} INTEGER,
+        ${NamaKolom.hargaRokokPerBungkus} REAL,
+        ${NamaKolom.tanggalMulaiMerokok} TEXT
       )
     ''');
   }
