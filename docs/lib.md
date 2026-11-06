@@ -37,11 +37,24 @@ class _MyAppState extends ConsumerState<MyApp> {
 
 ```dart
 enum TemaEnum { sistem, terang, gelap }
+
+extension TemaEnumExtension on TemaEnum {
+  String get label {
+    switch (this) {
+      case TemaEnum.sistem:
+        return 'Sistem';
+      case TemaEnum.terang:
+        return 'Terang';
+      case TemaEnum.gelap:
+        return 'Gelap';
+    }
+  }
+}
 ```
 
 
 // ============================================================
-// FILE: lib/fitur/tema/tema_notifier.dart
+// FILE: lib/fitur/tema/notifier/tema_notifier.dart
 // ============================================================
 
 ```dart

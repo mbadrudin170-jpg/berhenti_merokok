@@ -3544,6 +3544,38 @@ class TemaNotifier extends _$TemaNotifier {
 Commit `14ee623` mengubah anotasi menjadi `@Riverpod(keepAlive: true)` agar `TemaNotifier` tetap hidup. Auto-dispose akan menghapus state tema ketika tidak ada listener.
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Gunakan `keepAlive: true` pada provider yang state-nya harus persisten sepanjang siklus hidup aplikasi (misalnya tema), dan auto-dispose untuk state sementara.
+## Enum Mode Tema (`TemaEnum`)
+**Tujuan:**
+Mengelola pilihan mode tema aplikasi (sistem, terang, gelap) menggunakan enum yang type-safe, bukan string literal.
+**Aturan:**
+1. Definisikan `TemaEnum` dengan nilai `sistem`, `terang`, dan `gelap`.
+2. Gunakan `TemaEnum` sebagai tipe state `TemaNotifier` (bukan `String`).
+3. Setiap nilai enum yang ditampilkan ke pengguna wajib memiliki getter `label` melalui extension.
+**Contoh benar:**
+```dart
+enum TemaEnum { sistem, terang, gelap }
+extension TemaEnumExtension on TemaEnum {
+  String get label {
+    switch (this) {
+      case TemaEnum.sistem:
+        return 'Sistem';
+      case TemaEnum.terang:
+        return 'Terang';
+      case TemaEnum.gelap:
+        return 'Gelap';
+    }
+  }
+}
+```
+**Contoh salah:**
+```dart
+enum TemaEnum { sistem, terang, gelap } // tanpa extension label
+// atau menggunakan String mentah sebagai state tema
+```
+**Alasan:**
+Commit `206deca` menambahkan `TemaEnum` dan `riverpod_generator`; commit `eb762fe` memformat ulang enum. Enum memberikan type safety dan konsistensi dengan aturan enum yang ditampilkan ke pengguna.
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Tidak terdapat prinsip umum baru yang layak dijadikan aturan bersama; aturan enum yang ditampilkan ke pengguna sudah tercakup di `optimasi_boilerplate.md`.
 
 
 // ============================================================
