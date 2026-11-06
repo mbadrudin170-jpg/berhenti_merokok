@@ -135,17 +135,24 @@ Gunakan `flutter_easyloading` untuk loading overlay pada aksi simpan sesuai pola
 
 **Aturan wajib:**
 
-1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...'))` segera setelah flag `_isLoading` diaktifkan.
+1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black))` segera setelah flag `_isLoading` diaktifkan.
 2. Sembunyikan overlay melalui `unawaited(EasyLoading.dismiss())` di dalam blok `finally`.
 3. Pertahankan guard double-submit di awal metode: `if (_isLoading) { L.w(...); return; }`.
 4. Tombol simpan tidak perlu menampilkan spinner sendiri maupun dinonaktifkan; cukup panggil `_simpanForm` langsung.
 5. Pastikan `_isLoading` dikembalikan ke `false` pada semua jalur, dengan pemeriksaan `mounted` sebelum `setState`.
+6. Gunakan `maskType: EasyLoadingMaskType.black` pada setiap pemanggilan `EasyLoading.show` agar interaksi UI di belakang overlay diblokir secara konsisten.
 
 **Larangan:**
 
 - Jangan menampilkan spinner di dalam tombol sekaligus overlay EasyLoading untuk aksi yang sama.
 - Jangan menghilangkan guard `_isLoading` di awal metode.
 - Jangan memanggil `EasyLoading.dismiss()` tanpa `unawaited` atau di luar `finally`.
+- Jangan memanggil `EasyLoading.show` tanpa `maskType: EasyLoadingMaskType.black`.
+
+**Sumber evaluasi:**
+
+- Commit: `53d7a0e77ad68752a2a8c90d4bc92b92ea73aec0`
+- File: `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`
 
 ## Preferensi State Lokal daripada Re-watch Provider pada Halaman
 

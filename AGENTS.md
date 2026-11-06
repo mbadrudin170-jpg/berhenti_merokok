@@ -87,15 +87,20 @@ Gunakan family provider (`@Riverpod` dengan parameter pada `build`) ketika provi
 ## Penggunaan EasyLoading Overlay pada Aksi Simpan
 Gunakan `flutter_easyloading` untuk loading overlay pada aksi simpan sesuai pola implementasi proyek.
 **Aturan wajib:**
-1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...'))` segera setelah flag `_isLoading` diaktifkan.
+1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black))` segera setelah flag `_isLoading` diaktifkan.
 2. Sembunyikan overlay melalui `unawaited(EasyLoading.dismiss())` di dalam blok `finally`.
 3. Pertahankan guard double-submit di awal metode: `if (_isLoading) { L.w(...); return; }`.
 4. Tombol simpan tidak perlu menampilkan spinner sendiri maupun dinonaktifkan; cukup panggil `_simpanForm` langsung.
 5. Pastikan `_isLoading` dikembalikan ke `false` pada semua jalur, dengan pemeriksaan `mounted` sebelum `setState`.
+6. Gunakan `maskType: EasyLoadingMaskType.black` pada setiap pemanggilan `EasyLoading.show` agar interaksi UI di belakang overlay diblokir secara konsisten.
 **Larangan:**
 - Jangan menampilkan spinner di dalam tombol sekaligus overlay EasyLoading untuk aksi yang sama.
 - Jangan menghilangkan guard `_isLoading` di awal metode.
 - Jangan memanggil `EasyLoading.dismiss()` tanpa `unawaited` atau di luar `finally`.
+- Jangan memanggil `EasyLoading.show` tanpa `maskType: EasyLoadingMaskType.black`.
+**Sumber evaluasi:**
+- Commit: `53d7a0e77ad68752a2a8c90d4bc92b92ea73aec0`
+- File: `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`
 ## Preferensi State Lokal daripada Re-watch Provider pada Halaman
 Jika nilai yang dibutuhkan sudah tersedia dalam state lokal widget, gunakan nilai tersebut langsung sebagai argumen provider, tanpa me-`watch` provider async yang menyediakan nilai yang sama.
 **Aturan wajib:**
@@ -3495,7 +3500,7 @@ Keputusan ini bersifat sementara. Ketika device sudah mampu menangani analyzer, 
 - `lib/fitur/jadwal_service/page/form_jadwal_service.dart` — `_FormJadwalServiceState._simpanForm` dan `_buildTombolSimpan`.
 - Aksi simpan lain yang menggunakan `flutter_easyloading` sebagai overlay loading (sesuai `optimasi_ux.md` §12).
 **Aturan wajib:**
-1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...'))` segera setelah flag `_isLoading` diaktifkan.
+1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black))` segera setelah flag `_isLoading` diaktifkan.
 2. Sembunyikan overlay melalui `unawaited(EasyLoading.dismiss())` di dalam blok `finally`, sebelum mengembalikan `_isLoading` ke `false`.
 3. Pertahankan guard double-submit di awal metode: `if (_isLoading) { L.w(...); return; }`.
 4. Karena loading ditangani oleh overlay, tombol simpan tidak perlu menampilkan spinner sendiri maupun dinonaktifkan melalui `onPressed: _isLoading ? null : _simpanForm`; cukup panggil `_simpanForm` langsung.
@@ -3522,7 +3527,7 @@ Future<void> _simpanForm() async {
   }
   // ... validasi ...
   setState(() => _isLoading = true);
-  unawaited(EasyLoading.show(status: 'Menyimpan...'));
+  unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black));
   try {
     // ... operasi simpan ...
   } on Exception catch (e, s) {
@@ -3566,6 +3571,43 @@ Future<void> _simpanForm() async {
 ```
 **Penjelasan perbedaan:**
 Contoh benar menggunakan guard `_isLoading` di awal metode, overlay EasyLoading dengan `unawaited`, dan `EasyLoading.dismiss()` di `finally`, sehingga loading selalu dihentikan meskipun terjadi exception. Contoh salah menampilkan loading ganda, menghilangkan guard, dan tidak menjamin dismiss overlay.
+## Penggunaan maskType Hitam pada EasyLoading Overlay
+**Cakupan:**
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState._simpan`.
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_masukkanDummy`, `_hapusDummy`, `_reset`.
+- Seluruh pemanggilan `EasyLoading.show` di proyek ini.
+**Aturan wajib:**
+1. Setiap pemanggilan `EasyLoading.show` wajib menyertakan `maskType: EasyLoadingMaskType.black`.
+2. Mask type hitam memblokir interaksi UI di belakang overlay sehingga pengguna tidak dapat menekan tombol lain selama proses berlangsung.
+3. Pertahankan konsistensi mask type pada semua overlay EasyLoading, jangan mencampur mask type berbeda untuk aksi yang sama.
+**Larangan:**
+- Jangan memanggil `EasyLoading.show` tanpa `maskType: EasyLoadingMaskType.black`.
+- Jangan menggunakan mask type lain (mis. `none`, `clear`, `custom`) tanpa alasan yang jelas dan persetujuan pengguna.
+**Alasan:**
+Commit `53d7a0e` menambahkan `EasyLoadingMaskType.black` pada pemanggilan `EasyLoading.show` di `form_biodata.dart` dan `dummy_screen.dart` (3 tempat). Pola ini memastikan overlay memblokir interaksi UI di belakangnya secara konsisten, sehingga pengguna tidak dapat menekan tombol lain selama proses simpan/hapus berlangsung.
+**Dampak apabila dilanggar:**
+- Overlay tidak memblokir interaksi UI, sehingga pengguna dapat menekan tombol lain selama proses berlangsung (double-submit, race condition).
+- Tampilan loading tidak konsisten antar halaman.
+**Rujukan implementasi:**
+- `lib/fitur/biodata/screens/form_biodata.dart` — `unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black))`.
+- `lib/fitur/dummy/screens/dummy_screen.dart` — tiga pemanggilan `EasyLoading.show` dengan `maskType: EasyLoadingMaskType.black`.
+- `.agents/rules/global/aturan_bersama.md` — "Penggunaan EasyLoading Overlay pada Aksi Simpan".
+**Contoh benar:**
+```dart
+unawaited(
+  EasyLoading.show(
+    status: 'Menyimpan...',
+    maskType: EasyLoadingMaskType.black,
+  ),
+);
+```
+**Contoh salah:**
+```dart
+unawaited(EasyLoading.show(status: 'Menyimpan...')); // tanpa maskType
+```
+**Sumber evaluasi:**
+- Commit: `53d7a0e77ad68752a2a8c90d4bc92b92ea73aec0`
+- File: `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`
 ## Inisialisasi EasyLoading pada App
 **Cakupan:**
 - `lib/app.dart` — `_MyAppState.build`, khususnya `MaterialApp.builder`.
@@ -4936,7 +4978,7 @@ Future<void> _refreshProvider() async {
   final _ = ref.refresh(biodataProvider);
 }
 Future<void> _masukkanDummy(BuildContext context) async {
-  unawaited(EasyLoading.show(status: 'Menyimpan...'));
+  unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black));
   try {
     await DummyHelper.insert();
     await _refreshProvider();

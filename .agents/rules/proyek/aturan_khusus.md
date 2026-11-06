@@ -824,7 +824,7 @@ Keputusan ini bersifat sementara. Ketika device sudah mampu menangani analyzer, 
 
 **Aturan wajib:**
 
-1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...'))` segera setelah flag `_isLoading` diaktifkan.
+1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black))` segera setelah flag `_isLoading` diaktifkan.
 2. Sembunyikan overlay melalui `unawaited(EasyLoading.dismiss())` di dalam blok `finally`, sebelum mengembalikan `_isLoading` ke `false`.
 3. Pertahankan guard double-submit di awal metode: `if (_isLoading) { L.w(...); return; }`.
 4. Karena loading ditangani oleh overlay, tombol simpan tidak perlu menampilkan spinner sendiri maupun dinonaktifkan melalui `onPressed: _isLoading ? null : _simpanForm`; cukup panggil `_simpanForm` langsung.
@@ -861,7 +861,7 @@ Future<void> _simpanForm() async {
   }
   // ... validasi ...
   setState(() => _isLoading = true);
-  unawaited(EasyLoading.show(status: 'Menyimpan...'));
+  unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black));
   try {
     // ... operasi simpan ...
   } on Exception catch (e, s) {
@@ -911,6 +911,62 @@ Future<void> _simpanForm() async {
 **Penjelasan perbedaan:**
 
 Contoh benar menggunakan guard `_isLoading` di awal metode, overlay EasyLoading dengan `unawaited`, dan `EasyLoading.dismiss()` di `finally`, sehingga loading selalu dihentikan meskipun terjadi exception. Contoh salah menampilkan loading ganda, menghilangkan guard, dan tidak menjamin dismiss overlay.
+
+## Penggunaan maskType Hitam pada EasyLoading Overlay
+
+**Cakupan:**
+
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState._simpan`.
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_masukkanDummy`, `_hapusDummy`, `_reset`.
+- Seluruh pemanggilan `EasyLoading.show` di proyek ini.
+
+**Aturan wajib:**
+
+1. Setiap pemanggilan `EasyLoading.show` wajib menyertakan `maskType: EasyLoadingMaskType.black`.
+2. Mask type hitam memblokir interaksi UI di belakang overlay sehingga pengguna tidak dapat menekan tombol lain selama proses berlangsung.
+3. Pertahankan konsistensi mask type pada semua overlay EasyLoading, jangan mencampur mask type berbeda untuk aksi yang sama.
+
+**Larangan:**
+
+- Jangan memanggil `EasyLoading.show` tanpa `maskType: EasyLoadingMaskType.black`.
+- Jangan menggunakan mask type lain (mis. `none`, `clear`, `custom`) tanpa alasan yang jelas dan persetujuan pengguna.
+
+**Alasan:**
+
+Commit `53d7a0e` menambahkan `EasyLoadingMaskType.black` pada pemanggilan `EasyLoading.show` di `form_biodata.dart` dan `dummy_screen.dart` (3 tempat). Pola ini memastikan overlay memblokir interaksi UI di belakangnya secara konsisten, sehingga pengguna tidak dapat menekan tombol lain selama proses simpan/hapus berlangsung.
+
+**Dampak apabila dilanggar:**
+
+- Overlay tidak memblokir interaksi UI, sehingga pengguna dapat menekan tombol lain selama proses berlangsung (double-submit, race condition).
+- Tampilan loading tidak konsisten antar halaman.
+
+**Rujukan implementasi:**
+
+- `lib/fitur/biodata/screens/form_biodata.dart` — `unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black))`.
+- `lib/fitur/dummy/screens/dummy_screen.dart` — tiga pemanggilan `EasyLoading.show` dengan `maskType: EasyLoadingMaskType.black`.
+- `.agents/rules/global/aturan_bersama.md` — "Penggunaan EasyLoading Overlay pada Aksi Simpan".
+
+**Contoh benar:**
+
+```dart
+unawaited(
+  EasyLoading.show(
+    status: 'Menyimpan...',
+    maskType: EasyLoadingMaskType.black,
+  ),
+);
+```
+
+**Contoh salah:**
+
+```dart
+unawaited(EasyLoading.show(status: 'Menyimpan...')); // tanpa maskType
+```
+
+**Sumber evaluasi:**
+
+- Commit: `53d7a0e77ad68752a2a8c90d4bc92b92ea73aec0`
+- File: `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`
 
 ## Inisialisasi EasyLoading pada App
 
@@ -2546,7 +2602,7 @@ Future<void> _refreshProvider() async {
 }
 
 Future<void> _masukkanDummy(BuildContext context) async {
-  unawaited(EasyLoading.show(status: 'Menyimpan...'));
+  unawaited(EasyLoading.show(status: 'Menyimpan...', maskType: EasyLoadingMaskType.black));
   try {
     await DummyHelper.insert();
     await _refreshProvider();
