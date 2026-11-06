@@ -1,3 +1,5 @@
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/home.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart' as mui;
+import 'package:share_global_saya/core_shared.dart';
 
 class App extends ConsumerStatefulWidget {
   const App({super.key});
@@ -27,8 +30,36 @@ class _MyAppState extends ConsumerState<App> {
       TemaEnum.sistem => ThemeMode.system,
     };
 
+    final biodataAsync = ref.watch(biodataProvider);
+
+    Widget home;
+    if (biodataAsync.isLoading) {
+      home = const Scaffold(body: Center(child: CircularProgressIndicator()));
+    } else if (biodataAsync.hasError) {
+      home = Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Gagal memuat data'),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () {
+                final _ = ref.refresh(biodataProvider);
+              },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      final biodata = biodataAsync.asData?.value;
+      home = biodata == null ? const FormBiodata() : const Home();
+    }
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Berhenti Merokok',
       debugShowCheckedModeBanner: false,
       builder: EasyLoading.init(),
       themeMode: themeMode,
@@ -46,7 +77,7 @@ class _MyAppState extends ConsumerState<App> {
           brightness: Brightness.dark,
         ),
       ),
-      home: const Home(),
+      home: PengelolaOverlayLogDebug(child: home),
     );
   }
 }

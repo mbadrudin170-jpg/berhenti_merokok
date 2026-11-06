@@ -1608,19 +1608,24 @@ Menstandarkan cara memuat dan menyimpan data biodata ke SQLite agar konsisten de
 
 **Cakupan:**
 - `lib/fitur/biodata/notifier/biodata_notifier.dart` — `BiodataNotifier.build`, `_ambilData`, dan `simpan`.
-- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase.database`.
-- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`.
+- `lib/shared/db/sqflite/sqflite_op.dart` — `SqfliteOp` (operasi CRUD generik).
+- `lib/shared/konstanta/nama_tabel.dart` — `NamaTabel`.
+- `lib/shared/konstanta/nama_kolom.dart` — `NamaKolom`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel` (termasuk `fromSqflite` dan `toSqflite`).
 
 **Aturan:**
 1. `BiodataNotifier` menggunakan `AsyncNotifier<BiodataModel?>` dengan `build()` mengembalikan `Future<BiodataModel?>`.
-2. Pemuatan data dilakukan melalui `AppDatabase.database`, lalu `db.query('biodata', limit: 1)`. Jika kosong, kembalikan `null`.
-3. Parsing nilai `dynamic` dari baris database wajib menggunakan `ParserUtil` (`parseDateTime`, `parseIntOrNull`, `parseDoubleOrNull`), bukan cast langsung.
-4. Konversi tanggal dari UTC (string ISO8601 di database) ke waktu lokal menggunakan `.toLocal()` setelah parsing.
-5. Penyimpanan menggunakan `db.insert('biodata', ..., conflictAlgorithm: ConflictAlgorithm.replace)` untuk upsert berdasarkan primary key.
-6. Tanggal disimpan sebagai UTC ISO8601 string (`tanggal?.toUtc().toIso8601String()`).
-7. Perbarui `state` menjadi `AsyncValue.data(biodata)` hanya setelah operasi database berhasil.
-8. Bungkus operasi database dengan `try/catch`, catat error menggunakan `L.e`, dan teruskan menggunakan `rethrow`.
-9. Catat keberhasilan penyimpanan menggunakan `L.s`.
+2. Pemuatan data dilakukan melalui `SqfliteOp` (`const SqfliteOp().ambilSatu(NamaTabel.biodata)`), bukan pemanggilan `AppDatabase.database` langsung di notifier. Jika hasilnya `null`, kembalikan `null`.
+3. Parsing nilai `dynamic` dari baris database wajib dilakukan di dalam model melalui factory `BiodataModel.fromSqflite(row)`, dengan `ParserUtil` (`parseString`, `parseDateTime`, `parseIntOrNull`, `parseDoubleOrNull`), bukan cast langsung atau parsing manual di notifier.
+4. Konversi tanggal dari UTC (string ISO8601 di database) ke waktu lokal menggunakan `.toLocal()` setelah parsing (di dalam `fromSqflite`).
+5. Serialisasi model ke Map untuk penyimpanan wajib dilakukan melalui metode `toSqflite()`, yang menggunakan konstanta `NamaKolom` dan konversi tanggal ke UTC ISO8601 string.
+6. Nama tabel dan nama kolom wajib menggunakan konstanta `NamaTabel` dan `NamaKolom`, bukan string literal di notifier maupun model.
+7. Penyimpanan menggunakan `SqfliteOp.tambah(..., conflictAlgorithm: ConflictAlgorithm.replace)` untuk upsert berdasarkan primary key.
+8. Tanggal disimpan sebagai UTC ISO8601 string (`tanggal?.toUtc().toIso8601String()`).
+9. Perbarui `state` menjadi `AsyncValue.data(biodata)` hanya setelah operasi database berhasil.
+10. Bungkus operasi database dengan `try/catch`, catat error menggunakan `L.e`, dan teruskan menggunakan `rethrow`.
+11. Catat keberhasilan penyimpanan menggunakan `L.s`.
+12. Saat menyimpan, gunakan ID yang sudah ada jika data sudah tersimpan (`existing?.id`); buat ID baru dengan `const Uuid().v4()` hanya untuk data baru.
 
 **Contoh benar:**
 ```dart
@@ -1633,19 +1638,12 @@ class BiodataNotifier extends _$BiodataNotifier {
 
   Future<BiodataModel?> _ambilData() async {
     try {
-      final db = await AppDatabase.database;
-      final rows = await db.query('biodata', limit: 1);
-      if (rows.isEmpty) {
+      final op = const SqfliteOp();
+      final row = await op.ambilSatu(NamaTabel.biodata);
+      if (row == null) {
         return null;
       }
-      final row = rows.first;
-      return BiodataModel(
-        id: row['id'] as String,
-        nama: row['nama'] as String,
-        tanggalLahir: ParserUtil.parseDateTime(
-          row['tanggal_lahir'],
-        )?.toLocal(),
-      );
+      return BiodataModel.fromSqflite(row);
     } on Exception catch (e, s) {
       L.e('Gagal mengambil data biodata: $e $s');
       rethrow;
@@ -1654,13 +1652,17 @@ class BiodataNotifier extends _$BiodataNotifier {
 
   Future<void> simpan(BiodataModel biodata) async {
     try {
-      final db = await AppDatabase.database;
-      await db.insert('biodata', <String, Object?>{
-        'id': biodata.id,
-        'nama': biodata.nama,
-        'tanggal_lahir': biodata.tanggalLahir?.toUtc().toIso8601String(),
-      }, conflictAlgorithm: ConflictAlgorithm.replace);
-      state = AsyncValue.data(biodata);
+      final existing = state.asData?.value;
+      final model = biodata.id.isEmpty
+          ? biodata.copyWith(id: const Uuid().v4())
+          : biodata;
+      final op = const SqfliteOp();
+      await op.tambah(
+        NamaTabel.biodata,
+        model.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      state = AsyncValue.data(model);
       L.s('Biodata berhasil disimpan');
     } on Exception catch (e, s) {
       L.e('Gagal menyimpan biodata: $e $s');
@@ -1693,4 +1695,58 @@ class BiodataNotifier extends _$BiodataNotifier {
 Commit `398993d` mengonversi `BiodataNotifier` dari placeholder `String` menjadi `AsyncNotifier<BiodataModel?>` dengan persistensi sqflite. Pola ini memastikan data biodata persisten antar sesi, aman terhadap nilai null, dan konsisten dengan aturan penanganan error serta penyimpanan waktu UTC.
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Prinsip umum (AsyncNotifier, UTC storage, ParserUtil, try/catch, rethrow) sudah tercakup pada aturan bersama yang ada; detail implementasi (AppDatabase, ConflictAlgorithm.replace, skema tabel biodata) bersifat khusus proyek.
+Prinsip umum (AsyncNotifier, UTC storage, ParserUtil, try/catch, rethrow) sudah tercakup pada aturan bersama yang ada; detail implementasi (SqfliteOp, ConflictAlgorithm.replace, NamaTabel/NamaKolom, fromSqflite/toSqflite, skema tabel biodata) bersifat khusus proyek.
+
+## Penggunaan `SqfliteOp` untuk Operasi CRUD Generik
+
+**Tujuan:**
+Menstandarkan operasi database SQLite agar notifier dan service tidak memanggil `AppDatabase.database` secara langsung untuk CRUD umum.
+
+**Cakupan:**
+- `lib/shared/db/sqflite/sqflite_op.dart` — kelas `SqfliteOp`.
+- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase.database` (akses dasar, tetap tersedia untuk kasus khusus).
+
+**Aturan:**
+1. Untuk operasi tambah, baca, ubah, hapus, dan hitung pada tabel, gunakan `SqfliteOp` (`const SqfliteOp()`) alih-alih memanggil `db.insert/query/update/delete/rawQuery` langsung.
+2. Gunakan metode yang sesuai: `tambah`, `ambilSemua`, `ambil`, `ambilSatu`, `ubah`, `hapus`, `hitung`.
+3. Transaksi multi-operasi wajib menggunakan `SqfliteOp.transaksi(...)` agar commit/rollback terpusat.
+4. Batch multi-operasi wajib menggunakan `SqfliteOp.batch(...)`.
+5. SQL mentah (SELECT) gunakan `SqfliteOp.queryRaw(...)` dan (INSERT/UPDATE/DELETE) gunakan `SqfliteOp.executeRaw(...)`.
+6. Operasi database tetap dibungkus `try/catch`, catat error dengan `L.e`, dan teruskan dengan `rethrow` (sudah dilakukan di dalam `SqfliteOp`).
+7. Keberhasilan operasi dicatat dengan `L.s`/`L.i` di dalam `SqfliteOp`; jangan mencatat ulang di notifier untuk operasi yang sama.
+8. Jangan memanggil `AppDatabase.database` langsung di notifier/fitur apabila `SqfliteOp` sudah dapat menangani kebutuhan tersebut.
+
+**Larangan:**
+- Jangan menduplikasi logika CRUD di banyak notifier; gunakan `SqfliteOp`.
+- Jangan melakukan interpolasi nama tabel/kolom dinamis dari input pengguna ke SQL (tetap gunakan konstanta `NamaTabel`/`NamaKolom` dan parameter binding untuk nilai).
+
+**Alasan:**
+Commit `1bb1c7b` menambahkan `SqfliteOp` sebagai lapisan CRUD generik, dan commit `01e6f20` memigrasikan `BiodataNotifier` untuk menggunakan `SqfliteOp` alih-alih akses database langsung. Pola ini menjaga konsistensi penanganan error, logging, dan parameter binding di seluruh fitur.
+
+**Sumber evaluasi:**
+Commit: `1bb1c7bf8d1cbdd9aab17aae153893714655ae4f`, `01e6f20a0442e809a6c936391b2fa9fd37ceda6d`
+File: `lib/shared/db/sqflite/sqflite_op.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`
+
+## Konstanta Skema Database (`NamaTabel` dan `NamaKolom`)
+
+**Tujuan:**
+Menghindari string literal nama tabel dan kolom yang tersebar di kode database.
+
+**Cakupan:**
+- `lib/shared/konstanta/nama_tabel.dart` — `NamaTabel`.
+- `lib/shared/konstanta/nama_kolom.dart` — `NamaKolom`.
+- `lib/shared/db/sqflite/sqflite.dart` — `_buatTabel` (DDL).
+- `lib/fitur/biodata/model/biodata_model.dart` — `fromSqflite`/`toSqflite`.
+
+**Aturan:**
+1. Setiap nama tabel wajib didefinisikan sebagai konstanta `static const String` dalam kelas `NamaTabel` dengan konstruktor privat.
+2. Setiap nama kolom wajib didefinisikan sebagai konstanta `static const String` dalam kelas `NamaKolom` dengan konstruktor privat.
+3. Gunakan konstanta tersebut pada DDL pembuatan tabel, query `SqfliteOp`, dan serialisasi model (`fromSqflite`/`toSqflite`).
+4. Jangan menulis string nama tabel/kolom langsung di notifier, model, atau DDL.
+
+**Alasan:**
+Commit `01e6f20` memperkenalkan `NamaTabel` dan `NamaKolom` serta memigrasikan DDL dan `BiodataModel` untuk menggunakan konstanta tersebut. Sentralisasi ini mencegah typo nama kolom dan memudahkan refactoring skema.
+
+**Sumber evaluasi:**
+Commit: `01e6f20a0442e809a6c936391b2fa9fd37ceda6d`
+File: `lib/shared/konstanta/nama_tabel.dart`, `lib/shared/konstanta/nama_kolom.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/fitur/biodata/model/biodata_model.dart`

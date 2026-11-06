@@ -763,5 +763,39 @@ final rows = await db.rawQuery(
 );
 ```
 
+## Serialisasi Model dari Map Database
+
+Model data yang berasal dari baris database (atau payload jaringan) wajib menyediakan factory constructor untuk parsing dari `Map` dan metode serialisasi ke `Map`, sehingga notifier dan UI tidak melakukan parsing manual berulang.
+
+**Aturan wajib:**
+1. Factory constructor parsing (mis. `fromMap`/`fromSqflite`) wajib menangani nilai `null` dan konversi tipe dengan aman (gunakan helper parsing terpusat bila tersedia).
+2. Metode serialisasi (mis. `toMap`/`toSqflite`) wajib mengonversi nilai waktu ke format penyimpanan yang ditetapkan (mis. UTC ISO8601 string) sebelum disimpan.
+3. Nama tabel dan kolom yang digunakan pada parsing/serialisasi wajib merujuk pada konstanta terpusat, bukan string literal tersebar.
+4. Notifier hanya memanggil factory/serialisasi model; jangan mengulang logika parsing di notifier.
+
+**Larangan:**
+- Jangan melakukan cast langsung (`row['kolom'] as T`) di notifier atau UI untuk data yang dapat diparsing melalui model.
+- Jangan menduplikasi logika parsing yang sama di beberapa notifier.
+
+**Contoh benar:**
+```dart
+final model = BiodataModel.fromSqflite(row);
+await op.tambah(NamaTabel.biodata, model.toSqflite(), conflictAlgorithm: ConflictAlgorithm.replace);
+```
+
+**Contoh salah:**
+```dart
+final model = BiodataModel(
+  id: row['id'] as String,
+  nama: row['nama'] as String,
+  tanggalLahir: DateTime.parse(row['tanggal_lahir'] as String).toLocal(),
+);
+await db.insert('biodata', {'id': model.id, 'nama': model.nama});
+```
+
 **Alasan:**
-Parameter binding mencegah SQL injection dan kesalahan parsing nilai (mis. tanda kutip) pada data dinamis.
+Memusatkan parsing dan serialisasi di model menjaga konsistensi konversi tipe dan zona waktu, memudahkan pengujian, dan mencegah duplikasi logika di notifier.
+
+**Sumber evaluasi:**
+Commit: `01e6f20a0442e809a6c936391b2fa9fd37ceda6d`
+File: `lib/fitur/biodata/model/biodata_model.dart`

@@ -105,7 +105,9 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       );
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
-      Nav.pop(context);
+      if (Navigator.of(context).canPop()) {
+        Nav.pop(context);
+      }
     } on Exception catch (e, s) {
       L.e('Gagal menyimpan biodata: $e $s');
       if (mounted) {
