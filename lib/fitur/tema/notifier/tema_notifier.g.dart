@@ -33,7 +33,7 @@ final class TemaNotifierProvider
   TemaNotifier create() => TemaNotifier();
 }
 
-String _$temaNotifierHash() => r'6bb757a58340c3035c51e50d00183f6c2fe561ec';
+String _$temaNotifierHash() => r'e05c628d4d70bb2606bc65ce498dd860cacbd3bf';
 
 abstract class _$TemaNotifier extends $AsyncNotifier<TemaEnum> {
   FutureOr<TemaEnum> build();

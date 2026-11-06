@@ -12,6 +12,8 @@ class FormBiodata extends ConsumerStatefulWidget {
 class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _namaController = TextEditingController();
   final _namaFocusNode = FocusNode();
+
+  bool _isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -22,6 +24,21 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _namaController.dispose();
     _namaFocusNode.dispose();
     super.dispose();
+  }
+
+  void _simpan() {
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      Nav.pop(context);
+    } catch (e) {
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -40,6 +57,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             focusNode: null,
             nextFocusNode: null,
           ),
+          OutlinedButton(onPressed: () => _simpan(), child: Text('Simpan')),
         ],
       ),
     );

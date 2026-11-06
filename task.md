@@ -2,15 +2,18 @@
 
 ## Tinggi
 
-Tidak ada temuan.
+- Status: Belum dikerjakan
+- Masalah: File generated `biodata_model.freezed.dart` yang di-ref oleh `lib/fitur/biodata/model/biodata_model.dart` melalui direktif `part 'biodata_model.freezed.dart';` tidak ditemukan di proyek. Tanpa file ini, kode yang menggunakan Freezed tidak dapat dikompilasi.
+- Solusi: Jalankan `build_runner` untuk menghasilkan file `biodata_model.freezed.dart` dari anotasi `@freezed` pada `BiodataModel`. Pastikan perintah generator sesuai konfigurasi proyek.
+- Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 8 "File Hasil Generator" (file hasil generator tidak boleh diedit manual; ubah sumber lalu jalankan generator).
+- File terkait: [biodata_model.dart#L3](lib/fitur/biodata/model/biodata_model.dart#L3)
 
 ## Sedang
 
-- Status: Dilewati
-- Alasan: File terkait `lib/fitur/tema/notifier/tema_notifier.dart` sedang terbuka di editor, sehingga tidak boleh diubah sesuai protokol. Selain itu, kelas logger `L` yang dirujuk belum tersedia di proyek dan belum ada pola implementasinya, sehingga solusi tidak dapat diterapkan dengan aman dalam sesi ini.
+- Status: Belum dikerjakan
 - Masalah: Metode `set` pada `TemaNotifier` (`lib/fitur/tema/notifier/tema_notifier.dart`) melakukan operasi `SharedPreferences.getInstance()` dan `prefs.setString()` tanpa penanganan error (try/catch). Operasi penyimpanan dapat menghasilkan error runtime (misalnya storage penuh atau izin ditolak), namun error tersebut tidak dicatat maupun diteruskan dengan benar ke pemanggil. Selain itu, kelas logger `L` yang dirujuk oleh aturan proyek belum tersedia di proyek ini, sehingga penanganan error juga memerlukan penambahan logger terlebih dahulu.
 - Solusi: Bungkus operasi `SharedPreferences` di dalam metode `set` dengan try/catch, catat error menggunakan `L.e` (setelah kelas logger `L` tersedia), dan teruskan error menggunakan `rethrow` agar lapisan pemanggil dapat menangani kegagalan. Jika kelas `L` belum tersedia, tambahkan terlebih dahulu sesuai pola proyek, atau gunakan mekanisme logging yang setara.
-- Aturan dilanggar: `.agents/rules/global/aturan_bug_runtime.md` — poin 6 "Try/Catch dan Penanganan Error" (operasi penyimpanan wajib memiliki penanganan error dengan try/catch, logger `L.e`, dan rethrow). `.agents/rules/global/aturan_lainnya.md` — poin 10 "Logging dan Larangan print" (gunakan logger dari class `L` yang tersedia di proyek).
+- Aturan dilanggar: `.agents/rules/global/optimasi_bug_runtime.md` — poin 6 "Try/Catch dan Penanganan Error" (operasi penyimpanan wajib memiliki penanganan error dengan try/catch, logger `L.e`, dan rethrow). `.agents/rules/global/aturan_lainnya.md` — poin 10 "Logging dan Larangan print" (gunakan logger dari class `L` yang tersedia di proyek).
 - File terkait: [tema_notifier.dart#L20](lib/fitur/tema/notifier/tema_notifier.dart#L20), [tema_notifier.dart#L23](lib/fitur/tema/notifier/tema_notifier.dart#L23)
 
 ## Rendah
@@ -20,12 +23,6 @@ Tidak ada temuan.
 - Solusi: Hapus komentar TODO setelah implementasi selesai, atau implementasikan logika yang diperlukan (misalnya inisialisasi resource di `initState` dan pembersihan di `dispose`). Jika tidak ada logika tambahan yang diperlukan, cukup hapus komentar TODO.
 - Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Layar Home sebagai ConsumerStatefulWidget dengan Siklus Hidup" poin 3.
 - File terkait: [home.dart#L15](lib/home.dart#L15), [home.dart#L20](lib/home.dart#L20)
-
-- Status: Belum dikerjakan
-- Masalah: `MyApp` dideklarasikan sebagai `ConsumerStatefulWidget`, namun `_MyAppState.build` tidak mengamati provider apa pun melalui `ref`. Tidak ada kebutuhan akses provider pada root widget saat ini.
-- Solusi: Ubah `MyApp` dan `_MyAppState` menjadi `StatelessWidget` jika tidak membutuhkan akses provider. Jika nantinya root perlu mengamati provider (misalnya tema), kembalikan menjadi `ConsumerStatefulWidget`.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Root App Widget sebagai ConsumerStatefulWidget" poin 3.
-- File terkait: [app.dart#L5](lib/app.dart#L5), [app.dart#L12](lib/app.dart#L12)
 
 # UX
 
@@ -39,7 +36,7 @@ Tidak ada temuan.
 - Masalah: `MaterialApp` pada `lib/app.dart` tidak mendeklarasikan `supportedLocales` maupun `localizationsDelegates`. Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit agar teks sistem (dialog, date picker, toolbar pemilihan teks) mengikuti locale yang didukung. Selain itu, delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations` (diperlukan oleh `adaptive_dialog`) juga tidak terdaftar, yang dapat menyebabkan `Null check operator used on a null value` saat dialog ditampilkan.
 - Solusi: Tambahkan `supportedLocales: const [Locale('id', 'ID')]` dan `localizationsDelegates` yang mencakup `GlobalMaterialLocalizations.delegate`, `GlobalWidgetsLocalizations.delegate`, `GlobalCupertinoLocalizations.delegate`, dan `_MaterialUiLocalizationsDelegate()` pada `MaterialApp`. Impor `flutter_localizations` dari Flutter SDK dan buat kelas `_MaterialUiLocalizationsDelegate` dengan `isSupported => true`.
 - Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 33 "Lokalisasi Aplikasi". `.agents/rules/proyek/aturan_khusus.md` — bagian "Registrasi Delegate Lokalisasi `material_ui` untuk `adaptive_dialog`".
-- File terkait: [app.dart#L16](lib/app.dart#L16), [app.dart#L22](lib/app.dart#L22)
+- File terkait: [app.dart#L27](lib/app.dart#L27)
 
 ## Rendah
 
@@ -78,3 +75,9 @@ Tidak ada temuan.
 - Solusi: Tambahkan keyword `const` pada kedua widget `Text` untuk meningkatkan efisiensi rebuild dan mengikuti praktik terbaik Flutter.
 - Aturan dilanggar: Bukan pelanggaran aturan tertulis — praktik terbaik performa Flutter (linter `prefer_const_constructors`).
 - File terkait: [home.dart#L27](lib/home.dart#L27), [home.dart#L28](lib/home.dart#L28)
+
+- Status: Belum dikerjakan
+- Masalah: Body `Scaffold` pada `FormBiodata` (`lib/fitur/biodata/screens/form_biodata.dart`) tidak dibungkus dengan `SafeArea` dan tidak memiliki padding tepi layar. Widget `InputTeks` dapat menempel pada tepi layar dan berpotensi tertutup oleh notch atau navigation bar.
+- Solusi: Bungkus konten body dengan `SafeArea` dan tambahkan `Padding` dengan nilai yang sesuai dari referensi desain (optimasi_ui.md) pada lapisan container halaman, bukan pada widget reusable.
+- Aturan dilanggar: `.agents/rules/global/optimasi_ux.md` — bagian 10 "Padding tepi layar" dan bagian 14 "SafeArea".
+- File terkait: [form_biodata.dart#L29](lib/fitur/biodata/screens/form_biodata.dart#L29), [form_biodata.dart#L31](lib/fitur/biodata/screens/form_biodata.dart#L31), [form_biodata.dart#L33](lib/fitur/biodata/screens/form_biodata.dart#L33)

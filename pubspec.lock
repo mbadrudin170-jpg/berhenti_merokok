@@ -246,7 +246,7 @@ packages:
     source: hosted
     version: "10.0.2"
   freezed:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: freezed
       sha256: cb910646cb09265d49077b63b600ef1f5a718c1d6031836432237ddeabae1b12
@@ -254,7 +254,7 @@ packages:
     source: hosted
     version: "4.0.3"
   freezed_annotation:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: freezed_annotation
       sha256: "7294967ff0a6d98638e7acb774aac3af2550777accd8149c90af5b014e6d44d8"
