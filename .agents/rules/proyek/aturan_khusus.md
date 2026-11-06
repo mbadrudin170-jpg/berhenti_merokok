@@ -1045,6 +1045,82 @@ DataTable(
 
 Contoh benar menggunakan hierarki tipografi yang jelas: header (bodyLarge bold), label (bodyMedium bold), nilai (bodySmall). Contoh salah menggunakan ukuran default yang sama untuk semua, sehingga hierarki visual tidak terlihat.
 
+## Pewarnaan Semantik pada Tombol Aksi
+
+**Cakupan:**
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_DummyScreenState._buildTombolCustom` dan pemanggilannya.
+
+**Aturan wajib:**
+1. Tombol aksi dengan fungsi berbeda wajib dibedakan warnanya agar pengguna dapat mengenali tindakan berdasarkan warna, bukan hanya label teks.
+2. Gunakan warna semantik yang konsisten: hijau untuk tindakan penambahan/insert, merah untuk tindakan penghapusan/destruktif, oranye untuk tindakan reset/peringatan.
+3. Terapkan warna melalui parameter `backgroundColor` pada builder tombol (mis. `_buildTombolCustom`), bukan dengan membuat widget tombol terpisah per warna.
+4. Atur `foregroundColor` teks menjadi putih (`Colors.white`) agar kontras dengan background berwarna tetap terjaga.
+5. Jika tombol baru ditambahkan dengan fungsi yang berbeda, pilih warna yang sesuai dengan kategori semantiknya; jangan menggunakan warna yang sama untuk fungsi yang berbeda.
+
+**Larangan:**
+- Jangan menggunakan warna default (tanpa `backgroundColor`) untuk semua tombol aksi yang memiliki fungsi berbeda, karena pengguna sulit membedakan tindakan.
+- Jangan membuat widget tombol terpisah (`_buildTombolHijau`, `_buildTombolMerah`) hanya untuk perbedaan warna; gunakan parameter `backgroundColor`.
+- Jangan menggunakan warna yang kontras rendah (mis. teks gelap pada background gelap) yang menyulitkan pembacaan.
+
+**Alasan:**
+Commit `f220f801` menambahkan parameter `backgroundColor` pada `_buildTombolCustom` dan mewarnai tombol insert (hijau), hapus (merah), dan reset (oranye) dengan `foregroundColor: Colors.white`. Pola ini membantu pengguna membedakan tindakan berdasarkan warna, terutama pada layar dummy yang sering dipakai untuk pengujian data. Penggunaan parameter tunggal menjaga konsistensi implementasi dan menghindari duplikasi widget tombol.
+
+**Dampak apabila dilanggar:**
+- Pengguna sulit membedakan tombol aksi yang berbeda fungsi, meningkatkan risiko tindakan tidak sengaja (mis. menekan hapus alih-alih insert).
+- Tampilan tombol tidak konsisten antar layar yang menggunakan pola serupa.
+- Duplikasi widget tombol yang sulit dipelihara.
+
+**Rujukan implementasi:**
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_buildTombolCustom(void Function() onPressed, String value, Color backgroundColor)`.
+
+**Contoh benar:**
+```dart
+Widget _buildTombolCustom(
+  void Function() onPressed,
+  String value,
+  Color backgroundColor,
+) {
+  return SizedBox(
+    width: double.infinity,
+    child: OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: onPressed,
+      child: Text(value),
+    ),
+  );
+}
+
+// Penggunaan dengan warna semantik.
+_buildTombolCustom(() => unawaited(_masukkanDummy(context)), 'insert', Colors.green),
+_buildTombolCustom(() => unawaited(_hapusDummy(context)), 'hapus', Colors.red),
+_buildTombolCustom(() => unawaited(_reset(context)), 'reset', Colors.orange),
+```
+
+**Contoh salah:**
+```dart
+// Semua tombol menggunakan warna default, sulit dibedakan.
+_buildTombolCustom(() => unawaited(_masukkanDummy(context)), 'insert'),
+_buildTombolCustom(() => unawaited(_hapusDummy(context)), 'hapus'),
+_buildTombolCustom(() => unawaited(_reset(context)), 'reset'),
+
+Widget _buildTombolCustom(void Function() onPressed, String value) {
+  return SizedBox(
+    width: double.infinity,
+    child: OutlinedButton(onPressed: onPressed, child: Text(value)),
+  );
+}
+```
+
+**Sumber evaluasi:**
+- Commit: `f220f801d5b5aaa25db8bbf5124af44572708be2`
+- File: `lib/fitur/dummy/screens/dummy_screen.dart`
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Pewarnaan semantik pada tombol aksi (hijau=insert, merah=hapus, oranye=reset) bersifat khusus proyek karena pilihan warna dan kategori tindakan bergantung pada konteks aplikasi. Namun, prinsip umum "gunakan warna berbeda untuk tombol dengan fungsi berbeda agar pengguna dapat membedakan tindakan" dapat diterapkan pada proyek Flutter lainnya sebagai panduan UX.
+
 ## Rujukan Implementasi Khusus Proyek
 
 Aturan berikut merupakan penerapan dari aturan bersama (`aturan_bersama.md`) pada proyek ini. Prinsip umum tersimpan di aturan bersama; detail implementasi dan rujukan file tersimpan di sini.

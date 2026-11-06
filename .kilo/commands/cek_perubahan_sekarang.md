@@ -832,24 +832,24 @@ Susun laporan menggunakan struktur berikut.
 
 ## A. Ringkasan
 
-| Keterangan | Hasil |
-|---|---|
+| Keterangan                | Hasil  |
+| ------------------------- | ------ |
 | Total file Dart diperiksa | Jumlah |
-| File staged | Jumlah |
-| File unstaged | Jumlah |
-| File untracked | Jumlah |
-| Pelanggaran aturan | Jumlah |
-| Ketidaksesuaian SDK | Jumlah |
-| Potensi bug | Jumlah |
-| Rekomendasi | Jumlah |
+| File staged               | Jumlah |
+| File unstaged             | Jumlah |
+| File untracked            | Jumlah |
+| Pelanggaran aturan        | Jumlah |
+| Ketidaksesuaian SDK       | Jumlah |
+| Potensi bug               | Jumlah |
+| Rekomendasi               | Jumlah |
 
 ## B. Daftar File yang Diperiksa
 
-| No. | Path File | Status | Hasil |
-|---|---|---|---|
-| 1 | `lib/.../file.dart` | Staged | Hasil pemeriksaan |
-| 2 | `lib/.../file.dart` | Unstaged | Hasil pemeriksaan |
-| 3 | `lib/.../file.dart` | Untracked | Hasil pemeriksaan |
+| No. | Path File           | Status    | Hasil             |
+| --- | ------------------- | --------- | ----------------- |
+| 1   | `lib/.../file.dart` | Staged    | Hasil pemeriksaan |
+| 2   | `lib/.../file.dart` | Unstaged  | Hasil pemeriksaan |
+| 3   | `lib/.../file.dart` | Untracked | Hasil pemeriksaan |
 
 Pastikan semua file Dart yang menjadi target audit tercantum.
 
