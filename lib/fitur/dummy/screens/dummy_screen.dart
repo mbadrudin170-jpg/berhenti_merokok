@@ -158,19 +158,39 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
             _buildTombolCustom(
               () => unawaited(_masukkanDummy(context)),
               'insert',
+              Colors.green,
             ),
-            _buildTombolCustom(() => unawaited(_hapusDummy(context)), 'hapus'),
-            _buildTombolCustom(() => unawaited(_reset(context)), 'reset'),
+            _buildTombolCustom(
+              () => unawaited(_hapusDummy(context)),
+              'hapus',
+              Colors.red,
+            ),
+            _buildTombolCustom(
+              () => unawaited(_reset(context)),
+              'reset',
+              Colors.orange,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTombolCustom(void Function() onPressed, String value) {
+  Widget _buildTombolCustom(
+    void Function() onPressed,
+    String value,
+    Color backgroundColor,
+  ) {
     return SizedBox(
       width: double.infinity,
-      child: OutlinedButton(onPressed: onPressed, child: Text(value)),
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: Colors.white,
+        ),
+        onPressed: onPressed,
+        child: Text(value),
+      ),
     );
   }
 }
