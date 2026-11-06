@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
 
 class BiodataScreen extends ConsumerStatefulWidget {
   const BiodataScreen({super.key});
@@ -31,7 +32,9 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
             controller: _controller,
             label: 'Label',
             hintText: 'Hint',
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
             focusNode: null,
             nextFocusNode: null,
           ),
