@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +11,8 @@ import 'package:share_global_saya/core_shared.dart';
 import 'package:uuid/uuid.dart';
 
 class FormBiodata extends ConsumerStatefulWidget {
-  const FormBiodata({super.key});
+  final bool buatPertama;
+  const FormBiodata({super.key, required this.buatPertama});
 
   @override
   ConsumerState<FormBiodata> createState() => _BiodataScreenState();
@@ -31,13 +33,30 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   bool _isLoading = false;
   bool _sudahDiisi = false;
 
+  ProviderSubscription<AsyncValue<BiodataModel?>>? _biodataSubscription;
+
   @override
   void initState() {
     super.initState();
+    _biodataSubscription = ref.listenManual(biodataProvider, (previous, next) {
+      next.whenData((biodata) {
+        if (biodata != null && !_sudahDiisi && mounted) {
+          _sudahDiisi = true;
+          _namaController.text = biodata.nama;
+          _jumlahRokokController.text =
+              biodata.jumlahRokokPerHari?.toString() ?? '';
+          _hargaRokokController.text =
+              biodata.hargaRokokPerBungkus?.toString() ?? '';
+          _tanggalLahir = biodata.tanggalLahir;
+          _tanggalMulaiMerokok = biodata.tanggalMulaiMerokok;
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
+    _biodataSubscription?.close();
     _namaController.dispose();
     _jumlahRokokController.dispose();
     _hargaRokokController.dispose();
@@ -103,11 +122,13 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             : InputRupiah.parse(_hargaRokokController.text),
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
       );
-      await ref.read(biodataProvider.notifier).simpan(model);
-      if (!mounted) return;
-      if (Navigator.of(context).canPop()) {
-        Nav.pop(context);
-      }
+       await ref.read(biodataProvider.notifier).simpan(model);
+       if (!mounted) return;
+       if (widget.buatPertama) {
+         unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+       } else if (Navigator.of(context).canPop()) {
+         Nav.pop(context);
+       }
     } on Exception catch (e, s) {
       L.e('Gagal menyimpan biodata: $e $s');
       if (mounted) {
@@ -125,19 +146,6 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   Widget build(BuildContext context) {
     final biodataAsync = ref.watch(biodataProvider);
 
-    biodataAsync.whenData((biodata) {
-      if (biodata != null && !_sudahDiisi) {
-        _sudahDiisi = true;
-        _namaController.text = biodata.nama;
-        _jumlahRokokController.text =
-            biodata.jumlahRokokPerHari?.toString() ?? '';
-        _hargaRokokController.text =
-            biodata.hargaRokokPerBungkus?.toString() ?? '';
-        _tanggalLahir = biodata.tanggalLahir;
-        _tanggalMulaiMerokok = biodata.tanggalMulaiMerokok;
-      }
-    });
-
     if (biodataAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -151,7 +159,9 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
               const Text('Gagal memuat data'),
               const SizedBox(height: 8),
               OutlinedButton(
-                onPressed: () => ref.refresh(biodataProvider),
+                onPressed: () {
+                 final _ = ref.refresh(biodataProvider);
+               },
                 child: const Text('Coba lagi'),
               ),
             ],

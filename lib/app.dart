@@ -55,7 +55,7 @@ class _MyAppState extends ConsumerState<App> {
       );
     } else {
       final biodata = biodataAsync.asData?.value;
-      home = biodata == null ? const FormBiodata() : const Home();
+      home = biodata == null ? const FormBiodata(buatPertama: true) : const Home();
     }
 
     return MaterialApp(

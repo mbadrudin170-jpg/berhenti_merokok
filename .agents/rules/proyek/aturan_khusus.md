@@ -1626,6 +1626,7 @@ Menstandarkan cara memuat dan menyimpan data biodata ke SQLite agar konsisten de
 10. Bungkus operasi database dengan `try/catch`, catat error menggunakan `L.e`, dan teruskan menggunakan `rethrow`.
 11. Catat keberhasilan penyimpanan menggunakan `L.s`.
 12. Saat menyimpan, gunakan ID yang sudah ada jika data sudah tersimpan (`existing?.id`); buat ID baru dengan `const Uuid().v4()` hanya untuk data baru.
+13. Setelah simpan berhasil dan sebelum navigasi kembali, periksa `Navigator.of(context).canPop()`; panggil `Nav.pop(context)` hanya jika dapat pop. Jangan memanggil `Nav.pop` tanpa guard ketika halaman mungkin menjadi root (misalnya setelah routing berbasis biodata).
 
 **Contoh benar:**
 ```dart
@@ -1750,3 +1751,117 @@ Commit `01e6f20` memperkenalkan `NamaTabel` dan `NamaKolom` serta memigrasikan D
 **Sumber evaluasi:**
 Commit: `01e6f20a0442e809a6c936391b2fa9fd37ceda6d`
 File: `lib/shared/konstanta/nama_tabel.dart`, `lib/shared/konstanta/nama_kolom.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/fitur/biodata/model/biodata_model.dart`
+
+## Inisialisasi Database sqflite pada Platform Web di `main.dart`
+
+**Cakupan:**
+- `lib/main.dart` — `main()`.
+- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase.database`.
+
+**Aturan wajib:**
+1. `main()` wajib asynchronous (`Future<void> main() async`) dan memanggil `WidgetsFlutterBinding.ensureInitialized()` sebelum mengakses database atau platform channel.
+2. Pada platform web (`kIsWeb`), atur `databaseFactory = databaseFactoryFfiWeb` sebelum membuka database.
+3. Buka `AppDatabase.database` sebelum `runApp` untuk memastikan skema siap; bungkus dengan `try/catch`, catat kegagalan dengan logger (`p`), dan `rethrow` agar kegagalan tidak diabaikan.
+4. Jangan memanggil `runApp` sebelum inisialisasi database selesai pada jalur yang membutuhkannya.
+
+**Larangan:**
+- Jangan mengatur `databaseFactory` FFI web setelah database dibuka.
+- Jangan mengabaikan exception inisialisasi database.
+
+**Alasan:**
+Commit `69715cd` mengaktifkan dukungan SQLite web dengan inisialisasi `databaseFactoryFfiWeb` di `main.dart` dan pre-open database sebelum `runApp`, agar routing berbasis `biodataProvider` dapat membaca data dengan aman.
+
+**Contoh benar:**
+```dart
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
+  try {
+    await AppDatabase.database;
+  } on Exception catch (e, s) {
+    p('Gagal inisialisasi database: $e $s');
+    rethrow;
+  }
+  runApp(const ProviderScope(child: App()));
+}
+```
+
+**Contoh salah:**
+```dart
+void main() {
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
+  runApp(const ProviderScope(child: App())); // DB belum dibuka
+}
+```
+
+**Sumber evaluasi:**
+Commit: `69715cd3b115a6ad9233e77881fe91f272b59dc1`
+File: `lib/main.dart`
+
+## Routing Awal Aplikasi Berdasarkan State Biodata pada `App`
+
+**Cakupan:**
+- `lib/app.dart` — `_MyAppState.build`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — `FormBiodata`.
+
+**Aturan wajib:**
+1. `App` me-`watch` `biodataProvider` dan menentukan halaman awal: tampilkan loading saat `isLoading`, pesan error dengan tombol "Coba lagi" saat `hasError`, `FormBiodata` jika biodata `null`, dan `Home` jika biodata tersedia.
+2. Gunakan `biodataAsync.asData?.value` (bukan `.value`) untuk membaca nilai aman.
+3. Tombol retry memanggil `ref.refresh(biodataProvider)`.
+4. Bungkus halaman awal dengan `PengelolaOverlayLogDebug` (atau pembungkus overlay log debug proyek) agar overlay debug tetap tersedia.
+
+**Larangan:**
+- Jangan langsung menampilkan `Home` tanpa memeriksa state biodata.
+- Jangan mengabaikan status loading/error pada `biodataProvider` di root.
+
+**Alasan:**
+Commit `69715cd` mengubah `MaterialApp.home` dari `const Home()` menjadi halaman yang dipilih berdasarkan `biodataProvider`, sehingga pengguna baru diarahkan ke `FormBiodata` sebelum masuk aplikasi.
+
+**Contoh benar:**
+```dart
+final biodataAsync = ref.watch(biodataProvider);
+Widget home;
+if (biodataAsync.isLoading) {
+  home = const Scaffold(body: Center(child: CircularProgressIndicator()));
+} else if (biodataAsync.hasError) {
+  home = Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Gagal memuat data'),
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: () {
+              final _ = ref.refresh(biodataProvider);
+            },
+            child: const Text('Coba lagi'),
+          ),
+        ],
+      ),
+    ),
+  );
+} else {
+  final biodata = biodataAsync.asData?.value;
+  home = biodata == null ? const FormBiodata() : const Home();
+}
+MaterialApp(
+  home: PengelolaOverlayLogDebug(child: home),
+);
+```
+
+**Contoh salah:**
+```dart
+MaterialApp(
+  home: const Home(), // mengabaikan biodata dan form awal
+);
+```
+
+**Sumber evaluasi:**
+Commit: `69715cd3b115a6ad9233e77881fe91f272b59dc1`
+File: `lib/app.dart`
