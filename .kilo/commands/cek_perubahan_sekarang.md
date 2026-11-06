@@ -7,6 +7,8 @@ agent: ask
 
 ## 1. Tujuan
 
+
+
 Lakukan audit terhadap seluruh perubahan kode Dart yang belum di-commit untuk memastikan implementasinya sesuai dengan:
 
 1. `AGENTS.md`.
