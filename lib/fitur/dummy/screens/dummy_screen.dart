@@ -148,10 +148,12 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('data')),
+      appBar: AppBar(title: const Text('Dummy')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 16,
           children: [
             _buildTombolCustom(
               () => unawaited(_masukkanDummy(context)),
@@ -166,6 +168,9 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
   }
 
   Widget _buildTombolCustom(void Function() onPressed, String value) {
-    return OutlinedButton(onPressed: onPressed, child: Text(value));
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(onPressed: onPressed, child: Text(value)),
+    );
   }
 }
