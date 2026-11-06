@@ -8,4 +8,6 @@ class TemaNotifier extends _$TemaNotifier {
   String build() {
     return "";
   }
+
+  void set() {}
 }
