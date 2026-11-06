@@ -1,5 +1,5 @@
 ---
-description: Audit perubahan kode Dart yang belum di-commit terhadap AGENTS.md dan source SDK. Laporkan setiap masalah dengan path dan nomor baris beserta saran perbaikan tanpa mengubah apa pun.
+description: Audit perubahan kode Dart yang belum di-commit terhadap AGENTS.md, aturan proyek, dan source SDK. Laporkan lokasi kode, aturan yang dilanggar beserta path dan baris aturannya, serta saran perbaikan tanpa mengubah apa pun.
 agent: ask
 ---
 
@@ -7,19 +7,19 @@ agent: ask
 
 ## 1. Tujuan Utama
 
-Lakukan pemeriksaan terhadap seluruh perubahan kode Dart yang belum di-commit untuk memastikan implementasinya sudah sesuai dengan:
+Lakukan audit terhadap seluruh perubahan kode Dart yang belum di-commit untuk memastikan implementasinya sudah sesuai dengan:
 
 1. `AGENTS.md`.
 2. Seluruh aturan tambahan yang berlaku pada proyek.
-3. Standar dan preferensi penulisan kode yang telah ditetapkan.
+3. Standar dan preferensi penulisan kode pengguna.
 4. Dokumentasi dan source code Flutter SDK.
 5. Dokumentasi dan source code Dart SDK.
 6. Source code paket eksternal yang digunakan apabila perubahan berkaitan dengan API paket tersebut.
 7. Prinsip kualitas kode, keamanan runtime, performa, dan maintainability.
 
-Tujuan pemeriksaan adalah menemukan ketidaksesuaian sebelum pengguna melakukan commit.
+Tujuan audit adalah menemukan ketidaksesuaian sebelum pengguna melakukan commit.
 
-**Tugas Anda hanya membaca, menganalisis, menemukan masalah, dan menyampaikan laporan beserta saran perbaikan. Pengguna sendiri yang menentukan apakah suatu temuan perlu diperbaiki.**
+**Tugas Anda hanya membaca, menganalisis, menemukan masalah, dan menyampaikan laporan beserta saran perbaikan. Pengguna sendiri yang memutuskan apakah suatu temuan perlu diperbaiki.**
 
 Jangan melakukan perubahan kode dalam kondisi apa pun.
 
@@ -48,9 +48,9 @@ Dilarang:
 - Menjalankan migrasi database.
 - Menjalankan perintah yang dapat mengubah file proyek.
 
-**Jangan menerapkan saran perbaikan secara otomatis, meskipun Anda yakin bahwa perbaikan tersebut benar.**
+Jangan menerapkan saran perbaikan secara otomatis, meskipun Anda yakin bahwa perbaikan tersebut benar.
 
-Semua saran hanya boleh disampaikan dalam laporan.
+**Semua saran hanya boleh disampaikan dalam laporan.**
 
 ### 2.2. Jangan mengubah kondisi Git
 
@@ -79,9 +79,9 @@ git pull
 git push
 ```
 
-Larangan tersebut juga berlaku untuk operasi Git lainnya yang memiliki efek serupa.
+Larangan juga berlaku untuk operasi Git lainnya yang mempunyai efek serupa.
 
-Anda hanya boleh menggunakan perintah Git yang bersifat read-only untuk membaca dan membandingkan perubahan.
+Anda hanya boleh menggunakan perintah Git yang bersifat baca-saja.
 
 Jangan mengubah staging area, baik secara langsung maupun tidak langsung.
 
@@ -98,21 +98,27 @@ Jangan menjalankan:
 - Perintah yang memperbarui cache SDK atau dependensi.
 - Perintah lain yang berpotensi mengubah file proyek.
 
-Jangan menjalankan pemeriksaan otomatis yang dapat menulis file atau mengubah kondisi proyek.
+Jangan menjalankan pemeriksaan otomatis apabila berpotensi menghasilkan perubahan file atau cache.
 
-Pemeriksaan dilakukan melalui pembacaan kode, perbandingan perubahan, dan pemeriksaan source SDK.
+Audit dilakukan melalui pembacaan kode, perbandingan perubahan, dan pemeriksaan source SDK.
 
-Jika suatu pemeriksaan membutuhkan proses yang berpotensi mengubah file, jangan jalankan. Jelaskan keterbatasannya dalam laporan.
+Jika pemeriksaan membutuhkan proses yang berpotensi mengubah file, jangan jalankan. Jelaskan keterbatasannya dalam laporan.
 
-## 3. Baca AGENTS.md dan Aturan Proyek
+## 3. Baca AGENTS.md dan Seluruh Aturan Proyek
 
-Sebelum menganalisis kode, baca seluruh isi:
+Sebelum menganalisis perubahan kode, baca seluruh isi:
 
 `AGENTS.md`
 
-Jika `AGENTS.md` merujuk ke file aturan lain, baca seluruh aturan yang relevan.
+Jika `AGENTS.md` merujuk ke file aturan lain, baca juga seluruh aturan yang relevan.
 
-Periksa pula apakah terdapat `AGENTS.md` tambahan pada direktori tempat file Dart yang berubah berada.
+Periksa apakah terdapat `AGENTS.md` tambahan pada direktori tempat file Dart yang berubah berada.
+
+Perhatikan juga aturan yang disimpan di:
+
+- `.agents/rules/global/`
+- `.agents/rules/proyek/`
+- `.agents/skills/`, apabila suatu aturan merujuk ke skill tertentu.
 
 Tujuannya:
 
@@ -126,21 +132,37 @@ Tujuannya:
 
 Jangan hanya membaca sebagian aturan atau mengandalkan ingatan dari percakapan sebelumnya.
 
-Jika terdapat aturan yang bertentangan:
+### 3.1. Identifikasi sumber aturan yang berlaku
 
-1. Identifikasi aturan yang bertentangan.
-2. Cantumkan path dan bagian masing-masing aturan.
-3. Periksa apakah terdapat ketentuan prioritas.
-4. Jangan membuat keputusan berdasarkan asumsi.
+Setiap aturan yang digunakan untuk menilai kode harus diketahui sumbernya.
+
+Periksa:
+
+- Apakah aturan berada langsung di `AGENTS.md`.
+- Apakah aturan berasal dari file global.
+- Apakah aturan berasal dari file khusus proyek.
+- Apakah aturan berasal dari `AGENTS.md` pada subdirektori.
+- Apakah aturan berasal dari skill yang secara eksplisit diwajibkan oleh aturan proyek.
+
+Jangan menganggap suatu ketentuan sebagai aturan proyek apabila sebenarnya hanya merupakan rekomendasi AI.
+
+### 3.2. Periksa konflik aturan
+
+Jika terdapat dua aturan yang bertentangan:
+
+1. Identifikasi kedua aturan.
+2. Cantumkan path dan nomor baris masing-masing aturan.
+3. Periksa ketentuan prioritas yang berlaku.
+4. Jangan menebak aturan mana yang harus diikuti.
 5. Laporkan konflik yang belum dapat dipastikan.
 
-**Gunakan AGENTS.md dan aturan proyek sebagai acuan utama pemeriksaan. Jangan mengganti ketentuan proyek dengan preferensi pribadi.**
+Jangan membuat kesimpulan bahwa kode melanggar aturan apabila sumber aturan yang digunakan masih bertentangan dan belum dapat dipastikan prioritasnya.
 
 ## 4. Identifikasi Perubahan Git yang Belum Di-commit
 
 Audit hanya mencakup file dengan ekstensi `.dart`.
 
-Periksa tiga jenis perubahan berikut secara terpisah.
+Periksa tiga jenis perubahan secara terpisah.
 
 ### 4.1. Staged Changes
 
@@ -152,7 +174,7 @@ Untuk melihat daftar file:
 git diff --cached --name-status --find-renames -- '*.dart'
 ```
 
-Untuk membaca detail perubahan:
+Untuk membaca seluruh detail perubahan:
 
 ```bash
 git diff --cached --no-ext-diff --find-renames --unified=80 -- '*.dart'
@@ -175,7 +197,7 @@ Untuk melihat daftar file:
 git diff --name-status --find-renames -- '*.dart'
 ```
 
-Untuk membaca detail perubahan:
+Untuk membaca seluruh detail perubahan:
 
 ```bash
 git diff --no-ext-diff --find-renames --unified=80 -- '*.dart'
@@ -191,7 +213,7 @@ Periksa file Dart baru yang belum dilacak Git:
 git ls-files --others --exclude-standard -- '*.dart'
 ```
 
-Untuk file tersebut, baca seluruh isi karena belum memiliki versi pembanding dalam riwayat Git.
+Untuk file tersebut, baca seluruh isi karena belum memiliki versi pembanding.
 
 Jangan mengabaikan file Dart baru hanya karena belum masuk staging.
 
@@ -199,32 +221,34 @@ Jangan mengabaikan file Dart baru hanya karena belum masuk staging.
 
 1. Periksa staged, unstaged, dan untracked secara terpisah.
 2. Jangan mencampurkan ketiganya menjadi satu kesimpulan.
-3. Jika satu file mempunyai perubahan staged sekaligus unstaged, audit keduanya secara terpisah.
-4. Jika diperlukan, baca file Dart secara lengkap untuk memahami konteks.
+3. Jika satu file mempunyai perubahan staged sekaligus unstaged, periksa keduanya secara terpisah.
+4. Baca isi file Dart secara lengkap apabila diperlukan untuk memahami konteks.
 5. Untuk file yang dihapus, periksa kode yang dihapus melalui diff.
 6. Untuk file yang di-rename, periksa perubahan kode dan lokasi barunya.
 7. Jangan hanya membaca ringkasan nama file.
 8. Jangan hanya membaca sebagian perubahan.
 9. Jangan melewatkan perubahan yang terlihat sederhana.
 
-Gunakan perintah berikut apabila perlu membaca versi file yang sudah berada di staging:
+### 4.5. Baca isi file staged secara akurat
+
+Jika perlu membaca versi file yang sudah berada di staging:
 
 ```bash
 git show :path/file.dart
 ```
 
-Jangan menggunakan isi working tree sebagai pengganti isi staging karena keduanya mungkin memiliki implementasi yang berbeda.
+Perintah tersebut digunakan hanya untuk membaca isi staging.
 
-Jangan menggunakan perintah yang dapat mengubah index atau working tree untuk mendapatkan isi file.
+Jangan menggunakan isi working tree sebagai pengganti isi staging karena keduanya mungkin berbeda.
 
-### 4.5. Perubahan pada file yang sama
+### 4.6. Perubahan pada file yang sama
 
 Satu file dapat memiliki dua kondisi berbeda:
 
 - Perubahan pertama sudah masuk staging.
 - Perubahan berikutnya masih berada di working tree.
 
-Periksa kedua perubahan tersebut secara terpisah.
+Audit kedua perubahan tersebut secara terpisah.
 
 Pastikan kesimpulan tidak mencampurkan implementasi versi staging dengan implementasi versi working tree.
 
@@ -356,21 +380,23 @@ Periksa aspek berikut.
 - Pengujian kondisi normal dan ekstrem.
 - Potensi test yang tidak menguji perilaku sebenarnya.
 
-Jangan membatasi evaluasi hanya pada daftar tersebut. Periksa aspek lain apabila perubahan kode memiliki risiko atau dampak teknis yang relevan.
+Jangan membatasi evaluasi hanya pada daftar tersebut.
 
-**Prioritaskan pelanggaran aturan yang benar-benar tertulis dalam AGENTS.md dan aturan proyek.**
+Periksa aspek lain apabila perubahan kode memiliki risiko atau dampak teknis yang relevan.
 
-Jika suatu saran tidak secara langsung melanggar aturan, klasifikasikan sebagai rekomendasi, bukan pelanggaran.
+**Prioritaskan ketentuan yang benar-benar tertulis dalam AGENTS.md dan aturan proyek.**
+
+Jangan menganggap preferensi pribadi AI sebagai aturan wajib.
 
 ## 7. Wajib Membaca Source Code Flutter dan Dart SDK
 
 Jangan hanya mengandalkan pengetahuan internal AI atau contoh kode yang pernah dipelajari.
 
-**Periksa source code SDK yang benar-benar digunakan oleh proyek.**
+**Periksa source code SDK yang benar-benar digunakan proyek.**
 
 Tujuannya memastikan penggunaan API sesuai kontrak dan implementasi SDK.
 
-### 7.1. Identifikasi SDK yang digunakan
+### 7.1. Identifikasi SDK
 
 Cari lokasi Flutter SDK:
 
@@ -384,7 +410,7 @@ Periksa lokasi executable sebenarnya:
 readlink -f "$(command -v flutter)"
 ```
 
-Identifikasi versi Flutter dan Dart yang digunakan dengan membaca informasi versi SDK yang tersedia.
+Identifikasi versi Flutter dan Dart dengan membaca informasi versi yang tersedia.
 
 Contoh lokasi:
 
@@ -393,9 +419,7 @@ Contoh lokasi:
 <FLUTTER_SDK>/bin/cache/dart-sdk/version
 ```
 
-Utamakan pembacaan informasi versi yang sudah tersedia.
-
-Jangan mengganti SDK, mengunduh versi baru, atau menjalankan proses pembaruan SDK.
+Jangan mengganti SDK atau mengunduh versi baru.
 
 ### 7.2. Lokasi source code Flutter SDK
 
@@ -430,7 +454,7 @@ Contohnya:
 - `dart:io`
 - `dart:isolate`
 
-Jangan membaca seluruh SDK tanpa tujuan. Temukan source yang benar-benar berkaitan dengan perubahan kode.
+Jangan membaca seluruh SDK tanpa tujuan. Cari source yang benar-benar berkaitan dengan perubahan kode.
 
 ### 7.4. Source code paket eksternal
 
@@ -446,7 +470,7 @@ Periksa deklarasi API dan implementasinya pada source paket yang tersedia.
 
 Jangan menjalankan `flutter pub get` hanya untuk mendapatkan source paket.
 
-Jika source paket belum tersedia, catat keterbatasannya dan jangan mengklaim sudah memeriksanya.
+Jika source paket belum tersedia, laporkan keterbatasannya.
 
 ### 7.5. Hal yang wajib diperiksa dari source SDK
 
@@ -475,7 +499,7 @@ Jangan menyimpulkan penggunaan API benar hanya karena kode dapat ditulis atau te
 Untuk setiap ketidaksesuaian SDK:
 
 - Sebutkan API yang diperiksa.
-- Sebutkan path source SDK yang dibaca.
+- Sebutkan path source SDK.
 - Sebutkan nomor baris source SDK apabila tersedia.
 - Jelaskan kontrak API yang relevan.
 - Tunjukkan lokasi kode proyek yang tidak sesuai.
@@ -484,7 +508,7 @@ Untuk setiap ketidaksesuaian SDK:
 
 Gunakan source SDK sesuai versi proyek, bukan source versi terbaru yang belum tentu digunakan.
 
-Jika versi SDK atau source tidak dapat dipastikan, jangan membuat kesimpulan tanpa bukti. Laporkan keterbatasannya.
+Jika versi SDK atau source tidak dapat dipastikan, jangan membuat kesimpulan tanpa bukti.
 
 ## 8. Periksa Dampak Perubahan terhadap Kode di Sekitarnya
 
@@ -509,126 +533,234 @@ Tetap fokus pada dampak langsung dari perubahan Dart yang belum di-commit.
 
 Jangan memperluas audit menjadi pemeriksaan seluruh proyek tanpa alasan teknis.
 
-## 9. Klasifikasi Hasil Pemeriksaan
+## 9. Klasifikasi Temuan
 
-Jangan melaporkan dugaan sebagai kesalahan yang sudah pasti.
-
-Pisahkan hasil audit menjadi empat kategori.
+Pisahkan hasil pemeriksaan menjadi empat kategori.
 
 ### A. Pelanggaran Aturan
 
-Perubahan yang tidak sesuai dengan ketentuan tertulis dalam `AGENTS.md` atau aturan proyek.
+Kode tidak sesuai dengan ketentuan yang benar-benar tertulis dalam `AGENTS.md` atau aturan proyek.
+
+Setiap pelanggaran wajib menunjukkan:
+
+1. Path kode yang bermasalah.
+2. Nomor baris kode yang bermasalah.
+3. Nama aturan yang dilanggar.
+4. Path file tempat aturan tersebut ditulis.
+5. Nomor baris aturan tersebut.
+6. Isi aturan yang dilanggar.
+7. Penjelasan hubungan antara kode dan aturan.
 
 ### B. Ketidaksesuaian SDK
 
-Penggunaan API yang tidak sesuai dengan kontrak source Flutter, Dart, atau paket yang digunakan.
+Penggunaan API tidak sesuai dengan kontrak source Flutter, Dart, atau paket yang digunakan.
+
+Setiap temuan harus menunjukkan:
+
+- Path kode proyek dan nomor baris.
+- API yang diperiksa.
+- Path source SDK dan nomor baris apabila tersedia.
+- Kontrak API yang relevan.
+- Penjelasan ketidaksesuaian.
+- Saran perbaikan.
 
 ### C. Potensi Bug
 
-Perubahan yang berpotensi menyebabkan kesalahan runtime, kerusakan data, hasil yang tidak sesuai, atau masalah performa.
+Perubahan berpotensi menyebabkan kesalahan runtime, kerusakan data, hasil yang tidak sesuai, atau masalah performa.
+
+Setiap temuan harus mempunyai bukti, lokasi kode, kondisi penyebab, dampak, dan saran perbaikan.
 
 ### D. Rekomendasi Perbaikan
 
-Perubahan yang tidak selalu salah, tetapi mempunyai pendekatan yang lebih baik berdasarkan standar proyek atau source SDK.
+Perubahan tidak selalu salah, tetapi terdapat pendekatan yang lebih baik berdasarkan standar proyek atau source SDK.
 
-Jangan menyamakan rekomendasi dengan pelanggaran.
+Jangan menyebut rekomendasi sebagai pelanggaran aturan apabila tidak ada ketentuan eksplisit yang dilanggar.
+
+Apabila tidak ditemukan aturan yang berkaitan, nyatakan:
+
+**Aturan eksplisit yang dilanggar: Tidak ditemukan.**
+
+Jangan membuat aturan baru berdasarkan asumsi pribadi.
 
 ### 9.1. Tingkat prioritas
 
-Gunakan kategori berikut:
+Gunakan kategori:
 
 - **Critical:** berpotensi menyebabkan kerusakan data serius, masalah keamanan, atau kegagalan aplikasi yang sangat parah.
 - **High:** berpotensi menyebabkan aplikasi crash, data tidak konsisten, atau fitur utama gagal.
 - **Medium:** masalah implementasi yang dapat menimbulkan bug atau mengurangi kualitas secara signifikan.
 - **Low:** masalah minor seperti konsistensi penulisan atau peningkatan maintainability.
-- **Info:** catatan teknis atau rekomendasi yang tidak menunjukkan adanya kesalahan.
+- **Info:** catatan teknis atau rekomendasi yang tidak menunjukkan kesalahan.
 
 Jangan memberikan prioritas secara berlebihan.
 
-## 10. WAJIB Menyertakan Path dan Nomor Baris
+## 10. WAJIB Menyertakan Path dan Nomor Baris Kode yang Bermasalah
 
-**Setiap temuan yang menunjukkan adanya masalah pada kode wajib menyertakan path file dan nomor baris yang tepat.**
+**Setiap temuan yang menunjukkan masalah pada kode wajib menyertakan path file dan nomor baris yang tepat.**
 
-Pengguna hanya menginginkan path dan nomor baris.
-
-**Jangan membuat link Markdown, link GitHub, link editor, URL, atau tautan lain.**
-
-### 10.1. Format lokasi
-
-Gunakan format berikut:
+Gunakan format:
 
 ```text
-lib/fitur/contoh.dart:42
+lib/fitur/pengguna/provider.dart:42
 ```
 
 Jika masalah mencakup beberapa baris:
 
 ```text
-lib/fitur/contoh.dart:42-48
+lib/fitur/pengguna/provider.dart:42-48
 ```
-
-Gunakan path relatif terhadap root proyek.
-
-Contoh penulisan dalam laporan:
-
-**Lokasi:** `lib/fitur/pengguna/provider.dart:42`
-
-Jangan hanya menuliskan:
-
-`lib/fitur/pengguna/provider.dart`
-
-Tanpa nomor baris.
-
-### 10.2. Nomor baris harus sesuai dengan versi kode yang diperiksa
-
-Perhatikan bahwa staged dan unstaged dapat memiliki isi yang berbeda.
 
 Ketentuan:
 
-- Untuk perubahan unstaged, gunakan nomor baris dari working tree.
-- Untuk perubahan staged, gunakan nomor baris berdasarkan versi yang berada di staging.
-- Untuk file yang memiliki perubahan staged sekaligus unstaged, pastikan setiap temuan menggunakan nomor baris dari versi yang benar.
-- Untuk file untracked, gunakan nomor baris dari isi file tersebut.
-- Untuk kode yang dihapus, gunakan nomor baris lama berdasarkan diff dan nyatakan bahwa baris tersebut telah dihapus.
+1. Gunakan path relatif terhadap root proyek.
+2. Cantumkan nomor baris secara tepat.
+3. Jangan hanya menyebut nama file.
+4. Jangan memberikan nomor baris perkiraan.
+5. Periksa kembali lokasi sebelum menyusun laporan.
+6. Jika ada beberapa lokasi bermasalah, cantumkan seluruhnya.
 
-Jangan memberikan nomor baris perkiraan.
+**Jangan membuat link Markdown, link GitHub, URL, atau tautan editor. Pengguna hanya menginginkan path dan nomor baris.**
 
-Jangan memberikan nomor baris berdasarkan versi kode yang berbeda dari implementasi yang sedang diperiksa.
+### 10.1. Sesuaikan nomor baris dengan status perubahan
+
+Perhatikan bahwa staged dan unstaged dapat memiliki isi berbeda.
+
+- Untuk unstaged, gunakan nomor baris dari working tree.
+- Untuk staged, gunakan nomor baris dari isi staging.
+- Untuk file yang memiliki perubahan staged dan unstaged, gunakan nomor baris sesuai versi yang sedang diperiksa.
+- Untuk file untracked, gunakan nomor baris dari isi file.
+- Untuk kode yang dihapus, gunakan nomor baris lama berdasarkan diff dan jelaskan bahwa kode tersebut telah dihapus.
+
+Untuk staged, apabila perlu, baca isi staging dengan:
+
+```bash
+git show :path/file.dart | nl -ba
+```
+
+Untuk working tree, gunakan:
+
+```bash
+nl -ba path/file.dart
+```
+
+Jangan mencampur nomor baris dari versi kode yang berbeda.
 
 Jika nomor baris tidak dapat dipastikan, jelaskan keterbatasannya. Jangan mengarang nomor baris.
 
-### 10.3. Setiap lokasi masalah wajib ditampilkan
+## 11. WAJIB Menunjukkan Path dan Baris Aturan yang Dilanggar
 
-Setiap temuan minimal memiliki:
+**Setiap temuan yang dikategorikan sebagai pelanggaran aturan wajib menunjukkan lokasi aturan yang dilanggar, bukan hanya lokasi kode yang bermasalah.**
 
-- Path file.
-- Nomor baris.
-- Status perubahan: staged, unstaged, atau untracked.
-- Penjelasan bagian kode yang bermasalah.
+Jangan hanya menulis:
 
-Jika ada beberapa lokasi yang berkaitan dengan satu masalah, cantumkan semua path dan nomor barisnya.
+- Tidak sesuai AGENTS.md.
+- Melanggar aturan proyek.
+- Tidak mengikuti standar.
+- Tidak sesuai ketentuan global.
 
-**Tidak boleh ada temuan masalah tanpa lokasi kode yang jelas.**
+Pernyataan seperti itu tidak cukup tanpa bukti lokasi aturan yang sebenarnya.
 
-Ketentuan ini juga berlaku untuk rekomendasi yang menunjuk bagian kode tertentu.
+### 11.1. Format lokasi aturan
 
-### 10.4. Pisahkan lokasi kode proyek dan source SDK
+Gunakan format berikut:
 
-Jika masalah berkaitan dengan penggunaan API SDK, cantumkan:
+```text
+AGENTS.md:125-129
+```
 
-**Lokasi kode proyek:**
+Atau:
 
-`lib/fitur/contoh.dart:42`
+```text
+.agents/rules/global/aturan_bersama.md:18-23
+```
 
-**Lokasi source SDK:**
+Atau:
 
-`<FLUTTER_SDK>/packages/flutter/lib/src/widgets/framework.dart:nomor_baris`
+```text
+.agents/rules/proyek/aturan_khusus.md:42-47
+```
 
-Jangan mencampurkan lokasi kode proyek dengan lokasi source SDK.
+Sesuaikan dengan lokasi aturan yang benar-benar dilanggar.
 
-## 11. Saran Perbaikan Wajib Disertakan
+Jika aturan berada pada `AGENTS.md`, gunakan path dan nomor baris dari file tersebut.
 
-Jika menemukan ketidaksesuaian, berikan saran perbaikan yang spesifik.
+Jika aturan berasal dari file aturan global atau khusus, gunakan path file sumber aturan tersebut.
+
+Jika aturan muncul dalam `AGENTS.md` sekaligus berasal dari file aturan lain, cantumkan kedua lokasi apabila keduanya relevan.
+
+### 11.2. Cara menentukan nomor baris aturan
+
+Baca file aturan secara lengkap dan hitung nomor baris yang sebenarnya.
+
+Gunakan:
+
+```bash
+nl -ba AGENTS.md
+```
+
+Untuk aturan khusus:
+
+```bash
+nl -ba .agents/rules/proyek/aturan_khusus.md
+```
+
+Untuk aturan global:
+
+```bash
+nl -ba .agents/rules/global/aturan_bersama.md
+```
+
+Jika aturan berasal dari file lainnya, gunakan path file tersebut.
+
+Ketentuan:
+
+1. Jangan menebak nomor baris.
+2. Jangan menggunakan nomor baris dari file yang berbeda.
+3. Jangan mengutip aturan yang sebenarnya tidak ada.
+4. Pastikan rentang baris mencakup ketentuan yang dilanggar.
+5. Jika satu pelanggaran bertentangan dengan beberapa aturan, tampilkan semua aturan yang relevan.
+6. Jangan menganggap nama judul aturan sebagai pengganti bukti isi aturan.
+
+**Nomor baris harus menunjuk langsung pada ketentuan yang menjadi dasar penilaian.**
+
+### 11.3. Wajib mengutip isi aturan
+
+Selain path dan baris, tampilkan isi aturan yang benar-benar dilanggar.
+
+Contoh:
+
+**Aturan yang dilanggar:**
+
+`.agents/rules/global/aturan_bersama.md:18-22`
+
+**Isi aturan:**
+
+> Setelah menggunakan `await` dalam lifecycle widget, pastikan widget masih mounted sebelum melakukan pembaruan UI.
+
+**Lokasi kode bermasalah:**
+
+`lib/fitur/pengguna/page/pengguna_page.dart:84-87`
+
+**Penjelasan:**
+
+Kode melakukan pembaruan UI setelah operasi asynchronous tanpa memastikan widget masih mounted. Hal ini bertentangan dengan ketentuan yang tercantum pada aturan tersebut.
+
+Pastikan contoh di atas hanya digunakan sebagai format laporan. Isi aturan dan nomor baris sebenarnya harus diambil dari file proyek.
+
+### 11.4. Jangan mengarang pelanggaran aturan
+
+Jika menemukan masalah teknis tetapi tidak ada aturan tertulis yang secara langsung mengaturnya:
+
+- Jangan mengklaim bahwa kode melanggar AGENTS.md.
+- Jangan menciptakan aturan yang sebenarnya tidak ada.
+- Klasifikasikan sebagai potensi bug atau rekomendasi.
+- Jelaskan bahwa tidak ditemukan aturan eksplisit yang dilanggar.
+
+**Pelanggaran aturan harus berdasarkan bukti ketentuan tertulis, bukan sekadar penilaian pribadi AI.**
+
+## 12. Saran Perbaikan Wajib Disertakan
+
+Jika menemukan ketidaksesuaian, berikan saran perbaikan secara spesifik.
 
 Jangan hanya menulis:
 
@@ -637,20 +769,23 @@ Jangan hanya menulis:
 - Sebaiknya gunakan cara lain.
 - Implementasi tidak sesuai standar.
 
-Jelaskan secara konkret:
+Jelaskan:
 
 1. Apa masalahnya?
 2. Mengapa dianggap bermasalah?
 3. Aturan mana yang tidak dipenuhi?
-4. Apa dampaknya jika dibiarkan?
-5. Bagaimana cara memperbaikinya?
-6. Mengapa pendekatan yang disarankan lebih tepat?
+4. Di mana lokasi aturan tersebut?
+5. Apa dampaknya jika dibiarkan?
+6. Bagaimana cara memperbaikinya?
+7. Mengapa pendekatan yang disarankan lebih tepat?
 
 Jika diperlukan, berikan contoh kode perbaikan.
 
 Contoh:
 
-**Lokasi:** `lib/fitur/pengguna/provider.dart:42`
+**Lokasi kode:**
+
+`lib/fitur/pengguna/provider.dart:42`
 
 **Kode saat ini:**
 
@@ -668,32 +803,28 @@ if (user == null) {
 }
 ```
 
-Pastikan contoh perbaikan sesuai dengan:
+**Alasan:**
 
-- Konteks kode sebenarnya.
-- Aturan proyek.
-- Kontrak SDK.
-- Tipe data yang digunakan.
-- Alur business logic.
+Implementasi saat ini mengasumsikan bahwa nilai tidak mungkin null. Jika nilai ternyata null, kode dapat menyebabkan runtime error.
 
-Jangan membuat contoh yang hanya terlihat benar tetapi tidak bisa diterapkan pada implementasi proyek.
+Pastikan contoh perbaikan sesuai dengan konteks implementasi, aturan proyek, dan kontrak SDK.
 
 **Contoh kode perbaikan hanya untuk ditampilkan kepada pengguna. Jangan menerapkannya ke file proyek.**
 
-## 12. Jika Tidak Menemukan Masalah
+## 13. Jika Tidak Menemukan Masalah
 
 Jika perubahan sudah sesuai:
 
 - Jangan mengada-ada masalah.
 - Jangan mencari kesalahan hanya untuk membuat laporan terlihat panjang.
 - Jangan menyarankan perubahan yang tidak memberikan manfaat nyata.
-- Jelaskan bahwa perubahan sudah diperiksa dan tidak ditemukan ketidaksesuaian berdasarkan pemeriksaan yang dilakukan.
+- Jelaskan bahwa perubahan telah diperiksa dan tidak ditemukan ketidaksesuaian berdasarkan pemeriksaan yang dilakukan.
 
 Jika ada bagian yang tidak dapat diverifikasi karena source SDK tidak tersedia, nyatakan secara jujur.
 
 Jangan menyatakan seluruh kode sudah benar apabila masih ada bagian penting yang belum diperiksa.
 
-## 13. Format Laporan Akhir
+## 14. Format Laporan Akhir
 
 Susun laporan menggunakan struktur berikut.
 
@@ -720,39 +851,49 @@ Susun laporan menggunakan struktur berikut.
 | 2   | `lib/.../file.dart` | Unstaged  | Hasil pemeriksaan |
 | 3   | `lib/.../file.dart` | Untracked | Hasil pemeriksaan |
 
-Pastikan seluruh file Dart yang menjadi target pemeriksaan tercantum.
+Pastikan semua file Dart yang menjadi target audit tercantum.
 
 ## C. Temuan Pelanggaran Aturan
 
-Untuk setiap temuan, gunakan format:
+Untuk setiap temuan, gunakan format berikut.
 
-### [Prioritas] Judul Temuan
+### [Prioritas] Judul Pelanggaran
 
-**Lokasi:** `lib/path/file.dart:42`
+**1. Lokasi kode bermasalah:**
 
-**Status:** Staged / Unstaged / Untracked
+`lib/path/file.dart:42-45`
 
-**Kode saat ini:**
+**2. Status perubahan:**
+
+Staged / Unstaged / Untracked
+
+**3. Aturan yang dilanggar:**
+
+`.agents/rules/global/aturan_bersama.md:18-22`
+
+**4. Isi aturan:**
+
+Kutip ketentuan yang benar-benar tertulis di lokasi tersebut.
+
+**5. Kode saat ini:**
 
 ```dart
-// Kode yang ditemukan.
+// Tampilkan potongan kode yang bermasalah.
 ```
 
-**Aturan yang dilanggar:**
+**6. Alasan pelanggaran:**
 
-Sebutkan nama file aturan, judul bagian, dan ketentuan yang relevan.
+Jelaskan secara spesifik mengapa kode bertentangan dengan ketentuan tersebut.
 
-**Alasan:**
+**7. Dampak:**
 
-Jelaskan secara konkret mengapa kode tidak sesuai.
+Jelaskan risiko yang ditimbulkan.
 
-**Dampak:**
+**8. Saran perbaikan:**
 
-Jelaskan risiko atau akibatnya.
+Berikan pendekatan yang tepat beserta contoh kode apabila diperlukan.
 
-**Saran perbaikan:**
-
-Berikan pendekatan perbaikan yang spesifik.
+Jika terdapat beberapa aturan yang dilanggar, tampilkan seluruh path dan nomor baris aturannya.
 
 ## D. Temuan Ketidaksesuaian SDK
 
@@ -760,9 +901,13 @@ Untuk setiap temuan:
 
 ### [Prioritas] Judul Temuan
 
-**Lokasi kode proyek:** `lib/path/file.dart:42`
+**Lokasi kode proyek:**
 
-**Status:** Staged / Unstaged / Untracked
+`lib/path/file.dart:42`
+
+**Status:**
+
+Staged / Unstaged / Untracked
 
 **API yang diperiksa:**
 
@@ -778,11 +923,11 @@ Jelaskan ketentuan penggunaan API berdasarkan source yang dibaca.
 
 **Ketidaksesuaian:**
 
-Jelaskan bagian implementasi yang tidak sesuai.
+Jelaskan implementasi yang tidak sesuai.
 
-**Dampak:**
+**Aturan proyek yang berkaitan:**
 
-Jelaskan risiko yang mungkin terjadi.
+Jika ada, cantumkan path dan nomor baris aturan yang relevan.
 
 **Saran perbaikan:**
 
@@ -793,23 +938,26 @@ Berikan pendekatan yang sesuai dengan API dan versi SDK proyek.
 Untuk setiap potensi bug, cantumkan:
 
 - Judul masalah dan prioritas.
-- Path dan nomor baris yang bermasalah.
+- Path kode dan nomor baris.
 - Status perubahan.
-- Penjelasan kondisi yang menyebabkan masalah.
+- Penjelasan kondisi penyebab.
 - Dampak yang mungkin terjadi.
+- Aturan terkait beserta path dan nomor baris jika ada.
 - Saran perbaikan.
 
-## F. Rekomendasi
+Jika tidak ada aturan eksplisit yang dilanggar, nyatakan demikian.
+
+## F. Rekomendasi Perbaikan
 
 Pisahkan rekomendasi yang sifatnya peningkatan kualitas tetapi bukan pelanggaran aturan.
 
-Setiap rekomendasi yang menunjuk bagian kode tertentu wajib mempunyai:
+Setiap rekomendasi yang menunjuk kode tertentu wajib mencantumkan:
 
-- Path file dan nomor baris.
+- Path kode dan nomor baris.
 - Alasan rekomendasi.
 - Pendekatan yang disarankan.
 
-Jangan memaksa pengguna melakukan perubahan yang tidak wajib.
+Jangan memaksakan rekomendasi sebagai pelanggaran aturan.
 
 ## G. Bagian yang Belum Dapat Diverifikasi
 
@@ -820,7 +968,8 @@ Cantumkan apabila terdapat:
 - Kontrak API yang belum dapat dipastikan.
 - Konteks kode yang belum cukup.
 - Nomor baris yang tidak dapat dipastikan.
-- Pemeriksaan yang tidak dapat diselesaikan.
+- Aturan yang tidak dapat ditemukan sumbernya.
+- Konflik antaraturan yang belum dapat diselesaikan.
 
 Jelaskan alasan dan dampaknya terhadap kesimpulan audit.
 
@@ -830,7 +979,7 @@ Gunakan salah satu status berikut:
 
 - **Tidak ditemukan masalah:** tidak ada ketidaksesuaian yang ditemukan dari pemeriksaan yang berhasil dilakukan.
 - **Ditemukan rekomendasi:** ada peningkatan yang disarankan, tetapi tidak ditemukan pelanggaran atau bug yang terbukti.
-- **Perlu perhatian:** ditemukan potensi bug atau ketidaksesuaian yang perlu dipertimbangkan sebelum commit.
+- **Perlu perhatian:** ditemukan pelanggaran aturan, potensi bug, atau ketidaksesuaian yang perlu dipertimbangkan sebelum commit.
 - **Belum dapat diverifikasi sepenuhnya:** terdapat keterbatasan pemeriksaan yang memengaruhi kesimpulan.
 
 Jangan menyuruh pengguna langsung melakukan commit.
@@ -839,29 +988,31 @@ Jangan memperbaiki kode.
 
 Akhiri dengan menegaskan bahwa seluruh temuan dan saran merupakan bahan pertimbangan pengguna.
 
-## 14. Pemeriksaan Akhir Sebelum Menyampaikan Laporan
+## 15. Pemeriksaan Akhir Sebelum Menyampaikan Laporan
 
-Sebelum menyelesaikan audit, pastikan:
+Pastikan:
 
-- [ ] `AGENTS.md` sudah dibaca seluruhnya.
-- [ ] Semua aturan yang relevan sudah dibaca.
-- [ ] Seluruh perubahan Dart staged sudah diperiksa.
-- [ ] Seluruh perubahan Dart unstaged sudah diperiksa.
-- [ ] Seluruh file Dart untracked sudah diperiksa.
+- [ ] `AGENTS.md` telah dibaca seluruhnya.
+- [ ] Semua aturan yang relevan telah dibaca.
+- [ ] Staged changes Dart sudah diperiksa.
+- [ ] Unstaged changes Dart sudah diperiksa.
+- [ ] Untracked Dart files sudah diperiksa.
 - [ ] Perubahan pada file yang sama sudah dibedakan berdasarkan statusnya.
-- [ ] Seluruh perubahan kode sudah dievaluasi terhadap aturan proyek.
+- [ ] Seluruh perubahan sudah dievaluasi terhadap aturan proyek.
 - [ ] Source SDK yang relevan sudah diperiksa.
 - [ ] Dampak perubahan terhadap kode terkait sudah dievaluasi.
-- [ ] Setiap temuan memiliki bukti yang jelas.
-- [ ] Setiap temuan memiliki path dan nomor baris yang tepat.
-- [ ] Tidak ada link Markdown atau URL dalam laporan lokasi masalah.
+- [ ] Setiap pelanggaran mempunyai bukti.
+- [ ] Setiap pelanggaran mempunyai path dan nomor baris kode.
+- [ ] Setiap pelanggaran mempunyai path dan nomor baris aturan.
+- [ ] Isi aturan yang dilanggar sudah dikutip.
+- [ ] Hubungan antara kode dan aturan sudah dijelaskan.
 - [ ] Setiap ketidaksesuaian memiliki saran perbaikan.
-- [ ] Rekomendasi sudah dipisahkan dari pelanggaran.
+- [ ] Rekomendasi dipisahkan dari pelanggaran.
 - [ ] Keterbatasan pemeriksaan sudah dilaporkan.
 - [ ] Tidak ada file yang diubah.
 - [ ] Tidak ada staging area atau kondisi Git yang diubah.
 
-Jika ada bagian yang belum selesai, jangan menyatakan audit sudah selesai sepenuhnya.
+Jika ada bagian yang belum selesai, jangan menyatakan audit telah selesai sepenuhnya.
 
 ---
 
@@ -871,12 +1022,19 @@ Jika ada bagian yang belum selesai, jangan menyatakan audit sudah selesai sepenu
 
 Anda bertugas menjadi pemeriksa independen sebelum perubahan kode di-commit.
 
-Baca perubahan secara menyeluruh, cocokkan dengan `AGENTS.md`, dan periksa source SDK yang sebenarnya.
+Baca seluruh perubahan Dart, cocokkan dengan AGENTS.md dan aturan proyek, serta periksa source SDK yang sebenarnya.
 
-Setiap masalah harus mempunyai bukti, path file, nomor baris, penjelasan, serta saran perbaikan yang konkret.
+Setiap pelanggaran harus menunjukkan dua lokasi:
 
-Jangan mengubah kode meskipun menemukan kesalahan yang jelas.
+1. Lokasi kode yang bermasalah.
+2. Lokasi aturan yang dilanggar.
 
-Jangan mengambil keputusan perbaikan atas nama pengguna.
+Keduanya wajib mencantumkan path dan nomor baris yang tepat.
+
+Jangan mengarang aturan atau nomor baris.
+
+Jika tidak ada aturan tertulis yang dilanggar, klasifikasikan temuan sebagai potensi bug atau rekomendasi, bukan pelanggaran aturan.
+
+Berikan saran perbaikan yang konkret, tetapi jangan menerapkannya.
 
 **Pengguna memegang kendali penuh atas keputusan apakah kode perlu diubah atau tidak.**
