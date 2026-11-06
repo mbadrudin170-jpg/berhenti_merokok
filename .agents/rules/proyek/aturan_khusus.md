@@ -1068,3 +1068,186 @@ Commit `e8b8ace` menyusun ulang dependensi `pubspec.yaml` secara alfabetis, dan 
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` (misalnya alfabetis) agar perubahan lebih mudah ditinjau, tanpa mengubah kelompok atau sumber dependensi yang sudah ditetapkan.
+
+## Pemisahan Titik Masuk (main.dart) dan Widget Aplikasi (app.dart)
+
+**Tujuan:**
+Menjaga entry point aplikasi tetap minimal dan memisahkan tanggung jawab antara peluncuran aplikasi (`main()`) dan definisi widget root (`MyApp`).
+
+**Aturan:**
+1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export `app.dart` agar `MyApp` tetap dapat diimpor dari entry point.
+2. Definisi kelas `MyApp` dan logika widget root ditempatkan di `app.dart`.
+3. Jangan menempatkan logika UI, state, atau konfigurasi tema yang kompleks di dalam `main()`.
+
+**Contoh benar:**
+```dart
+// main.dart
+import 'package:berhenti_merokok/app.dart';
+import 'package:flutter/material.dart';
+
+export 'package:berhenti_merokok/app.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+```
+
+**Contoh salah:**
+```dart
+// main.dart berisi seluruh definisi MyApp dan logika UI.
+class MyApp extends StatelessWidget { ... }
+void main() => runApp(const MyApp());
+```
+
+**Alasan:**
+Commit `32967bb` memindahkan definisi `MyApp` dari `main.dart` ke `app.dart` dan menyisakan `main()` di `main.dart` dengan re-export. Pemisahan ini memudahkan pengujian dan pemeliharaan entry point.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari definisi widget root (`MyApp`) agar tanggung jawab setiap file jelas dan entry point tetap minimal.
+
+## Root App Widget sebagai ConsumerStatefulWidget
+
+**Tujuan:**
+Memungkinkan widget root mengakses dan mengamati provider (misalnya tema) melalui Riverpod, serta menyembunyikan banner debug pada build non-debug.
+
+**Aturan:**
+1. Jika `MyApp` perlu mengamati provider (misalnya `TemaNotifier`), gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
+2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
+3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
+
+**Contoh benar:**
+```dart
+class MyApp extends ConsumerStatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const Home(),
+    );
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: true,
+      home: const Home(),
+    );
+  }
+}
+```
+
+**Alasan:**
+Perubahan pada working tree (staged) mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema/locale); pertahankan `debugShowCheckedModeBanner: false` pada build pengembangan.
+
+## Layar Home sebagai ConsumerStatefulWidget dengan Siklus Hidup
+
+**Tujuan:**
+Memastikan layar utama yang membutuhkan akses provider dan pengelolaan siklus hidup (`initState`/`dispose`) menggunakan `ConsumerStatefulWidget`.
+
+**Aturan:**
+1. Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan `ref` dan pengelolaan siklus hidup widget.
+2. Implementasikan `initState` dan `dispose` sesuai kebutuhan, dengan pemanggilan `super` yang benar.
+3. Hindari meninggalkan `TODO` pada `initState`/`dispose` setelah implementasi selesai.
+
+**Contoh benar:**
+```dart
+class Home extends ConsumerStatefulWidget {
+  const Home({super.key});
+
+  @override
+  ConsumerState<Home> createState() => _HomeState();
+}
+
+class _HomeState extends ConsumerState<Home> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('data')),
+      body: const Center(child: Text('Home')),
+    );
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Tidak dapat mengakses ref atau lifecycle.
+    return const Scaffold(body: Center(child: Text('Home')));
+  }
+}
+```
+
+**Alasan:**
+Commit `0a6e373` menambahkan `Home` sebagai `ConsumerStatefulWidget` dengan `initState` dan `dispose`. Pola ini mempersiapkan layar untuk integrasi provider dan pengelolaan resource.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan akses provider dan pengelolaan siklus hidup; pastikan `initState`/`dispose` memanggil `super` dengan benar.
+
+## Pengelolaan Tema melalui TemaNotifier (Riverpod Generator)
+
+**Tujuan:**
+Mengelola state tema aplikasi melalui Notifier yang dibuat dengan `riverpod_generator`, bukan nilai hardcode di widget.
+
+**Aturan:**
+1. Buat `TemaNotifier` sebagai kelas `Notifier` dengan anotasi `@riverpod`.
+2. Gunakan `build()` untuk mengembalikan nilai tema awal.
+3. Jangan meng-hardcode tema final di widget; biarkan Notifier menjadi sumber kebenaran.
+
+**Contoh benar:**
+```dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'tema_notifier.g.dart';
+
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Tema ditentukan langsung di widget tanpa Notifier.
+MaterialApp(theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)));
+```
+
+**Alasan:**
+Commit `4498593` menambahkan `TemaNotifier` menggunakan `riverpod_generator`. Pola ini memisahkan pengelolaan tema dari widget presentasi.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Kelola state tema aplikasi melalui Notifier (Riverpod Generator) agar tema dapat diubah dan diamati secara terpusat, bukan di-hardcode di widget.

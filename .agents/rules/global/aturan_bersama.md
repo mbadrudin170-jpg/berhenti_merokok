@@ -268,3 +268,171 @@ dev_dependencies:
 
 **Alasan:**
 Urutan yang konsisten memudahkan peninjauan diff pada `pubspec.yaml` dan mencegah perubahan urutan yang tidak perlu saat instalasi ulang paket.
+
+## Pemisahan Titik Masuk dan Widget Aplikasi
+
+Jaga agar entry point aplikasi (`main()`) tetap minimal dan pisahkan definisi widget root (`MyApp`) ke file tersendiri.
+
+**Aturan:**
+
+1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export file yang memuat `MyApp`.
+2. Definisi kelas `MyApp` dan logika widget root ditempatkan di file terpisah (mis. `app.dart`).
+3. Jangan menempatkan logika UI, state, atau konfigurasi yang kompleks di dalam `main()`.
+
+**Contoh benar:**
+```dart
+// main.dart
+import 'package:aplikasi/app.dart';
+import 'package:flutter/material.dart';
+
+export 'package:aplikasi/app.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+```
+
+**Contoh salah:**
+```dart
+// main.dart berisi seluruh definisi MyApp dan logika UI.
+class MyApp extends StatelessWidget { ... }
+void main() => runApp(const MyApp());
+```
+
+**Alasan:**
+Pemisahan ini menjaga entry point tetap minimal dan memudahkan pengujian serta pemeliharaan.
+
+## Root Widget sebagai ConsumerStatefulWidget ketika Membutuhkan Provider
+
+Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema atau locale).
+
+**Aturan:**
+
+1. Jika `MyApp` perlu mengamati provider, gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
+2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
+3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
+
+**Contoh benar:**
+```dart
+class MyApp extends ConsumerStatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Aplikasi',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const Home(),
+    );
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: true,
+      home: const Home(),
+    );
+  }
+}
+```
+
+**Alasan:**
+Menggunakan `ConsumerStatefulWidget` pada root hanya saat dibutuhkan menjaga widget tetap sederhana, sementara `debugShowCheckedModeBanner: false` menjaga tampilan pengembangan tetap bersih.
+
+## Layar dengan Siklus Hidup Menggunakan ConsumerStatefulWidget
+
+Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan akses provider dan pengelolaan siklus hidup (`initState`/`dispose`).
+
+**Aturan:**
+
+1. Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan `ref` dan pengelolaan siklus hidup widget.
+2. Implementasikan `initState` dan `dispose` sesuai kebutuhan, dengan pemanggilan `super` yang benar.
+3. Hindari meninggalkan `TODO` pada `initState`/`dispose` setelah implementasi selesai.
+
+**Contoh benar:**
+```dart
+class Home extends ConsumerStatefulWidget {
+  const Home({super.key});
+
+  @override
+  ConsumerState<Home> createState() => _HomeState();
+}
+
+class _HomeState extends ConsumerState<Home> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: Text('Home')));
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Tidak dapat mengakses ref atau lifecycle.
+    return const Scaffold(body: Center(child: Text('Home')));
+  }
+}
+```
+
+**Alasan:**
+Pola ini mempersiapkan layar untuk integrasi provider dan pengelolaan resource dengan lifecycle yang benar.
+
+## Pengelolaan Tema melalui Notifier (Riverpod)
+
+Kelola state tema aplikasi melalui Notifier yang dibuat dengan `riverpod_generator`, bukan nilai hardcode di widget.
+
+**Aturan:**
+
+1. Buat Notifier tema sebagai kelas dengan anotasi `@riverpod`.
+2. Gunakan `build()` untuk mengembalikan nilai tema awal.
+3. Jangan meng-hardcode tema final di widget; biarkan Notifier menjadi sumber kebenaran.
+
+**Contoh benar:**
+```dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'tema_notifier.g.dart';
+
+@riverpod
+class TemaNotifier extends _$TemaNotifier {
+  @override
+  String build() {
+    return '';
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Tema ditentukan langsung di widget tanpa Notifier.
+MaterialApp(theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)));
+```
+
+**Alasan:**
+Memisahkan pengelolaan tema dari widget presentasi memungkinkan tema diubah dan diamati secara terpusat.
