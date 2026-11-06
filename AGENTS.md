@@ -4057,6 +4057,166 @@ MaterialApp(
 Commit `e38d1c0` menerapkan mode tema dinamis dari `TemaNotifier` ke `MaterialApp` dengan dukungan dark theme. Pola ini menjaga konsistensi tampilan pada mode terang/gelap/sistem.
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Saat mengamati state async di widget, gunakan `.asData?.value` untuk membaca nilai dengan aman; sediakan `theme`, `darkTheme`, dan `themeMode` agar tema dapat berubah dinamis.
+## Sinkronisasi Tema Material UI dengan Mode Terang/Gelap pada `App`
+**Cakupan:**
+- `lib/app.dart` — `_MyAppState` (WidgetsBindingObserver), `build`.
+- Paket `material_ui` (`mui.Theme`, `mui.ThemeData`, `mui.ColorScheme`).
+**Aturan wajib:**
+1. `_MyAppState` wajib mengimplementasikan `WidgetsBindingObserver` dan mendaftarkan observer pada `initState` serta melepasnya pada `dispose`.
+2. Implementasikan `didChangePlatformBrightness` yang memanggil `setState(() {})` agar UI membangun ulang saat kecerahan platform berubah.
+3. Hitung `Brightness` aktif berdasarkan `ThemeMode` (terang → light, gelap → dark, sistem → `platformDispatcher.platformBrightness`).
+4. Bangun `mui.ThemeData` dari `mui.ColorScheme.fromSeed` dengan brightness aktif, lalu bungkus `MaterialApp` dengan `mui.Theme(data: materialUiTheme, child: ...)`.
+5. Pertahankan `theme`, `darkTheme`, dan `themeMode` pada `MaterialApp` agar tema Flutter tetap sinkron.
+**Larangan:**
+- Jangan membungkus `MaterialApp` dengan `mui.Theme` tanpa menyesuaikan brightness dengan `ThemeMode` aktif.
+- Jangan lupa mendaftarkan/menlepas `WidgetsBindingObserver`.
+**Alasan:**
+Commit `b55fc5d` menambahkan observer dan membangun `mui.ThemeData` berdasarkan brightness aktif, sehingga komponen `material_ui` (termasuk `adaptive_dialog`) mengikuti mode tema terang/gelap. Pola ini mencegah tampilan dialog yang tidak sesuai dengan tema aplikasi.
+**Contoh benar:**
+```dart
+class _MyAppState extends ConsumerState<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  @override
+  void didChangePlatformBrightness() {
+    setState(() {});
+  }
+  @override
+  Widget build(BuildContext context) {
+    final brightness = switch (themeMode) {
+      ThemeMode.light => Brightness.light,
+      ThemeMode.dark => Brightness.dark,
+      ThemeMode.system =>
+        WidgetsBinding.instance.platformDispatcher.platformBrightness,
+    };
+    final materialUiTheme = mui.ThemeData.from(
+      colorScheme: mui.ColorScheme.fromSeed(
+        seedColor: Colors.deepPurple,
+        brightness: brightness,
+      ),
+    );
+    return mui.Theme(
+      data: materialUiTheme,
+      child: MaterialApp(
+        themeMode: themeMode,
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+        darkTheme: ThemeData(
+          colorScheme: .fromSeed(
+            seedColor: Colors.deepPurple,
+            brightness: Brightness.dark,
+          ),
+        ),
+        home: const Home(),
+      ),
+    );
+  }
+}
+```
+**Contoh salah:**
+```dart
+class _MyAppState extends ConsumerState<App> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      themeMode: themeMode,
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      home: const Home(),
+    ); // material_ui tidak mengikuti tema aktif
+  }
+}
+```
+**Sumber evaluasi:**
+- Commit: `b55fc5da9382f50b5fb49d23309c85e345f0299b`
+- File: `lib/app.dart`
+## Pemilihan Tema pada `PengaturanScreen`
+**Cakupan:**
+- `lib/fitur/pengaturan/screens/pengaturan_screen.dart` — `_PengaturanScreenState._buildTema`, `_ubahTema`.
+- `lib/fitur/tema/enum/tema_enum.dart` — `TemaEnum`, `TemaEnumExtension` (label, icon).
+**Aturan wajib:**
+1. Gunakan `PopupMenuButton<TemaEnum>` dengan `initialValue` dari state tema saat ini untuk memilih tema.
+2. Baca `temaProvider` dengan `ref.watch` dan periksa `.isLoading`/`.hasError` sebelum `.requireValue`, sesuai aturan AsyncValue.
+3. Tampilkan ikon dan label pada setiap `PopupMenuItem` serta pada tombol pemilih.
+4. Panggil `ref.read(temaProvider.notifier).set(tema)` melalui metode async terpisah (`_ubahTema`) yang dibungkus `try/catch`, dicatat dengan `L.e`, dan dijalankan dengan `unawaited`.
+5. Gunakan `MainAxisAlignment.spaceBetween` pada baris label dan pemilih agar tata letak rapi.
+**Larangan:**
+- Jangan memanggil `set` langsung di `onSelected` tanpa penanganan error.
+- Jangan membaca `temaProvider` dengan `.value`/`.valueOrNull`.
+**Alasan:**
+Commit `682d50e` menambahkan `PengaturanScreen` dengan pemilihan tema via `PopupMenuButton`, menambahkan getter `icon` pada `TemaEnumExtension`, dan navigasi dari `LainnyaScreen`. Pola ini menjaga konsistensi penanganan AsyncValue dan error pada aksi ubah tema.
+**Contoh benar:**
+```dart
+Widget _buildTema() {
+  final temaAsync = ref.watch(temaProvider);
+  if (temaAsync.isLoading) return const SizedBox.shrink();
+  if (temaAsync.hasError) return const SizedBox.shrink();
+  final temaSaatIni = temaAsync.requireValue;
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text('Tema', style: Theme.of(context).textTheme.bodyMedium),
+      PopupMenuButton<TemaEnum>(
+        initialValue: temaSaatIni,
+        onSelected: (tema) => unawaited(_ubahTema(tema)),
+        itemBuilder: (context) => TemaEnum.values
+            .map(
+              (tema) => PopupMenuItem<TemaEnum>(
+                value: tema,
+                child: Row(
+                  spacing: 8,
+                  children: [Icon(tema.icon), Text(tema.label)],
+                ),
+              ),
+            )
+            .toList(),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 8,
+          children: [
+            Icon(temaSaatIni.icon),
+            Text(temaSaatIni.label),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+Future<void> _ubahTema(TemaEnum tema) async {
+  try {
+    await ref.read(temaProvider.notifier).set(tema);
+  } on Exception catch (e, s) {
+    L.e('Gagal mengubah tema: $e $s');
+  }
+}
+```
+**Contoh salah:**
+```dart
+Widget _buildTema() {
+  final temaSaatIni =
+      ref.watch(temaProvider).asData?.value ?? TemaEnum.sistem; // tanpa status check
+  return Row(
+    children: [
+      PopupMenuButton<TemaEnum>(
+        onSelected: (tema) {
+          unawaited(ref.read(temaProvider.notifier).set(tema)); // tanpa try/catch
+        },
+        // ...
+      ),
+    ],
+  );
+}
+```
+**Sumber evaluasi:**
+- Commit: `682d50ef3c412feaac27f2bba37de4148b2ef8f5`
+- File: `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `lib/fitur/tema/enum/tema_enum.dart`, `lib/lainnya_screen.dart`
 ## Validasi Form Mengembalikan `String?`
 **Tujuan:**
 Memastikan validator input form mengembalikan nilai yang sesuai dengan kontrak `FormFieldValidator` (`String?`).
