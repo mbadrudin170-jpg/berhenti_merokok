@@ -8,7 +8,4 @@ class BiodataNotifier extends _$BiodataNotifier {
   String build() {
     return "";
   }
-  void _muatData() {
-    
-  }
 }
