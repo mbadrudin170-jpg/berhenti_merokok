@@ -912,6 +912,34 @@ Future<void> _simpanForm() async {
 
 Contoh benar menggunakan guard `_isLoading` di awal metode, overlay EasyLoading dengan `unawaited`, dan `EasyLoading.dismiss()` di `finally`, sehingga loading selalu dihentikan meskipun terjadi exception. Contoh salah menampilkan loading ganda, menghilangkan guard, dan tidak menjamin dismiss overlay.
 
+## Inisialisasi EasyLoading pada App
+
+**Cakupan:**
+- `lib/app.dart` — `_MyAppState.build`, khususnya `MaterialApp.builder`.
+
+**Aturan wajib:**
+1. Inisialisasi `flutter_easyloading` pada `MaterialApp.builder` menggunakan `EasyLoading.init()`.
+2. Jangan memanggil `EasyLoading.init()` di tempat lain atau menggantinya dengan widget loading custom.
+
+**Contoh benar:**
+```dart
+MaterialApp(
+  builder: EasyLoading.init(),
+  /* ... */
+);
+```
+
+**Contoh salah:**
+```dart
+MaterialApp(
+  // EasyLoading.init() tidak didaftarkan -> overlay tidak tampil.
+  /* ... */
+);
+```
+
+**Alasan:**
+`EasyLoading.init()` mendaftarkan overlay builder yang diperlukan agar `EasyLoading.show()` dapat menampilkan loading overlay di atas seluruh UI.
+
 ## Hierarki Tipografi pada Tabel Perbandingan Kendaraan
 
 **Cakupan:**

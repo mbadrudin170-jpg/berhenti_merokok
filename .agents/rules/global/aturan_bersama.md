@@ -693,3 +693,75 @@ import 'package:share_global_saya/core_shared.dart';
 
 **Alasan:**
 Menggunakan widget reusable menjaga konsistensi dan mengurangi duplikasi.
+
+## Side Effect di dalam `build()`
+
+Hindari memutasi state, controller, atau data di dalam metode `build()`.
+
+**Aturan:**
+1. Jangan memanggil `setState`, menulis ke `TextEditingController`, atau memutasi variabel state di dalam `build()`.
+2. Jangan menggunakan callback seperti `whenData`/`when` untuk menjalankan side effect (mis. mengisi controller) langsung di `build()`.
+3. Jika data async perlu disalin ke state lokal (mis. controller), lakukan pada `initState`, `ref.listen`, atau `addPostFrameCallback`, dengan pengecekan `mounted`.
+4. `build()` harus bersifat idempoten dan hanya membangun UI berdasarkan state yang sudah tersedia.
+
+**Contoh benar:**
+```dart
+@override
+void initState() {
+  super.initState();
+  ref.listenManual(biodataProvider, (previous, next) {
+    next.whenData((biodata) {
+      if (biodata != null && !_sudahDiisi) {
+        _sudahDiisi = true;
+        _namaController.text = biodata.nama;
+      }
+    });
+  });
+}
+```
+
+**Contoh salah:**
+```dart
+@override
+Widget build(BuildContext context) {
+  final biodataAsync = ref.watch(biodataProvider);
+  biodataAsync.whenData((biodata) {
+    if (biodata != null && !_sudahDiisi) {
+      _sudahDiisi = true;
+      _namaController.text = biodata.nama; // side effect di build
+    }
+  });
+  return Scaffold(/* ... */);
+}
+```
+
+**Alasan:**
+Side effect di `build()` dapat menyebabkan loop rebuild, inkonsistensi state, dan perilaku yang sulit diprediksi karena `build()` dapat dipanggil berkali-kali.
+
+## Parameter Binding pada SQL Mentah
+
+Saat menjalankan SQL mentah atau query dengan filter, gunakan parameter binding.
+
+**Aturan:**
+1. Gunakan `whereArgs` (atau argumen parameter) untuk nilai dinamis/filter.
+2. Jangan menginterpolasi nilai pengguna atau variabel dinamis ke dalam string SQL.
+3. Nama tabel dan kolom boleh ditulis langsung hanya jika merupakan konstanta yang terverifikasi, bukan input pengguna.
+
+**Contoh benar:**
+```dart
+final rows = await db.query(
+  'biodata',
+  where: 'id = ?',
+  whereArgs: [id],
+);
+```
+
+**Contoh salah:**
+```dart
+final rows = await db.rawQuery(
+  "SELECT * FROM biodata WHERE id = '$id'", // interpolasi -> risiko SQL injection
+);
+```
+
+**Alasan:**
+Parameter binding mencegah SQL injection dan kesalahan parsing nilai (mis. tanda kutip) pada data dinamis.

@@ -498,7 +498,66 @@ import 'package:share_global_saya/core_shared.dart';
 ```
 **Alasan:**
 Menggunakan widget reusable menjaga konsistensi dan mengurangi duplikasi.
-
+## Side Effect di dalam `build()`
+Hindari memutasi state, controller, atau data di dalam metode `build()`.
+**Aturan:**
+1. Jangan memanggil `setState`, menulis ke `TextEditingController`, atau memutasi variabel state di dalam `build()`.
+2. Jangan menggunakan callback seperti `whenData`/`when` untuk menjalankan side effect (mis. mengisi controller) langsung di `build()`.
+3. Jika data async perlu disalin ke state lokal (mis. controller), lakukan pada `initState`, `ref.listen`, atau `addPostFrameCallback`, dengan pengecekan `mounted`.
+4. `build()` harus bersifat idempoten dan hanya membangun UI berdasarkan state yang sudah tersedia.
+**Contoh benar:**
+```dart
+@override
+void initState() {
+  super.initState();
+  ref.listenManual(biodataProvider, (previous, next) {
+    next.whenData((biodata) {
+      if (biodata != null && !_sudahDiisi) {
+        _sudahDiisi = true;
+        _namaController.text = biodata.nama;
+      }
+    });
+  });
+}
+```
+**Contoh salah:**
+```dart
+@override
+Widget build(BuildContext context) {
+  final biodataAsync = ref.watch(biodataProvider);
+  biodataAsync.whenData((biodata) {
+    if (biodata != null && !_sudahDiisi) {
+      _sudahDiisi = true;
+      _namaController.text = biodata.nama; // side effect di build
+    }
+  });
+  return Scaffold(/* ... */);
+}
+```
+**Alasan:**
+Side effect di `build()` dapat menyebabkan loop rebuild, inkonsistensi state, dan perilaku yang sulit diprediksi karena `build()` dapat dipanggil berkali-kali.
+## Parameter Binding pada SQL Mentah
+Saat menjalankan SQL mentah atau query dengan filter, gunakan parameter binding.
+**Aturan:**
+1. Gunakan `whereArgs` (atau argumen parameter) untuk nilai dinamis/filter.
+2. Jangan menginterpolasi nilai pengguna atau variabel dinamis ke dalam string SQL.
+3. Nama tabel dan kolom boleh ditulis langsung hanya jika merupakan konstanta yang terverifikasi, bukan input pengguna.
+**Contoh benar:**
+```dart
+final rows = await db.query(
+  'biodata',
+  where: 'id = ?',
+  whereArgs: [id],
+);
+```
+**Contoh salah:**
+```dart
+final rows = await db.rawQuery(
+  "SELECT * FROM biodata WHERE id = '$id'", // interpolasi -> risiko SQL injection
+);
+```
+**Alasan:**
+Parameter binding mencegah SQL injection dan kesalahan parsing nilai (mis. tanda kutip) pada data dinamis.
 
 // ============================================================
 // FILE: .agents/rules/global/aturan_global.md
@@ -3324,6 +3383,28 @@ Future<void> _simpanForm() async {
 ```
 **Penjelasan perbedaan:**
 Contoh benar menggunakan guard `_isLoading` di awal metode, overlay EasyLoading dengan `unawaited`, dan `EasyLoading.dismiss()` di `finally`, sehingga loading selalu dihentikan meskipun terjadi exception. Contoh salah menampilkan loading ganda, menghilangkan guard, dan tidak menjamin dismiss overlay.
+## Inisialisasi EasyLoading pada App
+**Cakupan:**
+- `lib/app.dart` — `_MyAppState.build`, khususnya `MaterialApp.builder`.
+**Aturan wajib:**
+1. Inisialisasi `flutter_easyloading` pada `MaterialApp.builder` menggunakan `EasyLoading.init()`.
+2. Jangan memanggil `EasyLoading.init()` di tempat lain atau menggantinya dengan widget loading custom.
+**Contoh benar:**
+```dart
+MaterialApp(
+  builder: EasyLoading.init(),
+  /* ... */
+);
+```
+**Contoh salah:**
+```dart
+MaterialApp(
+  // EasyLoading.init() tidak didaftarkan -> overlay tidak tampil.
+  /* ... */
+);
+```
+**Alasan:**
+`EasyLoading.init()` mendaftarkan overlay builder yang diperlukan agar `EasyLoading.show()` dapat menampilkan loading overlay di atas seluruh UI.
 ## Hierarki Tipografi pada Tabel Perbandingan Kendaraan
 **Cakupan:**
 - `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` — DataTable dengan header kolom, label baris, dan nilai data.
