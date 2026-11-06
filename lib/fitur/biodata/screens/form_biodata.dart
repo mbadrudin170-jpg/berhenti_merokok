@@ -124,7 +124,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     }
     if (!mounted) return;
     setState(() => _isLoading = true);
-    unawaited(EasyLoading.show(status: 'Menyimpan...'));
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
     try {
       final existing = ref.read(biodataProvider).asData?.value;
       final model = BiodataModel(

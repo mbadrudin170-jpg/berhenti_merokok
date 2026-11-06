@@ -38,7 +38,12 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     if (!context.mounted) return;
 
     setState(() => _sedangMemuat = true);
-    unawaited(EasyLoading.show(status: 'Menyimpan...'));
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
     try {
       await DummyHelper.insert();
       await _refreshProvider();
@@ -78,7 +83,12 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     if (!context.mounted) return;
 
     setState(() => _sedangMemuat = true);
-    unawaited(EasyLoading.show(status: 'Menghapus...'));
+    unawaited(
+      EasyLoading.show(
+        status: 'Menghapus...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
     try {
       await DummyHelper.delete();
       await _refreshProvider();
@@ -118,7 +128,12 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     if (!context.mounted) return;
 
     setState(() => _sedangMemuat = true);
-    unawaited(EasyLoading.show(status: 'Memproses...'));
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
     try {
       await DummyHelper.delete();
       await DummyHelper.insert();

@@ -5125,6 +5125,106 @@ BiodataModel(
 - File: `lib/fitur/dummy/dummy_data/dummy_biodata.dart`
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Data dummy sebaiknya menggunakan nilai relatif terhadap waktu sekarang (bukan tanggal statis) agar tetap realistis sepanjang waktu; field baru pada model wajib diisi pada data dummy agar pengujian mencakup data lengkap.
+## Penambahan Field Baru pada Model (Vertical Slice)
+**Cakupan:**
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel` (Freezed).
+- `lib/fitur/biodata/model/biodata_model.freezed.dart` — file generated.
+- `lib/shared/konstanta/nama_kolom.dart` — `NamaKolom`.
+- `lib/shared/db/sqflite/sqflite.dart` — `_buatTabel`, `_onUpgrade`, `_versiDatabase`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState`.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — `_BiodataScreenState`.
+- `lib/fitur/dummy/dummy_data/dummy_biodata.dart` — data dummy.
+**Aturan wajib:**
+1. Tambahkan field baru pada model (Freezed) beserta pemetaan pada `fromSqflite` (parsing via `ParserUtil`, konversi UTC→lokal dengan `.toLocal()`) dan `toSqflite` (konversi lokal→UTC ISO8601 string).
+2. Tambahkan konstanta kolom baru pada `NamaKolom` (atau konstanta skema yang relevan), jangan gunakan string literal.
+3. Naikkan `_versiDatabase`, tambahkan kolom pada `CREATE TABLE` di `_buatTabel`, dan tambahkan migrasi pada `_onUpgrade` dengan guard `if (oldVersion < N)` (gunakan `ALTER TABLE ... ADD COLUMN` untuk kolom baru).
+4. Tambahkan input pada form yang relevan: variabel state, pengisian dari data tersimpan (listener), pemilih (mis. date picker), dan penyertaan nilai pada model saat simpan.
+5. Tambahkan tampilan field pada layar baca (display screen) yang relevan.
+6. Tambahkan nilai dummy yang sesuai pada data dummy, menggunakan nilai relatif terhadap waktu sekarang untuk field tanggal.
+7. Regenerasi file hasil generator (`.freezed.dart`, `.g.dart`) melalui generator; jangan edit manual.
+8. Jika field baru memerlukan tab/navigasi baru, ikuti aturan "Penambahan Tab Baru pada Navigasi Lazy (Home)".
+**Larangan:**
+- Jangan menambah field pada model tanpa memperbarui parsing/serialisasi, konstanta kolom, migrasi DB, form, tampilan, dan dummy data.
+- Jangan menaikkan versi database tanpa menambahkan migrasi yang sesuai.
+- Jangan mengedit file `.freezed.dart`/`.g.dart` secara manual.
+- Jangan menambah field model baru tanpa nilai dummy yang sesuai.
+**Alasan:**
+Commit `9dd29089` menambahkan field `tanggalMulaiBerhentiMerokok` pada `BiodataModel` dan memperbarui seluruh lapisan yang bergantung padanya: model (parsing/serialisasi), `NamaKolom`, skema database (versi 2→3 dengan `ALTER TABLE`), form (state, listener, date picker, simpan), tampilan (`BiodataScreen`), serta data dummy (commit `f9af412c`). Pola vertical slice ini memastikan tidak ada lapisan yang tertinggal saat field baru ditambahkan, yang dapat menyebabkan data tidak tersimpan, tidak tampil, atau migrasi gagal pada perangkat lama.
+**Dampak apabila dilanggar:**
+- Field baru tidak tersimpan/ditampilkan (data hilang atau null).
+- Migrasi skema gagal pada perangkat dengan database lama.
+- Dummy data tidak lengkap sehingga pengujian tidak mencakup field baru.
+- File generated tidak sinkron dengan sumber, menyebabkan error kompilasi.
+**Rujukan implementasi:**
+- `lib/fitur/biodata/model/biodata_model.dart` — commit `9dd29089`.
+- `lib/shared/konstanta/nama_kolom.dart` — commit `9dd29089`.
+- `lib/shared/db/sqflite/sqflite.dart` — commit `9dd29089`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — commit `9dd29089`.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — commit `9dd29089`.
+- `lib/fitur/dummy/dummy_data/dummy_biodata.dart` — commit `f9af412c`.
+**Contoh benar:**
+```dart
+// 1. Model: tambah field + parsing + serialisasi.
+@freezed
+abstract class BiodataModel with _$BiodataModel {
+  const factory BiodataModel({
+    required String id,
+    required String nama,
+    DateTime? tanggalMulaiBerhentiMerokok,
+  }) = _BiodataModel;
+  factory BiodataModel.fromSqflite(Map<String, dynamic> row) => BiodataModel(
+        id: ParserUtil.parseString(row[NamaKolom.id]),
+        nama: ParserUtil.parseString(row[NamaKolom.nama]),
+        tanggalMulaiBerhentiMerokok: ParserUtil.parseDateTime(
+          row[NamaKolom.tanggalMulaiBerhentiMerokok],
+        )?.toLocal(),
+      );
+}
+Map<String, dynamic> toSqflite() => {
+      NamaKolom.id: id,
+      NamaKolom.nama: nama,
+      NamaKolom.tanggalMulaiBerhentiMerokok:
+          tanggalMulaiBerhentiMerokok?.toUtc().toIso8601String(),
+    };
+}
+// 2. Konstanta kolom.
+class NamaKolom {
+  static const String tanggalMulaiBerhentiMerokok =
+      'tanggal_mulai_berhenti_merokok';
+}
+// 3. Migrasi: naikkan versi + ALTER TABLE.
+static const int _versiDatabase = 3;
+// onCreate: ... ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT
+// onUpgrade:
+if (oldVersion < 3) {
+  await db.execute(
+    'ALTER TABLE ${NamaTabel.biodata} '
+    'ADD COLUMN ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT',
+  );
+}
+```
+**Contoh salah:**
+```dart
+// Hanya menambah field pada model, tanpa memperbarui lapisan lain.
+@freezed
+abstract class BiodataModel with _$BiodataModel {
+  const factory BiodataModel({
+    required String id,
+    required String nama,
+    DateTime? tanggalMulaiBerhentiMerokok, // field baru
+  }) = _BiodataModel;
+}
+// NamaKolom tidak ditambahkan -> parsing pakai string literal atau null.
+// Versi database tidak dinaikkan -> perangkat lama tidak punya kolom.
+// Form tidak menambah input -> field tidak dapat diisi.
+// Dummy data tidak diisi -> field null pada pengujian.
+```
+**Sumber evaluasi:**
+- Commit: `9dd290894c133aed166035542a972bf696b7fd79`
+- Commit: `f9af412cbd090ad4e6023298cc3b76ec42c80446`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/shared/konstanta/nama_kolom.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/dummy/dummy_data/dummy_biodata.dart`
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Saat menambah field pada model, pastikan seluruh lapisan yang bergantung (parsing, serialisasi, konstanta skema, migrasi database, form, tampilan, dan data dummy) diperbarui secara konsisten agar tidak ada data yang hilang atau tidak tersimpan. Prinsip umum ini sudah tercakup pada aturan bersama yang ada (Serialisasi Model, Konstanta Skema, Migrasi Skema, Data Dummy Tanggal Relatif); detail checklist vertical slice bersifat khusus proyek.
 
 
 // ============================================================
