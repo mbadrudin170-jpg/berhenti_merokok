@@ -2940,3 +2940,85 @@ abstract class BiodataModel with _$BiodataModel {
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Saat menambah field pada model, pastikan seluruh lapisan yang bergantung (parsing, serialisasi, konstanta skema, migrasi database, form, tampilan, dan data dummy) diperbarui secara konsisten agar tidak ada data yang hilang atau tidak tersimpan. Prinsip umum ini sudah tercakup pada aturan bersama yang ada (Serialisasi Model, Konstanta Skema, Migrasi Skema, Data Dummy Tanggal Relatif); detail checklist vertical slice bersifat khusus proyek.
+
+## State Impian dengan Field Turunan (Freezed)
+
+**Cakupan:**
+- `lib/fitur/impian/state/impian_state.dart` — `ImpianState`.
+- `lib/fitur/impian/notifier/impian_notifier.dart` — `ImpianNotifier` (build, tambah, ubah, hapus, batch).
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState.build`.
+- `lib/fitur/impian/notifier/impian_notifier.g.dart` — file generated.
+
+**Aturan wajib:**
+1. `ImpianState` (Freezed) memuat `listImpian`, `jumlahImpian`, dan `totalJumlah`.
+2. `jumlahImpian` = jumlah item dalam `listImpian`; `totalJumlah` = agregasi `fold<double>` dari `element.jumlah` pada `listImpian`.
+3. Setiap mutasi (tambah, ubah, hapus, batch) wajib membangun `ImpianState` baru dengan `listImpian` hasil mutasi dan `jumlahImpian`/`totalJumlah` yang dihitung ulang dari list tersebut.
+4. Gunakan `fold<double>(0, (prev, e) => prev + e.jumlah)` untuk menghitung `totalJumlah`.
+5. Gunakan `@Default([])` untuk `listImpian` dan `@Default(0)` untuk `jumlahImpian`/`totalJumlah`.
+6. Screen wajib me-`watch` `impianProvider`, menangani `.isLoading`/`.hasError`/`.requireValue`, dan menyediakan tombol retry yang memanggil `ref.refresh(impianProvider)`.
+7. Navigasi ke form wajib menggunakan `const FormImpian()`.
+
+**Larangan:**
+- Jangan membangun `ImpianState` baru tanpa menghitung ulang `jumlahImpian` dan `totalJumlah` dari `listImpian` hasil mutasi.
+- Jangan menyimpan nilai turunan yang stale (tidak dihitung ulang) pada state.
+- Jangan menghitung `jumlahImpian`/`totalJumlah` di UI; hitung di notifier.
+- Jangan me-`watch` provider lama (`List<ImpianModel>`) setelah migrasi ke `ImpianState`.
+
+**Alasan:**
+Commit `4aaa5a3` memigrasikan state impian dari `List<ImpianModel>` ke `ImpianState` yang memuat `listImpian`, `jumlahImpian`, dan `totalJumlah`. Seluruh mutasi (tambah, ubah, hapus, batch) membangun `ImpianState` baru dengan agregat yang dihitung ulang via `fold<double>`, sehingga nilai turunan tidak stale. Screen juga diperbarui untuk menangani loading/error/retry sesuai pola AsyncValue.
+
+**Dampak apabila dilanggar:**
+- Nilai turunan (jumlah, total) stale setelah mutasi, menyebabkan tampilan tidak konsisten.
+- Screen tidak menangani loading/error, sehingga pengguna tidak mendapat feedback saat gagal memuat.
+- File generated (`.g.dart`) tidak sinkron dengan sumber, menyebabkan error kompilasi.
+
+**Rujukan implementasi:**
+- `lib/fitur/impian/state/impian_state.dart` — definisi Freezed.
+- `lib/fitur/impian/notifier/impian_notifier.dart` — semua mutasi membangun `ImpianState` dengan agregat dihitung ulang.
+- `lib/fitur/impian/screens/impian_screen.dart` — loading/error/retry + `const FormImpian()`.
+- `lib/fitur/impian/notifier/impian_notifier.g.dart` — file generated.
+
+**Contoh benar:**
+```dart
+state = AsyncValue.data(
+  ImpianState(
+    listImpian: [...dataLama.listImpian, impian],
+    jumlahImpian: dataLama.jumlahImpian + 1,
+    totalJumlah: dataLama.totalJumlah + impian.jumlah,
+  ),
+);
+// Atau hitung ulang dari list hasil:
+final totalJumlah = baru.fold<double>(
+  0,
+  (previousValue, element) => previousValue + element.jumlah,
+);
+state = AsyncValue.data(
+  ImpianState(
+    listImpian: baru,
+    jumlahImpian: baru.length,
+    totalJumlah: totalJumlah,
+  ),
+);
+```
+
+**Contoh salah:**
+```dart
+// State lama: hanya list, tanpa agregat.
+state = AsyncValue.data([...dataLama, impian]);
+
+// State baru tapi agregat tidak dihitung ulang (stale).
+state = AsyncValue.data(
+  ImpianState(
+    listImpian: [...dataLama.listImpian, impian],
+    jumlahImpian: dataLama.jumlahImpian, // stale
+    totalJumlah: dataLama.totalJumlah,   // stale
+  ),
+);
+```
+
+**Sumber evaluasi:**
+- Commit: `4aaa5a31f14c948e5b71281c20978139a52e1028`
+- File: `lib/fitur/impian/state/impian_state.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.g.dart`
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Ketika state menyimpan koleksi sekaligus nilai turunan (jumlah, total, agregat lainnya), setiap mutasi wajib membangun state baru dengan koleksi hasil mutasi dan nilai turunan yang dihitung ulang dari koleksi tersebut. Jangan menyimpan nilai turunan yang stale, dan jangan menghitung nilai turunan di UI (hitung di notifier). Prinsip ini dapat diterapkan pada seluruh proyek Flutter yang menggunakan immutable state (Freezed) dengan field turunan.

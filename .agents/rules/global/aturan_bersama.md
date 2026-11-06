@@ -987,3 +987,54 @@ Tanggal statis membuat data dummy menjadi tidak realistis seiring waktu dan meny
 **Sumber evaluasi:**
 - Commit: `f9af412cbd090ad4e6023298cc3b76ec42c80446`
 - File: `lib/fitur/dummy/dummy_data/dummy_biodata.dart`
+
+## State dengan Field Turunan (Agregat) pada Koleksi
+
+Ketika state menyimpan koleksi sekaligus nilai turunan (jumlah, total, agregat lainnya), setiap mutasi wajib membangun state baru dengan koleksi hasil mutasi dan nilai turunan yang dihitung ulang dari koleksi tersebut.
+
+**Aturan wajib:**
+1. Simpan field turunan sebagai bagian dari state (Freezed) dengan `@Default` yang sesuai.
+2. Pada setiap mutasi, bangun state baru dengan koleksi hasil mutasi dan field turunan yang dihitung ulang dari koleksi tersebut.
+3. Gunakan `fold` (mis. `fold<double>`) untuk agregasi numerik.
+4. Hitung nilai turunan di notifier, bukan di UI.
+5. Pastikan file generated (`.freezed.dart`, `.g.dart`) diperbarui melalui generator setelah perubahan state.
+
+**Larangan:**
+- Jangan membangun state baru tanpa menghitung ulang field turunan dari koleksi hasil mutasi.
+- Jangan menyimpan nilai turunan yang stale (tidak dihitung ulang).
+- Jangan menghitung nilai turunan di UI.
+- Jangan mengedit file `.freezed.dart`/`.g.dart` secara manual.
+
+**Alasan:**
+Commit `4aaa5a3` memigrasikan state impian dari `List<ImpianModel>` ke `ImpianState` (Freezed) yang memuat `listImpian`, `jumlahImpian`, dan `totalJumlah`. Seluruh mutasi (tambah, ubah, hapus, batch) membangun `ImpianState` baru dengan agregat yang dihitung ulang via `fold<double>`, sehingga nilai turunan tidak stale. Pola ini mencegah inkonsistensi tampilan dan menjaga single source of truth di notifier.
+
+**Contoh benar:**
+```dart
+final totalJumlah = baru.fold<double>(
+  0,
+  (previousValue, element) => previousValue + element.jumlah,
+);
+state = AsyncValue.data(
+  ImpianState(
+    listImpian: baru,
+    jumlahImpian: baru.length,
+    totalJumlah: totalJumlah,
+  ),
+);
+```
+
+**Contoh salah:**
+```dart
+// State baru tapi agregat tidak dihitung ulang (stale).
+state = AsyncValue.data(
+  ImpianState(
+    listImpian: [...dataLama.listImpian, impian],
+    jumlahImpian: dataLama.jumlahImpian, // stale
+    totalJumlah: dataLama.totalJumlah,   // stale
+  ),
+);
+```
+
+**Sumber evaluasi:**
+- Commit: `4aaa5a31f14c948e5b71281c20978139a52e1028`
+- File: `lib/fitur/impian/state/impian_state.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
