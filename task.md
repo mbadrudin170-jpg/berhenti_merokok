@@ -7,16 +7,17 @@ Tidak ada temuan.
 ## Sedang
 
 - Status: Belum dikerjakan
-- Masalah: Metode `_simpan` pada `FormBiodata` (`lib/fitur/biodata/screens/form_biodata.dart`) menangkap exception pada blok `catch (e)` tanpa melakukan apa pun (swallow error), sehingga kegagalan `Nav.pop` tidak dicatat maupun diteruskan. Selain itu, pemanggilan `Nav.pop(context)` tidak menggunakan `unawaited` meskipun hasil Future-nya tidak ditunggu.
-- Solusi: Tangani error pada blok catch dengan logger `L.e` dan `rethrow` (atau hapus try/catch jika tidak diperlukan), serta gunakan `unawaited(Nav.pop(context))` sesuai pola proyek. Jika kelas logger `L` belum tersedia, tambahkan terlebih dahulu.
-- Aturan dilanggar: `.agents/rules/global/optimasi_bug_runtime.md` — poin 6 "Try/Catch dan Penanganan Error" dan poin 10 "Penggunaan `await` dan `unawaited`".
+- Masalah: Metode `_simpan` pada `FormBiodata` (`lib/fitur/biodata/screens/form_biodata.dart`) menangkap exception pada blok `catch (e)` tanpa melakukan apa pun (swallow error), sehingga kegagalan `Nav.pop` tidak dicatat maupun diteruskan. Selain itu, `setState` pada blok `finally` dipanggil tanpa pemeriksaan `mounted`.
+- Solusi: Tangani error pada blok catch dengan logger `L.e` dan `rethrow` (atau hapus try/catch jika tidak diperlukan), serta tambahkan pemeriksaan `mounted` sebelum `setState` di blok `finally`. Jika kelas logger `L` belum tersedia, tambahkan terlebih dahulu.
+- Aturan dilanggar: `.agents/rules/global/optimasi_bug_runtime.md` — poin 6 "Try/Catch dan Penanganan Error" dan poin 4 "Pengecekan `mounted`".
 - File terkait: [form_biodata.dart#L29](lib/fitur/biodata/screens/form_biodata.dart#L29), [form_biodata.dart#L34](lib/fitur/biodata/screens/form_biodata.dart#L34), [form_biodata.dart#L36](lib/fitur/biodata/screens/form_biodata.dart#L36)
 
 - Status: Belum dikerjakan
-- Masalah: Metode `initState()` dan `dispose()` pada `_HomeState` masih mengandung komentar `// TODO: implement initState` dan `// TODO: implement dispose`, menandakan implementasi siklus hidup belum selesai.
-- Solusi: Hapus komentar TODO setelah implementasi selesai, atau implementasikan logika yang diperlukan. Jika tidak ada logika tambahan, cukup hapus komentar TODO.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Layar Home sebagai ConsumerStatefulWidget dengan Siklus Hidup" poin 3.
-- File terkait: [home.dart#L15](lib/home.dart#L15), [home.dart#L20](lib/home.dart#L20)
+- Masalah: `Home` (`lib/home.dart`) menggunakan `IndexedStack` dengan daftar halaman yang dibangun sekaligus sejak awal (`_pages = [const DashboardScreen(), const LainnyaScreen()]`), sehingga tab yang belum pernah dibuka tetap dibangun dan state/provider-nya aktif. Hal ini melanggar pola lazy loading yang mewajibkan tab hanya dibuat saat pertama kali dipilih.
+- Solusi: Terapkan lazy loading dengan `Set<int> _tabTerbuka` (awal `{0}`), representasikan tab yang belum dibuka sebagai `SizedBox.shrink()`, dan pertahankan `GlobalKey` per tab untuk fitur scroll-to-top. Deteksi double-tap dengan jendela waktu <= 500ms.
+- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Navigasi Tab Utama (Home) — Inisialisasi Lazy dan Retensi State".
+- File terkait: [home.dart#L12](lib/home.dart#L12), [home.dart#L16](lib/home.dart#L16), [home.dart#L30](lib/home.dart#L30)
+
 
 - Status: Belum dikerjakan
 - Masalah: Metode `initState()` dan `dispose()` pada `_DashboardScreenState` (`lib/fitur/dashboard/screens/dashboard_screen.dart`) masih mengandung komentar `// TODO: implement initState` dan `// TODO: implement dispose`, menandakan implementasi siklus hidup belum selesai.
@@ -57,16 +58,11 @@ Tidak ada temuan.
 ## Rendah
 
 - Status: Belum dikerjakan
-- Masalah: Judul `AppBar` pada halaman Home (`lib/home.dart`) dan `FormBiodata` (`lib/fitur/biodata/screens/form_biodata.dart`) menampilkan teks "data" yang tidak informatif dan tidak bermakna bagi pengguna.
+- Masalah: Judul `AppBar` pada halaman Home (`lib/home.dart`), `DashboardScreen` (`lib/fitur/dashboard/screens/dashboard_screen.dart`), dan `FormBiodata` (`lib/fitur/biodata/screens/form_biodata.dart`) menampilkan teks "data" yang tidak informatif dan tidak bermakna bagi pengguna.
 - Solusi: Ganti teks "data" dengan judul yang sesuai dan bermakna untuk setiap halaman (misalnya nama aplikasi atau judul halaman).
 - Aturan dilanggar: Bukan pelanggaran aturan tertulis — teks yang ditampilkan kepada pengguna seharusnya mudah dipahami dan bermakna (`.agents/rules/global/optimasi_ux.md` bagian 2 "Bahasa yang ditampilkan kepada pengguna").
-- File terkait: [home.dart#L27](lib/home.dart#L27), [form_biodata.dart#L47](lib/fitur/biodata/screens/form_biodata.dart#L47)
+- File terkait: [home.dart#L27](lib/home.dart#L27), [dashboard_screen.dart#L27](lib/fitur/dashboard/screens/dashboard_screen.dart#L27), [form_biodata.dart#L47](lib/fitur/biodata/screens/form_biodata.dart#L47)
 
-- Status: Belum dikerjakan
-- Masalah: Body halaman Home hanya menampilkan teks "Home" tanpa konten yang bermakna, sehingga pengguna tidak memperoleh informasi atau tindakan yang berguna.
-- Solusi: Tambahkan konten yang sesuai untuk halaman Home sesuai tujuan aplikasi (misalnya ringkasan, navigasi, atau informasi utama).
-- Aturan dilanggar: Bukan pelanggaran aturan tertulis — tampilan harus dirancang agar pengguna dapat memahami informasi dan tindakan yang tersedia (`.agents/rules/global/optimasi_ux.md` bagian 3 "Kejelasan tampilan").
-- File terkait: [home.dart#L28](lib/home.dart#L28)
 
 - Status: Belum dikerjakan
 - Masalah: `MaterialApp` pada `lib/app.dart` menggunakan `title: 'Flutter Demo'` yang merupakan nilai default template dan tidak mencerminkan nama aplikasi.
@@ -85,6 +81,12 @@ Tidak ada temuan.
 - Solusi: Teruskan `_namaFocusNode` ke parameter `focusNode` (dan atur `nextFocusNode` jika ada field berikutnya) agar pengelolaan fokus konsisten.
 - Aturan dilanggar: Bukan pelanggaran aturan tertulis — pengelolaan resource dan interaksi yang benar (`.agents/rules/global/optimasi_bug_runtime.md` poin 7 "Dispose dan Pengelolaan Sumber Daya").
 - File terkait: [form_biodata.dart#L14](lib/fitur/biodata/screens/form_biodata.dart#L14), [form_biodata.dart#L57](lib/fitur/biodata/screens/form_biodata.dart#L57), [form_biodata.dart#L58](lib/fitur/biodata/screens/form_biodata.dart#L58)
+
+- Status: Belum dikerjakan
+- Masalah: `LainnyaScreen` (`lib/lainnya_screen.dart`) masih berupa `Placeholder` tanpa konten yang bermakna, sehingga pengguna tidak memperoleh informasi atau tindakan yang berguna.
+- Solusi: Tambahkan konten yang sesuai untuk layar Lainnya sesuai tujuan aplikasi.
+- Aturan dilanggar: Bukan pelanggaran aturan tertulis — tampilan harus dirancang agar pengguna dapat memahami informasi dan tindakan yang tersedia (`.agents/rules/global/optimasi_ux.md` bagian 3 "Kejelasan tampilan").
+- File terkait: [lainnya_screen.dart#L8](lib/lainnya_screen.dart#L8)
 
 # UI
 
@@ -111,10 +113,22 @@ Tidak ada temuan.
 - File terkait: [form_biodata.dart#L29](lib/fitur/biodata/screens/form_biodata.dart#L29), [form_biodata.dart#L31](lib/fitur/biodata/screens/form_biodata.dart#L31), [form_biodata.dart#L33](lib/fitur/biodata/screens/form_biodata.dart#L33)
 
 - Status: Belum dikerjakan
-- Masalah: `Text('Home')` pada body Home dan `Text('Simpan')` pada `OutlinedButton` FormBiodata tidak menggunakan konstruktor `const`, padahal nilai teksnya statis. (`Text('data')` pada `AppBar` Home sudah menggunakan `const`.)
+- Masalah: Body `Scaffold` pada `DashboardScreen` (`lib/fitur/dashboard/screens/dashboard_screen.dart`) tidak dibungkus dengan `SafeArea` dan tidak memiliki padding tepi layar. Konten dapat tertutup oleh notch, status bar, atau navigation bar, dan dapat menempel pada tepi layar.
+- Solusi: Bungkus konten body dengan `SafeArea` dan tambahkan `Padding` dengan nilai yang sesuai pada lapisan container halaman, bukan pada widget reusable.
+- Aturan dilanggar: `.agents/rules/global/optimasi_ux.md` — bagian 10 "Padding tepi layar" dan bagian 14 "SafeArea".
+- File terkait: [dashboard_screen.dart#L26](lib/fitur/dashboard/screens/dashboard_screen.dart#L26), [dashboard_screen.dart#L28](lib/fitur/dashboard/screens/dashboard_screen.dart#L28), [dashboard_screen.dart#L29](lib/fitur/dashboard/screens/dashboard_screen.dart#L29)
+
+- Status: Belum dikerjakan
+- Masalah: Body `Scaffold` pada `LainnyaScreen` (`lib/lainnya_screen.dart`) tidak dibungkus dengan `SafeArea` dan tidak memiliki padding tepi layar.
+- Solusi: Bungkus konten body dengan `SafeArea` dan tambahkan `Padding` dengan nilai yang sesuai pada lapisan container halaman, bukan pada widget reusable.
+- Aturan dilanggar: `.agents/rules/global/optimasi_ux.md` — bagian 10 "Padding tepi layar" dan bagian 14 "SafeArea".
+- File terkait: [lainnya_screen.dart#L7](lib/lainnya_screen.dart#L7), [lainnya_screen.dart#L9](lib/lainnya_screen.dart#L9)
+
+- Status: Belum dikerjakan
+- Masalah: `Text('Simpan')` pada `OutlinedButton` FormBiodata dan `Text('DashboardScreen')` pada body DashboardScreen tidak menggunakan konstruktor `const`, padahal nilai teksnya statis.
 - Solusi: Tambahkan keyword `const` pada kedua widget `Text` untuk meningkatkan efisiensi rebuild.
 - Atura dilanggar: Bukan pelanggaran aturan tertulis — praktik terbaik performa Flutter (linter `prefer_const_constructors`).
-- File terkait: [home.dart#L28](lib/home.dart#L28), [form_biodata.dart#L60](lib/fitur/biodata/screens/form_biodata.dart#L60)
+- File terkait: [dashboard_screen.dart#L28](lib/fitur/dashboard/screens/dashboard_screen.dart#L28), [form_biodata.dart#L60](lib/fitur/biodata/screens/form_biodata.dart#L60)
 
 - Status: Belum dikerjakan
 - Masalah: `FormBiodata` menggunakan `Column` langsung sebagai body `Scaffold` tanpa `SingleChildScrollView`/`ListView`, sehingga konten dapat terpotong pada layar kecil atau saat keyboard muncul.

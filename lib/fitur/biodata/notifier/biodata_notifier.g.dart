@@ -13,7 +13,7 @@ part of 'biodata_notifier.dart';
 final biodataProvider = BiodataNotifierProvider._();
 
 final class BiodataNotifierProvider
-    extends $NotifierProvider<BiodataNotifier, String> {
+    extends $AsyncNotifierProvider<BiodataNotifier, BiodataModel?> {
   BiodataNotifierProvider._()
     : super(
         from: null,
@@ -31,29 +31,21 @@ final class BiodataNotifierProvider
   @$internal
   @override
   BiodataNotifier create() => BiodataNotifier();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
-    );
-  }
 }
 
-String _$biodataNotifierHash() => r'd146a4ff4431d3425957340fc837f9703e5acec4';
+String _$biodataNotifierHash() => r'a03957f7c6502c7808255f65b45125ac39bd01a9';
 
-abstract class _$BiodataNotifier extends $Notifier<String> {
-  String build();
+abstract class _$BiodataNotifier extends $AsyncNotifier<BiodataModel?> {
+  FutureOr<BiodataModel?> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<String, String>;
+    final ref = this.ref as $Ref<AsyncValue<BiodataModel?>, BiodataModel?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<String, String>,
-              String,
+              AnyNotifier<AsyncValue<BiodataModel?>, BiodataModel?>,
+              AsyncValue<BiodataModel?>,
               Object?,
               Object?
             >;
