@@ -2663,55 +2663,57 @@ Menstandarkan penggunaan transaksi SQLite untuk operasi yang melibatkan lebih da
 3. Jika salah satu operasi gagal, seluruh transaksi di-rollback otomatis oleh Sqflite.
 4. Jangan menggunakan `batch` untuk operasi multi-tabel yang memerlukan konsistensi antar tabel; gunakan `transaksi`.
 5. Gunakan `batch` hanya untuk operasi massal pada satu tabel yang tidak memerlukan konsistensi antar tabel.
+6. Bungkus operasi transaksi dengan `try/catch`, catat error dengan `L.e`, dan teruskan dengan `rethrow`, agar kegagalan transaksi dapat ditangani oleh pemanggil (mis. UI) dan dicatat untuk debugging.
 
 **Larangan:**
 - Jangan melakukan insert/delete ke beberapa tabel secara terpisah tanpa transaksi.
 - Jangan mencampurkan `batch` dan `transaksi` untuk operasi yang sama.
+- Jangan menjalankan transaksi tanpa `try/catch` pada helper, karena kegagalan tidak akan tercatat dan tidak dapat ditangani pemanggil.
 
 **Alasan:**
-Commit `bc75a4a` mengubah `DummyHelper.insert()` dan `delete()` dari `batch` ke `transaksi`, karena operasi tersebut melibatkan dua tabel (impian dan biodata) yang harus konsisten. Penggunaan `transaksi` memastikan jika insert ke tabel kedua gagal, insert ke tabel pertama di-rollback.
+Commit `bc75a4a` mengubah `DummyHelper.insert()` dan `delete()` dari `batch` ke `transaksi`, karena operasi tersebut melibatkan dua tabel (impian dan biodata) yang harus konsisten. Penggunaan `transaksi` memastikan jika insert ke tabel kedua gagal, insert ke tabel pertama di-rollback. Commit `4c1ebe84` kemudian membungkus operasi transaksi dengan `try/catch`, `L.e`, dan `rethrow` agar kegagalan transaksi tercatat dan dapat ditangani pemanggil (mis. UI menampilkan feedback error).
 
 **Contoh benar:**
 ```dart
 static Future<void> insert() async {
-  final op = const SqfliteOp();
-  await op.transaksi((txn) async {
-    for (final impian in dummyImpian) {
-      await txn.insert(
-        NamaTabel.impian,
-        impian.toSqflite(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-    for (final biodata in dummyBiodata) {
-      await txn.insert(
-        NamaTabel.biodata,
-        biodata.toSqflite(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-  });
+  try {
+    final op = const SqfliteOp();
+    await op.transaksi((txn) async {
+      for (final impian in dummyImpian) {
+        await txn.insert(
+          NamaTabel.impian,
+          impian.toSqflite(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+      for (final biodata in dummyBiodata) {
+        await txn.insert(
+          NamaTabel.biodata,
+          biodata.toSqflite(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+    });
+  } on Exception catch (e, s) {
+    L.e('Gagal memasukkan data dummy: $e $s');
+    rethrow;
+  }
 }
 ```
 
 **Contoh salah:**
 ```dart
-// Menggunakan batch untuk operasi multi-tabel (tidak menjamin konsistensi antar tabel).
+// Transaksi tanpa try/catch -> kegagalan tidak tercatat dan tidak dapat ditangani.
 static Future<void> insert() async {
   final op = const SqfliteOp();
-  await op.batch((batch) {
-    for (final impian in dummyImpian) {
-      batch.insert(NamaTabel.impian, impian.toSqflite());
-    }
-    for (final biodata in dummyBiodata) {
-      batch.insert(NamaTabel.biodata, biodata.toSqflite());
-    }
+  await op.transaksi((txn) async {
+    // ...
   });
 }
 ```
 
 **Sumber evaluasi:**
-- Commit: `bc75a4a098ae904736d8ef79e5277a7f6fae45bc`
+- Commit: `bc75a4a098ae904736d8ef79e5277a7f6fae45bc`, `4c1ebe84c530b7a5da735fb2aa370ec95e986622`
 - File: `lib/fitur/dummy/helper/dummy_helper.dart`
 
 ## Penambahan Tab Baru pada Navigasi Lazy (Home)
@@ -3127,6 +3129,75 @@ return Scaffold(
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Saat daftar kosong, tampilkan pesan state kosong yang jelas di tengah layar dengan screen-edge padding dan sediakan aksi tambah (mis. FAB) agar pengguna dapat menambah data pertama. Gunakan `ListView.separated`/`ListView.builder` dengan `Key` stabil untuk daftar yang berpotensi panjang, dan pertahankan pola loading/error/retry sebelum mengevaluasi empty state. Prinsip ini dapat diterapkan pada seluruh proyek Flutter.
 
+## Progress Bar dan Sisa Target pada Item Impian
+
+**Cakupan:**
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState.build` (itemBuilder), `_buildSaldoTerkumpul`.
+- `lib/fitur/impian/state/impian_state.dart` — `ImpianState` (`totalJumlah`, `listImpian`).
+- `lib/fitur/impian/model/impian_model.dart` — `ImpianModel` (`jumlah`, `targetTanggal`).
+
+**Aturan wajib:**
+1. Item daftar impian wajib menampilkan progress bar (`LinearProgressIndicator`) yang merepresentasikan rasio `totalJumlah / item.jumlah`.
+2. Nilai progress wajib di-clamp ke rentang `[0.0, 1.0]` menggunakan `.clamp(0.0, 1.0)` untuk mencegah nilai di luar range yang menyebabkan assertion error pada `LinearProgressIndicator`.
+3. Jika `totalJumlah <= 0` atau `item.jumlah <= 0`, nilai progress wajib `0` (hindari division by zero).
+4. Item daftar impian wajib menampilkan teks sisa target: `Sisa: ${FormatUang.formatRupiah((item.jumlah - totalJumlah).clamp(0.0, double.infinity))}`.
+5. Sisa target wajib di-clamp ke `[0.0, double.infinity]` agar tidak menampilkan nilai negatif.
+6. Progress bar dan sisa target ditampilkan dalam `Column` (subtitle) dengan `crossAxisAlignment: CrossAxisAlignment.start` dan `spacing: 4`.
+7. Pertahankan `ValueKey(item.id)` pada `Card` item untuk stabilitas posisi scroll.
+
+**Larangan:**
+- Jangan menghitung progress tanpa clamp (berisiko nilai > 1.0 atau < 0.0 yang menyebabkan error pada `LinearProgressIndicator`).
+- Jangan membagi `totalJumlah / item.jumlah` tanpa guard `item.jumlah <= 0` (division by zero).
+- Jangan menampilkan sisa target negatif.
+- Jangan menghapus progress bar dari item daftar impian.
+
+**Alasan:**
+Commit `754f50d0` mengganti subtitle item impian dari teks tanggal target menjadi `LinearProgressIndicator` disertai teks sisa target, dengan clamp pada nilai progress dan sisa. Pola ini memberikan feedback visual progress tabungan impian dan mencegah error runtime pada `LinearProgressIndicator` akibat nilai di luar range. Clamp memastikan nilai tetap valid meskipun data tidak konsisten.
+
+**Dampak apabila dilanggar:**
+- `LinearProgressIndicator` melempar assertion error jika value di luar `[0.0, 1.0]`.
+- Division by zero jika `item.jumlah` nol.
+- Sisa target negatif ditampilkan kepada pengguna.
+- Posisi scroll dan identitas item tidak stabil jika key dihapus.
+
+**Rujukan implementasi:**
+- `lib/fitur/impian/screens/impian_screen.dart` — itemBuilder subtitle (progress bar + sisa target).
+- `lib/fitur/impian/state/impian_state.dart` — `ImpianState.totalJumlah`.
+- Commit: `f86ece05d171990279a6e4740d6b9350538b4762`, `754f50d0ff2be1212758d30ee56d891579af1c66`.
+
+**Contoh benar:**
+```dart
+subtitle: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  spacing: 4,
+  children: [
+    LinearProgressIndicator(
+      value: impianState.totalJumlah <= 0 || item.jumlah <= 0
+          ? 0
+          : (impianState.totalJumlah / item.jumlah).clamp(0.0, 1.0),
+    ),
+    Text(
+      'Sisa: ${FormatUang.formatRupiah((item.jumlah - impianState.totalJumlah).clamp(0.0, double.infinity))}',
+    ),
+  ],
+),
+```
+
+**Contoh salah:**
+```dart
+subtitle: Column(
+  children: [
+    LinearProgressIndicator(
+      value: impianState.totalJumlah / item.jumlah, // tanpa guard/clamp -> error
+    ),
+    Text('Sisa: ${item.jumlah - impianState.totalJumlah}'), // bisa negatif
+  ],
+),
+```
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Saat menampilkan progress bar berbasis rasio dua nilai numerik, selalu gunakan guard division-by-zero dan clamp nilai ke rentang valid `[0.0, 1.0]` (progress) serta `[0.0, double.infinity]` (sisa/defisit) untuk mencegah assertion error dan tampilan nilai negatif. Prinsip ini dapat diterapkan pada seluruh proyek Flutter yang menampilkan indikator progress berbasis perhitungan.
+
 ## Form Impian dengan Mode Tambah dan Ubah (Dual-Mode)
 
 **Cakupan:**
@@ -3397,7 +3468,7 @@ Halaman detail item yang hanya membaca provider sebaiknya menggunakan `ConsumerW
 1. Dashboard menampilkan "Lama berhenti merokok" yang dihitung dari `biodata.tanggalMulaiBerhentiMerokok` (UTC disimpan, dikonversi ke lokal saat ditampilkan).
 2. Jika `tanggalMulaiBerhentiMerokok` null, tampilkan teks "Belum ditentukan".
 3. Jika selisih waktu negatif (tanggal di masa depan), tampilkan "0 detik".
-4. Format durasi: hari, jam, menit, detik — tampilkan hanya komponen yang relevan (hari > 0 untuk hari; jam jika hari > 0 atau jam > 0; menit jika ada komponen lebih besar; detik selalu).
+4. Format durasi: hari, jam, menit, detik — tampilkan hanya komponen yang bernilai lebih dari nol (hari > 0 untuk hari; jam > 0 untuk jam; menit > 0 untuk menit; detik selalu ditampilkan). Jangan menampilkan jam/menit hanya karena ada komponen yang lebih besar.
 5. Tampilkan juga tanggal mulai berhenti (`FormatTanggal.formatDasar`) dan sapaan nama pengguna (jika nama tidak kosong).
 6. Handle `biodataProvider` dengan urutan `.isLoading` → `.hasError` → `.requireValue`; sediakan tombol "Coba lagi" yang memanggil `ref.refresh(biodataProvider)`.
 7. Bungkus konten utama dengan `SafeArea` dan `Padding` screen-edge (mis. `EdgeInsets.all(16)`).
@@ -3422,7 +3493,7 @@ Commit `150bc02c` mengonversi `DashboardNotifier` ke `AsyncNotifier` dan menyemp
 **Rujukan implementasi:**
 - `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_DashboardScreenState.build`, `_DurasiBerhenti`, `_formatLamaBerhenti`.
 - `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
-- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`, `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`, `150bc02c5cf6f3ca9778d16558022e53147c8c53`.
+- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`, `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`, `150bc02c5cf6f3ca9778d16558022e53147c8c53`, `4c1ebe84c530b7a5da735fb2aa370ec95e986622`.
 
 **Contoh benar:**
 ```dart

@@ -9,6 +9,7 @@ import 'package:sqflite/sqflite.dart';
 class DummyHelper {
   /// Memasukkan seluruh data dummy ke database SQLite.
   static Future<void> insert() async {
+    L.i('tes');
     try {
       final op = const SqfliteOp();
       await op.transaksi((txn) async {

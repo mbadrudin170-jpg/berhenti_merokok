@@ -22,6 +22,7 @@ class _MyAppState extends ConsumerState<App> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    L.init(ref.container);
   }
 
   @override
