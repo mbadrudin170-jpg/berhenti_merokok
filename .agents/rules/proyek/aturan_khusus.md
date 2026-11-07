@@ -2949,6 +2949,7 @@ abstract class BiodataModel with _$BiodataModel {
 **Sumber evaluasi:**
 - Commit: `9dd290894c133aed166035542a972bf696b7fd79`
 - Commit: `f9af412cbd090ad4e6023298cc3b76ec42c80446`
+- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`
 - File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/shared/konstanta/nama_kolom.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/dummy/dummy_data/dummy_biodata.dart`
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
@@ -3421,7 +3422,7 @@ Commit `150bc02c` mengonversi `DashboardNotifier` ke `AsyncNotifier` dan menyemp
 **Rujukan implementasi:**
 - `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_DashboardScreenState.build`, `_DurasiBerhenti`, `_formatLamaBerhenti`.
 - `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
-- Commit: `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`, `150bc02c5cf6f3ca9778d16558022e53147c8c53`.
+- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`, `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`, `150bc02c5cf6f3ca9778d16558022e53147c8c53`.
 
 **Contoh benar:**
 ```dart
@@ -3463,3 +3464,261 @@ Timer.periodic(const Duration(seconds: 1), (_) {
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Pembaruan berkala (mis. jam berjalan) sebaiknya diisolasi pada widget kecil yang melakukan `setState` sendiri, dengan `Timer.periodic` yang dibatalkan di `dispose` dan pemeriksaan `mounted` sebelum `setState`, agar tidak memicu rebuild seluruh halaman setiap interval. Prinsip ini dapat diterapkan pada seluruh proyek Flutter.
+
+## Field Non-Nullable dengan Default pada BiodataModel
+
+**Cakupan:**
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel` (Freezed).
+- `lib/fitur/biodata/model/biodata_model.freezed.dart` — file generated.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — tampilan biodata.
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState`.
+- `lib/fitur/dummy/dummy_data/dummy_biodata.dart` — data dummy.
+
+**Aturan wajib:**
+1. Field numerik yang seharusnya selalu memiliki nilai (mis. `jumlahRokokPerHari`, `hargaRokokPerBungkus`, `batangPerBungkus`) wajib didefinisikan sebagai non-nullable dengan `@Default` yang sesuai pada model Freezed.
+2. Gunakan `@Default(10)` untuk `jumlahRokokPerHari`, `@Default(0.0)` untuk `hargaRokokPerBungkus`, dan `@Default(20.0)` untuk `batangPerBungkus` (atau nilai default yang sesuai dengan konteks).
+3. Parsing pada `fromSqflite` wajib menggunakan `ParserUtil.parseInt` / `ParserUtil.parseDouble` (non-null) dengan `defaultValue`, bukan `parseIntOrNull` / `parseDoubleOrNull`.
+4. Serialisasi pada `toSqflite` tetap menyimpan nilai apa adanya (tanpa null check).
+5. Pada form, parsing input wajib menggunakan `int.tryParse(...) ?? 0` / `double.tryParse(...) ?? 20.0` (atau default yang sesuai), bukan `int.tryParse(...) ?? null`.
+6. Pada tampilan (display screen), tampilkan nilai langsung dengan `.toString()` tanpa fallback `'Belum diisi'`.
+7. Pada data dummy, isi nilai field non-nullable secara eksplisit.
+8. Regenerasi file `.freezed.dart` melalui generator setelah mengubah nullability field.
+
+**Larangan:**
+- Jangan mendefinisikan field numerik yang seharusnya selalu ada sebagai nullable (`int?`, `double?`) dengan `@Default` yang tidak diterapkan.
+- Jangan menggunakan `parseIntOrNull` / `parseDoubleOrNull` untuk field yang sudah non-nullable; gunakan `parseInt` / `parseDouble` dengan `defaultValue`.
+- Jangan menampilkan fallback `'Belum diisi'` untuk field non-nullable; tampilkan nilai langsung.
+- Jangan mengedit file `.freezed.dart` secara manual.
+
+**Alasan:**
+Commit `4640e3e` mengonversi `jumlahRokokPerHari` (dari `int?` ke `int` dengan `@Default(10)`) dan `hargaRokokPerBungkus` (dari `double?` ke `double` dengan `@Default(0.0)`), serta menambahkan `batangPerBungkus` (non-nullable dengan `@Default(20.0)`). Pola ini menghilangkan null check yang tersebar di form, parsing, dan tampilan, serta menyederhanakan logika perhitungan pada dashboard (mis. `uangDihemat = (rokokTidakDiHisap / batangPerBungkus) * hargaPerBungkus` tanpa null guard). Field yang selalu memiliki nilai tidak perlu penanganan null di setiap lapisan.
+
+**Dampak apabila dilanggar:**
+- Null check yang tersebar di banyak lapisan (form, parsing, display) menjadi tidak konsisten.
+- Perhitungan dashboard memerlukan null guard tambahan yang dapat menyebabkan hasil 0 atau error.
+- Tampilan menampilkan "Belum diisi" untuk field yang seharusnya selalu memiliki nilai.
+- File generated tidak sinkron dengan sumber, menyebabkan error kompilasi.
+
+**Rujukan implementasi:**
+- `lib/fitur/biodata/model/biodata_model.dart` — field non-nullable dengan `@Default`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — parsing input dengan `?? 0` / `?? 20.0`.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — tampilan langsung `.toString()`.
+- `lib/fitur/dummy/dummy_data/dummy_biodata.dart` — nilai dummy eksplisit.
+- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`.
+
+**Contoh benar:**
+```dart
+// Model: non-nullable dengan @Default.
+@freezed
+abstract class BiodataModel with _$BiodataModel {
+  const factory BiodataModel({
+    required String id,
+    required String nama,
+    @Default(10) int jumlahRokokPerHari,
+    @Default(0.0) double hargaRokokPerBungkus,
+    @Default(20.0) double batangPerBungkus,
+  }) = _BiodataModel;
+
+  factory BiodataModel.fromSqflite(Map<String, dynamic> row) => BiodataModel(
+    id: ParserUtil.parseString(row[NamaKolom.id]),
+    nama: ParserUtil.parseString(row[NamaKolom.nama]),
+    jumlahRokokPerHari: ParserUtil.parseInt(
+      row[NamaKolom.jumlahRokokPerHari],
+      defaultValue: 10,
+    ),
+    hargaRokokPerBungkus: ParserUtil.parseDouble(
+      row[NamaKolom.hargaRokokPerBungkus],
+      defaultValue: 0.0,
+    ),
+    batangPerBungkus: ParserUtil.parseDouble(
+      row[NamaKolom.batangPerBungkus],
+      defaultValue: 20.0,
+    ),
+  );
+}
+
+// Form: parsing input dengan default.
+jumlahRokokPerHari: int.tryParse(_jumlahRokokController.text.trim()) ?? 0,
+hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
+    ? 0.0
+    : InputRupiah.parse(_hargaRokokController.text),
+batangPerBungkus: double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
+
+// Display: tampilkan langsung.
+_buildItem('Jumlah rokok per hari', biodata.jumlahRokokPerHari.toString()),
+```
+
+**Contoh salah:**
+```dart
+// Model: nullable tanpa @Default.
+@freezed
+abstract class BiodataModel with _$BiodataModel {
+  const factory BiodataModel({
+    required String id,
+    required String nama,
+    int? jumlahRokokPerHari,
+    double? hargaRokokPerBungkus,
+  }) = _BiodataModel;
+}
+
+// Parsing: menggunakan parseIntOrNull.
+jumlahRokokPerHari: ParserUtil.parseIntOrNull(row[NamaKolom.jumlahRokokPerHari]),
+
+// Display: fallback 'Belum diisi'.
+_buildItem('Jumlah rokok per hari', biodata.jumlahRokokPerHari?.toString() ?? 'Belum diisi'),
+```
+
+**Penjelasan perbedaan:**
+Contoh benar mendefinisikan field numerik sebagai non-nullable dengan `@Default`, menggunakan parsing non-null dengan `defaultValue`, dan menampilkan nilai langsung tanpa fallback. Contoh salah menggunakan nullable dengan null check di setiap lapisan, menyebabkan null handling yang tersebar dan tidak konsisten.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Ketika sebuah field numerik seharusnya selalu memiliki nilai yang bermakna (bukan null), preferensikan tipe non-nullable dengan nilai default (`@Default`) alih-alih nullable dengan null check yang tersebar di parsing, form, dan tampilan. Prinsip ini mengurangi kompleksitas null handling dan menjaga konsistensi di seluruh lapisan. Prinsip ini dapat diterapkan pada seluruh proyek Flutter yang menggunakan Freezed dan model immutable.
+
+## Dashboard Menghitung Progres dan Kerugian dari Biodata
+
+**Cakupan:**
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_DashboardScreenState._buildCardProgres`, `_buildInfoKerugian`, `_buildBiodataNull`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel` (sumber data perhitungan).
+
+**Aturan wajib:**
+1. Dashboard wajib menampilkan kartu progres yang menghitung:
+   - Hari berhenti = `DateTime.now().difference(tanggalMulaiBerhentiMerokok).inDays` (minimum 0).
+   - Rokok tidak dihisap = `jumlahRokokPerHari * hariBerhenti`.
+   - Uang dihemat = `(rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus`.
+2. Dashboard wajib menampilkan kartu kerugian saat merokok yang menghitung:
+   - Total hari merokok = `tanggalMulaiBerhentiMerokok.difference(tanggalMulaiMerokok).inDays` (minimum 0).
+   - Rokok dihisap = `jumlahRokokPerHari * totalHariMerokok`.
+   - Uang terbuang = `(rokokDihisap / batangPerBungkus) * hargaRokokPerBungkus`.
+   - Menit hilang = `rokokDihisap * 11` (asumsi 11 menit per batang).
+   - Hari hilang = `menitHilang / (24 * 60)`, ditampilkan dengan 1 desimal.
+3. Jika `biodata` null (belum ada data), tampilkan state kosong "Belum ada data biodata" dengan tombol "Isi Biodata" yang menavigasi ke `FormBiodata(buatPertama: false)`.
+4. Gunakan `FormatUang.formatRupiah` untuk menampilkan nilai uang.
+5. Gunakan `overflow: TextOverflow.ellipsis` pada judul kartu untuk mencegah overflow.
+6. Pertahankan pola loading/error/retry pada `biodataProvider` (urutan `.isLoading` → `.hasError` → `.requireValue`).
+
+**Larangan:**
+- Jangan menampilkan perhitungan tanpa menangani `biodata` null.
+- Jangan menggunakan nilai negatif untuk hari berhenti atau total hari merokok (clamp ke 0).
+- Jangan menghitung metrik smoke-free di luar dashboard (mis. di provider) tanpa alasan yang jelas; perhitungan sederhana dapat dilakukan di widget.
+- Jangan mengabaikan `batangPerBungkus` pada perhitungan uang (gunakan pembagian, bukan perkalian langsung).
+
+**Alasan:**
+Commit `4640e3e` menambahkan perhitungan progres (uang dihemat, rokok tidak dihisap) dan kerugian (rokok dihisap, uang terbuang, hari hidup hilang) pada dashboard, menggunakan field biodata yang baru dijadikan non-nullable (`batangPerBungkus`). Kartu progres dan kerugian ditampilkan sebagai `Card` dengan `Padding` internal, dan state kosong ditampilkan ketika `biodata` null. Pola ini menyelaraskan dashboard dengan tujuan aplikasi (berhenti merokok) dan memberikan informasi yang bermakna kepada pengguna.
+
+**Dampak apabila dilanggar:**
+- Dashboard menampilkan data yang tidak relevan (mis. field kendaraan) alih-alih metrik smoke-free.
+- Perhitungan uang salah karena tidak menggunakan `batangPerBungkus` sebagai pembagi.
+- State null pada biodata menyebabkan crash (`biodata.requireValue` pada null).
+- Judul kartu overflow pada layar sempit.
+
+**Rujukan implementasi:**
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardProgres`, `_buildInfoKerugian`, `_buildBiodataNull`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`.
+- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`, `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`, `150bc02c5cf6f3ca9778d16558022e53147c8c53`.
+
+**Contoh benar:**
+```dart
+// Perhitungan uang dihemat menggunakan batangPerBungkus sebagai pembagi.
+final rokokTidakDiHisap = jumlahRokokPerHari * hariBerhenti;
+final uangDihemat = (rokokTidakDiHisap / biodata.batangPerBungkus) * hargaPerBungkus;
+
+// State kosong ketika biodata null.
+if (biodata == null) {
+  return _buildBiodataNull();
+}
+
+// Navigasi ke form dari state kosong.
+OutlinedButton(
+  onPressed: () => unawaited(Nav.to(context, const FormBiodata(buatPertama: false))),
+  child: const Text('Isi Biodata'),
+);
+```
+
+**Contoh salah:**
+```dart
+// Menggunakan harga per bungkus langsung tanpa membagi dengan batangPerBungkus.
+final uangDihemat = rokokTidakDiHisap * hargaPerBungkus; // salah: tidak mempertimbangkan batang per bungkus
+
+// Tidak menangani biodata null -> crash.
+final biodata = biodataAsync.requireValue;
+final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok; // crash jika biodata null
+```
+
+**Penjelasan perbedaan:**
+Contoh benar menggunakan `batangPerBungkus` sebagai pembagi untuk menghitung jumlah bungkus, lalu mengalikan dengan harga per bungkus. Contoh salah mengalikan jumlah batang langsung dengan harga per bungkus, menghasilkan nilai yang jauh lebih besar dari seharusnya. State null juga ditangani dengan tampilan kosong dan navigasi ke form.
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Dashboard yang menampilkan metrik turunan dari data pengguna sebaiknya menghitung nilai dari field model yang sudah non-nullable, menangani state null dengan tampilan kosong dan navigasi ke form, dan menggunakan utilitas format (mis. `FormatUang`) untuk konsistensi tampilan. Prinsip ini dapat diterapkan pada seluruh proyek Flutter.
+
+## Ekstraksi State Kosong ke Widget Terpisah
+
+**Cakupan:**
+- `lib/fitur/impian/screens/impian_screen.dart` — `_EmptyImpian`.
+
+**Aturan wajib:**
+1. State kosong (empty state) yang kompleks (lebih dari satu elemen) sebaiknya diekstrak ke widget `StatelessWidget` terpisah (mis. `_EmptyImpian`) agar `build` utama tetap bersih.
+2. Widget empty state wajib mencakup `SafeArea` dan `Padding` screen-edge.
+3. Widget empty state wajib menampilkan pesan yang jelas dan, jika memungkinkan, ikon dan petunjuk aksi.
+4. Pertahankan `FloatingActionButton` pada halaman utama meskipun empty state ditampilkan, agar pengguna dapat menambah data pertama.
+
+**Larangan:**
+- Jangan menempatkan logika empty state yang kompleks langsung di dalam `build` utama jika dapat diekstrak.
+- Jangan menghilangkan `FloatingActionButton` pada state kosong.
+- Jangan menghilangkan `SafeArea` atau `Padding` screen-edge pada empty state.
+
+**Alasan:**
+Commit `4640e3e` mengekstrak empty state impian dari inline `Padding` + `Center` + `Text` menjadi widget `_EmptyImpian` (StatelessWidget) yang mencakup `SafeArea`, `Padding`, `Center`, ikon, pesan, dan petunjuk aksi. Pola ini menjaga `build` utama tetap bersih dan konsisten dengan aturan padding tepi layar.
+
+**Dampak apabila dilanggar:**
+- `build` utama menjadi panjang dan sulit dibaca.
+- Empty state tidak konsisten dengan aturan padding tepi layar.
+- Petunjuk aksi hilang, menyebabkan pengguna bingung.
+
+**Rujukan implementasi:**
+- `lib/fitur/impian/screens/impian_screen.dart` — `_EmptyImpian`.
+- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`.
+
+**Contoh benar:**
+```dart
+class _EmptyImpian extends StatelessWidget {
+  const _EmptyImpian();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.star, size: 48),
+              Text('Belum ada impian', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Tekan tombol + untuk menambah impian pertama.', textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Empty state inline yang panjang di dalam build.
+if (listImpian.isEmpty) {
+  return Scaffold(
+    appBar: AppBar(title: const Text('Impian')),
+    body: const Padding(
+      padding: EdgeInsets.all(16),
+      child: Center(child: Text('Belum ada impian')),
+    ),
+    // Tidak ada FAB, tidak ada ikon, tidak ada petunjuk.
+  );
+}
+```
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+State kosong yang kompleks sebaiknya diekstrak ke widget terpisah agar `build` utama tetap bersih, dengan tetap mempertahankan `SafeArea`, `Padding` screen-edge, pesan yang jelas, dan aksi tambah (FAB). Prinsip ini dapat diterapkan pada seluruh proyek Flutter.

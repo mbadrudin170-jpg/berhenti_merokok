@@ -1340,3 +1340,26 @@ Timer.periodic(const Duration(seconds: 1), (_) {
 **Sumber evaluasi:**
 - Commit: `150bc02c5cf6f3ca9778d16558022e53147c8c53`, `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`
 - File: `lib/fitur/dashboard/screens/dashboard_screen.dart`
+
+## Preferensi Field Non-Nullable dengan Default pada Model
+
+Ketika sebuah field numerik seharusnya selalu memiliki nilai yang bermakna (bukan null), preferensikan tipe non-nullable dengan nilai default alih-alih nullable dengan null check yang tersebar di parsing, form, dan tampilan.
+
+**Aturan wajib:**
+1. Gunakan `@Default(nilai)` pada field Freezed untuk menentukan nilai default.
+2. Gunakan parsing non-null (mis. `ParserUtil.parseInt` / `ParserUtil.parseDouble`) dengan `defaultValue` pada `fromMap`/`fromSqflite`, bukan `parseIntOrNull` / `parseDoubleOrNull`.
+3. Pada form, gunakan `int.tryParse(...) ?? nilaiDefault` / `double.tryParse(...) ?? nilaiDefault`, bukan `?? null`.
+4. Pada tampilan, tampilkan nilai langsung dengan `.toString()` tanpa fallback `'Belum diisi'` atau `?? 'Belum diisi'`.
+5. Regenerasi file `.freezed.dart` melalui generator setelah mengubah nullability.
+
+**Larangan:**
+- Jangan mendefinisikan field yang seharusnya selalu ada sebagai nullable (`int?`, `double?`) tanpa alasan yang jelas.
+- Jangan menggunakan parsing nullable (`parseIntOrNull`, `parseDoubleOrNull`) untuk field non-nullable.
+- Jangan menampilkan fallback string untuk field yang sudah non-nullable.
+
+**Alasan:**
+Pola ini mengurangi kompleksitas null handling yang tersebar di banyak lapisan (model, parsing, form, tampilan, dummy data), menjaga konsistensi, dan menyederhanakan perhitungan turunan yang bergantung pada field tersebut. Field yang selalu memiliki nilai tidak memerlukan penanganan null di setiap lapisan.
+
+**Sumber evaluasi:**
+- Commit: `4640e3ec65c4413cd698f71261269d1b4c4821ac`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`
