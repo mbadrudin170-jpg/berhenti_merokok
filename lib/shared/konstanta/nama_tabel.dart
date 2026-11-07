@@ -7,4 +7,7 @@ class NamaTabel {
 
   /// Tabel impian.
   static const String impian = 'impian';
+
+  /// Tabel diary craving (pemicu).
+  static const String diaryCraving = 'diary_craving';
 }

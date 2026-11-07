@@ -36,4 +36,17 @@ class NamaKolom {
 
   /// Kolom jumlah impian.
   static const String jumlah = 'jumlah';
+
+  // Kolom tabel diary craving.
+  /// Kolom tanggal kejadian craving.
+  static const String tanggal = 'tanggal';
+
+  /// Kolom kategori pemicu craving.
+  static const String pemicu = 'pemicu';
+
+  /// Kolom intensitas craving (1-5).
+  static const String intensitas = 'intensitas';
+
+  /// Kolom catatan craving.
+  static const String catatan = 'catatan';
 }

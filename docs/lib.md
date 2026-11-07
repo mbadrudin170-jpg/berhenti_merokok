@@ -30,7 +30,6 @@ class _MyAppState extends ConsumerState<MyApp> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/tema/enum/tema_enum.dart
 // ============================================================
@@ -52,7 +51,6 @@ extension TemaEnumExtension on TemaEnum {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/tema/notifier/tema_notifier.dart
 // ============================================================
@@ -70,7 +68,6 @@ class TemaNotifier extends _$TemaNotifier {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/home.dart
@@ -110,7 +107,6 @@ class _HomeState extends ConsumerState<Home> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/main.dart
 // ============================================================
@@ -126,7 +122,6 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 ```
-
 
 // ============================================================
 // FILE: lib/shared/helper/shared_keys.dart
@@ -144,5 +139,3 @@ class SharedKeys {
   static const String tema = 'tema';
 }
 ```
-
-

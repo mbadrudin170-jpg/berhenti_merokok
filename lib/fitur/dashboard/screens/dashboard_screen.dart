@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,7 +77,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        actions: [
+          IconButton(
+            tooltip: 'SOS Craving',
+            icon: const Icon(Icons.sos),
+            onPressed: () =>
+                unawaited(Nav.to(context, const SosCravingScreen())),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

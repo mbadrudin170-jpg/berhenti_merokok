@@ -7,7 +7,6 @@
 - `lib/main.dart`
 - `lib/shared/helper/shared_keys.dart`
 
-## ⚠️  assets (tidak ditemukan)
+## ⚠️ assets (tidak ditemukan)
 
-## ⚠️  supabase (tidak ditemukan)
-
+## ⚠️ supabase (tidak ditemukan)

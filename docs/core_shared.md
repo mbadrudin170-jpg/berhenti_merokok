@@ -14,5 +14,3 @@ class SharedKeys {
   static const String tema = 'tema';
 }
 ```
-
-
