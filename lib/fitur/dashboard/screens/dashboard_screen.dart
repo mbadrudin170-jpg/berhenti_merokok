@@ -19,21 +19,28 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    L.i('DashboardScreen initState');
   }
 
   @override
   void dispose() {
+    L.i('DashboardScreen dispose');
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final biodataAsync = ref.watch(biodataProvider);
+    L.i('biodataAsync=$biodataAsync');
 
     if (biodataAsync.isLoading) {
+      L.w('biodataAsync loading');
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
       return Scaffold(
         appBar: AppBar(title: const Text('Dashboard')),
         body: SafeArea(
@@ -60,11 +67,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final biodata = biodataAsync.requireValue;
+    L.i('biodata=$biodata');
     if (biodata == null) {
       return _buildBiodataNull();
     }
     final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
     final nama = biodata.nama;
+    L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
@@ -125,6 +134,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final rokokTidakDiHisap = jumlahRokokPerHari * hariBerhenti;
     final uangDihemat =
         (rokokTidakDiHisap / biodata.batangPerBungkus) * hargaPerBungkus;
+    L.i(
+      'tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat',
+    );
 
     return Card(
       child: Padding(
@@ -180,6 +192,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
     final menitHilang = (rokokDihisap * 11).round();
     final hariHilang = menitHilang / (24 * 60);
+    L.i(
+      'totalHariMerokok=$totalHariMerokok, rokokDihisap=$rokokDihisap, uangTerbuang=$uangTerbuang, menitHilang=$menitHilang, hariHilang=$hariHilang',
+    );
 
     return Card(
       child: Padding(
@@ -197,7 +212,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             _buildInfoKerugianKustom(
               CupertinoIcons.smoke,
               '$rokokDihisap batang',
-              'rokok yang dihisap',
+              'Total rokok yang dihisap',
             ),
             _buildInfoKerugianKustom(
               CupertinoIcons.money_dollar,
@@ -220,6 +235,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     String title,
     String subtitle,
   ) {
+    L.i('icon=$icon, title=$title, subtitle=$subtitle');
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
@@ -299,6 +315,7 @@ String _formatLamaBerhenti(DateTime? tanggalBerhenti) {
     return 'Belum ditentukan';
   }
   final selisih = DateTime.now().difference(tanggalBerhenti);
+  L.i('tanggalBerhenti=$tanggalBerhenti, selisih=$selisih');
   if (selisih.isNegative) {
     return '0 detik';
   }
