@@ -29,18 +29,23 @@
 - Jangan mengubah lokasi/mekanisme `L.init()`.
 
 **Alasan:**
-Commit `6bae210` dan `f55410a` menambahkan log debug pada `DummyHelper`, `DummyScreen`, `ImpianScreen`, `BiodataNotifier`, dan `ImpianNotifier`. Pola yang diterapkan: format singkat `namaVar=nilai`, tampilan model langsung (`row=$row`, `existing=${existing?.id}`), gabungan variabel terkait dalam satu log, dan penggunaan `L.e` pada blok catch dengan stack trace. Command `.kilo/commands/tambah_log.md` mendokumentasikan standar ini untuk penggunaan berulang.
+Lima commit terakhir (`f2859a0`, `6bae210`, `f55410a`, `c05f446`, `7b9e8d0`) menambahkan log debug secara bertahap pada `DummyHelper`, `DummyScreen`, `ImpianScreen`, `BiodataNotifier`, `ImpianNotifier`, `BiodataScreen`, `FormImpian`, dan `PengaturanScreen`. Pola yang diterapkan konsisten: format singkat `namaVar=nilai`, tampilan model langsung (`row=$row`, `biodata=$biodata`, `impian=$impian`), gabungan variabel terkait dalam satu log (commit `7b9e8d0` memperluas log form impian dengan menggabungkan `_namaController.text`, `_jumlahController.text`, dan `_targetTanggal`), penggunaan `L.w` untuk kondisi peringatan (`konfirmasi bukan ok`, `jumlah <= 0`), dan penggunaan `L.e` pada blok catch dengan stack trace. Command `.kilo/commands/tambah_log.md` (commit `f2859a0`) mendokumentasikan standar ini untuk penggunaan berulang. Commit `c05f446` juga merangkum ulang aturan proyek dan global agar lebih ringkas, menunjukkan preferensi aturan yang fokus dan tidak verbose.
 
 **Sumber evaluasi:**
-- Commit: `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`
-- File: `lib/fitur/dummy/helper/dummy_helper.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `.kilo/commands/tambah_log.md`
+- Commit: `f2859a0f7b8f6ebeb0befefffa8047a9c3173c04`, `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`, `c05f4460a316c3bf33aaad30fc1d8a32f66b9c5b`, `7b9e8d054624b8941c1f44b11551fe9ea57a54a1`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `.kilo/commands/tambah_log.md`
 
 **Contoh benar:**
 ```dart
 L.i('dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}');
 L.i('row=$row');
 L.i('biodata=$biodata');
+L.i('impian=$impian');
 L.i('konfirmasi=$konfirmasi');
+L.i('_namaController.text=${_namaController.text}, _jumlahController.text=${_jumlahController.text}, _targetTanggal=$_targetTanggal');
+L.i('listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}');
+L.w('konfirmasi bukan ok');
+L.w('jumlah <= 0');
 L.e('Gagal memasukkan data dummy: $e $s');
 ```
 
