@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -53,14 +55,44 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     }
 
     final impianState = impianAsync.requireValue;
-
+    final List<ImpianModel> listImpian = impianState.listImpian;
+    if (listImpian.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Impian')),
+        body: const Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(child: Text('Belum ada impian')),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+          child: const Icon(CupertinoIcons.add),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('Impian')),
-      body: Center(
-        child: Text('ImpianScreen (${impianState.jumlahImpian} impian)'),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView.separated(
+          itemCount: listImpian.length,
+          itemBuilder: (context, index) {
+            final ImpianModel item = listImpian[index];
+            return Card(
+              key: ValueKey(item.id),
+              child: ListTile(
+                title: Text(item.nama),
+                subtitle: const LinearProgressIndicator(),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const SizedBox(height: 8);
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+        child: const Icon(CupertinoIcons.add),
       ),
     );
   }
