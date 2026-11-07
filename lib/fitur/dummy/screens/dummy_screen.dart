@@ -20,6 +20,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
   bool _sedangMemuat = false;
 
   Future<void> _masukkanDummy(BuildContext context) async {
+    L.i('_masukkanDummy _sedangMemuat=$_sedangMemuat');
     if (_sedangMemuat) {
       L.w('Dummy masih diproses, aksi diabaikan');
       return;
@@ -32,6 +33,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
       okLabel: 'Masukkan',
       cancelLabel: 'Batal',
     );
+    L.i('konfirmasi=$konfirmasi');
     if (konfirmasi != OkCancelResult.ok) {
       return;
     }
@@ -64,6 +66,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
   }
 
   Future<void> _hapusDummy(BuildContext context) async {
+    L.i('_hapusDummy _sedangMemuat=$_sedangMemuat');
     if (_sedangMemuat) {
       L.w('Dummy masih diproses, aksi diabaikan');
       return;
@@ -77,6 +80,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
       cancelLabel: 'Batal',
       isDestructiveAction: true,
     );
+    L.i('konfirmasi=$konfirmasi');
     if (konfirmasi != OkCancelResult.ok) {
       return;
     }
@@ -109,6 +113,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
   }
 
   Future<void> _reset(BuildContext context) async {
+    L.i('_reset _sedangMemuat=$_sedangMemuat');
     if (_sedangMemuat) {
       L.w('Dummy masih diproses, aksi diabaikan');
       return;
@@ -122,6 +127,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
       cancelLabel: 'Batal',
       isDestructiveAction: true,
     );
+    L.i('konfirmasi=$konfirmasi');
     if (konfirmasi != OkCancelResult.ok) {
       return;
     }
@@ -156,6 +162,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
 
   Future<void> _refreshProvider() async {
     // Perbarui state agar UI memuat data dummy terbaru.
+    L.i('_refreshProvider');
     final _ = ref.refresh(impianProvider);
     final _ = ref.refresh(biodataProvider);
   }
@@ -196,6 +203,7 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     String value,
     Color backgroundColor,
   ) {
+    L.i('value=$value, backgroundColor=$backgroundColor');
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton(

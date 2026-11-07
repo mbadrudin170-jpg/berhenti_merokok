@@ -31,12 +31,16 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   @override
   Widget build(BuildContext context) {
     final impianAsync = ref.watch(impianProvider);
+    L.i(
+      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
+    );
 
     if (impianAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (impianAsync.hasError) {
+      L.w('impianProvider error=${impianAsync.error}');
       return Scaffold(
         body: Center(
           child: Column(
@@ -58,7 +62,11 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
 
     final impianState = impianAsync.requireValue;
     final List<ImpianModel> listImpian = impianState.listImpian;
+    L.i(
+      'listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}',
+    );
     if (listImpian.isEmpty) {
+      L.w('listImpian kosong');
       return Scaffold(
         appBar: AppBar(title: const Text('Impian')),
         body: const _EmptyImpian(),
@@ -82,6 +90,9 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                   itemCount: listImpian.length,
                   itemBuilder: (context, index) {
                     final ImpianModel item = listImpian[index];
+                    L.i(
+                      'item.id=${item.id}, item.nama=${item.nama}, item.jumlah=${item.jumlah}',
+                    );
                     return Card(
                       key: ValueKey(item.id),
                       child: ListTile(
@@ -94,9 +105,12 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                           spacing: 4,
                           children: [
                             LinearProgressIndicator(
-                              value: impianState.totalJumlah <= 0 || item.jumlah <= 0
+                              value:
+                                  impianState.totalJumlah <= 0 ||
+                                      item.jumlah <= 0
                                   ? 0
-                                  : (impianState.totalJumlah / item.jumlah).clamp(0.0, 1.0),
+                                  : (impianState.totalJumlah / item.jumlah)
+                                        .clamp(0.0, 1.0),
                             ),
                             Text(
                               'Sisa: ${FormatUang.formatRupiah((item.jumlah - impianState.totalJumlah).clamp(0.0, double.infinity))}',
@@ -123,6 +137,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   }
 
   Widget _buildSaldoTerkumpul(ImpianState state) {
+    L.i('totalJumlah=${state.totalJumlah}');
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),

@@ -10,6 +10,9 @@ class DummyHelper {
   /// Memasukkan seluruh data dummy ke database SQLite.
   static Future<void> insert() async {
     L.i('tes');
+    L.i(
+      'dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}',
+    );
     try {
       final op = const SqfliteOp();
       await op.transaksi((txn) async {
@@ -28,6 +31,7 @@ class DummyHelper {
           );
         }
       });
+      L.i('insert selesai');
     } on Exception catch (e, s) {
       L.e('Gagal memasukkan data dummy: $e $s');
       rethrow;
@@ -36,6 +40,9 @@ class DummyHelper {
 
   /// Menghapus seluruh data dummy dari database SQLite.
   static Future<void> delete() async {
+    L.i(
+      'dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}',
+    );
     try {
       final op = const SqfliteOp();
       await op.transaksi((txn) async {
@@ -54,6 +61,7 @@ class DummyHelper {
           );
         }
       });
+      L.i('delete selesai');
     } on Exception catch (e, s) {
       L.e('Gagal menghapus data dummy: $e $s');
       rethrow;
