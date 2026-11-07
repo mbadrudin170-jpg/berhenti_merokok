@@ -55,3 +55,72 @@ L.i('tes'); // tidak memberikan informasi nilai variabel
 L.i('nama=${model.nama}, umur=${model.umur}'); // menguraikan properti model
 print('data=$data'); // menggunakan print() alih-alih L.*
 ```
+
+
+## Penggunaan Biodata untuk Menghitung Saldo Terkumpul pada Impian
+
+**Cakupan:**
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`, `_hitungUangDihemat`, `_buildSaldoTerkumpul`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`.
+
+**Aturan wajib:**
+1. Impian screen wajib melakukan `ref.watch(biodataProvider)` untuk memperoleh data biodata yang digunakan menghitung saldo terkumpul.
+2. Saldo terkumpul merupakan uang yang dihemat dari tidak merokok, dihitung dari biodata: hari berhenti (`DateTime.now().difference(tanggalMulaiBerhentiMerokok).inDays`, minimum 0), rokok tidak dihisap (`jumlahRokokPerHari * hariBerhenti`), dan uang dihemat (`(rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus`).
+3. Selama `biodataAsync` masih loading atau error, saldo terkumpul dianggap 0; jangan memanggil `requireValue` sebelum memastikan data tersedia.
+4. Perhitungan saldo terkumpul wajib dilakukan di widget (mis. method `_hitungUangDihemat`), bukan di provider, karena merupakan perhitungan turunan sederhana yang bergantung pada waktu saat ini.
+5. Progress bar dan teks "Sisa" pada setiap item impian wajib berbasis saldo terkumpul (uang yang dihemat), bukan `totalJumlah` dari `ImpianState`.
+6. Perhitungan uang yang dihemat wajib konsisten dengan perhitungan pada dashboard (`_buildCardProgres`); jangan menduplikasi logika dengan formula yang berbeda.
+
+**Larangan:**
+- Jangan menggunakan `totalJumlah` dari `ImpianState` sebagai saldo terkumpul (saldo berasal dari biodata, bukan dari jumlah impian).
+- Jangan memanggil `biodataAsync.requireValue` tanpa memeriksa loading/error terlebih dahulu.
+- Jangan menghitung saldo terkumpul di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di widget).
+- Jangan menduplikasi formula perhitungan uang yang dihemat dengan versi yang berbeda antara dashboard dan impian.
+
+**Alasan:**
+Commit `336a72f` mengubah impian screen agar menggunakan biodata sebagai sumber saldo terkumpul (uang yang dihemat dari tidak merokok), menggantikan `totalJumlah` dari `ImpianState`. Perubahan ini menyelaraskan impian dengan dashboard yang sudah menggunakan perhitungan yang sama. Penanganan loading/error biodata dengan nilai default 0 mencegah crash dan tampilan kosong sementara. Perhitungan di widget (bukan provider) sesuai dengan prinsip bahwa perhitungan sederhana yang bergantung pada waktu saat ini dapat dilakukan di widget.
+
+**Sumber evaluasi:**
+- Commit: `336a72f3b67ea7361aea95ac36ae90d08b1e2c6c`
+- File: `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/model/biodata_model.dart`
+
+**Contoh benar:**
+```dart
+final biodataAsync = ref.watch(biodataProvider);
+BiodataModel? biodata;
+if (biodataAsync.isLoading) {
+  // saldo tetap 0 sementara
+} else if (biodataAsync.hasError) {
+  // saldo tetap 0 sementara
+} else {
+  biodata = biodataAsync.requireValue;
+}
+final uangDihemat = _hitungUangDihemat(biodata);
+
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
+  int hariBerhenti = 0;
+  final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+  if (tanggalBerhenti != null) {
+    hariBerhenti = DateTime.now().difference(tanggalBerhenti).inDays;
+    if (hariBerhenti < 0) hariBerhenti = 0;
+  }
+  final rokokTidakDiHisap = biodata.jumlahRokokPerHari * hariBerhenti;
+  return (rokokTidakDiHisap / biodata.batangPerBungkus) *
+      biodata.hargaRokokPerBungkus;
+}
+```
+
+**Contoh salah:**
+```dart
+// Menggunakan totalJumlah sebagai saldo terkumpul (salah).
+_buildSaldoTerkumpul(impianState.totalJumlah);
+
+// Memanggil requireValue tanpa memeriksa loading/error (berisiko crash).
+final biodata = biodataAsync.requireValue;
+final uangDihemat = _hitungUangDihemat(biodata);
+
+// Formula berbeda dengan dashboard (tidak konsisten).
+final uangDihemat = rokokTidakDiHisap * biodata.hargaRokokPerBungkus; // salah: tidak membagi dengan batangPerBungkus
+```
