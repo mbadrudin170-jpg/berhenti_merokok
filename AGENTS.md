@@ -788,6 +788,24 @@ state = AsyncValue.data(
 **Sumber evaluasi:**
 - Commit: `4aaa5a31f14c948e5b71281c20978139a52e1028`
 - File: `lib/fitur/impian/state/impian_state.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+## Penanganan State Kosong (Empty State) pada Daftar
+Saat daftar kosong, tampilkan pesan state kosong yang jelas di tengah layar dengan screen-edge padding dan sediakan aksi tambah (mis. FAB) agar pengguna dapat menambah data pertama.
+**Aturan wajib:**
+1. Tampilkan pesan state kosong yang jelas (mis. "Belum ada data") di tengah layar, dibungkus `Padding` dengan screen-edge padding yang konsisten.
+2. Sediakan aksi tambah (mis. `FloatingActionButton` dengan ikon tambah) pada state kosong agar pengguna dapat menambah data pertama.
+3. Gunakan `ListView.separated` atau `ListView.builder` (bukan `ListView(children: ...)`) untuk daftar yang berpotensi melebihi 20 item.
+4. Setiap item daftar wajib memiliki `Key` stabil (`ValueKey(item.id)`) agar posisi scroll dan identitas item tetap konsisten saat mutasi.
+5. Pertahankan pola loading/error/retry (`isLoading` → `hasError` → `requireValue`) pada screen sebelum mengevaluasi empty state.
+**Larangan:**
+- Jangan menampilkan daftar kosong tanpa pesan atau tanpa aksi tambah.
+- Jangan menghilangkan aksi tambah pada state kosong.
+- Jangan menggunakan `ListView(children: ...)` untuk daftar panjang.
+- Jangan membuat key baru setiap rebuild untuk item daftar.
+**Alasan:**
+Pola ini menjaga konsistensi dengan aturan padding tepi layar, performa key stabil, dan UX kejelasan tampilan. State kosong yang jelas mencegah pengguna bingung dan menyediakan jalur aksi yang jelas untuk menambah data pertama.
+**Sumber evaluasi:**
+- Commit: `f72bf351dc279641ddacdddcb0f5a46fb7c5b4d5`
+- File: `lib/fitur/impian/screens/impian_screen.dart`
 
 
 // ============================================================
@@ -5380,6 +5398,85 @@ state = AsyncValue.data(
 - File: `lib/fitur/impian/state/impian_state.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.g.dart`
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Ketika state menyimpan koleksi sekaligus nilai turunan (jumlah, total, agregat lainnya), setiap mutasi wajib membangun state baru dengan koleksi hasil mutasi dan nilai turunan yang dihitung ulang dari koleksi tersebut. Jangan menyimpan nilai turunan yang stale, dan jangan menghitung nilai turunan di UI (hitung di notifier). Prinsip ini dapat diterapkan pada seluruh proyek Flutter yang menggunakan immutable state (Freezed) dengan field turunan.
+## Penanganan State Kosong (Empty State) pada Daftar Impian
+**Cakupan:**
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState.build`.
+- `lib/fitur/impian/screens/form_impian.dart` — `FormImpian` (tujuan navigasi dari empty state).
+**Aturan wajib:**
+1. Jika daftar impian kosong (`listImpian.isEmpty`), tampilkan pesan state kosong yang jelas (mis. `'Belum ada impian'`) di tengah layar, dibungkus `Padding` dengan screen-edge padding yang konsisten (mis. `EdgeInsets.all(16)`).
+2. Tetap sediakan `FloatingActionButton` dengan ikon tambah (`CupertinoIcons.add`) pada state kosong agar pengguna dapat menambah impian pertama.
+3. Navigasi ke form wajib menggunakan `Nav.to(context, const FormImpian())`.
+4. Pada state tidak kosong, gunakan `ListView.separated` dengan `separatorBuilder` berupa `SizedBox(height: 8)` (atau spacing konsisten) untuk menjaga jarak antar item.
+5. Setiap item daftar wajib memiliki `Key` stabil (`ValueKey(item.id)`) agar posisi scroll dan identitas item tetap konsisten saat mutasi.
+6. Pertahankan pola loading/error/retry (`isLoading` → `hasError` → `requireValue`) pada screen sebelum mengevaluasi empty state.
+**Larangan:**
+- Jangan menampilkan daftar kosong tanpa pesan atau tanpa aksi tambah.
+- Jangan menghilangkan `FloatingActionButton` pada state kosong.
+- Jangan menggunakan `ListView(children: ...)` untuk daftar yang berpotensi melebihi 20 item; gunakan `ListView.separated`/`ListView.builder`.
+- Jangan membuat key baru setiap rebuild untuk item daftar.
+**Alasan:**
+Commit `f72bf35` mengimplementasikan daftar impian dengan state kosong: saat `listImpian` kosong, tampil pesan `'Belum ada impian'` di tengah layar dengan `Padding` screen-edge 16 dan `FloatingActionButton` tambah; saat tidak kosong, gunakan `ListView.separated` dengan separator `SizedBox(height: 8)` dan `Card` dengan `ValueKey(item.id)`. Pola ini menjaga konsistensi dengan aturan padding tepi layar, performa key stabil, dan UX kejelasan tampilan.
+**Dampak apabila dilanggar:**
+- Pengguna tidak mendapat feedback bahwa daftar kosong atau cara menambah data pertama.
+- Posisi scroll dan identitas item tidak stabil saat mutasi.
+- Daftar panjang tidak efisien (rebuild semua item sekaligus).
+**Rujukan implementasi:**
+- `lib/fitur/impian/screens/impian_screen.dart` — empty state + `ListView.separated` + `ValueKey`.
+- `.agents/rules/global/optimasi_ux.md` §10 — padding tepi layar.
+- `.agents/rules/global/optimasi_performa.md` §1 — Key stabil dan posisi scroll.
+**Contoh benar:**
+```dart
+final List<ImpianModel> listImpian = impianState.listImpian;
+if (listImpian.isEmpty) {
+  return Scaffold(
+    appBar: AppBar(title: const Text('Impian')),
+    body: const Padding(
+      padding: EdgeInsets.all(16),
+      child: Center(child: Text('Belum ada impian')),
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+      child: const Icon(CupertinoIcons.add),
+    ),
+  );
+}
+return Scaffold(
+  appBar: AppBar(title: const Text('Impian')),
+  body: Padding(
+    padding: const EdgeInsets.all(16),
+    child: ListView.separated(
+      itemCount: listImpian.length,
+      itemBuilder: (context, index) {
+        final ImpianModel item = listImpian[index];
+        return Card(
+          key: ValueKey(item.id),
+          child: ListTile(title: Text(item.nama)),
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(height: 8),
+    ),
+  ),
+  floatingActionButton: FloatingActionButton(
+    onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+    child: const Icon(CupertinoIcons.add),
+  ),
+);
+```
+**Contoh salah:**
+```dart
+// Tidak ada pesan empty state dan tidak ada FAB.
+return Scaffold(
+  appBar: AppBar(title: const Text('Impian')),
+  body: ListView(
+    children: listImpian.map((e) => ListTile(title: Text(e.nama))).toList(),
+  ),
+);
+```
+**Sumber evaluasi:**
+- Commit: `f72bf351dc279641ddacdddcb0f5a46fb7c5b4d5`
+- File: `lib/fitur/impian/screens/impian_screen.dart`
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Saat daftar kosong, tampilkan pesan state kosong yang jelas di tengah layar dengan screen-edge padding dan sediakan aksi tambah (mis. FAB) agar pengguna dapat menambah data pertama. Gunakan `ListView.separated`/`ListView.builder` dengan `Key` stabil untuk daftar yang berpotensi panjang, dan pertahankan pola loading/error/retry sebelum mengevaluasi empty state. Prinsip ini dapat diterapkan pada seluruh proyek Flutter.
 
 
 // ============================================================

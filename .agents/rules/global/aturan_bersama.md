@@ -1038,3 +1038,27 @@ state = AsyncValue.data(
 **Sumber evaluasi:**
 - Commit: `4aaa5a31f14c948e5b71281c20978139a52e1028`
 - File: `lib/fitur/impian/state/impian_state.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+
+## Penanganan State Kosong (Empty State) pada Daftar
+
+Saat daftar kosong, tampilkan pesan state kosong yang jelas di tengah layar dengan screen-edge padding dan sediakan aksi tambah (mis. FAB) agar pengguna dapat menambah data pertama.
+
+**Aturan wajib:**
+1. Tampilkan pesan state kosong yang jelas (mis. "Belum ada data") di tengah layar, dibungkus `Padding` dengan screen-edge padding yang konsisten.
+2. Sediakan aksi tambah (mis. `FloatingActionButton` dengan ikon tambah) pada state kosong agar pengguna dapat menambah data pertama.
+3. Gunakan `ListView.separated` atau `ListView.builder` (bukan `ListView(children: ...)`) untuk daftar yang berpotensi melebihi 20 item.
+4. Setiap item daftar wajib memiliki `Key` stabil (`ValueKey(item.id)`) agar posisi scroll dan identitas item tetap konsisten saat mutasi.
+5. Pertahankan pola loading/error/retry (`isLoading` → `hasError` → `requireValue`) pada screen sebelum mengevaluasi empty state.
+
+**Larangan:**
+- Jangan menampilkan daftar kosong tanpa pesan atau tanpa aksi tambah.
+- Jangan menghilangkan aksi tambah pada state kosong.
+- Jangan menggunakan `ListView(children: ...)` untuk daftar panjang.
+- Jangan membuat key baru setiap rebuild untuk item daftar.
+
+**Alasan:**
+Pola ini menjaga konsistensi dengan aturan padding tepi layar, performa key stabil, dan UX kejelasan tampilan. State kosong yang jelas mencegah pengguna bingung dan menyediakan jalur aksi yang jelas untuk menambah data pertama.
+
+**Sumber evaluasi:**
+- Commit: `f72bf351dc279641ddacdddcb0f5a46fb7c5b4d5`
+- File: `lib/fitur/impian/screens/impian_screen.dart`
