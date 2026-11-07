@@ -52,6 +52,62 @@ logger.i('tes'); // tidak memberikan informasi nilai variabel
 logger.i('nama=${model.nama}, umur=${model.umur}'); // menguraikan properti model
 print('data=$data'); // menggunakan print() alih-alih logger
 ```
+## Type Promotion untuk Null Safety (Field Objek)
+**Aturan:**
+1. Field nullable dari objek model wajib disalin terlebih dahulu ke variabel lokal sebelum digunakan dalam kondisi null-check, agar type promotion berlaku.
+2. Setelah penyalinan, gunakan variabel lokal tersebut dalam percabangan `== null` dan pemanggilan fungsi, bukan akses properti objek dengan operator `!`.
+3. Jangan menggunakan operator `!` untuk memaksakan nilai nullable menjadi non-null apabila nilai tersebut dapat dipromosikan melalui variabel lokal.
+4. Prinsip ini melengkapi aturan penanganan null yang sudah ada, dengan fokus pada field objek (bukan hanya parameter constructor atau variabel privat).
+**Alasan:**
+Type promotion memungkinkan compiler Dart mempromosikan tipe nullable ke non-nullable setelah pemeriksaan null, sehingga operator `!` tidak diperlukan. Penggunaan operator `!` berisiko menimbulkan runtime error jika nilai ternyata null. Commit `1e7b71e` menunjukkan refactoring pada `biodata_screen.dart` untuk menghindari operator `!` dengan menyalin field nullable ke variabel lokal.
+**Contoh benar:**
+```dart
+final tanggalLahir = biodata?.tanggalLahir;
+final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+_buildItem(
+  'Tanggal lahir',
+  tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(tanggalLahir),
+);
+```
+**Contoh salah:**
+```dart
+_buildItem(
+  'Tanggal lahir',
+  biodata.tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(biodata.tanggalLahir!),
+);
+```
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+## Import Ordering (Urutan Import)
+**Aturan:**
+1. Import wajib diurutkan secara alfabetis berdasarkan path package.
+2. Import dari package proyek (`package:berhenti_merokok/...`) wajib diurutkan berdasarkan path lengkap.
+3. Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
+4. Prinsip ini berlaku untuk seluruh file Dart dalam proyek.
+**Alasan:**
+Urutan import yang konsisten memudahkan pembacaan kode dan pengelolaan dependensi. Commit `1e7b71e` menunjukkan perubahan urutan import pada `biodata_screen.dart` agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+**Contoh benar:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+```
+**Contoh salah:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+```
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
 
 
 // ============================================================
@@ -2317,6 +2373,120 @@ final biodata = biodataAsync.requireValue;
 final uangDihemat = _hitungUangDihemat(biodata);
 // Formula berbeda dengan dashboard (tidak konsisten).
 final uangDihemat = rokokTidakDiHisap * biodata.hargaRokokPerBungkus; // salah: tidak membagi dengan batangPerBungkus
+```
+## Type Promotion untuk Null Safety pada Biodata Screen
+**Cakupan:**
+- `lib/fitur/biodata/screens/biodata_screen.dart` — `_BiodataScreenState.build`, `_buildItem`.
+**Aturan wajib:**
+1. Field nullable dari objek model (misalnya `BiodataModel`) wajib disalin terlebih dahulu ke variabel lokal sebelum digunakan dalam kondisi null-check, agar type promotion berlaku.
+2. Setelah penyalinan, gunakan variabel lokal tersebut dalam percabangan `== null` dan pemanggilan fungsi, bukan akses properti objek dengan operator `!`.
+3. Jangan menggunakan operator `!` untuk memaksakan nilai nullable menjadi non-null apabila nilai tersebut dapat dipromosikan melalui variabel lokal.
+4. Urutan import wajib mengikuti urutan alfabetis berdasarkan path package.
+**Larangan:**
+- Jangan menggunakan `biodata.tanggalLahir!` atau `biodata.tanggalMulaiMerokok!` ketika nilai tersebut dapat disalin ke variabel lokal.
+- Jangan mengakses properti nullable secara langsung dengan operator `!` apabila type promotion dapat digunakan.
+- Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
+**Alasan:**
+Commit `1e7b71e` melakukan refactoring pada `biodata_screen.dart` untuk menghindari operator `!` dengan menyalin field nullable (`tanggalLahir`, `tanggalMulaiMerokok`, `tanggalMulaiBerhentiMerokok`) ke variabel lokal, sehingga type promotion berlaku dan operator `!` tidak diperlukan. Perubahan ini juga mengubah urutan import agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+**Contoh benar:**
+```dart
+final tanggalLahir = biodata?.tanggalLahir;
+final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+_buildItem(
+  'Tanggal lahir',
+  tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(tanggalLahir),
+);
+```
+**Contoh salah:**
+```dart
+_buildItem(
+  'Tanggal lahir',
+  biodata.tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(biodata.tanggalLahir!),
+);
+```
+## Penghapusan Biodata Lama pada Dummy Helper
+**Cakupan:**
+- `lib/fitur/dummy/helper/dummy_helper.dart` — method yang memasukkan data dummy biodata.
+**Aturan wajib:**
+1. Sebelum memasukkan data dummy biodata, hapus seluruh baris biodata yang sudah ada dalam database.
+2. Penghapusan dilakukan di dalam transaksi yang sama dengan proses insert data dummy, agar data dummy menjadi satu-satunya biodata yang terbaca aplikasi.
+3. Tambahkan komentar penjelasan pada kode yang melakukan penghapusan, agar alasan penghapusan (karena `ambilSatu` mengembalikan baris pertama) dapat dipahami.
+**Larangan:**
+- Jangan memasukkan data dummy biodata tanpa terlebih dahulu menghapus biodata yang ada, karena `ambilSatu` mengembalikan baris pertama dan data dummy mungkin tidak terbaca.
+- Jangan melakukan penghapusan di luar transaksi yang sama dengan proses insert.
+**Alasan:**
+Commit `1e7b71e` menambahkan `await txn.delete(NamaTabel.biodata)` pada `dummy_helper.dart` agar data dummy menjadi satu-satunya biodata yang terbaca aplikasi, karena `ambilSatu` mengembalikan baris pertama. Commit ini juga menambahkan komentar penjelasan pada kode penghapusan.
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`
+**Contoh benar:**
+```dart
+// Hapus biodata yang ada agar data dummy menjadi satu-satunya biodata
+// yang terbaca aplikasi (ambilSatu mengembalikan baris pertama).
+await txn.delete(NamaTabel.biodata);
+for (final biodata in dummyBiodata) {
+  await txn.insert(
+    NamaTabel.biodata,
+    biodata.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+```
+**Contoh salah:**
+```dart
+// Memasukkan data dummy tanpa menghapus biodata yang ada.
+// ambilSatu mungkin mengembalikan biodata lama, bukan data dummy.
+for (final biodata in dummyBiodata) {
+  await txn.insert(
+    NamaTabel.biodata,
+    biodata.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+```
+## Pesan Konfirmasi yang Menjelaskan Konsekuensi pada Dummy Screen
+**Cakupan:**
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_DummyScreenState` (dialog konfirmasi).
+**Aturan wajib:**
+1. Pesan konfirmasi pada dialog "Masukkan Dummy" wajib menjelaskan konsekuensi bahwa biodata yang ada akan diganti dengan data dummy.
+2. Pesan harus menggunakan bahasa formal dan baku, serta jelas menyebutkan data yang akan terpengaruh.
+**Larangan:**
+- Jangan menggunakan pesan konfirmasi generik ("Apakah Anda yakin ingin memasukkan data dummy?") tanpa menjelaskan konsekuensi penggantian biodata.
+- Jangan membiarkan pengguna tidak mengetahui bahwa biodata lama akan diganti.
+**Alasan:**
+Commit `1e7b71e` mengubah pesan konfirmasi pada `dummy_screen.dart` dari "Apakah Anda yakin ingin memasukkan data dummy?" menjadi pesan yang menjelaskan bahwa "Biodata yang ada akan diganti dengan data dummy." Perubahan ini meningkatkan kejelasan UX agar pengguna mengetahui konsekuensi tindakan.
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/dummy/screens/dummy_screen.dart`
+**Contoh benar:**
+```dart
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Masukkan Dummy',
+  message:
+      'Apakah Anda yakin ingin memasukkan data dummy? '
+      'Biodata yang ada akan diganti dengan data dummy.',
+  okLabel: 'Masukkan',
+  cancelLabel: 'Batal',
+);
+```
+**Contoh salah:**
+```dart
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Masukkan Dummy',
+  message: 'Apakah Anda yakin ingin memasukkan data dummy?',
+  okLabel: 'Masukkan',
+  cancelLabel: 'Batal',
+);
 ```
 
 

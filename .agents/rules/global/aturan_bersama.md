@@ -55,3 +55,74 @@ logger.i('tes'); // tidak memberikan informasi nilai variabel
 logger.i('nama=${model.nama}, umur=${model.umur}'); // menguraikan properti model
 print('data=$data'); // menggunakan print() alih-alih logger
 ```
+
+
+## Type Promotion untuk Null Safety (Field Objek)
+
+**Aturan:**
+1. Field nullable dari objek model wajib disalin terlebih dahulu ke variabel lokal sebelum digunakan dalam kondisi null-check, agar type promotion berlaku.
+2. Setelah penyalinan, gunakan variabel lokal tersebut dalam percabangan `== null` dan pemanggilan fungsi, bukan akses properti objek dengan operator `!`.
+3. Jangan menggunakan operator `!` untuk memaksakan nilai nullable menjadi non-null apabila nilai tersebut dapat dipromosikan melalui variabel lokal.
+4. Prinsip ini melengkapi aturan penanganan null yang sudah ada, dengan fokus pada field objek (bukan hanya parameter constructor atau variabel privat).
+
+**Alasan:**
+Type promotion memungkinkan compiler Dart mempromosikan tipe nullable ke non-nullable setelah pemeriksaan null, sehingga operator `!` tidak diperlukan. Penggunaan operator `!` berisiko menimbulkan runtime error jika nilai ternyata null. Commit `1e7b71e` menunjukkan refactoring pada `biodata_screen.dart` untuk menghindari operator `!` dengan menyalin field nullable ke variabel lokal.
+
+**Contoh benar:**
+```dart
+final tanggalLahir = biodata?.tanggalLahir;
+final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+
+_buildItem(
+  'Tanggal lahir',
+  tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(tanggalLahir),
+);
+```
+
+**Contoh salah:**
+```dart
+_buildItem(
+  'Tanggal lahir',
+  biodata.tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(biodata.tanggalLahir!),
+);
+```
+
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+
+
+## Import Ordering (Urutan Import)
+
+**Aturan:**
+1. Import wajib diurutkan secara alfabetis berdasarkan path package.
+2. Import dari package proyek (`package:berhenti_merokok/...`) wajib diurutkan berdasarkan path lengkap.
+3. Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
+4. Prinsip ini berlaku untuk seluruh file Dart dalam proyek.
+
+**Alasan:**
+Urutan import yang konsisten memudahkan pembacaan kode dan pengelolaan dependensi. Commit `1e7b71e` menunjukkan perubahan urutan import pada `biodata_screen.dart` agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+
+**Contoh benar:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+```
+
+**Contoh salah:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+```
+
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
