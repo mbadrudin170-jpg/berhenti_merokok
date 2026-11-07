@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
-import 'package:uuid/uuid.dart';
 
 class FormBiodata extends ConsumerStatefulWidget {
   final bool buatPertama;
-  const FormBiodata({super.key, required this.buatPertama});
+  final BiodataModel? biodataModel;
+  const FormBiodata({super.key, required this.buatPertama, this.biodataModel});
 
   @override
   ConsumerState<FormBiodata> createState() => _BiodataScreenState();
@@ -39,21 +39,27 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   @override
   void initState() {
     super.initState();
+    final modelAwal = widget.biodataModel;
+    if (modelAwal != null) {
+      _isiDariModel(modelAwal);
+    }
     _biodataSubscription = ref.listenManual(biodataProvider, (previous, next) {
       next.whenData((biodata) {
         if (biodata != null && !_sudahDiisi && mounted) {
-          _sudahDiisi = true;
-          _namaController.text = biodata.nama;
-          _jumlahRokokController.text =
-              biodata.jumlahRokokPerHari?.toString() ?? '';
-          _hargaRokokController.text =
-              biodata.hargaRokokPerBungkus?.toString() ?? '';
-          _tanggalLahir = biodata.tanggalLahir;
-          _tanggalMulaiMerokok = biodata.tanggalMulaiMerokok;
-          _tanggalMulaiBerhentiMerokok = biodata.tanggalMulaiBerhentiMerokok;
+          _isiDariModel(biodata);
         }
       });
     });
+  }
+
+  void _isiDariModel(BiodataModel model) {
+    _sudahDiisi = true;
+    _namaController.text = model.nama;
+    _jumlahRokokController.text = model.jumlahRokokPerHari?.toString() ?? '';
+    _hargaRokokController.text = model.hargaRokokPerBungkus?.toString() ?? '';
+    _tanggalLahir = model.tanggalLahir;
+    _tanggalMulaiMerokok = model.tanggalMulaiMerokok;
+    _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
   }
 
   @override
@@ -131,9 +137,8 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       ),
     );
     try {
-      final existing = ref.read(biodataProvider).asData?.value;
       final model = BiodataModel(
-        id: existing?.id ?? const Uuid().v4(),
+        id: widget.biodataModel?.id ?? '',
         nama: _namaController.text.trim(),
         tanggalLahir: _tanggalLahir,
         jumlahRokokPerHari: int.tryParse(_jumlahRokokController.text.trim()),

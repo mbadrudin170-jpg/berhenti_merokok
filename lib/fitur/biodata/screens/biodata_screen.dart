@@ -121,7 +121,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                         onPressed: () => unawaited(
                           Nav.to(
                             context,
-                            const FormBiodata(buatPertama: false),
+                            FormBiodata(
+                              buatPertama: false,
+                              biodataModel: biodata,
+                            ),
                           ),
                         ),
                         child: const Text('Ubah Biodata'),
