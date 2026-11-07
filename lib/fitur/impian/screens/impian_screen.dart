@@ -89,7 +89,9 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                           Nav.to(context, DetailImpianScreen(id: item.id)),
                         ),
                         title: Text(item.nama),
-                        subtitle: const LinearProgressIndicator(),
+                        subtitle: Text(
+                          'Target: ${FormatTanggal.formatDasar(item.targetTanggal)}',
+                        ),
                       ),
                     );
                   },
