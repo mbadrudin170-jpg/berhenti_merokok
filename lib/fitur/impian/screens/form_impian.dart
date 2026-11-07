@@ -38,7 +38,9 @@ class _FormImpianState extends ConsumerState<FormImpian> {
       _namaController.text = impian.nama;
       _jumlahController.text = FormatUang.formatRupiah(impian.jumlah);
       _targetTanggal = impian.targetTanggal;
-      L.i('_targetTanggal=$_targetTanggal');
+      L.i(
+        '_namaController.text=${_namaController.text}, _jumlahController.text=${_jumlahController.text}, _targetTanggal=$_targetTanggal',
+      );
     }
   }
 
