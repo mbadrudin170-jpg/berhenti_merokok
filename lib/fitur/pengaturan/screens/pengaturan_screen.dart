@@ -26,6 +26,7 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
   }
 
   Future<void> _ubahTema(TemaEnum tema) async {
+    L.i('tema=$tema');
     try {
       await ref.read(temaProvider.notifier).set(tema);
     } on Exception catch (e, s) {
@@ -49,13 +50,17 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
 
   Widget _buildTema() {
     final temaAsync = ref.watch(temaProvider);
+    L.i('temaAsync=$temaAsync');
     if (temaAsync.isLoading) {
+      L.w('tema loading');
       return const SizedBox.shrink();
     }
     if (temaAsync.hasError) {
+      L.w('tema error');
       return const SizedBox.shrink();
     }
     final temaSaatIni = temaAsync.requireValue;
+    L.i('temaSaatIni=$temaSaatIni');
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

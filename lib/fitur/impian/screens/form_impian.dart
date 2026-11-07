@@ -33,10 +33,12 @@ class _FormImpianState extends ConsumerState<FormImpian> {
   void initState() {
     super.initState();
     final impian = widget.impian;
+    L.i('impian=$impian');
     if (impian != null) {
       _namaController.text = impian.nama;
       _jumlahController.text = FormatUang.formatRupiah(impian.jumlah);
       _targetTanggal = impian.targetTanggal;
+      L.i('_targetTanggal=$_targetTanggal');
     }
   }
 
@@ -51,14 +53,17 @@ class _FormImpianState extends ConsumerState<FormImpian> {
 
   Future<void> _pilihTargetTanggal() async {
     final awal = _targetTanggal ?? DateTime.now();
+    L.i('awal=$awal, _targetTanggal=$_targetTanggal');
     final picked = await showDatePicker(
       context: context,
       initialDate: awal,
       firstDate: DateTime(2000),
       lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
     );
+    L.i('picked=$picked');
     if (picked != null && mounted) {
       setState(() => _targetTanggal = picked);
+      L.i('_targetTanggal=$_targetTanggal');
     }
   }
 
@@ -68,9 +73,11 @@ class _FormImpianState extends ConsumerState<FormImpian> {
       return;
     }
     if (!(_formKey.currentState?.validate() ?? false)) {
+      L.w('validasi form gagal');
       return;
     }
     if (_namaController.text.trim().isEmpty) {
+      L.w('nama impian kosong');
       if (mounted) {
         AppToast.gagal(context, 'Nama impian wajib diisi');
       }
@@ -83,11 +90,14 @@ class _FormImpianState extends ConsumerState<FormImpian> {
       okLabel: 'Simpan',
       cancelLabel: 'Batal',
     );
+    L.i('konfirmasi=$konfirmasi');
     if (konfirmasi != OkCancelResult.ok) {
+      L.w('konfirmasi bukan ok');
       return;
     }
     if (!mounted) return;
     setState(() => _isLoading = true);
+    L.i('_isLoading=$_isLoading');
     unawaited(
       EasyLoading.show(
         status: 'Menyimpan...',
@@ -96,7 +106,9 @@ class _FormImpianState extends ConsumerState<FormImpian> {
     );
     try {
       final jumlah = InputRupiah.parse(_jumlahController.text);
+      L.i('jumlah=$jumlah');
       if (jumlah <= 0) {
+        L.w('jumlah <= 0');
         if (mounted) {
           AppToast.gagal(context, 'Jumlah harus lebih dari 0');
         }
@@ -109,9 +121,12 @@ class _FormImpianState extends ConsumerState<FormImpian> {
         dibuat: widget.impian?.dibuat ?? DateTime.now(),
         jumlah: jumlah,
       );
+      L.i('model=$model');
       if (widget.impian == null) {
+        L.i('widget.impian null, tambah');
         await ref.read(impianProvider.notifier).tambah(model);
       } else {
+        L.i('widget.impian tidak null, ubah');
         await ref.read(impianProvider.notifier).ubah(model);
       }
       if (!mounted) return;
@@ -127,6 +142,7 @@ class _FormImpianState extends ConsumerState<FormImpian> {
       unawaited(EasyLoading.dismiss());
       if (mounted) {
         setState(() => _isLoading = false);
+        L.i('_isLoading=$_isLoading');
       }
     }
   }

@@ -17,21 +17,28 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
   @override
   void initState() {
     super.initState();
+    L.i('BiodataScreen initState');
   }
 
   @override
   void dispose() {
+    L.i('BiodataScreen dispose');
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final biodataAsync = ref.watch(biodataProvider);
+    L.i('biodataAsync=$biodataAsync');
 
     if (biodataAsync.isLoading) {
+      L.w('biodataAsync loading');
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
       return Scaffold(
         appBar: AppBar(title: const Text('Biodata')),
         body: Center(
@@ -53,6 +60,7 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     }
 
     final biodata = biodataAsync.requireValue;
+    L.i('biodata=$biodata');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
@@ -140,6 +148,7 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
   }
 
   Widget _buildItem(String label, String nilai) {
+    L.i('label=$label, nilai=$nilai');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 4,
