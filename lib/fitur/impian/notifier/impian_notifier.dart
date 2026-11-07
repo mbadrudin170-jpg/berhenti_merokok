@@ -26,6 +26,7 @@ class ImpianNotifier extends _$ImpianNotifier {
         0,
         (previousValue, element) => previousValue + element.jumlah,
       );
+      L.i('daftar.length=${daftar.length}, totalJumlah=$totalJumlah');
       return ImpianState(
         listImpian: daftar,
         jumlahImpian: daftar.length,
@@ -38,8 +39,14 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> tambah(ImpianModel impian) async {
+    L.i(
+      'impian.id=${impian.id}, impian.nama=${impian.nama}, impian.jumlah=${impian.jumlah}',
+    );
     try {
       final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
       final op = const SqfliteOp();
       await op.tambah(
         NamaTabel.impian,
@@ -62,8 +69,12 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Menambahkan banyak impian sekaligus menggunakan operasi batch.
   Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
+    L.i('daftarImpian.length=${daftarImpian.length}');
     try {
       final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final impian in daftarImpian) {
@@ -93,8 +104,14 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> ubah(ImpianModel impian) async {
+    L.i(
+      'impian.id=${impian.id}, impian.nama=${impian.nama}, impian.jumlah=${impian.jumlah}',
+    );
     try {
       final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
       final op = const SqfliteOp();
       await op.ubah(
         NamaTabel.impian,
@@ -124,8 +141,12 @@ class ImpianNotifier extends _$ImpianNotifier {
   }
 
   Future<void> hapus(String id) async {
+    L.i('id=$id');
     try {
       final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
       final op = const SqfliteOp();
       await op.hapus(
         NamaTabel.impian,
@@ -153,8 +174,12 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Menghapus banyak impian sekaligus menggunakan operasi batch.
   Future<void> hapusBanyak(List<String> daftarId) async {
+    L.i('daftarId.length=${daftarId.length}');
     try {
       final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final id in daftarId) {
@@ -188,8 +213,12 @@ class ImpianNotifier extends _$ImpianNotifier {
 
   /// Mengubah banyak impian sekaligus menggunakan operasi batch.
   Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
+    L.i('daftarImpian.length=${daftarImpian.length}');
     try {
       final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
       final op = const SqfliteOp();
       await op.batch((batch) {
         for (final impian in daftarImpian) {

@@ -1,66 +1,62 @@
 ---
-description: Tambahkan log debug pada variabel dan parameter hanya di file Dart yang ditentukan pengguna.
+description: Tambahkan log debug untuk memantau nilai variabel dan parameter hanya pada file Dart yang ditentukan pengguna.
 agent: code
 ---
 
-# Tambahkan Log Debug pada Variabel
+# Tambahkan Log Debug
 
-## Tujuan
+## 1. Tujuan
 
-Tambahkan log debug pada variabel dan parameter di file yang secara spesifik ditentukan oleh pengguna.
-
-Tujuannya adalah membantu pengguna mengetahui nilai variabel selama program berjalan, sehingga lebih mudah melacak alur eksekusi, menemukan penyebab masalah, dan memahami perubahan nilai data.
+Tambahkan log debug pada setiap variabel dan parameter yang relevan di file Dart yang secara khusus ditentukan pengguna.
 
 Gunakan sistem logging yang sudah tersedia di proyek, yaitu `L.i()`, `L.w()`, dan `L.e()` dari:
 
 `lib/shared/utils/l.dart`
 
-Jangan membuat sistem logging baru.
+Fokus utama adalah menampilkan nilai aktual variabel agar pengguna dapat mengetahui data yang sedang diproses ketika program berjalan.
 
-## 1. Batasan File
+Log harus sederhana, singkat, dan mudah dibaca. Jangan membuat pesan yang terlalu deskriptif.
 
-1. Hanya tambahkan log pada file yang secara eksplisit ditentukan oleh pengguna.
-2. Jangan mencari file lain untuk dijadikan target penambahan log.
-3. File lain boleh dibaca apabila diperlukan untuk memahami alur eksekusi, letak `L.init()`, atau hubungan antarvariabel.
-4. Jangan menambahkan log di file yang tidak ditentukan pengguna.
-5. Jangan mengubah file `lib/shared/utils/l.dart`. File tersebut hanya digunakan sebagai referensi implementasi logging.
-6. Jika pengguna belum menentukan file target, tanyakan path file yang ingin diberi log. Jangan mulai mengubah file apa pun.
+## 2. Batasan File
 
-## 2. Aturan Utama Penambahan Log
+1. Hanya tambahkan log pada file yang ditentukan pengguna.
+2. Jangan menambahkan log pada file lain.
+3. File lain boleh dibaca untuk memahami alur eksekusi dan urutan inisialisasi.
+4. Jangan mengubah `lib/shared/utils/l.dart`.
+5. Jangan mengubah file generated seperti `.g.dart` dan `.freezed.dart`.
+6. Jika pengguna belum menentukan file target, tanyakan terlebih dahulu.
+7. Jangan memperluas cakupan pekerjaan ke seluruh proyek.
 
-1. Tambahkan log pada variabel dan parameter yang terdapat dalam file target.
-2. Usahakan setiap nilai variabel dapat diketahui pada saat nilainya tersedia.
-3. Untuk parameter fungsi atau method, tambahkan log pada awal fungsi atau method setelah parameter tersedia.
-4. Untuk variabel lokal, tambahkan log setelah variabel mendapatkan nilainya.
-5. Jika variabel mengalami perubahan nilai yang penting, tambahkan log setelah perubahan tersebut agar nilai terbarunya dapat diketahui.
-6. Untuk beberapa variabel yang tersedia pada titik eksekusi yang sama, gabungkan nilainya dalam satu pemanggilan log agar tidak terlalu banyak baris logging.
-7. Jangan menambahkan log berulang hanya karena variabel yang sama digunakan berkali-kali tanpa perubahan nilai.
-8. Jangan menambahkan log sebelum variabel mendapatkan nilai.
-9. Jangan mengubah urutan operasi program hanya demi menambahkan log.
-10. Jangan menambahkan log yang tidak memberikan informasi nilai variabel secara nyata.
+## 3. Aturan Penempatan Log
 
-### Prioritas informasi
+Tambahkan log pada setiap variabel dan parameter yang relevan.
 
-Utamakan pencatatan:
+Prioritaskan:
 
-- Parameter yang diterima fungsi atau method.
-- Nilai variabel lokal setelah dihitung.
-- Nilai data sebelum dikirim ke repository, database, API, atau proses lainnya.
-- Nilai hasil dari repository, database, API, atau proses lainnya.
-- Nilai sebelum dan sesudah perubahan state.
-- Nilai yang digunakan dalam kondisi percabangan apabila diperlukan untuk mengetahui alasan suatu kondisi terpenuhi atau tidak.
+1. Parameter yang diterima fungsi atau method.
+2. Variabel lokal setelah mendapatkan nilai.
+3. Variabel setelah mengalami perubahan nilai.
+4. Data sebelum dikirim ke repository, database, atau API.
+5. Data hasil dari repository, database, atau API.
+6. Nilai state sebelum dan sesudah perubahan.
+7. Nilai yang digunakan dalam percabangan apabila diperlukan untuk mengetahui alasan kondisi tersebut terpenuhi.
 
-Jangan hanya mencatat bahwa suatu proses dijalankan. Utamakan nilai variabel yang digunakan dalam proses tersebut.
+Ketentuan:
 
-## 3. Ketentuan Penggunaan L.i()
+- Log harus ditempatkan setelah variabel mendapatkan nilainya.
+- Jika beberapa variabel tersedia pada titik eksekusi yang sama, gabungkan dalam satu log.
+- Jangan mencatat variabel yang sama berulang kali apabila nilainya belum berubah.
+- Jika nilai variabel berubah, catat kembali nilai terbarunya pada titik yang relevan.
+- Jangan mengubah urutan proses hanya demi menambahkan log.
+- Jangan menambahkan log yang tidak memberikan informasi nilai aktual.
 
-Gunakan `L.i()` untuk mencatat nilai variabel dan parameter dalam alur program normal.
+## 4. Penggunaan L.i()
 
-**Jangan membuat pesan terlalu panjang atau terlalu deskriptif.**
+Gunakan `L.i()` untuk mencatat nilai variabel dan parameter dalam alur normal program.
 
-Cukup cantumkan nama variabel dan nilainya menggunakan interpolasi Dart.
+Format harus sederhana. Cukup nama variabel dan nilainya.
 
-Contoh yang benar:
+Contoh:
 
 ```dart
 L.i('kopi=$kopi, susu=$susu, teh=$teh');
@@ -76,17 +72,17 @@ L.i('isLoading=$isLoading, data=$data');
 
 Ketentuan:
 
-1. Gunakan nama variabel yang sebenarnya.
-2. Sertakan nilai variabel menggunakan `$namaVariabel`.
-3. Gabungkan variabel yang berkaitan dalam satu log apabila berada pada titik eksekusi yang sama.
-4. Jangan menambahkan penjelasan panjang yang tidak diperlukan.
-5. Jangan menggunakan nilai contoh atau nilai perkiraan. Catat nilai aktual saat program berjalan.
+1. Gunakan nama variabel sebenarnya.
+2. Gunakan interpolasi Dart `$namaVariabel`.
+3. Jangan menambahkan penjelasan panjang.
+4. Jangan menambahkan keterangan yang tidak diperlukan.
+5. Jangan menggunakan nilai perkiraan atau nilai contoh sebagai pengganti nilai aktual.
 
-## 4. Ketentuan Penggunaan L.w()
+## 5. Penggunaan L.w()
 
-Gunakan `L.w()` ketika terdapat kondisi peringatan atau kondisi khusus yang perlu diperhatikan.
+Gunakan `L.w()` untuk kondisi peringatan atau kondisi khusus yang perlu diketahui pengguna.
 
-Pesan harus singkat, tetapi tetap memberikan sedikit konteks mengenai kondisi yang terjadi dan menyertakan nilai variabel terkait.
+Formatnya sama seperti `L.i()`, tetapi tambahkan sedikit informasi mengenai kondisi yang terjadi.
 
 Contoh:
 
@@ -104,16 +100,18 @@ L.w('menggunakan nilai default, jumlah=$jumlah');
 
 Ketentuan:
 
-1. Tetap sertakan nilai variabel yang berkaitan dengan kondisi tersebut.
-2. Berikan keterangan singkat mengenai alasan log peringatan muncul.
-3. Jangan menggunakan `L.w()` hanya untuk mencatat variabel dalam alur normal.
+1. Keterangan harus singkat.
+2. Tetap sertakan nilai variabel yang berkaitan.
+3. Jangan menggunakan `L.w()` untuk alur normal.
 4. Jangan membuat pesan terlalu panjang.
 
-## 5. Ketentuan Penggunaan L.e()
+## 6. Penggunaan L.e()
 
-Gunakan `L.e()` khusus untuk mencatat error yang terjadi dalam proses program, terutama pada blok `catch`.
+Gunakan `L.e()` khusus untuk mencatat error.
 
-Format yang diutamakan:
+Berbeda dengan `L.i()` dan `L.w()`, log error harus menjelaskan proses yang gagal serta menyertakan error dan stack trace apabila tersedia.
+
+Contoh:
 
 ```dart
 try {
@@ -123,148 +121,169 @@ try {
 }
 ```
 
+Contoh lainnya:
+
+```dart
+L.e('gagal mengambil data pengguna: $e $s');
+L.e('gagal menyimpan transaksi: $e $s');
+```
+
 Ketentuan:
 
-1. Sertakan konteks singkat mengenai proses yang gagal.
-2. Sertakan nilai error menggunakan `$e`.
+1. Sertakan nama proses yang gagal.
+2. Sertakan error menggunakan `$e`.
 3. Sertakan stack trace menggunakan `$s` apabila tersedia.
 4. Jangan mengarang informasi error.
-5. Jangan menggunakan `L.e()` untuk mencatat kondisi normal atau peringatan biasa.
-6. Jika blok `catch` belum memiliki parameter stack trace dan diperlukan untuk memperoleh `$s`, penambahan parameter stack trace diperbolehkan selama tidak mengubah penanganan error.
-7. Jangan menghilangkan atau mengubah mekanisme penanganan error yang sudah tersedia.
-8. Jangan menambahkan `try-catch` baru hanya untuk memasukkan log apabila sebelumnya tidak diperlukan.
+5. Jangan menggunakan `L.e()` untuk kondisi normal atau peringatan.
+6. Jangan mengubah mekanisme penanganan error yang sudah ada.
+7. Jangan menambahkan `try-catch` baru hanya demi menambahkan log.
+
+Jika blok `catch` belum menerima stack trace dan diperlukan, gunakan parameter `(e, s)` tanpa mengubah perilaku penanganan error yang sudah ada.
+
+## 7. Aturan Khusus untuk Model
+
+Jika variabel merupakan objek model, cukup tampilkan objek model secara langsung menggunakan `$model`.
+
+Jangan menguraikan properti model satu per satu.
+
+**Benar:**
+
+```dart
+L.i('model=$model');
+```
+
+**Salah:**
+
+```dart
+L.i('model=${model.nama}, umur=${model.umur}');
+```
+
+**Salah:**
+
+```dart
+L.i('nama=${model.nama}, umur=${model.umur}, alamat=${model.alamat}');
+```
+
+Aturan ini berlaku untuk:
+
+- Model Freezed.
+- Model hasil API.
+- Model database.
+- Model hasil repository.
+- Model lainnya.
+
+Jika nama variabel model bukan `model`, gunakan nama variabel sebenarnya.
 
 Contoh:
 
 ```dart
-} catch (e, s) {
-  L.e('gagal mengambil data pengguna: $e $s');
-  rethrow;
-}
+L.i('pengguna=$pengguna');
+L.i('transaksi=$transaksi');
+L.i('produk=$produk');
 ```
 
-Pertahankan perilaku penanganan error yang sudah ada. Contoh di atas bukan instruksi untuk selalu menambahkan `rethrow`.
+Jangan menguraikan properti objek model kecuali pengguna secara khusus meminta pemeriksaan properti tertentu.
 
-## 6. Aturan L.init()
+## 8. Aturan L.init()
 
-Pemilihan sistem logging harus berdasarkan apakah `L.init()` sudah benar-benar dijalankan ketika kode tersebut dieksekusi.
+Pemilihan metode logging wajib berdasarkan urutan inisialisasi yang sebenarnya.
 
-Referensi implementasi:
+### 8.1. Setelah L.init()
 
-`lib/shared/utils/l.dart`
-
-### 6.1. Kode yang dieksekusi setelah L.init()
-
-Jika jalur eksekusi sudah melewati pemanggilan `L.init()`, gunakan:
+Jika jalur eksekusi sudah melewati `L.init()`, gunakan:
 
 - `L.i()` untuk informasi.
 - `L.w()` untuk peringatan.
 - `L.e()` untuk error.
 
-Contoh:
+### 8.2. Sebelum L.init()
 
-```dart
-L.i('nama=$nama, umur=$umur');
-L.w('izin ditolak, izin=$izin');
-L.e('gagal menyimpan data: $e $s');
-```
-
-### 6.2. Kode yang dieksekusi sebelum L.init()
-
-Jika jalur eksekusi belum melewati `L.init()`, jangan menggunakan `L.i()`, `L.w()`, atau `L.e()`.
-
-Gunakan `debugPrint()` dengan pengecekan `kDebugMode`.
+Jika jalur eksekusi belum melewati `L.init()`, gunakan `debugPrint()` dengan pengecekan `kDebugMode`.
 
 Contoh:
 
 ```dart
 if (kDebugMode) {
-  debugPrint('nama=$nama, umur=$umur');
+  debugPrint('kopi=$kopi, susu=$susu');
 }
 ```
 
-Pastikan tersedia import:
+Pastikan import berikut tersedia:
 
 ```dart
 import 'package:flutter/foundation.dart';
 ```
 
-Jika import tersebut belum tersedia, tambahkan hanya apabila memang diperlukan dan belum tersedia melalui import yang sudah ada.
-
-### 6.3. Wajib memeriksa urutan inisialisasi
+### 8.3. Pemeriksaan urutan inisialisasi
 
 1. Cari lokasi pemanggilan `L.init()` di proyek.
-2. Baca implementasi pemanggilan tersebut.
-3. Telusuri alur eksekusi file target.
-4. Tentukan apakah fungsi, method, callback, atau proses yang diberi log dapat berjalan sebelum `L.init()`.
-5. Jangan menentukan penggunaan `L.*` hanya berdasarkan posisi kode dalam file.
-6. Jika urutan inisialisasi belum dapat dipastikan, gunakan `debugPrint()` dengan pengecekan `kDebugMode` pada bagian tersebut.
+2. Periksa kapan `L.init()` dijalankan.
+3. Telusuri jalur eksekusi fungsi, method, callback, atau proses yang akan diberi log.
+4. Jangan hanya menentukan penggunaan logging berdasarkan posisi kode dalam file.
+5. Jika belum dapat memastikan apakah `L.init()` sudah dijalankan, gunakan `debugPrint()` dengan pengecekan `kDebugMode`.
 
-Jangan mengubah lokasi atau mekanisme pemanggilan `L.init()`.
+Jangan mengubah mekanisme atau lokasi pemanggilan `L.init()`.
 
-## 7. Larangan
+## 9. Keamanan Data
+
+Jangan mencatat nilai sensitif seperti:
+
+- Password.
+- Access token.
+- Refresh token.
+- OTP.
+- Secret key.
+- Private key.
+- Kredensial autentikasi.
+
+Jika variabel model atau objek mengandung informasi sensitif, jangan mencetak keseluruhan objek tersebut. Laporkan variabel yang dikecualikan beserta alasannya tanpa menampilkan nilainya.
+
+## 10. Larangan
 
 1. Jangan mengubah logika bisnis.
 2. Jangan mengubah hasil proses program.
-3. Jangan mengubah kondisi `if`, `else`, `switch`, atau perulangan.
-4. Jangan mengubah nilai variabel hanya untuk keperluan logging.
-5. Jangan mengubah tipe data variabel.
-6. Jangan mengubah parameter fungsi atau method, kecuali penambahan parameter stack trace pada `catch` sebagaimana dijelaskan sebelumnya.
-7. Jangan menghapus kode yang sudah ada.
-8. Jangan melakukan refactoring.
-9. Jangan membuat fungsi logging tambahan.
-10. Jangan menambahkan package baru.
-11. Jangan menggunakan `print()` sebagai pengganti logging yang sudah ditentukan.
-12. Jangan mengubah file di luar daftar target pengguna.
-13. Jangan menambahkan log pada file generated seperti `.g.dart` dan `.freezed.dart`.
-14. Jangan menambahkan log yang mencetak password, token autentikasi, OTP, secret key, private key, atau kredensial lainnya. Laporkan variabel sensitif yang dikecualikan tanpa menampilkan nilainya.
-15. Jangan mengubah format pesan log menjadi terlalu panjang dan sulit dibaca.
+3. Jangan mengubah kondisi percabangan.
+4. Jangan mengubah nilai variabel.
+5. Jangan mengubah tipe data.
+6. Jangan melakukan refactoring.
+7. Jangan menambahkan fitur.
+8. Jangan membuat sistem logging baru.
+9. Jangan menambahkan package baru.
+10. Jangan menggunakan `print()` sebagai pengganti sistem logging.
+11. Jangan mengubah file di luar daftar target.
+12. Jangan mengubah `L.init()`.
+13. Jangan menambahkan log sebelum variabel mendapatkan nilai.
+14. Jangan mencetak properti model satu per satu.
+15. Jangan membuat pesan log terlalu panjang.
 
-## 8. Ketentuan Import
-
-Jika file target belum memiliki akses terhadap `L`:
-
-1. Cari pola import yang digunakan proyek.
-2. Tambahkan import `L` menggunakan path yang benar sesuai struktur proyek.
-3. Hindari import duplikat.
-4. Jangan mengubah import lain yang tidak berkaitan.
-
-Jika file memerlukan `debugPrint()` dan `kDebugMode`, pastikan import yang sesuai tersedia.
-
-## 9. Pemeriksaan Setelah Penambahan Log
+## 11. Pemeriksaan Setelah Penambahan Log
 
 Setelah selesai:
 
-1. Periksa kembali setiap file target.
-2. Pastikan penambahan log tidak mengubah logika program.
-3. Pastikan setiap interpolasi menggunakan nama variabel yang benar.
+1. Pastikan semua variabel dan parameter yang relevan sudah diberi log.
+2. Pastikan nilai yang dicatat merupakan nilai aktual.
+3. Pastikan objek model cukup menggunakan `$model`.
 4. Pastikan `L.i()`, `L.w()`, dan `L.e()` digunakan sesuai fungsinya.
-5. Pastikan tidak ada pemanggilan `L.*` sebelum `L.init()` dijalankan.
-6. Pastikan kode sebelum `L.init()` menggunakan `debugPrint()` dengan pengecekan `kDebugMode`.
-7. Pastikan tidak ada data sensitif yang dicetak.
-8. Periksa format kode agar tetap sesuai dengan formatter Dart.
-9. Jalankan `flutter analyze` jika memungkinkan, kemudian laporkan hasilnya.
-10. Jangan memperbaiki masalah lain yang tidak berkaitan dengan penambahan log.
+5. Pastikan log sebelum `L.init()` menggunakan `debugPrint()` dengan pengecekan `kDebugMode`.
+6. Pastikan log setelah `L.init()` menggunakan `L.*`.
+7. Pastikan tidak ada data sensitif yang tercetak.
+8. Pastikan tidak ada perubahan logika program.
+9. Periksa format kode Dart.
+10. Jalankan `flutter analyze` jika memungkinkan dan laporkan hasilnya.
 
-## 10. Format Laporan Akhir
+Jangan memperbaiki masalah lain yang tidak berkaitan dengan penambahan log.
 
-Setelah selesai, berikan laporan dengan format berikut:
+## 12. Format Laporan Akhir
 
 # Laporan Penambahan Log Debug
 
 ## A. File yang Diperbarui
 
-Tampilkan seluruh file yang ditentukan pengguna dan berhasil diberi log.
-
-Format:
-
-- `lib/path/nama_file.dart`
-  - Jumlah log yang ditambahkan.
-  - Jenis log: `L.i()`, `L.w()`, `L.e()`, atau `debugPrint()`.
+Tampilkan path setiap file yang berhasil diberi log.
 
 ## B. Lokasi Log
 
-Tampilkan path dan nomor baris setiap bagian log yang ditambahkan.
+Tampilkan path dan nomor baris setiap log yang ditambahkan.
 
 Contoh:
 
@@ -273,25 +292,24 @@ Contoh:
 
 ## C. Variabel yang Dikecualikan
 
-Sebutkan variabel sensitif yang tidak dicatat beserta path dan alasannya. Jangan tampilkan nilai sensitifnya.
+Tampilkan variabel yang tidak dicatat karena mengandung informasi sensitif beserta alasannya.
 
 ## D. Pemeriksaan L.init()
 
-Jelaskan apakah log menggunakan `L.*` atau `debugPrint()`, serta dasar penentuan urutan inisialisasinya.
+Jelaskan penggunaan `L.*` dan `debugPrint()` berdasarkan urutan inisialisasi.
 
 ## E. Hasil Pemeriksaan
 
-Laporkan:
+Laporkan hasil pemeriksaan kode dan `flutter analyze`.
 
-- Apakah penambahan log berhasil.
-- Apakah ada kesalahan dari `flutter analyze`.
-- Apakah ada bagian yang tidak dapat diberi log beserta alasannya.
-- Pastikan tidak ada perubahan logika program.
+Pastikan tidak ada perubahan logika program.
 
-## 11. Prinsip Pelaksanaan
+## 13. Prinsip Pelaksanaan
 
-**Fokus hanya pada penambahan log debug di file yang ditentukan pengguna.**
+Fokus hanya menambahkan log debug pada file yang ditentukan pengguna.
 
-Log harus sederhana, berisi nilai variabel yang aktual, mudah dibaca, dan ditempatkan pada titik eksekusi yang tepat.
+Utamakan nilai variabel dan parameter, bukan penjelasan panjang.
 
-Jangan menjadikan pekerjaan ini sebagai kesempatan untuk memperbaiki, merapikan, atau mengubah implementasi program di luar kebutuhan logging.
+Gunakan format log yang sederhana, konsisten, dan mudah dibaca.
+
+Jangan melakukan pekerjaan tambahan di luar kebutuhan logging.

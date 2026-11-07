@@ -19,6 +19,7 @@ class BiodataNotifier extends _$BiodataNotifier {
     try {
       final op = const SqfliteOp();
       final row = await op.ambilSatu(NamaTabel.biodata);
+      L.i('row=$row');
       if (row == null) {
         return null;
       }
@@ -30,11 +31,14 @@ class BiodataNotifier extends _$BiodataNotifier {
   }
 
   Future<void> simpan(BiodataModel biodata) async {
+    L.i('biodata.id=${biodata.id}, biodata.nama=${biodata.nama}');
     try {
       final existing = await future;
+      L.i('existing=${existing?.id}');
       final model = biodata.id.isEmpty
           ? biodata.copyWith(id: existing?.id ?? const Uuid().v4())
           : biodata;
+      L.i('model.id=${model.id}');
       final op = const SqfliteOp();
       await op.tambah(
         NamaTabel.biodata,
