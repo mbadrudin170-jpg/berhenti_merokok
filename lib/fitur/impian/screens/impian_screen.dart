@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,8 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
             return Card(
               key: ValueKey(item.id),
               child: ListTile(
+                onTap: () =>
+                    unawaited(Nav.to(context, DetailImpianScreen(id: item.id))),
                 title: Text(item.nama),
                 subtitle: const LinearProgressIndicator(),
               ),

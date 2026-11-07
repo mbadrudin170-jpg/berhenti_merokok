@@ -10,7 +10,8 @@ import 'package:share_global_saya/core_shared.dart';
 import 'package:uuid/uuid.dart';
 
 class FormImpian extends ConsumerStatefulWidget {
-  const FormImpian({super.key});
+  final ImpianModel? impian;
+  const FormImpian({super.key, this.impian});
 
   @override
   ConsumerState<FormImpian> createState() => _FormImpianState();
@@ -31,6 +32,12 @@ class _FormImpianState extends ConsumerState<FormImpian> {
   @override
   void initState() {
     super.initState();
+    final impian = widget.impian;
+    if (impian != null) {
+      _namaController.text = impian.nama;
+      _jumlahController.text = FormatUang.formatRupiah(impian.jumlah);
+      _targetTanggal = impian.targetTanggal;
+    }
   }
 
   @override
@@ -96,13 +103,17 @@ class _FormImpianState extends ConsumerState<FormImpian> {
         return;
       }
       final model = ImpianModel(
-        id: const Uuid().v4(),
+        id: widget.impian?.id ?? const Uuid().v4(),
         nama: _namaController.text.trim(),
         targetTanggal: _targetTanggal ?? DateTime.now(),
-        dibuat: DateTime.now(),
+        dibuat: widget.impian?.dibuat ?? DateTime.now(),
         jumlah: jumlah,
       );
-      await ref.read(impianProvider.notifier).tambah(model);
+      if (widget.impian == null) {
+        await ref.read(impianProvider.notifier).tambah(model);
+      } else {
+        await ref.read(impianProvider.notifier).ubah(model);
+      }
       if (!mounted) return;
       if (Navigator.of(context).canPop()) {
         Nav.pop(context);
@@ -123,7 +134,10 @@ class _FormImpianState extends ConsumerState<FormImpian> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Form Impian')),
+      appBar: AppBar(
+        title: Text(widget.impian == null ? 'Form Impian' : 'Ubah Impian'),
+      ),
+
       body: SafeArea(
         child: Form(
           key: _formKey,
