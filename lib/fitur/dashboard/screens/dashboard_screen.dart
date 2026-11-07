@@ -1,3 +1,4 @@
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,9 +24,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+    final biodata = biodataAsync.requireValue;
     return Scaffold(
       appBar: AppBar(title: const Text('data')),
-      body: Center(child: Text('DashboardScreen')),
+      body: ListView(children: [Card(child: Text(''))]),
     );
   }
 }
