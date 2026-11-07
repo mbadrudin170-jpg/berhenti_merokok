@@ -1062,3 +1062,217 @@ Pola ini menjaga konsistensi dengan aturan padding tepi layar, performa key stab
 **Sumber evaluasi:**
 - Commit: `f72bf351dc279641ddacdddcb0f5a46fb7c5b4d5`
 - File: `lib/fitur/impian/screens/impian_screen.dart`
+
+## Form dengan Mode Tambah dan Ubah (Dual-Mode)
+
+Form yang mendukung mode tambah dan ubah sebaiknya menerima model opsional, mempertahankan identitas data lama (ID, tanggal pembuatan), memilih operasi notifier yang sesuai, dan mengisi controller pada `initState` (bukan `build`).
+
+**Aturan wajib:**
+1. Form menerima parameter opsional berupa model yang sudah ada untuk membedakan mode tambah (null) dan mode ubah (non-null).
+2. Pada `initState`, jika model tersedia, isi controller dan state lokal dari model tersebut; jangan melakukan pengisian di `build()`.
+3. Saat menyimpan, pertahankan identitas data lama (ID, tanggal pembuatan); buat nilai baru hanya jika tidak ada model lama.
+4. Pilih operasi penyimpanan sesuai mode (tambah untuk data baru, ubah untuk data yang sudah ada).
+5. Judul atau label aksi mencerminkan mode (mis. "Form X" untuk tambah, "Ubah X" untuk ubah).
+6. Tetap pertahankan validasi, konfirmasi, loading overlay, guard double-submit, dan penanganan error.
+
+**Larangan:**
+- Jangan selalu membuat ID baru pada mode ubah (akan membuat data duplikat).
+- Jangan mengisi controller dari model di dalam `build()` (side effect).
+- Jangan mengubah identitas data lama (ID, tanggal pembuatan) pada mode ubah.
+
+**Alasan:**
+Pola dual-mode menjaga identitas data saat pengubahan dan mencegah pembuatan record baru yang seharusnya update. Pengisian controller pada `initState` menghindari side effect di `build()`.
+
+**Contoh benar:**
+```dart
+class FormX extends ConsumerStatefulWidget {
+  final ModelX? model;
+  const FormX({super.key, this.model});
+
+  @override
+  ConsumerState<FormX> createState() => _FormXState();
+}
+
+class _FormXState extends ConsumerState<FormX> {
+  @override
+  void initState() {
+    super.initState();
+    final model = widget.model;
+    if (model != null) {
+      _namaController.text = model.nama;
+    }
+  }
+
+  Future<void> _simpan() async {
+    // ... validasi, konfirmasi, loading ...
+    final model = ModelX(
+      id: widget.model?.id ?? const Uuid().v4(),
+      nama: _namaController.text.trim(),
+      dibuat: widget.model?.dibuat ?? DateTime.now(),
+    );
+    if (widget.model == null) {
+      await ref.read(provider.notifier).tambah(model);
+    } else {
+      await ref.read(provider.notifier).ubah(model);
+    }
+    if (!mounted) return;
+    if (Navigator.of(context).canPop()) {
+      Nav.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.model == null ? 'Form X' : 'Ubah X'),
+      ),
+      // ...
+    );
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+@override
+Widget build(BuildContext context) {
+  final model = widget.model;
+  if (model != null) {
+    _namaController.text = model.nama; // side effect di build
+  }
+  return Scaffold(/* ... */);
+}
+
+// Selalu membuat ID baru (duplikasi pada mode ubah).
+final model = ModelX(id: const Uuid().v4(), dibuat: DateTime.now());
+await ref.read(provider.notifier).tambah(model);
+```
+
+**Sumber evaluasi:**
+- Commit: `b015312031f01fdf2195d0c17e1a77ac60f98e6b`, `ea119ec4b7f73756e410eb8b336fca8e65420abe`
+- File: `lib/fitur/impian/screens/form_impian.dart`
+
+## Halaman Detail Item berbasis Provider
+
+Halaman detail item yang hanya membaca provider sebaiknya menggunakan `ConsumerWidget`, menangani loading/error/retry, mencari item dengan `firstWhereOrNull`, menampilkan state not-found yang jelas, dan menyediakan aksi ubah yang membawa model yang ditemukan.
+
+**Aturan wajib:**
+1. Gunakan `ConsumerWidget` apabila halaman hanya membaca provider dan tidak membutuhkan lifecycle.
+2. Tangani `.isLoading` → `.hasError` → `.requireValue` sesuai urutan; sediakan tombol retry yang memanggil `ref.refresh(provider)`.
+3. Cari item berdasarkan ID menggunakan `firstWhereOrNull` (bukan `firstWhere`).
+4. Jika item tidak ditemukan, tampilkan state not-found yang jelas dengan screen-edge padding.
+5. Sediakan aksi ubah yang menavigasi ke form dengan model yang ditemukan.
+6. Pertahankan `SafeArea` dan `Padding` screen-edge pada konten utama.
+
+**Larangan:**
+- Jangan menggunakan `ConsumerStatefulWidget` untuk halaman detail yang hanya membaca provider.
+- Jangan menggunakan `firstWhere` untuk pencarian item yang mungkin tidak ada.
+- Jangan mengabaikan status loading/error pada provider.
+- Jangan menavigasi ke form ubah tanpa menyertakan model yang ditemukan.
+
+**Alasan:**
+Pola ini menjaga konsistensi dengan aturan AsyncValue, pencarian aman, dan padding tepi layar, serta mencegah exception pada item yang tidak ada.
+
+**Contoh benar:**
+```dart
+class DetailXScreen extends ConsumerWidget {
+  final String id;
+  const DetailXScreen({super.key, required this.id});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stateAsync = ref.watch(provider);
+
+    if (stateAsync.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (stateAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail X')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Gagal memuat data'),
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(provider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final state = stateAsync.requireValue;
+    final ModelX? item = state.list.firstWhereOrNull((e) => e.id == id);
+
+    if (item == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail X')),
+        body: const SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: Text('Data tidak ditemukan')),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Detail X'),
+        actions: [
+          IconButton(
+            icon: const Icon(CupertinoIcons.pencil),
+            onPressed: () =>
+                unawaited(Nav.to(context, FormX(model: item))),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                // ... item detail ...
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+class DetailXScreen extends ConsumerStatefulWidget {
+  // ConsumerStatefulWidget tidak diperlukan jika hanya membaca provider.
+}
+
+// firstWhere melempar exception jika item tidak ada.
+final item = state.list.firstWhere((e) => e.id == id);
+
+// Form ubah dibuka tanpa model.
+Nav.to(context, const FormX());
+```
+
+**Sumber evaluasi:**
+- Commit: `b015312031f01fdf2195d0c17e1a77ac60f98e6b`
+- File: `lib/fitur/impian/screens/detail_impian_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`
