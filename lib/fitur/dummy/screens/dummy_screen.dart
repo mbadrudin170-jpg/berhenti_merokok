@@ -29,7 +29,9 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
     final konfirmasi = await showOkCancelAlertDialog(
       context: context,
       title: 'Masukkan Dummy',
-      message: 'Apakah Anda yakin ingin memasukkan data dummy?',
+      message:
+          'Apakah Anda yakin ingin memasukkan data dummy? '
+          'Biodata yang ada akan diganti dengan data dummy.',
       okLabel: 'Masukkan',
       cancelLabel: 'Batal',
     );

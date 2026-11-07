@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -62,6 +62,12 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     final biodata = biodataAsync.requireValue;
     L.i('biodata=$biodata');
 
+    // Salin field nullable ke variabel lokal agar type promotion berlaku
+    // (menghindari penggunaan operator `!`).
+    final tanggalLahir = biodata?.tanggalLahir;
+    final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+    final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
       body: SafeArea(
@@ -94,9 +100,9 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                       _buildItem('Nama', biodata.nama),
                       _buildItem(
                         'Tanggal lahir',
-                        biodata.tanggalLahir == null
+                        tanggalLahir == null
                             ? 'Belum dipilih'
-                            : FormatTanggal.formatDasar(biodata.tanggalLahir!),
+                            : FormatTanggal.formatDasar(tanggalLahir),
                       ),
                       _buildItem(
                         'Jumlah rokok per hari',
@@ -112,18 +118,16 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                       ),
                       _buildItem(
                         'Tanggal mulai merokok',
-                        biodata.tanggalMulaiMerokok == null
+                        tanggalMulaiMerokok == null
                             ? 'Belum dipilih'
-                            : FormatTanggal.formatDasar(
-                                biodata.tanggalMulaiMerokok!,
-                              ),
+                            : FormatTanggal.formatDasar(tanggalMulaiMerokok),
                       ),
                       _buildItem(
                         'Tanggal mulai berhenti merokok',
-                        biodata.tanggalMulaiBerhentiMerokok == null
+                        tanggalMulaiBerhentiMerokok == null
                             ? 'Belum dipilih'
                             : FormatTanggal.formatDasar(
-                                biodata.tanggalMulaiBerhentiMerokok!,
+                                tanggalMulaiBerhentiMerokok,
                               ),
                       ),
                       const SizedBox(height: 8),

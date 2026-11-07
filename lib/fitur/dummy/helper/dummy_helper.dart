@@ -23,6 +23,9 @@ class DummyHelper {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
+        // Hapus biodata yang ada agar data dummy menjadi satu-satunya biodata
+        // yang terbaca aplikasi (ambilSatu mengembalikan baris pertama).
+        await txn.delete(NamaTabel.biodata);
         for (final biodata in dummyBiodata) {
           await txn.insert(
             NamaTabel.biodata,
