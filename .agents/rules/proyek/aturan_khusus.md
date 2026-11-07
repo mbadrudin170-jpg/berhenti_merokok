@@ -3385,3 +3385,81 @@ Nav.to(context, const FormImpian());
 
 **Prinsip umum yang dapat dijadikan referensi aturan bersama:**
 Halaman detail item yang hanya membaca provider sebaiknya menggunakan `ConsumerWidget`, menangani loading/error/retry, mencari item dengan `firstWhereOrNull`, menampilkan state not-found yang jelas, dan menyediakan aksi ubah yang membawa model yang ditemukan. Prinsip ini dapat diterapkan pada seluruh proyek Flutter.
+
+## Dashboard Menampilkan Durasi Berhenti Merokok Real-Time
+
+**Cakupan:**
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_DashboardScreenState.build`, `_DurasiBerhenti`, `_formatLamaBerhenti`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider` (sumber `tanggalMulaiBerhentiMerokok` dan `nama`).
+
+**Aturan wajib:**
+1. Dashboard menampilkan "Lama berhenti merokok" yang dihitung dari `biodata.tanggalMulaiBerhentiMerokok` (UTC disimpan, dikonversi ke lokal saat ditampilkan).
+2. Jika `tanggalMulaiBerhentiMerokok` null, tampilkan teks "Belum ditentukan".
+3. Jika selisih waktu negatif (tanggal di masa depan), tampilkan "0 detik".
+4. Format durasi: hari, jam, menit, detik — tampilkan hanya komponen yang relevan (hari > 0 untuk hari; jam jika hari > 0 atau jam > 0; menit jika ada komponen lebih besar; detik selalu).
+5. Tampilkan juga tanggal mulai berhenti (`FormatTanggal.formatDasar`) dan sapaan nama pengguna (jika nama tidak kosong).
+6. Handle `biodataProvider` dengan urutan `.isLoading` → `.hasError` → `.requireValue`; sediakan tombol "Coba lagi" yang memanggil `ref.refresh(biodataProvider)`.
+7. Bungkus konten utama dengan `SafeArea` dan `Padding` screen-edge (mis. `EdgeInsets.all(16)`).
+8. Pembaruan setiap detik diisolasi pada widget kecil `_DurasiBerhenti` (StatefulWidget) dengan `Timer.periodic(const Duration(seconds: 1))`, `setState` sendiri, cancel timer di `dispose`, dan pemeriksaan `mounted` sebelum `setState`.
+9. Jangan memicu rebuild seluruh halaman setiap detik; hanya widget durasi yang melakukan rebuild.
+
+**Larangan:**
+- Jangan menggunakan `Timer.periodic` pada level halaman yang memanggil `setState` seluruh halaman setiap detik.
+- Jangan lupa membatalkan timer di `dispose()` (memory leak).
+- Jangan memanggil `setState` setelah widget tidak terpasang (periksa `mounted`).
+- Jangan menampilkan durasi tanpa penanganan loading/error pada `biodataProvider`.
+
+**Alasan:**
+Commit `150bc02c` mengonversi `DashboardNotifier` ke `AsyncNotifier` dan menyempurnakan tampilan durasi berhenti merokok. Dashboard screen membaca `biodataProvider`, menangani loading/error/retry, dan menampilkan durasi real-time melalui widget `_DurasiBerhenti` yang memperbarui diri setiap detik. Pola isolate rebuild mencegah rebuild seluruh halaman setiap detik, menjaga performa.
+
+**Dampak apabila dilanggar:**
+- Rebuild seluruh halaman setiap detik menyebabkan UI tidak responsif.
+- Timer yang tidak dibatalkan menyebabkan memory leak dan callback aktif setelah halaman ditutup.
+- `setState` setelah unmount menyebabkan crash.
+- Tidak menangani loading/error menyebabkan crash saat data belum tersedia.
+
+**Rujukan implementasi:**
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_DashboardScreenState.build`, `_DurasiBerhenti`, `_formatLamaBerhenti`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
+- Commit: `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`, `150bc02c5cf6f3ca9778d16558022e53147c8c53`.
+
+**Contoh benar:**
+```dart
+class _DurasiBerhenti extends StatefulWidget {
+  const _DurasiBerhenti({required this.tanggalBerhenti});
+  final DateTime? tanggalBerhenti;
+  @override
+  State<_DurasiBerhenti> createState() => _DurasiBerhentiState();
+}
+class _DurasiBerhentiState extends State<_DurasiBerhenti> {
+  Timer? _timer;
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Text(_formatLamaBerhenti(widget.tanggalBerhenti));
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Rebuild seluruh halaman setiap detik.
+Timer.periodic(const Duration(seconds: 1), (_) {
+  if (mounted) setState(() {});
+});
+// Timer tidak dibatalkan di dispose -> memory leak.
+```
+
+**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
+Pembaruan berkala (mis. jam berjalan) sebaiknya diisolasi pada widget kecil yang melakukan `setState` sendiri, dengan `Timer.periodic` yang dibatalkan di `dispose` dan pemeriksaan `mounted` sebelum `setState`, agar tidak memicu rebuild seluruh halaman setiap interval. Prinsip ini dapat diterapkan pada seluruh proyek Flutter.

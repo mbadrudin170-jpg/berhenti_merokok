@@ -1277,3 +1277,66 @@ Nav.to(context, const FormX());
 **Sumber evaluasi:**
 - Commit: `b015312031f01fdf2195d0c17e1a77ac60f98e6b`
 - File: `lib/fitur/impian/screens/detail_impian_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`
+
+## Pembaruan Berkala dengan Timer dan Isolate Rebuild
+
+Pembaruan berkala (mis. jam berjalan, countdown) sebaiknya diisolasi pada widget kecil agar tidak memicu rebuild seluruh halaman setiap interval.
+
+**Aturan wajib:**
+1. Gunakan `Timer.periodic` dengan interval yang sesuai untuk pembaruan berkala.
+2. Tempatkan pembaruan berkala pada widget `StatefulWidget` kecil (bukan pada level halaman) agar hanya widget tersebut yang melakukan `setState`.
+3. Batalkan timer melalui `_timer?.cancel()` di dalam `dispose()`.
+4. Periksa `mounted` sebelum memanggil `setState` di dalam callback timer.
+5. Jangan memicu rebuild seluruh halaman setiap interval.
+
+**Larangan:**
+- Jangan memanggil `Timer.periodic` pada level halaman yang melakukan `setState` seluruh halaman setiap detik.
+- Jangan lupa membatalkan timer di `dispose()` (memory leak).
+- Jangan memanggil `setState` setelah widget tidak terpasang.
+- Jangan menggunakan `setState` pada parent untuk update berkala yang hanya memengaruhi satu widget.
+
+**Alasan:**
+Pembaruan berkala yang memicu rebuild seluruh halaman setiap detik menyebabkan UI tidak responsif dan pemborosan resource. Isolasi pada widget kecil menjaga performa, sementara cancel timer di `dispose` dan pemeriksaan `mounted` mencegah memory leak dan crash. Pola ini juga konsisten dengan aturan pengelolaan resource dan optimasi rebuild.
+
+**Contoh benar:**
+```dart
+class _JamBerjalan extends StatefulWidget {
+  const _JamBerjalan({required this.mulai});
+  final DateTime mulai;
+  @override
+  State<_JamBerjalan> createState() => _JamBerjalanState();
+}
+class _JamBerjalanState extends State<_JamBerjalan> {
+  Timer? _timer;
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    final selisih = DateTime.now().difference(widget.mulai);
+    return Text('${selisih.inSeconds} detik');
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Rebuild seluruh halaman setiap detik.
+Timer.periodic(const Duration(seconds: 1), (_) {
+  if (mounted) setState(() {});
+});
+// Timer tidak dibatalkan di dispose -> memory leak.
+```
+
+**Sumber evaluasi:**
+- Commit: `150bc02c5cf6f3ca9778d16558022e53147c8c53`, `a2a68c090c2f0a54c5cbb8b90784d97e31aa3c88`
+- File: `lib/fitur/dashboard/screens/dashboard_screen.dart`
