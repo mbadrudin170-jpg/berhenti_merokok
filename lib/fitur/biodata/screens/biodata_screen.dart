@@ -92,13 +92,15 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                       ),
                       _buildItem(
                         'Jumlah rokok per hari',
-                        biodata.jumlahRokokPerHari?.toString() ?? 'Belum diisi',
+                        biodata.jumlahRokokPerHari.toString(),
                       ),
                       _buildItem(
                         'Harga rokok per bungkus',
-                        biodata.hargaRokokPerBungkus == null
-                            ? 'Belum diisi'
-                            : biodata.hargaRokokPerBungkus.toString(),
+                        biodata.hargaRokokPerBungkus.toString(),
+                      ),
+                      _buildItem(
+                        'Batang per bungkus',
+                        biodata.batangPerBungkus.toString(),
                       ),
                       _buildItem(
                         'Tanggal mulai merokok',

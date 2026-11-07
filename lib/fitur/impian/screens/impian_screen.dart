@@ -4,6 +4,7 @@ import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,10 +61,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     if (listImpian.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Impian')),
-        body: const Padding(
-          padding: EdgeInsets.all(16),
-          child: Center(child: Text('Belum ada impian')),
-        ),
+        body: const _EmptyImpian(),
         floatingActionButton: FloatingActionButton(
           onPressed: () => unawaited(Nav.to(context, const FormImpian())),
           child: const Icon(CupertinoIcons.add),
@@ -72,30 +70,90 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Impian')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView.separated(
-          itemCount: listImpian.length,
-          itemBuilder: (context, index) {
-            final ImpianModel item = listImpian[index];
-            return Card(
-              key: ValueKey(item.id),
-              child: ListTile(
-                onTap: () =>
-                    unawaited(Nav.to(context, DetailImpianScreen(id: item.id))),
-                title: Text(item.nama),
-                subtitle: const LinearProgressIndicator(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            spacing: 8,
+            children: [
+              _buildSaldoTerkumpul(impianState),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: listImpian.length,
+                  itemBuilder: (context, index) {
+                    final ImpianModel item = listImpian[index];
+                    return Card(
+                      key: ValueKey(item.id),
+                      child: ListTile(
+                        onTap: () => unawaited(
+                          Nav.to(context, DetailImpianScreen(id: item.id)),
+                        ),
+                        title: Text(item.nama),
+                        subtitle: const LinearProgressIndicator(),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(height: 8);
+                  },
+                ),
               ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return const SizedBox(height: 8);
-          },
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => unawaited(Nav.to(context, const FormImpian())),
         child: const Icon(CupertinoIcons.add),
+      ),
+    );
+  }
+
+  Widget _buildSaldoTerkumpul(ImpianState state) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text('Saldo terkumpul'),
+            Text(
+              '${FormatUang.formatRupiah(state.totalJumlah)}',
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget untuk state kosong daftar impian.
+class _EmptyImpian extends StatelessWidget {
+  const _EmptyImpian();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.star, size: 48),
+              Text(
+                'Belum ada impian',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Tekan tombol + untuk menambah impian pertama.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

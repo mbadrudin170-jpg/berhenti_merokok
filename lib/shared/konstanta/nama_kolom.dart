@@ -17,6 +17,9 @@ class NamaKolom {
   /// Kolom harga rokok per bungkus biodata.
   static const String hargaRokokPerBungkus = 'harga_rokok_per_bungkus';
 
+  /// Kolom batang rokok per bungkus biodata.
+  static const String batangPerBungkus = 'batang_per_bungkus';
+
   /// Kolom tanggal mulai merokok biodata.
   static const String tanggalMulaiMerokok = 'tanggal_mulai_merokok';
 

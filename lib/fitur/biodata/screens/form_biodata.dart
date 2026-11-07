@@ -22,10 +22,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _namaController = TextEditingController();
   final _jumlahRokokController = TextEditingController();
   final _hargaRokokController = TextEditingController();
+  final _batangPerBungkusController = TextEditingController();
 
   final _namaFocusNode = FocusNode();
   final _jumlahRokokFocusNode = FocusNode();
   final _hargaRokokFocusNode = FocusNode();
+  final _batangPerBungkusFocusNode = FocusNode();
 
   DateTime? _tanggalLahir;
   DateTime? _tanggalMulaiMerokok;
@@ -55,8 +57,9 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   void _isiDariModel(BiodataModel model) {
     _sudahDiisi = true;
     _namaController.text = model.nama;
-    _jumlahRokokController.text = model.jumlahRokokPerHari?.toString() ?? '';
-    _hargaRokokController.text = model.hargaRokokPerBungkus?.toString() ?? '';
+    _jumlahRokokController.text = model.jumlahRokokPerHari.toString();
+    _hargaRokokController.text = model.hargaRokokPerBungkus.toString();
+    _batangPerBungkusController.text = model.batangPerBungkus.toString();
     _tanggalLahir = model.tanggalLahir;
     _tanggalMulaiMerokok = model.tanggalMulaiMerokok;
     _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
@@ -68,9 +71,11 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _namaController.dispose();
     _jumlahRokokController.dispose();
     _hargaRokokController.dispose();
+    _batangPerBungkusController.dispose();
     _namaFocusNode.dispose();
     _jumlahRokokFocusNode.dispose();
     _hargaRokokFocusNode.dispose();
+    _batangPerBungkusFocusNode.dispose();
     super.dispose();
   }
 
@@ -141,10 +146,11 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
         id: widget.biodataModel?.id ?? '',
         nama: _namaController.text.trim(),
         tanggalLahir: _tanggalLahir,
-        jumlahRokokPerHari: int.tryParse(_jumlahRokokController.text.trim()),
+        jumlahRokokPerHari: int.tryParse(_jumlahRokokController.text.trim()) ?? 0,
         hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
-            ? null
+            ? 0.0
             : InputRupiah.parse(_hargaRokokController.text),
+        batangPerBungkus: double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
       );
@@ -225,11 +231,17 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                 focusNode: _jumlahRokokFocusNode,
                 nextFocusNode: _hargaRokokFocusNode,
               ),
-              InputRupiah(
+               InputRupiah(
                 controller: _hargaRokokController,
                 label: 'Harga rokok per bungkus',
                 hintText: 'Masukkan harga rokok per bungkus',
                 focusNode: _hargaRokokFocusNode,
+              ),
+              InputAngka(
+                controller: _batangPerBungkusController,
+                label: 'Batang per bungkus',
+                hintText: 'Masukkan jumlah batang per bungkus',
+                focusNode: _batangPerBungkusFocusNode,
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,

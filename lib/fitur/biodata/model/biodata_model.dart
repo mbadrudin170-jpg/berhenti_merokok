@@ -12,8 +12,9 @@ abstract class BiodataModel with _$BiodataModel {
     required String id,
     required String nama,
     DateTime? tanggalLahir,
-    int? jumlahRokokPerHari,
-    double? hargaRokokPerBungkus,
+    @Default(10) int jumlahRokokPerHari,
+    @Default(0.0) double hargaRokokPerBungkus,
+    @Default(20.0) double batangPerBungkus,
     DateTime? tanggalMulaiMerokok,
     DateTime? tanggalMulaiBerhentiMerokok,
   }) = _BiodataModel;
@@ -25,11 +26,16 @@ abstract class BiodataModel with _$BiodataModel {
       nama: ParserUtil.parseString(row[NamaKolom.nama]),
       tanggalLahir: ParserUtil.parseDateTime(row[NamaKolom.tanggalLahir])
           ?.toLocal(),
-      jumlahRokokPerHari: ParserUtil.parseIntOrNull(
+      jumlahRokokPerHari: ParserUtil.parseInt(
         row[NamaKolom.jumlahRokokPerHari],
+        defaultValue: 10,
       ),
-      hargaRokokPerBungkus: ParserUtil.parseDoubleOrNull(
+      hargaRokokPerBungkus: ParserUtil.parseDouble(
         row[NamaKolom.hargaRokokPerBungkus],
+      ),
+      batangPerBungkus: ParserUtil.parseDouble(
+        row[NamaKolom.batangPerBungkus],
+        defaultValue: 20.0,
       ),
       tanggalMulaiMerokok: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiMerokok],
@@ -48,6 +54,7 @@ abstract class BiodataModel with _$BiodataModel {
       NamaKolom.tanggalLahir: tanggalLahir?.toUtc().toIso8601String(),
       NamaKolom.jumlahRokokPerHari: jumlahRokokPerHari,
       NamaKolom.hargaRokokPerBungkus: hargaRokokPerBungkus,
+      NamaKolom.batangPerBungkus: batangPerBungkus,
       NamaKolom.tanggalMulaiMerokok: tanggalMulaiMerokok
           ?.toUtc()
           .toIso8601String(),

@@ -16,6 +16,7 @@ final List<BiodataModel> dummyBiodata = [
     tanggalLahir: DateTime.now().subtract(const Duration(days: 365 * 36)),
     jumlahRokokPerHari: 12,
     hargaRokokPerBungkus: 35000.0,
+    batangPerBungkus: 20.0,
     tanggalMulaiMerokok: DateTime.now().subtract(
       const Duration(days: 365 * 16),
     ),
