@@ -176,7 +176,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final rokokDihisap = jumlahRokokPerHari * totalHariMerokok;
-    final uangTerbuang = (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
+    final uangTerbuang =
+        (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
     final menitHilang = (rokokDihisap * 11).round();
     final hariHilang = menitHilang / (24 * 60);
 
@@ -213,6 +214,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
     );
   }
+
   Widget _buildInfoKerugianKustom(
     IconData icon,
     String title,
@@ -238,8 +240,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               children: [
                 const Text('Belum ada data biodata'),
                 OutlinedButton(
-                  onPressed: () =>
-                      unawaited(Nav.to(context, const FormBiodata(buatPertama: false))),
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
                   child: const Text('Isi Biodata'),
                 ),
               ],
@@ -309,10 +312,10 @@ String _formatLamaBerhenti(DateTime? tanggalBerhenti) {
   if (hari > 0) {
     bagian.add('$hari hari');
   }
-  if (jam > 0 || hari > 0) {
+  if (jam > 0) {
     bagian.add('$jam jam');
   }
-  if (menit > 0 || jam > 0 || hari > 0) {
+  if (menit > 0) {
     bagian.add('$menit menit');
   }
   bagian.add('$detik detik');

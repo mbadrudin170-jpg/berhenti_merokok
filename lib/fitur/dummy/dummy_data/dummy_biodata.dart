@@ -21,7 +21,7 @@ final List<BiodataModel> dummyBiodata = [
       const Duration(days: 365 * 16),
     ),
     tanggalMulaiBerhentiMerokok: DateTime.now().subtract(
-      const Duration(days: 30),
+      const Duration(days: 30, hours: 7, minutes: 30),
     ),
   ),
 ];
