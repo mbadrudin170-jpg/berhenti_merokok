@@ -7,15 +7,14 @@ part 'dashboard_notifier.g.dart';
 
 @riverpod
 class DashboardNotifier extends _$DashboardNotifier {
-  
   @override
   Future<DashboardState> build() async {
     return await _muatData();
   }
 
   Future<DashboardState> _muatData() async {
-    final biodataAsync = await ref.watch(biodataProvider.future);
-    final impianAsync = await ref.watch(impianProvider.future);
+    await ref.watch(biodataProvider.future);
+    await ref.watch(impianProvider.future);
     return DashboardState();
   }
 }

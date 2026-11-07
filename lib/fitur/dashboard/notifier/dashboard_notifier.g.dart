@@ -13,7 +13,7 @@ part of 'dashboard_notifier.dart';
 final dashboardProvider = DashboardNotifierProvider._();
 
 final class DashboardNotifierProvider
-    extends $NotifierProvider<DashboardNotifier, DashboardState> {
+    extends $AsyncNotifierProvider<DashboardNotifier, DashboardState> {
   DashboardNotifierProvider._()
     : super(
         from: null,
@@ -31,29 +31,21 @@ final class DashboardNotifierProvider
   @$internal
   @override
   DashboardNotifier create() => DashboardNotifier();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(DashboardState value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<DashboardState>(value),
-    );
-  }
 }
 
-String _$dashboardNotifierHash() => r'e073043eafdc32ba96517e647e60d699499f6bab';
+String _$dashboardNotifierHash() => r'f5b47cd988fd2cbd1bc517b8374c21d5b27f0a30';
 
-abstract class _$DashboardNotifier extends $Notifier<DashboardState> {
-  DashboardState build();
+abstract class _$DashboardNotifier extends $AsyncNotifier<DashboardState> {
+  FutureOr<DashboardState> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<DashboardState, DashboardState>;
+    final ref = this.ref as $Ref<AsyncValue<DashboardState>, DashboardState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<DashboardState, DashboardState>,
-              DashboardState,
+              AnyNotifier<AsyncValue<DashboardState>, DashboardState>,
+              AsyncValue<DashboardState>,
               Object?,
               Object?
             >;
