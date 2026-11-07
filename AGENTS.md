@@ -815,6 +815,7 @@ Form yang mendukung mode tambah dan ubah sebaiknya menerima model opsional, memp
 4. Pilih operasi penyimpanan sesuai mode (tambah untuk data baru, ubah untuk data yang sudah ada).
 5. Judul atau label aksi mencerminkan mode (mis. "Form X" untuk tambah, "Ubah X" untuk ubah).
 6. Tetap pertahankan validasi, konfirmasi, loading overlay, guard double-submit, dan penanganan error.
+7. Jika form menerima model awal secara sinkron (mis. dari parent) sekaligus memantau provider async, ekstrak logika pengisian controller/state lokal ke satu metode helper agar tidak duplikat antara pre-fill sinkron dan pengisian async; gunakan flag `_sudahDiisi` agar pengisian hanya terjadi sekali.
 **Larangan:**
 - Jangan selalu membuat ID baru pada mode ubah (akan membuat data duplikat).
 - Jangan mengisi controller dari model di dalam `build()` (side effect).
@@ -881,8 +882,8 @@ final model = ModelX(id: const Uuid().v4(), dibuat: DateTime.now());
 await ref.read(provider.notifier).tambah(model);
 ```
 **Sumber evaluasi:**
-- Commit: `b015312031f01fdf2195d0c17e1a77ac60f98e6b`, `ea119ec4b7f73756e410eb8b336fca8e65420abe`
-- File: `lib/fitur/impian/screens/form_impian.dart`
+- Commit: `b015312031f01fdf2195d0c17e1a77ac60f98e6b`, `ea119ec4b7f73756e410eb8b336fca8e65420abe`, `6c8d3c2b798c775cd7a8fde904ffd5e72605d341`
+- File: `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/screens/form_biodata.dart`
 ## Halaman Detail Item berbasis Provider
 Halaman detail item yang hanya membaca provider sebaiknya menggunakan `ConsumerWidget`, menangani loading/error/retry, mencari item dengan `firstWhereOrNull`, menampilkan state not-found yang jelas, dan menyediakan aksi ubah yang membawa model yang ditemukan.
 **Aturan wajib:**
@@ -4850,8 +4851,9 @@ Commit: `69715cd3b115a6ad9233e77881fe91f272b59dc1`
 File: `lib/app.dart`
 ## Pengisian Form Biodata via Listener Manual dan Alur Simpan Awal vs Edit
 **Cakupan:**
-- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState`, khususnya `initState`, `dispose`, dan `_simpan`.
-- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState`, khususnya `initState`, `dispose`, `_isiDariModel`, dan `_simpan`.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — navigasi ke form edit yang menyerahkan `biodata` yang sudah ada.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider` dan `simpan`.
 **Aturan wajib:**
 1. Pengisian controller form dari data async wajib dilakukan melalui `ref.listenManual` di `initState`, bukan melalui `whenData`/`when` di dalam `build()`.
 2. Simpan `ProviderSubscription` yang dikembalikan `ref.listenManual` ke field state, lalu panggil `close()` pada `dispose()` agar subscription tidak bocor.
@@ -4860,29 +4862,41 @@ File: `lib/app.dart`
 5. FormBiodata menerima parameter `buatPertama` (wajib) untuk membedakan alur:
    - `buatPertama == true` (pengguna baru, biodata belum ada): setelah simpan berhasil, navigasi dengan `Nav.pushAndRemoveUntil(context, const Home())` agar FormBiodata tidak dapat dikembalikan.
    - `buatPertama == false` (edit biodata): setelah simpan berhasil, gunakan guard `Navigator.of(context).canPop()` lalu `Nav.pop(context)` bila dapat pop.
-6. Pada callback aksi (`_simpan`), baca nilai provider dengan `ref.read(biodataProvider).asData?.value` (bukan `ref.watch`), sesuai aturan AsyncValue.
-7. Saat menyimpan, gunakan ID yang sudah ada bila data tersimpan (`existing?.id`); buat ID baru dengan `const Uuid().v4()` hanya untuk data baru.
-8. Bungkus operasi simpan dengan `try/catch`, catat error dengan `L.e`, tampilkan feedback dengan `AppToast.gagal`, dan sembunyikan overlay EasyLoading di `finally`.
+6. FormBiodata juga menerima parameter opsional `biodataModel` (model yang sudah ada) untuk mendukung jalur perubahan (edit). Jika tersedia, pre-fill form secara sinkron pada `initState` sebelum listener async diaktifkan, agar nilai langsung tampil tanpa menunggu provider resolved.
+7. Ekstrak logika pengisian controller dan state lokal ke metode helper (mis. `_isiDariModel(BiodataModel model)`) agar dapat dipakai bersama oleh pre-fill sinkron (dari `biodataModel`) dan pengisian async (dari listener), tanpa duplikasi. Helper wajib mengatur flag `_sudahDiisi = true`.
+8. Pada callback listener, panggil helper yang sama (`_isiDariModel`) dengan guard `!_sudahDiisi`, sehingga pre-fill sinkron yang sudah terjadi tidak ditimpa oleh pembaruan listener berikutnya.
+9. Pada callback aksi (`_simpan`), jangan lagi membaca `existing` dari provider; gunakan identitas dari `widget.biodataModel?.id ?? ''` untuk ID. Penjagaan ID yang sudah tersimpan tetap dilakukan di notifier melalui `existing?.id` (lihat aturan "Sinkronkan State dari Future Sebelum Mutasi pada Notifier").
+10. Bungkus operasi simpan dengan `try/catch`, catat error dengan `L.e`, tampilkan feedback dengan `AppToast.gagal`, dan sembunyikan overlay EasyLoading di `finally`.
+11. Jangan melakukan pembuatan UUID di form; tanggung jawab pembuatan ID baru berada di notifier (via `const Uuid().v4()` ketika `existing?.id` null dan id input kosong).
 **Larangan:**
 - Jangan memanggil `biodataAsync.whenData(...)` di dalam `build()` untuk mengisi controller (side effect di build).
 - Jangan membiarkan `ProviderSubscription` dari `ref.listenManual` tidak ditutup di `dispose()`.
 - Jangan memanggil `Nav.pop(context)` tanpa guard `canPop()` pada alur edit, karena halaman bisa menjadi root.
 - Jangan memanggil `Nav.pushAndRemoveUntil` pada alur edit, dan jangan memanggil `Nav.pop` pada alur simpan awal.
+- Jangan membuat UUID di form; pembuatan ID baru adalah tanggung jawab notifier.
+- Jangan membaca `existing` dari provider di `_simpan` untuk menentukan ID; gunakan `widget.biodataModel?.id` dan biarkan notifier mempertahankan/membuat ID.
+- Jangan menduplikasi logika pengisian controller antara pre-fill sinkron dan listener async; ekstrak ke `_isiDariModel`.
 **Alasan:**
-Sebelumnya form diisi melalui `biodataAsync.whenData(...)` di dalam `build()`, yang merupakan side effect di build dan dapat menyebabkan loop rebuild serta inkonsistensi state. Perubahan memindahkan pengisian ke `ref.listenManual` di `initState` dengan flag `_sudahDiisi` dan pengecekan `mounted`, serta menyimpan subscription untuk ditutup di `dispose()`. Alur navigasi pasca-simpan juga dibedakan: simpan awal mengarahkan ke `Home` dengan `pushAndRemoveUntil`, sedangkan edit kembali dengan `Nav.pop` yang di-guard `canPop()`.
+Sebelumnya form diisi melalui `biodataAsync.whenData(...)` di dalam `build()`, yang merupakan side effect di build dan dapat menyebabkan loop rebuild serta inkonsistensi state. Perubahan memindahkan pengisian ke `ref.listenManual` di `initState` dengan flag `_sudahDiisi` dan pengecekan `mounted`, serta menyimpan subscription untuk ditutup di `dispose()`. Alur navigasi pasca-simpan juga dibedakan: simpan awal mengarahkan ke `Home` dengan `pushAndRemoveUntil`, sedangkan edit kembali dengan `Nav.pop` yang di-guard `canPop()`. Pada jalur perubahan (edit), form juga menerima `biodataModel` yang sudah ada untuk pre-fill sinkron, dan logika pengisian diekstrak ke `_isiDariModel` agar tidak duplikat antara pre-fill sinkron dan pengisian async. ID diambil dari `widget.biodataModel?.id` (bukan dari provider atau UUID di form), dan pembuatan UUID baru diserahkan ke notifier.
 **Dampak apabila dilanggar:**
 - Side effect di `build()` menyebabkan loop rebuild dan controller tertimpa berulang.
 - Subscription yang tidak ditutup menyebabkan memory leak dan callback aktif setelah halaman ditutup.
 - Navigasi yang salah (pop pada root atau kembali ke form awal) merusak alur onboarding.
 **Rujukan implementasi:**
-- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState.initState`, `dispose`, `_simpan`, parameter `buatPertama`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState.initState`, `dispose`, `_isiDariModel`, `_simpan`, parameter `buatPertama` dan `biodataModel`.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — navigasi ke `FormBiodata(buatPertama: false, biodataModel: biodata)`.
 - `.agents/rules/global/optimasi_bug_runtime.md` §4 (mounted) dan §6 (try/catch).
 - `.agents/rules/global/optimasi_ux.md` §5 (status operasi) dan §12 (loading).
 **Contoh benar:**
 ```dart
 class FormBiodata extends ConsumerStatefulWidget {
   final bool buatPertama;
-  const FormBiodata({super.key, required this.buatPertama});
+  final BiodataModel? biodataModel;
+  const FormBiodata({
+    super.key,
+    required this.buatPertama,
+    this.biodataModel,
+  });
   // ...
 }
 class _BiodataScreenState extends ConsumerState<FormBiodata> {
@@ -4933,8 +4947,8 @@ Widget build(BuildContext context) {
 }
 ```
 **Sumber evaluasi:**
-Commit: `791e578a7d4fb4d436908afb06423ed930915ca9`
-File: `lib/fitur/biodata/screens/form_biodata.dart`
+- Commit: `791e578a7d4fb4d436908afb06423ed930915ca9`, `6c8d3c2b798c775cd7a8fde904ffd5e72605d341`
+- File: `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`
 ## Migrasi Skema SQLite saat Penambahan Tabel atau Kolom
 **Cakupan:**
 - `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase` (`_versiDatabase`, `_buatTabel`, `_onUpgrade`).

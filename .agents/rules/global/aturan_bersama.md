@@ -1074,6 +1074,7 @@ Form yang mendukung mode tambah dan ubah sebaiknya menerima model opsional, memp
 4. Pilih operasi penyimpanan sesuai mode (tambah untuk data baru, ubah untuk data yang sudah ada).
 5. Judul atau label aksi mencerminkan mode (mis. "Form X" untuk tambah, "Ubah X" untuk ubah).
 6. Tetap pertahankan validasi, konfirmasi, loading overlay, guard double-submit, dan penanganan error.
+7. Jika form menerima model awal secara sinkron (mis. dari parent) sekaligus memantau provider async, ekstrak logika pengisian controller/state lokal ke satu metode helper agar tidak duplikat antara pre-fill sinkron dan pengisian async; gunakan flag `_sudahDiisi` agar pengisian hanya terjadi sekali.
 
 **Larangan:**
 - Jangan selalu membuat ID baru pada mode ubah (akan membuat data duplikat).
@@ -1150,8 +1151,8 @@ await ref.read(provider.notifier).tambah(model);
 ```
 
 **Sumber evaluasi:**
-- Commit: `b015312031f01fdf2195d0c17e1a77ac60f98e6b`, `ea119ec4b7f73756e410eb8b336fca8e65420abe`
-- File: `lib/fitur/impian/screens/form_impian.dart`
+- Commit: `b015312031f01fdf2195d0c17e1a77ac60f98e6b`, `ea119ec4b7f73756e410eb8b336fca8e65420abe`, `6c8d3c2b798c775cd7a8fde904ffd5e72605d341`
+- File: `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/screens/form_biodata.dart`
 
 ## Halaman Detail Item berbasis Provider
 
