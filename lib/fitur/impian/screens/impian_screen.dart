@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
-import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +32,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   @override
   Widget build(BuildContext context) {
     final impianAsync = ref.watch(impianProvider);
+    final biodataAsync = ref.watch(biodataProvider);
     L.i(
       'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
     );
@@ -65,6 +67,19 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     L.i(
       'listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}',
     );
+
+    // Saldo terkumpul = uang yang dihemat dari tidak merokok (berdasarkan biodata).
+    BiodataModel? biodata;
+    if (biodataAsync.isLoading) {
+      L.w('biodataAsync loading');
+    } else if (biodataAsync.hasError) {
+      L.w('biodataAsync error=${biodataAsync.error}');
+    } else {
+      biodata = biodataAsync.requireValue;
+    }
+    final uangDihemat = _hitungUangDihemat(biodata);
+    L.i('uangDihemat=$uangDihemat');
+
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
       return Scaffold(
@@ -84,7 +99,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           child: Column(
             spacing: 8,
             children: [
-              _buildSaldoTerkumpul(impianState),
+              _buildSaldoTerkumpul(uangDihemat),
               Expanded(
                 child: ListView.separated(
                   itemCount: listImpian.length,
@@ -105,15 +120,12 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                           spacing: 4,
                           children: [
                             LinearProgressIndicator(
-                              value:
-                                  impianState.totalJumlah <= 0 ||
-                                      item.jumlah <= 0
+                              value: uangDihemat <= 0 || item.jumlah <= 0
                                   ? 0
-                                  : (impianState.totalJumlah / item.jumlah)
-                                        .clamp(0.0, 1.0),
+                                  : (uangDihemat / item.jumlah).clamp(0.0, 1.0),
                             ),
                             Text(
-                              'Sisa: ${FormatUang.formatRupiah((item.jumlah - impianState.totalJumlah).clamp(0.0, double.infinity))}',
+                              'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
                             ),
                           ],
                         ),
@@ -136,8 +148,26 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     );
   }
 
-  Widget _buildSaldoTerkumpul(ImpianState state) {
-    L.i('totalJumlah=${state.totalJumlah}');
+  /// Menghitung uang yang dihemat dari tidak merokok berdasarkan biodata.
+  double _hitungUangDihemat(BiodataModel? biodata) {
+    if (biodata == null) {
+      return 0;
+    }
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    int hariBerhenti = 0;
+    if (tanggalBerhenti != null) {
+      hariBerhenti = DateTime.now().difference(tanggalBerhenti).inDays;
+      if (hariBerhenti < 0) {
+        hariBerhenti = 0;
+      }
+    }
+    final rokokTidakDiHisap = biodata.jumlahRokokPerHari * hariBerhenti;
+    return (rokokTidakDiHisap / biodata.batangPerBungkus) *
+        biodata.hargaRokokPerBungkus;
+  }
+
+  Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
+    L.i('saldoTerkumpul=$saldoTerkumpul');
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -145,7 +175,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           children: [
             Text('Saldo terkumpul'),
             Text(
-              '${FormatUang.formatRupiah(state.totalJumlah)}',
+              '${FormatUang.formatRupiah(saldoTerkumpul)}',
               style: Theme.of(context).textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
