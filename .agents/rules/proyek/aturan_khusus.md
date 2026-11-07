@@ -996,6 +996,80 @@ MaterialApp(
 **Alasan:**
 `EasyLoading.init()` mendaftarkan overlay builder yang diperlukan agar `EasyLoading.show()` dapat menampilkan loading overlay di atas seluruh UI.
 
+## Inisialisasi Logger `L` dengan ProviderContainer pada App
+
+**Cakupan:**
+- `lib/app.dart` — `_MyAppState.initState`.
+- `lib/shared/utils/l.dart` (paket `share_global_saya`) — kelas `L`, metode `init(ProviderContainer)`.
+
+**Aturan wajib:**
+1. `L.init(ref.container)` wajib dipanggil di dalam `initState()` dari `_MyAppState` (atau state root yang setara) agar logger dapat mengirim log ke overlay debug (`LogDebugNotifier`).
+2. Pemanggilan wajib dilakukan setelah `super.initState()` dan setelah `WidgetsBinding.instance.addObserver(this)` (jika ada observer).
+3. Jangan memanggil `L.init` di tempat lain atau berulang kali; satu kali pada inisialisasi root sudah cukup.
+4. Jika `L.init` tidak dipanggil, overlay debug tidak akan menerima log (log console tetap tampil, tetapi overlay kosong).
+
+**Larangan:**
+- Jangan memanggil `L.init` di dalam `build()` (side effect).
+- Jangan memanggil `L.init` dengan container selain `ref.container` dari root.
+- Jangan menghapus pemanggilan `L.init(ref.container)` dengan alasan "merapikan" kode, meskipun analyzer tidak melaporkan masalah.
+
+**Alasan:**
+Kelas `L` (dari `share_global_saya`) menggunakan `ProviderContainer` statis untuk mengirim log ke `LogDebugNotifier` (overlay debug). Tanpa inisialisasi container, `_container` bernilai `null` dan `_kirimKeOverlayDebug` langsung `return`, sehingga overlay debug tidak menampilkan log apapun. Commit `3b2e58cc` menambahkan `L.init(ref.container)` pada `_MyAppState.initState()` agar overlay debug berfungsi sejak aplikasi diluncurkan.
+
+**Dampak apabila dilanggar:**
+- Overlay debug kosong; log hanya muncul di console (debugPrint).
+- Debugging melalui overlay (yang ditampilkan via `PengelolaOverlayLogDebug`) menjadi tidak berguna.
+- Error runtime yang dicatat via `L.e` tidak terlihat di overlay, menyulitkan diagnosis.
+
+**Rujukan implementasi:**
+- `lib/app.dart` — `_MyAppState.initState` (`L.init(ref.container)`).
+- `share_global_saya/lib/src/utils/l.dart` — `L.init(ProviderContainer container)`, `_container`, `_kirimKeOverlayDebug`.
+- Commit: `3b2e58ccf4d667162f39e3e38cba3d66edad3ed2`.
+
+**Contoh benar:**
+```dart
+class _MyAppState extends ConsumerState<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    L.init(ref.container);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // ...
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+class _MyAppState extends ConsumerState<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // L.init(ref.container) tidak dipanggil -> overlay debug kosong.
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    L.init(ref.container); // side effect di build -> SALAH
+    // ...
+  }
+}
+```
+
+**Penjelasan perbedaan:**
+Contoh benar memanggil `L.init(ref.container)` sekali di `initState` setelah `super.initState()`, sehingga overlay debug dapat menerima log sejak awal. Contoh salah melewatkan inisialisasi (overlay kosong) atau memanggilnya di `build()` (side effect, berpotensi berulang).
+
 ## Hierarki Tipografi pada Tabel Perbandingan Kendaraan
 
 **Cakupan:**
