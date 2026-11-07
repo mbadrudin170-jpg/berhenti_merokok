@@ -89,8 +89,19 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                           Nav.to(context, DetailImpianScreen(id: item.id)),
                         ),
                         title: Text(item.nama),
-                        subtitle: Text(
-                          'Target: ${FormatTanggal.formatDasar(item.targetTanggal)}',
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4,
+                          children: [
+                            LinearProgressIndicator(
+                              value: impianState.totalJumlah <= 0 || item.jumlah <= 0
+                                  ? 0
+                                  : (impianState.totalJumlah / item.jumlah).clamp(0.0, 1.0),
+                            ),
+                            Text(
+                              'Sisa: ${FormatUang.formatRupiah((item.jumlah - impianState.totalJumlah).clamp(0.0, double.infinity))}',
+                            ),
+                          ],
                         ),
                       ),
                     );
