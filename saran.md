@@ -154,7 +154,7 @@
 - **Referensi:** `flutter_local_notifications` 22.3.3 (`getNotificationAppLaunchDetails`).
 - **Saran perbaikan:** Tambahkan guard platform (mis. lewati pada Web/Linux atau tangani sesuai kemampuan), tangani `UnsupportedError` secara eksplisit sebelum `Exception`, dan pertimbangkan retry/penundaan navigasi apabila navigator belum siap. Variabel `id` hasil parsing payload saat ini tidak digunakan (tidak berdampak).
 - **Alasan:** Menjaga konsistensi dengan aturan penanganan platform dan error Future.
-- **Status:** Belum diperbaiki.
+- **Riwayat status:** Diperbaiki (guard platform ditambahkan pada `cekNotifikasiSaatBuka`, `UnsupportedError` ditangani eksplisit sebelum `Exception`, dan `_navigasiDariPayload` melakukan retry terbatas saat navigator belum siap).
 
 ## 2026-11-08 — Panggilan asynchronous di dalam blok catch pada pengaturan notifikasi
 
@@ -165,6 +165,7 @@
 - **Referensi:** `NotifikasiService.aktif()`, `_muatPreferensiNotifikasi()`.
 - **Saran perbaikan:** Bungkus kedua pemanggilan dalam `try/catch` terpisah dan catat dengan `L.e(...)`; pertahankan pemeriksaan `mounted`.
 - **Alasan:** Mencegah unhandled Future dan menjaga konsistensi UI saat kegagalan izin.
+- **Riwayat status:** Diperbaiki (pemanggilan `NotifikasiService.aktif()` dan `_muatPreferensiNotifikasi()` di dalam blok catch kini dibungkus `try/catch` terpisah dengan pencatatan `L.e`, pemeriksaan `mounted` dipertahankan).
 
 ## 2026-11-08 — Inkonsistensi preferensi waktu pengingat saat penyimpanan gagal
 

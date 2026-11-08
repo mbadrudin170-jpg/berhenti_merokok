@@ -88,10 +88,17 @@ class NotifikasiService {
   }
 
   /// Navigasi berdasarkan payload notifikasi (foreground/background).
-  static void _navigasiDariPayload(String? payload) {
+  static void _navigasiDariPayload(String? payload, {int percobaan = 0}) {
     final navigator = navigatorKey.currentState;
     if (navigator == null) {
-      L.w('navigator null saat navigasi notifikasi');
+      if (percobaan < 3) {
+        L.w('navigator null saat navigasi notifikasi, coba lagi');
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _navigasiDariPayload(payload, percobaan: percobaan + 1);
+        });
+      } else {
+        L.w('navigator null saat navigasi notifikasi, batalkan');
+      }
       return;
     }
 
@@ -127,6 +134,14 @@ class NotifikasiService {
   /// Menangani kondisi aplikasi diluncurkan dari keadaan terminated
   /// melalui notifikasi.
   static void cekNotifikasiSaatBuka() {
+    // Platform yang tidak mendukung notifikasi terjadwal/launch details.
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      L.w('platform tidak mendukung cek notifikasi saat buka');
+      return;
+    }
     unawaited(
       Future(() async {
         try {
@@ -139,7 +154,9 @@ class NotifikasiService {
               });
             }
           }
-        } catch (e, s) {
+        } on UnsupportedError catch (e, s) {
+          L.e('Platform tidak mendukung cek notifikasi saat buka: $e $s');
+        } on Exception catch (e, s) {
           L.e('Gagal cek notifikasi saat buka: $e $s');
         }
       }).catchError((Object e, StackTrace s) {
