@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,8 +20,9 @@ class DetailImpianScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final impianAsync = ref.watch(impianProvider);
+    final biodataAsync = ref.watch(biodataProvider);
 
-    if (impianAsync.isLoading) {
+    if (impianAsync.isLoading || biodataAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -47,6 +52,32 @@ class DetailImpianScreen extends ConsumerWidget {
       );
     }
 
+    if (biodataAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail Impian')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Gagal memuat data biodata'),
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(biodataProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     final impianState = impianAsync.requireValue;
     final ImpianModel? impian = impianState.listImpian.firstWhereOrNull(
       (item) => item.id == id,
@@ -63,6 +94,14 @@ class DetailImpianScreen extends ConsumerWidget {
         ),
       );
     }
+
+    final uangDihemat = biodataAsync.requireValue?.uangDihemat ?? 0.0;
+    final rasio = ImpianProgresHelper.rasio(uangDihemat, impian.jumlah);
+    final sudahTercapai = ImpianProgresHelper.tercapai(
+      uangDihemat,
+      impian.jumlah,
+    );
+    final sisa = ImpianProgresHelper.sisa(uangDihemat, impian.jumlah);
 
     return Scaffold(
       appBar: AppBar(
@@ -83,6 +122,7 @@ class DetailImpianScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 12,
               children: [
+                VisualTabunganImpian(rasio: rasio, tercapai: sudahTercapai),
                 _buildItem(context, 'Nama', impian.nama),
                 _buildItem(
                   context,
@@ -99,6 +139,17 @@ class DetailImpianScreen extends ConsumerWidget {
                   'Dibuat',
                   FormatTanggal.formatDasar(impian.dibuat),
                 ),
+                _buildItem(
+                  context,
+                  'Status',
+                  sudahTercapai ? 'Tercapai' : 'Belum tercapai',
+                ),
+                _buildItem(
+                  context,
+                  'Progres',
+                  '${(rasio * 100).toStringAsFixed(0)}%',
+                ),
+                _buildItem(context, 'Sisa', FormatUang.formatRupiah(sisa)),
               ],
             ),
           ),

@@ -165,20 +165,6 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 ### Prioritas Sedang
 
-#### 2. Impian (Goals/Tabungan)
-
-- **Kondisi fitur pada proyek:** Daftar impian dengan nama, jumlah target, target tanggal, progress bar berbasis saldo terkumpul, dan state kosong dengan CTA sudah tersedia.
-- **Status implementasi:** Sebagian (core impian dan progress ada; visual piggy bank/reward belum).
-- **Path implementasi proyek:** `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/impian/screens/detail_impian_screen.dart`.
-- **Aplikasi pembanding:** Breev (Aura App Studio); Flamy (Offlinefirst); Quit It (Antonis Evmorfopoulos).
-- **Implementasi referensi:** Piggy bank visual dengan tema (Breev), savings goals dengan item keinginan (Flamy), savings goals dengan reward (Quit It).
-- **Peluang optimasi:** Menambahkan visualisasi progres tabungan (piggy bank) dan opsi "hadiah" saat impian tercapai.
-- **Saran optimasi:** Tambahkan indikator visual (mis. piggy bank) dan pesan perayaan saat impian tercapai.
-- **Tujuan dan manfaat:** Meningkatkan motivasi dan kejelasan progres menuju tujuan finansial.
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.aura.stopsmoking ; https://play.google.com/store/apps/details?id=net.offlinefirst.flamy ; https://play.google.com/store/apps/details?id=com.quititapp
-- **Link bukti:** Deskripsi resmi Google Play Store.
-- **Alasan prioritas:** Relevan dan bermanfaat, dampak terbatas.
-
 #### 3. Biodata (Profil Merokok)
 
 - **Kondisi fitur pada proyek:** Biodata mencakup nama, tanggal lahir, jumlah rokok/hari, harga rokok/bungkus, tanggal mulai merokok, tanggal mulai berhenti, mode berhenti (seketika/bertahap), penurunan per minggu, dan tanggal mulai penurunan.
@@ -331,21 +317,6 @@ Status PRD: Sudah dibuat — `prd/optimasi-pemulihan-kesehatan-milestone.md`
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa ; https://play.google.com/store/apps/details?id=com.lastcig.app ; https://quittracker.app/
 - **Link screenshot atau sumber visual:** Deskripsi resmi Google Play Store.
 - **Alasan prioritas:** Relevan dan bermanfaat.
-
-#### 3. Visualisasi Tabungan (Piggy Bank)
-
-- **Fitur/halaman yang dibandingkan:** Impian.
-- **Aplikasi referensi:** Breev (Aura App Studio); Quit It (Antonis Evmorfopoulos).
-- **Pola UI:** Visualisasi piggy bank/tabungan yang terisi sesuai progres.
-- **Pola UX:** Memberikan kepuasan visual saat progres bertambah.
-- **Pola layout:** Ilustrasi pada kartu impian atau dashboard.
-- **Tujuan pola:** Meningkatkan motivasi dan kejelasan progres.
-- **Kondisi pada proyek:** Impian menggunakan progress bar; visual piggy bank belum ada.
-- **Saran untuk proyek:** Tambahkan ilustrasi piggy bank yang terisi sesuai progres saldo terkumpul.
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.aura.stopsmoking ; https://play.google.com/store/apps/details?id=com.quititapp
-- **Link screenshot atau sumber visual:** Deskripsi resmi Google Play Store.
-- **Alasan prioritas:** Relevan, dampak terbatas.
-- **Status PRD:** Sudah dibuat — prd/optimasi-impian-tabungan.md
 
 #### 4. Grafik dan Insight Pemicu
 
