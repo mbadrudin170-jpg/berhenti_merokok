@@ -161,9 +161,9 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     L.i('picked=${picked.hour}:${picked.minute}');
     final jamLama = _jam;
     final menitLama = _menit;
+    final jamBaru = picked.hour;
+    final menitBaru = picked.minute;
     setState(() {
-      _jam = picked.hour;
-      _menit = picked.minute;
       _sedangMemproses = true;
     });
     unawaited(
@@ -177,13 +177,22 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     try {
       if (_notifikasiAktif) {
         await NotifikasiService.jadwalkanPengingatHarian(
-          jam: _jam,
-          menit: _menit,
+          jam: jamBaru,
+          menit: menitBaru,
         );
         if (!mounted) return;
+        setState(() {
+          _jam = jamBaru;
+          _menit = menitBaru;
+        });
         AppToast.sukses(context, 'Waktu pengingat diperbarui');
       } else {
-        await NotifikasiService.setWaktu(_jam, _menit);
+        await NotifikasiService.setWaktu(jamBaru, menitBaru);
+        if (!mounted) return;
+        setState(() {
+          _jam = jamBaru;
+          _menit = menitBaru;
+        });
       }
     } on Exception catch (e, s) {
       L.e('Gagal memperbarui waktu pengingat: $e $s');

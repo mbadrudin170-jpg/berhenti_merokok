@@ -89,7 +89,7 @@ Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAkt
 - **Referensi:** Aturan proyek UX; dokumentasi plugin tidak relevan langsung.
 - **Saran perbaikan:** Simpan waktu sebelumnya sebelum perubahan. Terapkan waktu baru setelah penyimpanan atau penjadwalan berhasil. Jika gagal, pulihkan nilai sebelumnya dan tampilkan pesan kegagalan yang jelas.
 - **Alasan:** Menjaga kesesuaian antara tampilan, preferensi, dan jadwal aktif.
-- **Status:** Sebagian diperbaiki (pemeriksaan mounted ditambahkan pada `_ubahNotifikasi`). Masih perlu menyimpan waktu sebelumnya dan memulihkannya jika penjadwalan gagal.
+- **Status:** Sudah diperbaiki. `_pilihWaktu()` kini menyimpan waktu sebelumnya, hanya menerapkan waktu baru setelah penjadwalan/penyimpanan berhasil, dan memulihkan nilai sebelumnya jika gagal. Pemeriksaan `mounted` konsisten setelah setiap `await`.
 
 ## 2026-11-08 — Pemeriksaan mounted setelah operasi asynchronous pada pengaturan notifikasi
 
