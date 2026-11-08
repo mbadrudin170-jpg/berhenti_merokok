@@ -1,10 +1,50 @@
 # Saran Perbaikan
 
+## 2026-11-08 — Dua pilihan pengurutan "mendekati terkumpul" menghasilkan urutan identik
+
+- **Masalah:** Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 136-143), comparator `mendekatiTerkumpulZa` menukar operand `a` dan `b` pada perhitungan `sisa` tetapi kemudian membandingkan dalam arah yang sama, sehingga hasilnya identik dengan `mendekatiTerkumpulAz`. Verifikasi dengan data contoh (uang terkumpul 0, 50, 100, 150, 300 dan target 50, 100, 200) menunjukkan kedua pilihan selalu menghasilkan urutan yang sama. Pilihan "besar" (descending) tidak pernah menghasilkan urutan terbalik. Label "Paling mendekati terkumpul (besar)" juga berpotensi membingungkan karena secara aktual berarti sisa terbesar (paling jauh dari terkumpul).
+- **Prioritas:** Sedang
+- **Path:** `lib/fitur/impian/screens/impian_screen.dart:136-143`
+- **Aturan terkait:** Tidak ditemukan pelanggaran aturan tertulis (risiko teknis/bug logika pengurutan).
+- **Bukti SDK/paket:** Dart SDK 3.13.7 — `List.sort` (`/google/flutter/bin/cache/dart-sdk/lib/core/list.dart`) dan `Comparable.compareTo` (`/google/flutter/bin/cache/dart-sdk/lib/core/comparable.dart`); perilaku comparator sepenuhnya ditentukan oleh kode aplikasi.
+- **Dampak:** Pengguna tidak dapat mengurutkan impian dari yang paling jauh dari terkumpul; dua opsi menu memberikan hasil yang sama.
+- **Rekomendasi:** Perbaiki comparator `mendekatiTerkumpulZa` agar benar-benar descending, misalnya:
+  ```dart
+  case SortImpian.mendekatiTerkumpulZa:
+    final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+    final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+    return sisaB.compareTo(sisaA);
+  ```
+  Pertimbangkan juga memperjelas label "Paling mendekati terkumpul (besar)" menjadi "Sisa terbesar" agar maknanya tidak ambigu.
+- **Riwayat status:** Belum diperbaiki (ditemukan pada audit commit `3203498723c8b92108edfee3b4eb4ac28bdec792`).
+
+## 2026-11-08 — Pengurutan koleksi menggunakan `List.sort` manual alih-alih `collection.sorted`
+
+- **Masalah:** `lib/fitur/impian/screens/impian_screen.dart` (baris 125-145) menggunakan `[...listImpianAsli]..sort(...)`. Aturan proyek mengarahkan penggunaan fungsi `sorted` dari paket `collection` untuk pengurutan koleksi.
+- **Prioritas:** Sedang
+- **Path:** `lib/fitur/impian/screens/impian_screen.dart:125-145`
+- **Aturan terkait:** `.agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md:31-49` — penggunaan `collection.sorted` untuk pengurutan koleksi.
+- **Bukti SDK/paket:** `collection` 1.19.1 (terkunci sebagai dependency transitive pada `pubspec.lock`; source `/home/mbadrudin170/.pub-cache/hosted/pub.dev/collection-1.19.1/lib/src/iterable_extensions.dart:63-66`): `List<T> sorted(Comparator<T> compare) => [...this]..sort(compare);`. Perilaku identik dengan implementasi saat ini; yang berbeda adalah konsistensi dengan aturan proyek. Paket `collection` tidak terdaftar sebagai dependency langsung pada `pubspec.yaml`.
+- **Dampak:** Inkonsistensi dengan standar proyek; ketergantungan pada dependency transitive tanpa deklarasi langsung.
+- **Rekomendasi:** Ganti `[...listImpianAsli]..sort(...)` dengan `listImpianAsli.sorted(...)`, tambahkan `import 'package:collection/collection.dart';`, dan daftarkan `collection` sebagai dependency langsung bila diperlukan.
+- **Riwayat status:** Belum diperbaiki (ditemukan pada audit commit `3203498723c8b92108edfee3b4eb4ac28bdec792`).
+
+## 2026-11-08 — Tombol pengurutan pada AppBar tidak memiliki tooltip
+
+- **Masalah:** `IconButton` pada `lib/fitur/impian/screens/impian_screen.dart` (baris 172-176) hanya menampilkan ikon (`CupertinoIcons.sort_up`) tanpa `tooltip`. Aturan UX mewajibkan tooltip untuk ikon tanpa label teks.
+- **Prioritas:** Rendah
+- **Path:** `lib/fitur/impian/screens/impian_screen.dart:172-176`
+- **Aturan terkait:** `.agents/rules/global/optimasi_ux.md:91-110` (kejelasan tujuan tombol dan tooltip pada ikon tanpa label) dan `:458-479` (area sentuh dan tooltip).
+- **Bukti SDK/paket:** Flutter 3.47.9 — `IconButton.tooltip` (`/google/flutter/packages/flutter/lib/src/material/icon_button.dart:205, 523, 764`); default `null`. Area sentuh default memenuhi 48 dp (`kMinInteractiveDimension`).
+- **Dampak:** Pengguna tidak mendapatkan petunjuk fungsi tombol melalui tooltip; aksesibilitas berkurang.
+- **Rekomendasi:** Tambahkan `tooltip: 'Urutkan'` pada `IconButton`.
+- **Riwayat status:** Belum diperbaiki (ditemukan pada audit commit `f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8`).
+
 ## 2026-11-08 — Potensi overflow pada kartu impian saat menampilkan sisa dan target
 
-- **Masalah:** Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 139-147, kondisi HEAD), `Row` dengan `MainAxisAlignment.spaceBetween` menampilkan dua `Text` tanpa `Flexible`/`Expanded`. Pada layar sempit atau skala teks besar, total lebar teks dapat melebihi lebar kartu dan menyebabkan overflow. Nominal target juga ditampilkan tanpa label, sehingga maknanya kurang jelas dibanding "Sisa".
+- **Masalah:** Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 209-216, kondisi HEAD), `Row` dengan `MainAxisAlignment.spaceBetween` menampilkan dua `Text` tanpa `Flexible`/`Expanded`. Pada layar sempit atau skala teks besar, total lebar teks dapat melebihi lebar kartu dan menyebabkan overflow. Nominal target juga ditampilkan tanpa label, sehingga maknanya kurang jelas dibanding "Sisa".
 - **Prioritas:** Rendah
-- **Path:** `lib/fitur/impian/screens/impian_screen.dart:139-147`
+- **Path:** `lib/fitur/impian/screens/impian_screen.dart:209-216`
 - **Aturan terkait:** `.agents/rules/global/optimasi_ui.md` (bagian 3 — Penanganan Text Overflow)
 - **Referensi:** Flutter SDK `Row` (`packages/flutter/lib/src/widgets/basic.dart`) dan `Text` (`packages/flutter/lib/src/widgets/text.dart`); `MainAxisAlignment.spaceBetween` tidak membatasi lebar anak.
 - **Saran perbaikan:** Bungkus salah satu atau kedua `Text` dengan `Flexible`/`Expanded`, atau gunakan `Wrap`/`FittedBox` sesuai kebutuhan. Tambahkan label singkat (mis. "Target") pada nominal kanan agar maknanya jelas.
