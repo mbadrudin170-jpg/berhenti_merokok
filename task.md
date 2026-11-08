@@ -108,25 +108,7 @@ Tidak ada temuan.
 
 ## Sedang
 
-#### Task 3
-
-- Status: Selesai
-- Masalah: Pada `dashboard_screen.dart` sekitar baris 313-318, perhitungan `totalHariMerokok` menggunakan `tanggalBerhenti.difference(tanggalMulaiMerokok).inDays` tanpa normalisasi tanggal ke komponen tanggal saja. Hasil perhitungan hari dapat bergeser akibat komponen waktu pada nilai `DateTime`.
-- Solusi: Normalisasi kedua tanggal dengan `DateTime(tanggal.year, tanggal.month, tanggal.day)` sebelum menghitung selisih hari, agar hasil perhitungan berbasis hari akurat.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L303); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L620)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L313)
-- Prompt:
-
 ## Rendah
-
-#### Task 1
-
-- Status: batal
-- Masalah: Pada `dashboard_screen.dart`, pemanggilan `L.i(...)` berada langsung di dalam `build()` (baris 39, 75, dan 81), sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
-- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam `build()`.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L11); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L39); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L75); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L81)
-- Prompt:
 
 # Kelompok 9
 
@@ -145,21 +127,3 @@ Tidak ada temuan.
 - [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart)
 
 ## Rendah
-
-#### Task 1
-
-- Status: Selesai
-- Masalah: Pada `form_alasan_berhenti.dart`, pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` dilepas dengan `unawaited(...)` tanpa penanganan error (`.catchError(...)`). Aturan notifikasi #14 dan optimasi bug runtime mewajibkan penanganan error pada Future yang dilepas, agar kegagalan menampilkan/menutup loading tidak menjadi unhandled error.
-- Solusi: Bungkus pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `.catchError((Object e, StackTrace s) { L.e('...: $e $s'); })`, sesuai pola pada `pengaturan_screen.dart`.
-- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L6)
-- File bermasalah: [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart#L70); [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart#L101)
-- Prompt:
-
-#### Task 2
-
-- Status: batal
-- Masalah: Pada `alasan_berhenti_screen.dart`, pemanggilan `L.i(...)` berada langsung di dalam `build()` (baris 64-67) dan di dalam `itemBuilder` (baris 119), sehingga log berulang pada setiap rebuild dan setiap item, meskipun nilai tidak berubah, menambah noise. Selain itu, log pada `itemBuilder` menguraikan properti model (`item.id`, `item.teks`) alih-alih menampilkan objek model langsung.
-- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan untuk objek model gunakan `$model` alih-alih menguraikan properti. Hindari log di dalam `build()` dan `itemBuilder`.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L3); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
-- File bermasalah: [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart#L64); [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart#L119)
-- Prompt:
