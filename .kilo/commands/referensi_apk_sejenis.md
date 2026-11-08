@@ -1,633 +1,465 @@
 ---
-description: Riset aplikasi Android sejenis, temukan fitur baru, evaluasi optimasi fitur, analisis UI/UX dan layout, lalu perbarui refrensi_apk.md di root proyek
+description: Analisis seluruh APK yang terdaftar di apk_serupa.md untuk menemukan referensi fitur, optimasi fitur, serta pola UI, UX, dan layout aplikasi kompetitor, kemudian perbarui refrensi_apk.md.
 agent: code
 ---
 
-# Riset Referensi Aplikasi Mobile Sejenis
+# Analisis Referensi APK Sejenis
 
-## 1. Tujuan dan batas pekerjaan
+## Tujuan
 
-Lakukan penelitian terhadap aplikasi mobile yang memiliki kategori, tujuan, atau fitur yang relevan dengan proyek ini.
+Lakukan analisis terhadap seluruh aplikasi mobile yang sudah terdaftar di file `apk_serupa.md` pada direktori root proyek.
 
-Gunakan tools pencarian, browser, inspeksi gambar, screenshot, MCP, dan kemampuan lainnya yang benar-benar tersedia pada sesi Kilo Code.
+Tujuan analisis adalah menemukan:
 
-Penelitian memiliki tiga ruang lingkup:
+1. Fitur baru dari aplikasi sejenis yang berpotensi ditambahkan ke proyek.
+2. Peluang optimasi terhadap fitur yang sudah dimiliki proyek.
+3. Referensi UI, UX, dan layout dari aplikasi kompetitor yang memiliki fitur serupa.
+4. Rekomendasi pengembangan berdasarkan hasil analisis.
 
-1. Menemukan fitur baru dari aplikasi sejenis yang layak dipertimbangkan untuk proyek.
-2. Menemukan peluang optimasi terhadap fitur yang sudah tersedia pada proyek.
-3. Menganalisis pola UI, UX, dan layout aplikasi kompetitor untuk menghasilkan saran yang dapat dipertimbangkan pemilik proyek.
+Seluruh hasil analisis wajib dicatat di file `refrensi_apk.md` pada direktori root proyek.
 
-Seluruh hasil penelitian harus ditulis ke:
+**Penting:** Tugas AI hanya melakukan riset, analisis, dan memberikan rekomendasi. Pengguna yang akan menentukan rekomendasi mana yang akan dipilih dan diterapkan.
 
-`./refrensi_apk.md`
+## 1. Persiapan dan Pemahaman Proyek
 
-### Batas pekerjaan
+Sebelum melakukan analisis:
 
-Command ini hanya boleh:
+1. Baca `AGENTS.md` dan aturan lain yang berlaku di proyek.
+2. Baca dokumentasi proyek yang relevan.
+3. Periksa struktur proyek.
+4. Pelajari fitur dan fungsi aplikasi yang benar-benar sudah tersedia.
+5. Identifikasi kategori, tujuan, target pengguna, dan alur penggunaan aplikasi.
+6. Identifikasi fitur yang sudah berjalan dan fitur yang masih dalam pengembangan.
 
-- Membaca aturan dan kondisi proyek.
-- Melakukan riset aplikasi mobile.
-- Membandingkan fitur aplikasi kompetitor.
-- Menganalisis UI, UX, dan layout berdasarkan bukti.
-- Menyusun rekomendasi.
-- Membuat atau memperbarui `./refrensi_apk.md`.
+Gunakan kode sumber, dokumentasi, dan tampilan aplikasi sebagai dasar untuk memahami kondisi aktual proyek.
+
+Jangan membuat asumsi mengenai fitur yang belum terbukti keberadaannya.
+
+## 2. Sumber Referensi APK
+
+Sumber utama pencarian adalah:
+
+`apk_serupa.md`
+
+Lokasi: direktori root proyek.
+
+Ketentuan:
+
+1. Baca seluruh isi `apk_serupa.md`.
+2. Periksa semua aplikasi yang terdaftar di dalamnya.
+3. Jangan melewatkan aplikasi yang terdaftar.
+4. Jangan mencari atau menambahkan aplikasi kompetitor baru yang tidak terdaftar di file tersebut.
+5. Gunakan tautan yang tersedia di `apk_serupa.md` untuk membuka halaman aplikasi, repositori, dokumentasi, screenshot, atau informasi lain yang berkaitan langsung dengan aplikasi tersebut.
+6. Apabila satu aplikasi memiliki beberapa tautan dari store berbeda, manfaatkan tautan tersebut untuk memperkaya referensi.
+7. Jangan menganggap suatu fitur tersedia hanya berdasarkan nama aplikasi atau kategori aplikasinya.
+
+**Batasan sumber:** Analisis kompetitor hanya boleh menggunakan aplikasi yang sudah terdaftar di `apk_serupa.md`. Sumber tambahan hanya boleh digunakan untuk memeriksa informasi aplikasi yang sama, bukan untuk menemukan APK kompetitor baru.
+
+Apabila suatu aplikasi tidak dapat diakses, catat keterbatasannya dan lanjutkan analisis terhadap aplikasi lainnya.
+
+## 3. Analisis Fitur Aplikasi
+
+Bagian ini bertujuan menemukan fitur yang dapat meningkatkan fungsi dan manfaat aplikasi proyek.
+
+Lakukan dua jenis analisis berikut.
+
+### A. Rekomendasi Fitur Baru
+
+Cari fitur dari aplikasi sejenis yang belum tersedia di proyek dan berpotensi untuk ditambahkan.
+
+Ketentuan:
+
+1. Identifikasi fitur yang benar-benar tersedia pada aplikasi referensi.
+2. Pahami tujuan dan manfaat fitur tersebut.
+3. Identifikasi permasalahan pengguna yang diselesaikan oleh fitur tersebut.
+4. Analisis kesesuaian fitur dengan tujuan dan kategori proyek.
+5. Pertimbangkan manfaatnya bagi pengguna proyek.
+6. Berikan rekomendasi fitur yang relevan dan layak dipertimbangkan.
+
+**Batasan platform:**
+
+Hanya rekomendasikan fitur yang dapat digunakan oleh pengguna melalui aplikasi mobile Android atau iOS.
+
+Jangan merekomendasikan:
+
+- Fitur khusus website.
+- Fitur khusus aplikasi desktop.
+- Fitur yang hanya dapat digunakan melalui browser komputer.
+- Fitur yang tidak relevan dengan penggunaan aplikasi mobile.
+
+Fitur yang memerlukan layanan backend tetap boleh direkomendasikan selama fungsi utamanya dapat digunakan melalui aplikasi mobile. Jelaskan ketergantungan tersebut apabila relevan.
+
+Jangan memasukkan fitur hanya karena tersedia di aplikasi kompetitor. Pastikan fitur tersebut memiliki manfaat nyata bagi proyek.
+
+### B. Optimasi Fitur yang Sudah Ada
+
+Cari kesamaan fitur antara aplikasi referensi dan aplikasi proyek.
+
+Tujuan analisis ini adalah menemukan peluang peningkatan terhadap fitur yang sudah dimiliki proyek.
+
+Untuk setiap fitur yang sama:
+
+1. Identifikasi fitur pada aplikasi proyek.
+2. Identifikasi aplikasi referensi yang memiliki fitur serupa.
+3. Bandingkan cara kerja dan alur penggunaan fitur.
+4. Identifikasi kelebihan pendekatan aplikasi referensi.
+5. Cari kekurangan atau keterbatasan pendekatan fitur yang digunakan proyek apabila dapat dibuktikan.
+6. Identifikasi peluang peningkatan.
+7. Berikan rekomendasi optimasi.
+
+Perhatikan aspek berikut:
+
+- Kemudahan penggunaan.
+- Kecepatan penyelesaian aktivitas.
+- Jumlah langkah yang dibutuhkan pengguna.
+- Kejelasan informasi.
+- Efisiensi interaksi.
+- Konsistensi perilaku fitur.
+- Pencegahan kesalahan pengguna.
+- Kenyamanan penggunaan di perangkat mobile.
+
+Jangan menyarankan perubahan hanya karena aplikasi kompetitor memiliki cara kerja yang berbeda.
+
+Rekomendasi harus mempunyai alasan yang jelas dan memberikan potensi peningkatan dibandingkan kondisi proyek saat ini.
+
+## 4. Analisis UI, UX, dan Layout
+
+Bagian ini bertujuan menemukan referensi desain dari aplikasi kompetitor yang memiliki fitur sama atau serupa dengan proyek.
+
+Gunakan aplikasi yang sudah terdaftar di `apk_serupa.md` sebagai satu-satunya daftar kompetitor yang dianalisis.
+
+### A. Identifikasi Kompetitor
+
+Dari seluruh aplikasi yang terdaftar:
+
+1. Identifikasi aplikasi yang mempunyai fitur sama dengan proyek.
+2. Kelompokkan aplikasi berdasarkan kesamaan fitur.
+3. Prioritaskan aplikasi yang mempunyai alur penggunaan dan tujuan fitur paling mendekati proyek.
+4. Manfaatkan screenshot, halaman aplikasi, atau demonstrasi visual yang tersedia.
+
+Jangan membandingkan tampilan dua fitur yang sebenarnya memiliki fungsi berbeda tanpa menjelaskan perbedaannya.
+
+### B. Analisis UI (User Interface)
+
+Identifikasi pola tampilan dari aplikasi referensi, meliputi:
+
+- Susunan komponen.
+- Struktur halaman.
+- Penempatan tombol dan tindakan utama.
+- Penggunaan kartu dan daftar.
+- Navigasi antarhalaman.
+- Hierarki informasi.
+- Penggunaan ikon.
+- Penggunaan warna.
+- Penyajian informasi.
+- Pengelompokan konten.
+- Konsistensi komponen visual.
+
+Jelaskan pola UI yang ditemukan dan tujuan penggunaannya.
+
+### C. Analisis UX (User Experience)
+
+Identifikasi pola pengalaman pengguna, meliputi:
+
+- Kemudahan memahami fungsi halaman.
+- Kemudahan menemukan fitur.
+- Alur penyelesaian aktivitas.
+- Jumlah interaksi untuk menyelesaikan tugas.
+- Kejelasan tindakan dan konsekuensinya.
+- Umpan balik setelah pengguna melakukan tindakan.
+- Penanganan kondisi loading, kosong, berhasil, dan gagal.
+- Pencegahan kesalahan pengguna.
+- Kenyamanan penggunaan di perangkat mobile.
+
+Jelaskan manfaat pendekatan UX tersebut bagi pengguna.
+
+### D. Analisis Layout
+
+Perhatikan bagaimana aplikasi referensi mengatur:
+
+- Pembagian area halaman.
+- Posisi konten utama.
+- Jarak antar elemen.
+- Padding dan margin.
+- Ukuran komponen.
+- Penggunaan ruang layar.
+- Posisi navigasi.
+- Pengaturan konten pada berbagai ukuran layar.
+- Prioritas informasi berdasarkan kepentingannya.
+
+Jelaskan tujuan susunan layout tersebut dan pengaruhnya terhadap kemudahan penggunaan.
+
+### E. Rekomendasi UI, UX, dan Layout
+
+Setelah analisis, berikan rekomendasi untuk proyek.
+
+Setiap rekomendasi harus menjelaskan:
+
+1. Referensi aplikasi yang digunakan.
+2. Pola UI, UX, atau layout yang ditemukan.
+3. Tujuan penggunaan pola tersebut.
+4. Kondisi atau potensi masalah pada proyek yang berkaitan.
+5. Rekomendasi yang dapat diterapkan.
+6. Manfaat yang diharapkan.
+
+Jangan sekadar menyuruh meniru tampilan aplikasi kompetitor.
+
+Ambil pola yang bermanfaat, kemudian sesuaikan dengan tujuan, karakteristik, dan kebutuhan pengguna proyek.
+
+**Ketentuan bukti visual:**
+
+- Apabila screenshot tersedia, periksa screenshot tersebut sebelum menyimpulkan pola visual.
+- Apabila tersedia beberapa halaman, analisis halaman yang relevan dengan fitur yang dibandingkan.
+- Jangan mengarang detail tampilan yang tidak dapat dilihat.
+- Apabila screenshot atau demonstrasi visual tidak tersedia, nyatakan bahwa analisis visual belum dapat diverifikasi.
+- Bedakan fakta hasil pengamatan dengan interpretasi dan rekomendasi.
+
+## 5. Prioritas Rekomendasi
+
+Semua temuan harus disusun berdasarkan tingkat prioritas.
+
+Gunakan tiga tingkat prioritas:
+
+### Prioritas Tinggi
+
+Rekomendasi dengan manfaat besar, relevansi tinggi terhadap tujuan proyek, atau berpotensi memperbaiki masalah penting dalam penggunaan aplikasi.
+
+### Prioritas Menengah
+
+Rekomendasi yang memiliki manfaat jelas, tetapi dampaknya tidak sepenting prioritas tinggi atau dapat diterapkan setelah kebutuhan utama terpenuhi.
+
+### Prioritas Rendah
+
+Rekomendasi tambahan yang bermanfaat, tetapi tidak terlalu mendesak atau dampaknya relatif kecil.
+
+Pertimbangkan beberapa aspek dalam menentukan prioritas:
+
+- Relevansi terhadap tujuan aplikasi.
+- Manfaat bagi pengguna.
+- Frekuensi kebutuhan fitur.
+- Dampak terhadap kemudahan penggunaan.
+- Potensi peningkatan kualitas aplikasi.
+- Kelayakan penerapan pada perangkat mobile.
+- Perkiraan kompleksitas penerapan.
+
+Prioritas merupakan penilaian awal AI, bukan keputusan final untuk implementasi.
+
+**Jangan menghapus rekomendasi hanya karena prioritasnya rendah.** Pengguna akan melakukan penyortiran sendiri.
+
+## 6. Aturan Referensi dan Validitas Analisis
+
+Setiap temuan wajib memiliki tautan referensi.
+
+Ketentuan:
+
+1. Cantumkan tautan langsung menuju aplikasi yang menjadi sumber referensi.
+2. Gunakan tautan yang sudah tersedia di `apk_serupa.md` apabila relevan.
+3. Apabila tersedia halaman dokumentasi atau screenshot resmi dari aplikasi yang sama, tautan tersebut boleh disertakan sebagai referensi tambahan.
+4. Pastikan tautan mengarah ke sumber yang sesuai.
+5. Jangan mengarang informasi atau tautan.
+6. Jangan menyatakan suatu fitur tersedia apabila tidak ditemukan bukti pendukung.
+7. Jangan menyimpulkan pola UI atau layout tanpa bukti visual yang memadai.
+8. Apabila informasi tidak ditemukan, nyatakan bahwa informasi tersebut belum dapat diverifikasi.
+
+Pisahkan dengan jelas:
+
+- Hasil pengamatan.
+- Analisis atau interpretasi.
+- Rekomendasi untuk proyek.
+
+Jangan menyajikan pendapat AI sebagai fakta mengenai aplikasi referensi.
+
+## 7. Format Penulisan `refrensi_apk.md`
+
+Lokasi file wajib:
+
+`refrensi_apk.md`
+
+Direktori: root proyek.
+
+Gunakan bahasa Indonesia yang baik dan benar.
+
+Susun dokumen dengan struktur berikut.
+
+# Referensi Aplikasi Sejenis
+
+## 1. Ringkasan Analisis
+
+Jelaskan secara singkat:
+
+- Tujuan analisis.
+- Jumlah aplikasi yang diperiksa.
+- Jumlah aplikasi yang berhasil dianalisis.
+- Keterbatasan sumber apabila ada.
+- Gambaran umum hasil penelitian.
+
+## 2. Referensi dan Rekomendasi Fitur
+
+Kelompokkan rekomendasi berdasarkan prioritas.
+
+### Prioritas Tinggi
+
+#### Nama Fitur
+
+**Sumber Referensi:** Nama aplikasi dan nama store.
+
+**Link:** Tautan langsung aplikasi.
+
+**Kondisi pada Proyek:** Jelaskan apakah fitur belum tersedia atau sudah tersedia.
+
+**Tujuan Fitur:** Jelaskan permasalahan yang diselesaikan dan manfaatnya bagi pengguna.
+
+**Hasil Pengamatan:** Jelaskan bagaimana aplikasi referensi menerapkan fitur tersebut.
+
+**Rekomendasi:** Jelaskan usulan penerapan atau pengembangan fitur pada proyek.
+
+**Alasan Prioritas:** Jelaskan mengapa fitur ini masuk kategori prioritas tinggi.
+
+### Prioritas Menengah
+
+Gunakan format penulisan yang sama.
+
+### Prioritas Rendah
+
+Gunakan format penulisan yang sama.
+
+## 3. Rekomendasi Optimasi Fitur yang Sudah Ada
+
+Kelompokkan berdasarkan fitur yang ditemukan pada proyek.
+
+### Prioritas Tinggi
+
+#### Nama Fitur Proyek
+
+**Sumber Referensi:** Nama aplikasi dan nama store.
+
+**Link:** Tautan langsung aplikasi.
+
+**Kondisi Saat Ini:** Jelaskan cara kerja fitur pada proyek.
+
+**Hasil Perbandingan:** Jelaskan perbedaan atau kelebihan pendekatan aplikasi referensi.
+
+**Peluang Optimasi:** Jelaskan bagian yang berpotensi ditingkatkan.
+
+**Tujuan Optimasi:** Jelaskan manfaat yang ingin dicapai.
+
+**Rekomendasi:** Jelaskan usulan peningkatan.
+
+### Prioritas Menengah
+
+Gunakan format penulisan yang sama.
+
+### Prioritas Rendah
+
+Gunakan format penulisan yang sama.
+
+## 4. Referensi UI, UX, dan Layout
+
+Kelompokkan berdasarkan fitur atau halaman yang memiliki fungsi serupa.
+
+### Prioritas Tinggi
+
+#### Nama Fitur atau Halaman
+
+**Aplikasi Referensi:** Nama aplikasi dan nama store.
+
+**Link:** Tautan langsung aplikasi atau halaman referensinya.
+
+**Pola UI:** Jelaskan struktur dan susunan komponen yang ditemukan.
+
+**Pola UX:** Jelaskan alur dan pengalaman penggunaan.
+
+**Pola Layout:** Jelaskan pengaturan posisi, jarak, ukuran, dan pembagian area.
+
+**Tujuan Desain:** Jelaskan alasan pola tersebut digunakan dan manfaatnya bagi pengguna.
+
+**Kondisi pada Proyek:** Jelaskan kondisi halaman atau fitur yang sebanding pada proyek.
+
+**Rekomendasi:** Jelaskan pola yang layak dipertimbangkan untuk proyek beserta alasannya.
+
+### Prioritas Menengah
+
+Gunakan format penulisan yang sama.
+
+### Prioritas Rendah
+
+Gunakan format penulisan yang sama.
+
+## 5. Referensi Tambahan dan Keterbatasan
+
+Cantumkan:
+
+- Aplikasi yang tidak dapat diakses.
+- Fitur yang belum dapat diverifikasi.
+- Screenshot yang tidak tersedia.
+- Informasi yang masih belum lengkap.
+
+Jangan mengisi bagian ini dengan asumsi.
+
+## 8. Aturan Kualitas Dokumen
+
+Pastikan dokumen:
+
+1. Terstruktur dan mudah dibaca.
+2. Tidak mengulang rekomendasi yang sama.
+3. Mengelompokkan temuan berdasarkan fitur serta UI, UX, dan layout.
+4. Mengurutkan setiap kelompok berdasarkan prioritas tinggi, menengah, dan rendah.
+5. Menyertakan tautan referensi untuk setiap temuan.
+6. Menjelaskan tujuan dan manfaat setiap fitur maupun pola desain.
+7. Memisahkan fitur baru dengan optimasi fitur yang sudah tersedia.
+8. Menggunakan istilah teknis secara konsisten.
+9. Tidak berisi rekomendasi yang hanya berupa opini tanpa alasan.
+10. Tidak memasukkan rekomendasi yang tidak dapat digunakan melalui aplikasi mobile.
+
+## 9. Aturan Pengelolaan File
+
+Sebelum memperbarui dokumen:
+
+1. Periksa apakah `refrensi_apk.md` sudah tersedia di root proyek.
+2. Jika sudah tersedia, baca seluruh isinya.
+3. Pertahankan temuan lama yang masih valid dan relevan.
+4. Perbarui atau koreksi informasi yang tidak akurat apabila ditemukan bukti yang lebih baik.
+5. Hindari duplikasi temuan.
+6. Rapikan pengelompokan berdasarkan fitur dan UI, UX, serta layout.
+7. Pastikan seluruh hasil baru dimasukkan sesuai struktur dokumen yang ditentukan.
+
+Apabila file belum tersedia, buat file baru dengan struktur tersebut.
+
+Jangan membuat file hasil dengan nama lain.
+
+## 10. Batasan Perubahan Proyek
+
+Tugas ini hanya mencakup:
+
+- Membaca aturan dan dokumentasi proyek.
+- Membaca serta memeriksa seluruh daftar aplikasi di `apk_serupa.md`.
+- Melakukan riset terhadap aplikasi yang terdaftar.
+- Menganalisis fitur, UI, UX, dan layout.
+- Menyusun rekomendasi berdasarkan prioritas.
+- Membuat atau memperbarui `refrensi_apk.md`.
 
 Dilarang:
 
-- Mengimplementasikan fitur baru.
-- Mengubah kode aplikasi.
-- Mengubah desain atau UI aplikasi.
-- Mengubah dependency.
+- Mengubah kode sumber.
+- Menambahkan atau menghapus fitur.
+- Mengubah UI, UX, atau layout proyek.
+- Memasang dependency atau package.
 - Mengubah konfigurasi proyek.
-- Mengubah aturan atau command lain.
-- Membuat roadmap atau task implementasi.
-- Membuat commit.
+- Mengubah isi `apk_serupa.md`.
+- Membuat perubahan lain di luar ruang lingkup tugas.
 
-Hasil penelitian merupakan bahan pertimbangan. Pemilik proyek yang menentukan rekomendasi mana yang akan digunakan.
+## 11. Laporan Akhir
 
----
+Setelah selesai, berikan laporan yang mencakup:
 
-## 2. Baca aturan dan pahami proyek
+1. Lokasi file hasil: `refrensi_apk.md`.
+2. Jumlah aplikasi yang terdaftar di `apk_serupa.md`.
+3. Jumlah aplikasi yang berhasil diperiksa.
+4. Jumlah rekomendasi fitur baru.
+5. Jumlah rekomendasi optimasi fitur.
+6. Jumlah rekomendasi UI, UX, dan layout.
+7. Kendala atau informasi yang belum dapat diverifikasi.
 
-Jangan memulai penelitian eksternal sebelum memahami proyek.
+Jangan mengklaim analisis selesai apabila masih ada aplikasi terdaftar yang belum diperiksa. Laporkan dengan jelas aplikasi yang belum berhasil dianalisis.
 
-### 2.1. Baca aturan
-
-1. Baca `AGENTS.md` di root proyek terlebih dahulu.
-2. Ikuti instruksi yang terdapat di dalamnya.
-3. Periksa aturan tambahan pada direktori terkait, termasuk `.agents/`, `.kilo/rules/`, `.kilocode/rules/`, dan lokasi lain yang secara eksplisit disebutkan oleh aturan proyek.
-4. Baca aturan dokumentasi dan penelitian apabila tersedia.
-5. Jangan menganggap seluruh file Markdown sebagai aturan.
-6. Apabila ditemukan konflik aturan, catat path dan isi aturan yang bertentangan. Ikuti prioritas yang dinyatakan secara eksplisit. Jika tidak ada prioritas yang jelas, jangan membuat keputusan sendiri.
-
-### 2.2. Identifikasi kondisi proyek
-
-Periksa kode dan dokumentasi proyek untuk memahami:
-
-- Nama dan tujuan aplikasi.
-- Kategori aplikasi.
-- Platform yang didukung.
-- Target pengguna.
-- Masalah utama yang diselesaikan aplikasi.
-- Fitur yang sudah tersedia.
-- Fitur yang masih dalam pengembangan.
-- Fitur yang belum tersedia.
-- Struktur navigasi.
-- Halaman dan komponen utama.
-- Alur penggunaan aplikasi.
-- Teknologi dan keterbatasan teknis yang relevan.
-
-Gunakan implementasi aktual sebagai sumber utama.
-
-Periksa file seperti:
-
-- `README.md`
-- `pubspec.yaml`
-- Konfigurasi Android dan iOS.
-- Direktori `lib/`.
-- Halaman dan widget.
-- Model dan notifier.
-- Navigasi.
-- Dokumentasi fitur.
-- Dokumen perencanaan yang benar-benar tersedia.
-
-Untuk setiap fitur yang relevan, catat:
-
-- Nama fitur.
-- Tujuan fitur.
-- Status implementasi.
-- Path implementasi.
-- Halaman atau komponen terkait.
-- Keterangan kondisi saat ini.
-
-Jangan menganggap fitur belum tersedia hanya karena tidak ditemukan dari nama file. Lakukan pencarian dan pemeriksaan kode yang relevan terlebih dahulu.
-
-### 2.3. Periksa dokumen penelitian lama
-
-Periksa keberadaan `./refrensi_apk.md`.
-
-Jika sudah tersedia:
-
-1. Baca seluruh isi dokumen.
-2. Pelajari referensi dan rekomendasi yang telah tercatat.
-3. Identifikasi informasi yang masih relevan.
-4. Identifikasi informasi yang sudah tidak sesuai dengan kondisi proyek.
-5. Hindari membuat rekomendasi duplikat.
-6. Pertahankan informasi lama yang masih relevan.
-7. Perbarui informasi lama apabila ditemukan bukti yang lebih akurat.
-
-Jangan langsung menimpa seluruh isi dokumen.
-
----
-
-## 3. Temukan dan gunakan tools penelitian
-
-### 3.1. Periksa tools yang tersedia
-
-Periksa terlebih dahulu tools yang tersedia pada sesi Kilo Code.
-
-Prioritaskan:
-
-1. Pencarian web.
-2. Browser atau browser automation.
-3. Pengambilan isi halaman web.
-4. Pencarian gambar aplikasi.
-5. Inspeksi screenshot.
-6. MCP yang menyediakan data aplikasi atau informasi tambahan.
-
-Jangan menganggap tool tertentu pasti tersedia.
-
-Jangan memasang MCP, meminta API key, atau mengubah konfigurasi Kilo Code untuk menyelesaikan penelitian.
-
-### 3.2. Strategi pencarian aplikasi
-
-Utamakan aplikasi Android yang tersedia di Google Play Store.
-
-Cari aplikasi berdasarkan:
-
-- Kategori aplikasi proyek.
-- Tujuan aplikasi.
-- Fitur utama proyek.
-- Nama fitur yang ingin dibandingkan.
-- Permasalahan pengguna yang ingin diselesaikan.
-
-Gunakan App Store sebagai referensi tambahan apabila memiliki fitur atau alur yang relevan.
-
-Jangan menyebut aplikasi iOS sebagai APK Android.
-
-Cari aplikasi kompetitor langsung dan aplikasi dari kategori lain yang memiliki implementasi fitur yang dapat dibandingkan secara masuk akal.
-
-Jangan memasukkan aplikasi hanya karena populer. Utamakan kesesuaian fitur dan kebutuhan pengguna.
-
-### 3.3. Kualitas sumber
-
-Gunakan urutan sumber berikut:
-
-1. Google Play Store dan App Store.
-2. Situs resmi pengembang.
-3. Dokumentasi dan panduan penggunaan resmi.
-4. Screenshot resmi aplikasi.
-5. Video demonstrasi aplikasi.
-6. Ulasan pengguna dan sumber pihak ketiga tepercaya.
-
-Pastikan sumber benar-benar berkaitan dengan aplikasi dan fitur yang sedang diteliti.
-
-Hindari menggunakan deskripsi promosi sebagai satu-satunya bukti keberadaan suatu fitur apabila informasi tambahan dapat diperiksa.
-
-Jangan mengunduh atau memasang APK dari situs mirror yang tidak tepercaya. Instalasi APK tidak diperlukan untuk menyelesaikan penelitian.
-
-### 3.4. Keterbatasan tools
-
-Jika tools tertentu tidak tersedia:
-
-- Cari alternatif yang memang tersedia.
-- Jangan mengaku telah memeriksa screenshot jika tidak melakukannya.
-- Jangan mengaku telah mencoba aplikasi jika tidak benar-benar melakukannya.
-- Jangan membuat URL, screenshot, fitur, atau hasil penelitian fiktif.
-- Cantumkan keterbatasan yang ditemukan.
-
-Jika penelitian eksternal tidak dapat diverifikasi, jangan mengisi dokumen menggunakan dugaan.
-
----
-
-## 4. Ruang lingkup A: Penelitian fitur baru
-
-Tujuan penelitian ini adalah menemukan fitur tambahan dari aplikasi sejenis yang belum tersedia pada proyek.
-
-### 4.1. Batasan fitur
-
-Hanya sarankan fitur yang dapat digunakan melalui aplikasi pada perangkat mobile.
-
-Fitur yang dapat dipertimbangkan:
-
-- Fitur yang seluruh alur utamanya dapat dijalankan melalui Android atau iOS.
-- Fitur yang menggunakan kamera, lokasi, notifikasi, sensor, penyimpanan lokal, biometrik, atau kemampuan perangkat mobile.
-- Fitur yang menggunakan backend, API, atau layanan cloud selama interaksi utamanya tetap dapat dilakukan melalui aplikasi mobile.
-- Fitur yang mendukung penggunaan offline apabila relevan.
-
-Jangan sarankan:
-
-- Fitur yang hanya berjalan pada desktop.
-- Fitur yang mengharuskan pengguna menyelesaikan alur utama melalui dashboard web.
-- Fitur administratif yang tidak relevan dengan pengguna aplikasi mobile.
-- Kemampuan backend yang tidak memiliki manfaat atau alur penggunaan jelas pada aplikasi mobile.
-
-### 4.2. Penelitian setiap fitur
-
-Untuk setiap fitur yang ditemukan:
-
-1. Pastikan fitur benar-benar tersedia pada aplikasi referensi.
-2. Pastikan fitur belum tersedia pada proyek.
-3. Jika fungsi serupa sudah tersedia, masukkan ke bagian optimasi fitur yang sudah ada, bukan fitur baru.
-4. Jelaskan nama dan tujuan fitur.
-5. Jelaskan masalah pengguna yang diselesaikan.
-6. Jelaskan manfaatnya.
-7. Jelaskan alur penggunaan dari tindakan pengguna sampai hasil yang diterima.
-8. Jelaskan aplikasi referensinya.
-9. Sertakan tautan Google Play atau App Store.
-10. Sertakan sumber yang membuktikan keberadaan fitur.
-11. Jelaskan ketergantungan penting seperti internet, akun, API, izin perangkat, backend, atau layanan pihak ketiga.
-12. Jelaskan relevansinya dengan proyek.
-13. Berikan alasan prioritas.
-
-Jangan membuat desain kode atau rancangan implementasi teknis.
-
-Tujuannya adalah memberikan alternatif fitur kepada pemilik proyek.
-
----
-
-## 5. Ruang lingkup B: Optimasi fitur yang sudah ada
-
-Tujuan penelitian ini adalah menemukan cara meningkatkan fitur yang sudah tersedia pada proyek berdasarkan implementasi aplikasi kompetitor.
-
-Untuk setiap fitur:
-
-1. Catat kondisi implementasi proyek saat ini.
-2. Sertakan path file dan halaman yang relevan apabila ditemukan.
-3. Cari aplikasi kompetitor yang memiliki fungsi atau alur serupa.
-4. Periksa bagaimana kompetitor menyajikan fitur tersebut.
-5. Identifikasi kelebihan implementasi referensi.
-6. Bandingkan dengan implementasi proyek.
-7. Identifikasi peluang peningkatan yang realistis.
-8. Berikan saran optimasi yang spesifik.
-9. Jelaskan tujuan dan manfaat optimasi.
-10. Sertakan tautan referensi.
-11. Berikan prioritas dan alasannya.
-
-Perhatikan peluang peningkatan seperti:
-
-- Penyederhanaan alur.
-- Pengurangan langkah pengguna.
-- Kemudahan menemukan fitur.
-- Kejelasan informasi.
-- Pengelompokan data.
-- Kemudahan input.
-- Feedback tindakan.
-- Pengelolaan data.
-- Efisiensi penggunaan.
-- Konsistensi perilaku.
-- Dukungan kondisi offline.
-
-Jangan menyebut sesuatu sebagai kekurangan proyek tanpa bukti dari implementasi aktual.
-
-Jangan merekomendasikan penggantian keseluruhan fitur apabila peningkatan kecil sudah mencukupi.
-
----
-
-## 6. Ruang lingkup C: Analisis UI, UX, dan layout
-
-Cari aplikasi kompetitor yang memiliki fitur sama atau alur pengguna yang sebanding dengan proyek.
-
-Tujuannya bukan menyalin desain aplikasi lain, melainkan menemukan pola yang dapat meningkatkan pengalaman pengguna.
-
-### 6.1. Analisis UI
-
-Periksa:
-
-- Susunan elemen pada halaman.
-- Struktur kartu dan daftar.
-- Penggunaan warna.
-- Hierarki visual.
-- Pengelompokan informasi.
-- Judul dan label.
-- Ikon dan tombol.
-- Kepadatan konten.
-- Konsistensi komponen.
-
-### 6.2. Analisis UX
-
-Periksa:
-
-- Kemudahan menemukan fitur.
-- Urutan langkah penggunaan.
-- Kejelasan fungsi tombol.
-- Kemudahan menyelesaikan aktivitas.
-- Pencegahan kesalahan.
-- Konsistensi interaksi.
-- Feedback tindakan.
-- Penanganan loading.
-- Penanganan error.
-- Kondisi kosong.
-- Konfirmasi tindakan penting.
-
-### 6.3. Analisis layout
-
-Periksa:
-
-- Navigasi utama.
-- Struktur tab dan menu.
-- Hierarki halaman.
-- Penempatan fitur utama.
-- Susunan section.
-- Layout formulir.
-- Layout daftar.
-- Penggunaan dialog dan bottom sheet.
-- Penggunaan scroll.
-- Penempatan tombol aksi.
-- Kesesuaian dengan layar perangkat mobile.
-
-### 6.4. Bukti visual
-
-Gunakan screenshot resmi, video demonstrasi, atau sumber visual yang dapat diperiksa.
-
-Jangan menyimpulkan detail tampilan hanya dari deskripsi teks aplikasi.
-
-Jika screenshot atau demonstrasi tidak tersedia:
-
-- Jangan mengarang posisi tombol.
-- Jangan mengarang warna.
-- Jangan mengarang struktur halaman.
-- Jangan mengarang jumlah tab.
-- Jangan mengarang perilaku interaksi.
-
-Tandai bagian tersebut sebagai belum dapat diverifikasi secara visual.
-
-### 6.5. Hasil analisis
-
-Untuk setiap pola yang ditemukan, jelaskan:
-
-1. Nama aplikasi.
-2. Nama fitur atau halaman.
-3. Pola UI yang ditemukan.
-4. Pola UX yang ditemukan.
-5. Pola layout yang ditemukan.
-6. Tujuan pola tersebut.
-7. Manfaat bagi pengguna.
-8. Kondisi tampilan proyek saat ini jika dapat diperiksa.
-9. Saran yang dapat diterapkan pada proyek.
-10. Alasan prioritas.
-11. Link aplikasi.
-12. Link screenshot atau sumber visual.
-
-Jangan memberikan saran generik seperti "buat lebih menarik".
-
-Hubungkan setiap saran dengan kegunaan, keterbacaan, konsistensi, efisiensi alur, atau pengurangan beban kognitif.
-
----
-
-## 7. Standar bukti penelitian
-
-Setiap rekomendasi wajib memiliki tautan referensi yang dapat dibuka.
-
-Untuk setiap aplikasi, catat jika tersedia:
-
-- Nama aplikasi.
-- Nama pengembang.
-- Platform.
-- Link Google Play.
-- Link App Store jika relevan.
-- Link situs pengembang.
-- Link dokumentasi.
-- Link screenshot atau video.
-- Fitur yang menjadi referensi.
-- Versi aplikasi.
-- Tanggal pembaruan aplikasi.
-- Tanggal penelitian.
-
-Bedakan jenis informasi:
-
-- **Terverifikasi:** tercantum dalam sumber resmi atau dapat diperiksa langsung.
-- **Teramati:** terlihat pada screenshot, video, atau halaman yang diperiksa.
-- **Interpretasi:** hasil analisis berdasarkan bukti.
-- **Saran:** rekomendasi untuk proyek.
-- **Belum terverifikasi:** informasi yang belum dapat dipastikan.
-
-Jangan menyamarkan interpretasi sebagai fakta.
-
-Jangan menggunakan tautan hasil pencarian umum apabila tersedia tautan langsung ke aplikasi atau sumber spesifik.
-
----
-
-## 8. Sistem prioritas
-
-Semua rekomendasi harus disusun berdasarkan:
-
-1. Prioritas Tinggi.
-2. Prioritas Sedang.
-3. Prioritas Rendah.
-
-Terapkan secara terpisah pada:
-
-- Fitur baru.
-- Optimasi fitur yang sudah ada.
-- UI, UX, dan layout.
-
-Gunakan kriteria:
-
-**Tinggi**
-
-- Sangat sesuai dengan tujuan aplikasi.
-- Menjawab kebutuhan pengguna utama.
-- Memiliki manfaat jelas.
-- Didukung bukti yang kuat.
-- Dapat digunakan melalui mobile.
-- Tidak memiliki hambatan kelayakan yang besar.
-
-**Sedang**
-
-- Relevan dan bermanfaat.
-- Dampaknya lebih terbatas.
-- Memerlukan pertimbangan tambahan.
-- Cocok untuk sebagian pengguna atau alur.
-
-**Rendah**
-
-- Bersifat tambahan.
-- Dampaknya belum terlalu kuat.
-- Bukti masih terbatas.
-- Kompleksitas lebih besar dibanding manfaatnya.
-
-Setiap rekomendasi harus memiliki alasan penetapan prioritas.
-
-Jangan menghilangkan rekomendasi prioritas rendah hanya karena terdapat rekomendasi prioritas tinggi.
-
-Prioritas hanya merupakan urutan pertimbangan. Pemilik proyek yang menentukan pilihan akhir.
-
----
-
-## 9. Format file hasil penelitian
-
-Path wajib:
-
-`./refrensi_apk.md`
-
-Gunakan struktur berikut:
-
-# Referensi APK Sejenis
-
-## Informasi Riset
-
-- Nama proyek:
-- Kategori aplikasi:
-- Platform:
-- Tanggal penelitian:
-- Ringkasan cakupan:
-- Keterbatasan penelitian:
-
-## Ringkasan Temuan
-
-Berikan ringkasan hasil penelitian tanpa menentukan fitur atau desain yang harus diimplementasikan.
-
-## A. Rekomendasi Fitur Baru
-
-### Prioritas Tinggi
-
-#### 1. Nama Fitur
-
-- **Tujuan:**
-- **Masalah pengguna:**
-- **Cara kerja di mobile:**
-- **Aplikasi referensi:**
-- **Link aplikasi:**
-- **Link bukti:**
-- **Manfaat untuk proyek:**
-- **Ketergantungan/keterbatasan:**
-- **Alasan prioritas:**
-
-### Prioritas Sedang
-
-### Prioritas Rendah
-
-## B. Optimasi Fitur yang Sudah Ada
-
-### Prioritas Tinggi
-
-#### 1. Nama Fitur
-
-- **Kondisi fitur pada proyek:**
-- **Status implementasi:**
-- **Path implementasi proyek:**
-- **Aplikasi pembanding:**
-- **Implementasi referensi:**
-- **Peluang optimasi:**
-- **Saran optimasi:**
-- **Tujuan dan manfaat:**
-- **Link aplikasi:**
-- **Link bukti:**
-- **Alasan prioritas:**
-
-### Prioritas Sedang
-
-### Prioritas Rendah
-
-## C. Rekomendasi UI, UX, dan Layout
-
-### Prioritas Tinggi
-
-#### 1. Nama Pola atau Halaman
-
-- **Fitur/halaman yang dibandingkan:**
-- **Aplikasi referensi:**
-- **Pola UI:**
-- **Pola UX:**
-- **Pola layout:**
-- **Tujuan pola:**
-- **Kondisi pada proyek:**
-- **Saran untuk proyek:**
-- **Link aplikasi:**
-- **Link screenshot atau sumber visual:**
-- **Alasan prioritas:**
-
-### Prioritas Sedang
-
-### Prioritas Rendah
-
-## D. Daftar Aplikasi Kompetitor
-
-| Aplikasi | Pengembang | Platform | Fitur Relevan | Link Store | Sumber Tambahan |
-| -------- | ---------- | -------- | ------------- | ---------- | --------------- |
-
-## E. Catatan Validasi dan Keterbatasan
-
-- Informasi yang belum terverifikasi.
-- Screenshot atau alur yang belum dapat diperiksa.
-- Tools yang tidak tersedia.
-- Hal yang perlu diperiksa lebih lanjut.
-
-### Aturan format
-
-1. Jangan menyisakan judul kosong.
-2. Jangan menambahkan placeholder.
-3. Setiap rekomendasi wajib menyertakan tautan referensi.
-4. Kelompokkan berdasarkan fitur dan UI/UX.
-5. Jangan mengelompokkan seluruh isi hanya berdasarkan nama aplikasi.
-6. Hindari penjelasan duplikat.
-7. Jangan menebak path implementasi proyek.
-8. Gunakan bahasa Indonesia yang baku dan jelas.
-9. Pertahankan tautan Markdown yang dapat diklik.
-10. Tulis hanya informasi yang didukung hasil penelitian.
-
----
-
-## 10. Aturan pembaruan dokumen
-
-1. Hanya buat atau ubah `./refrensi_apk.md`.
-2. Baca seluruh isi dokumen lama sebelum memperbaruinya.
-3. Gabungkan hasil baru dengan hasil lama yang masih relevan.
-4. Pertahankan referensi lama yang masih valid.
-5. Perbarui informasi lama apabila tersedia bukti baru.
-6. Hapus duplikasi secara hati-hati.
-7. Jangan menghapus keputusan atau catatan pemilik proyek yang masih relevan.
-8. Jangan mengubah hasil penelitian menjadi keputusan implementasi.
-9. Jangan mengubah file proyek lainnya.
-
----
-
-## 11. Validasi akhir
-
-Sebelum menyelesaikan pekerjaan:
-
-1. Baca kembali seluruh `refrensi_apk.md`.
-2. Pastikan seluruh fitur baru benar-benar dapat digunakan melalui perangkat mobile.
-3. Pastikan fitur yang sudah tersedia tidak keliru dikategorikan sebagai fitur baru.
-4. Pastikan rekomendasi optimasi didasarkan pada perbandingan yang nyata.
-5. Pastikan analisis UI/UX didukung bukti visual yang benar-benar diperiksa.
-6. Pastikan fakta, pengamatan, interpretasi, dan saran dibedakan.
-7. Pastikan prioritas tersusun Tinggi, Sedang, dan Rendah.
-8. Pastikan setiap temuan memiliki tujuan dan manfaat.
-9. Pastikan semua tautan berasal dari sumber yang ditemukan.
-10. Pastikan tidak ada rekomendasi duplikat.
-11. Pastikan hanya `refrensi_apk.md` yang diubah oleh pelaksanaan command.
-12. Jangan membuat commit.
-
----
-
-## 12. Laporan akhir
-
-Berikan laporan dengan format:
-
-### Status Penelitian
-
-Selesai, sebagian selesai, atau terhambat.
-
-### File Hasil
-
-`./refrensi_apk.md`
-
-### Aplikasi Referensi
-
-Daftar aplikasi kompetitor yang berhasil diperiksa.
-
-### Jumlah Temuan
-
-| Kategori         | Tinggi | Sedang | Rendah |
-| ---------------- | -----: | -----: | -----: |
-| Fitur baru       |        |        |        |
-| Optimasi fitur   |        |        |        |
-| UI/UX dan layout |        |        |        |
-
-### Sumber
-
-Daftar tautan utama yang berhasil diperiksa.
-
-### Keterbatasan
-
-Jelaskan informasi atau visual yang belum berhasil diverifikasi.
-
-### Perubahan File
-
-Konfirmasikan bahwa hanya `refrensi_apk.md` yang diubah.
-
-Jangan menyatakan penelitian selesai apabila sumber atau bukti utama belum berhasil diperiksa.
-
-Jangan mengimplementasikan rekomendasi. Hasil penelitian harus menjadi bahan pertimbangan agar pemilik proyek dapat menyortir sendiri.
+**PENTING: Jangan menerapkan satu pun rekomendasi ke kode proyek. Seluruh rekomendasi hanya ditulis ke `refrensi_apk.md`. Pengguna akan membaca, menyortir, dan menentukan sendiri rekomendasi yang ingin diterapkan.**
