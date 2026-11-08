@@ -11,7 +11,7 @@
 
 ## Ringkasan Temuan
 
-Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti merokok (counter smoke-free, penghematan uang, rokok tidak dihisap, milestone kesehatan, SOS craving dengan napas 4-7-8/timer/distraksi, diary pemicu, kalender smoke-free, badge, notifikasi harian, mode berhenti bertahap). Peluang utama terletak pada: (1) akses cepat ke fitur SOS craving dari layar utama, (2) visualisasi progres yang lebih kuat (counter besar, piggy bank tabungan, grafik pemicu), (3) penanganan slip/relapse yang suportif, (4) penyimpanan cadangan/ekspor data, dan (5) widget layar beranda. Rekomendasi prioritas tinggi berfokus pada aksesibilitas SOS craving dan penanganan slip yang tidak menghakimi.
+Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti merokok (counter smoke-free, penghematan uang, rokok tidak dihisap, milestone kesehatan, SOS craving dengan napas 4-7-8/timer/distraksi, diary pemicu, kalender smoke-free, badge, notifikasi harian, mode berhenti bertahap). Peluang utama terletak pada: (1) akses cepat ke fitur SOS craving dari layar utama, (2) visualisasi progres yang lebih kuat (counter besar, piggy bank tabungan, grafik pemicu), (3) penanganan slip/relapse yang suportif, dan (4) widget layar beranda. Rekomendasi prioritas tinggi berfokus pada aksesibilitas SOS craving dan penanganan slip yang tidak menghakimi.
 
 ---
 
@@ -33,19 +33,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 ### Prioritas Sedang
 
-#### 2. Penyimpanan Cadangan dan Ekspor Data (Lokal)
-
-- **Tujuan:** Melindungi data pengguna (biodata, impian, diary craving) dari kehilangan saat ganti perangkat atau reset.
-- **Masalah pengguna:** Data saat ini hanya tersimpan lokal di SQLite; pengguna yang kehilangan perangkat kehilangan seluruh riwayat.
-- **Cara kerja di mobile:** Ekspor data ke berkas (CSV/JSON) yang dapat disimpan pengguna, atau pencadangan ke penyimpanan lokal/awan pilihan pengguna (tanpa akun wajib).
-- **Aplikasi referensi:** Smoke Tracker: Track & Pace (Codeas); Quitzilla; Quit Tracker (despDev).
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.smoketracker.app ; https://quitzilla.com/ ; https://quittracker.app/
-- **Link bukti:** Deskripsi resmi (pencadangan terenkripsi ke Google Drive, ekspor CSV, penyimpanan lokal).
-- **Manfaat untuk proyek:** Meningkatkan kepercayaan pengguna terhadap data pribadi dan mendukung prinsip offline-first.
-- **Ketergantungan/keterbatasan:** Perlu penanganan izin penyimpanan berkas dan format ekspor yang jelas.
-- **Alasan prioritas:** Relevan dan bermanfaat, tetapi memerlukan pertimbangan tambahan terkait format dan izin.
-
-#### 3. Pencatatan Slip/Relapse yang Suportif
+#### 2. Pencatatan Slip/Relapse yang Suportif
 
 - **Tujuan:** Memungkinkan pengguna mencatat jika sempat merokok lagi tanpa kehilangan seluruh progres, dengan pesan yang tidak menghakimi.
 - **Masalah pengguna:** Saat ini progres dihitung dari satu tanggal berhenti; jika pengguna merokok lagi, tidak ada mekanisme pencatatan slip yang mempertahankan riwayat.
@@ -57,7 +45,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Memerlukan penyesuaian perhitungan smoke-free dan riwayat.
 - **Alasan prioritas:** Relevan dan bermanfaat, memerlukan pertimbangan tambahan.
 
-#### 4. Kuis Onboarding dan Rencana Berhenti
+#### 3. Kuis Onboarding dan Rencana Berhenti
 
 - **Tujuan:** Membantu pengguna baru menyusun rencana berhenti merokok (tanggal berhenti, pemicu, strategi) sejak awal.
 - **Masalah pengguna:** Form biodata saat ini hanya mencatat data dasar tanpa panduan menyusun rencana.
@@ -69,7 +57,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Memerlukan konten dan logika tambahan.
 - **Alasan prioritas:** Relevan, dampak terbatas pada sebagian pengguna.
 
-#### 5. Widget Layar Beranda (Home Widget)
+#### 4. Widget Layar Beranda (Home Widget)
 
 - **Tujuan:** Menampilkan penghitung smoke-free dan tabungan langsung di layar beranda tanpa membuka aplikasi.
 - **Masalah pengguna:** Pengguna harus membuka aplikasi untuk melihat progres terkini.
@@ -421,34 +409,34 @@ Status PRD: Sudah dibuat — `prd/optimasi-pemulihan-kesehatan-milestone.md`
 
 ## D. Daftar Aplikasi Kompetitor
 
-| Aplikasi | Pengembang | Platform | Fitur Relevan | Link Store | Sumber Tambahan |
-| -------- | ---------- | -------- | ------------- | ---------- | --------------- |
-| Quit Smoking : Tracker & Timer | H2M apps | Android | Counter real-time, 24 milestone kesehatan, SOS craving, widget beranda, kalender, notifikasi cerdas | https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke | Deskripsi resmi Google Play |
-| Smoke Free | Portable Pixels | Android | Coaches, badge, log craving, health improvement bars, diary pemicu, daily missions | https://play.google.com/store/apps/details?id=com.portablepixels.smokefree | https://smokefreeapp.com/faq |
-| QuitNow | Fewlaps | Android | Ex-smoker status, chat komunitas, sesi ahli, 80 milestone, Wear OS, buku | https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa | Deskripsi resmi Google Play |
-| Stop Smoking - EasyQuit | Herzberg | Android | Slow mode (tapering), statistik uang, craving trigger pie chart, game pasangan, 100+ badge, treat savings | https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking | Deskripsi resmi Google Play |
-| Quit Tracker | despDev | Android | Home screen widget, card game distraksi, diary, statistik, penyimpanan lokal | https://play.google.com/store/apps/details?id=com.despdev.quitsmoking | https://quittracker.app/ |
-| Quit It | Antonis Evmorfopoulos | Android/iOS | Trigger insights, personal rewards, craving management, jurnal | https://play.google.com/store/apps/details?id=com.quititapp | https://www.quit-it-web.com/ |
-| Kick It | UC San Diego | Android/iOS | Check-in harian, quit plan, trigger & strategi, badge, multi-bahasa | https://play.google.com/store/apps/details?id=com.kickitca | https://kickitca.org/app |
-| quitSTART | Smokefree.gov | Android | Tips personalisasi, tantangan, game, Quit Kit, tag pemicu | https://play.google.com/store/apps/details?id=com.mmgct.quitstart | https://smokefree.gov/tools-tips/quitstart |
-| QUIT Smoking SOS | ANKO Solutions | Android | SOS satu ketukan, napas, mini-games, artikel, AI coach Quity, 15 achievement, widget beranda, onboarding quiz | https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking | Deskripsi resmi Google Play |
-| Smoke Tracker: Track & Pace | Codeas | Android | Log rokok/vape, biaya, batas harian, reward/coins, achievement, pencadangan terenkripsi | https://play.google.com/store/apps/details?id=com.smoketracker.app | Deskripsi resmi Google Play |
-| LastCig | VictorExplore | Android | Timer real-time, log rokok/craving, toxin tracking, privasi lokal (tanpa akun) | https://play.google.com/store/apps/details?id=com.lastcig.app | Deskripsi resmi Google Play |
-| Bommi | Lazy Hippo | Android/iOS | Urge rescue widget, streak, uang tersimpan, kalori, milestone, tema terang/gelap | https://bommi.lazyhippodev.com/ | Situs resmi |
-| Flamy | Offlinefirst | Android/iOS | Rencana berhenti personal (6 pertanyaan), SOS napas/distraksi, health tracker, game, bagikan progres, CBT | https://play.google.com/store/apps/details?id=net.offlinefirst.flamy | https://flamy.co/ |
-| Quitzilla | Quitzilla | Android/iOS | Timer, uang & waktu diperoleh, alasan berhenti, diary relapse, ekspor CSV, pencadangan Google Drive | https://quitzilla.com/ | Situs resmi |
-| Quit Smoking: Progress Tracker | Inspector Studios | Android | Quit plan, diary pemicu, mood, laporan mingguan, insight, achievement, reasons vault, CBT | https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker | Deskripsi resmi Google Play |
-| MeQuit (Stop Smoking Daily Motivation) | Stop Smoking App | Android/iOS | Trigger logging, pengingat kustom, reset slip, statistik | https://stopsmokingapp.com/quit-smoking-daily-motivation-app | Situs resmi |
-| Quit Smoking: Widget Tracker | KEISUKE ONO | iOS | Widget beranda, live activity, tombol craving satu ketukan, breathing guide, insight jam/tempat | App Store | https://www.appbrain.com/appstore/quit-smoking-widget-tracker/ios-6789900590 |
+| Aplikasi                               | Pengembang            | Platform    | Fitur Relevan                                                                                                 | Link Store                                                                                    | Sumber Tambahan                                                              |
+| -------------------------------------- | --------------------- | ----------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Quit Smoking : Tracker & Timer         | H2M apps              | Android     | Counter real-time, 24 milestone kesehatan, SOS craving, widget beranda, kalender, notifikasi cerdas           | https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke                          | Deskripsi resmi Google Play                                                  |
+| Smoke Free                             | Portable Pixels       | Android     | Coaches, badge, log craving, health improvement bars, diary pemicu, daily missions                            | https://play.google.com/store/apps/details?id=com.portablepixels.smokefree                    | https://smokefreeapp.com/faq                                                 |
+| QuitNow                                | Fewlaps               | Android     | Ex-smoker status, chat komunitas, sesi ahli, 80 milestone, Wear OS, buku                                      | https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa                      | Deskripsi resmi Google Play                                                  |
+| Stop Smoking - EasyQuit                | Herzberg              | Android     | Slow mode (tapering), statistik uang, craving trigger pie chart, game pasangan, 100+ badge, treat savings     | https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking                    | Deskripsi resmi Google Play                                                  |
+| Quit Tracker                           | despDev               | Android     | Home screen widget, card game distraksi, diary, statistik, penyimpanan lokal                                  | https://play.google.com/store/apps/details?id=com.despdev.quitsmoking                         | https://quittracker.app/                                                     |
+| Quit It                                | Antonis Evmorfopoulos | Android/iOS | Trigger insights, personal rewards, craving management, jurnal                                                | https://play.google.com/store/apps/details?id=com.quititapp                                   | https://www.quit-it-web.com/                                                 |
+| Kick It                                | UC San Diego          | Android/iOS | Check-in harian, quit plan, trigger & strategi, badge, multi-bahasa                                           | https://play.google.com/store/apps/details?id=com.kickitca                                    | https://kickitca.org/app                                                     |
+| quitSTART                              | Smokefree.gov         | Android     | Tips personalisasi, tantangan, game, Quit Kit, tag pemicu                                                     | https://play.google.com/store/apps/details?id=com.mmgct.quitstart                             | https://smokefree.gov/tools-tips/quitstart                                   |
+| QUIT Smoking SOS                       | ANKO Solutions        | Android     | SOS satu ketukan, napas, mini-games, artikel, AI coach Quity, 15 achievement, widget beranda, onboarding quiz | https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking                         | Deskripsi resmi Google Play                                                  |
+| Smoke Tracker: Track & Pace            | Codeas                | Android     | Log rokok/vape, biaya, batas harian, reward/coins, achievement, pencadangan terenkripsi                       | https://play.google.com/store/apps/details?id=com.smoketracker.app                            | Deskripsi resmi Google Play                                                  |
+| LastCig                                | VictorExplore         | Android     | Timer real-time, log rokok/craving, toxin tracking, privasi lokal (tanpa akun)                                | https://play.google.com/store/apps/details?id=com.lastcig.app                                 | Deskripsi resmi Google Play                                                  |
+| Bommi                                  | Lazy Hippo            | Android/iOS | Urge rescue widget, streak, uang tersimpan, kalori, milestone, tema terang/gelap                              | https://bommi.lazyhippodev.com/                                                               | Situs resmi                                                                  |
+| Flamy                                  | Offlinefirst          | Android/iOS | Rencana berhenti personal (6 pertanyaan), SOS napas/distraksi, health tracker, game, bagikan progres, CBT     | https://play.google.com/store/apps/details?id=net.offlinefirst.flamy                          | https://flamy.co/                                                            |
+| Quitzilla                              | Quitzilla             | Android/iOS | Timer, uang & waktu diperoleh, alasan berhenti, diary relapse, ekspor CSV, pencadangan Google Drive           | https://quitzilla.com/                                                                        | Situs resmi                                                                  |
+| Quit Smoking: Progress Tracker         | Inspector Studios     | Android     | Quit plan, diary pemicu, mood, laporan mingguan, insight, achievement, reasons vault, CBT                     | https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker | Deskripsi resmi Google Play                                                  |
+| MeQuit (Stop Smoking Daily Motivation) | Stop Smoking App      | Android/iOS | Trigger logging, pengingat kustom, reset slip, statistik                                                      | https://stopsmokingapp.com/quit-smoking-daily-motivation-app                                  | Situs resmi                                                                  |
+| Quit Smoking: Widget Tracker           | KEISUKE ONO           | iOS         | Widget beranda, live activity, tombol craving satu ketukan, breathing guide, insight jam/tempat               | App Store                                                                                     | https://www.appbrain.com/appstore/quit-smoking-widget-tracker/ios-6789900590 |
 
 ## E. Catatan Validasi dan Keterbatasan
 
 - **Informasi yang belum terverifikasi:** Detail visual (posisi tombol, warna, struktur halaman) sebagian besar didasarkan pada deskripsi resmi dan tangkapan layar yang tersedia; tidak semua dapat diperiksa secara langsung karena penelitian dilakukan daring tanpa instalasi aplikasi.
 - **Screenshot atau alur yang belum dapat diperiksa:** Alur interaksi detail (animasi, gesture, transisi) tidak dapat diverifikasi; hanya deskripsi fitur yang dapat dikonfirmasi dari sumber resmi.
 - **Tools yang tidak tersedia:** Tidak ada akses ke emulator Android atau perangkat fisik; pengujian aplikasi kompetitor tidak dilakukan secara langsung.
-- **Hal yang perlu diperiksa lebih lanjut:** Ketersediaan dan kestabilan paket `home_widget` untuk widget beranda; format ekspor data yang paling sesuai; akurasi data toxin yang dihindari.
+- **Hal yang perlu diperiksa lebih lanjut:** Ketersediaan dan kestabilan paket `home_widget` untuk widget beranda; akurasi data toxin yang dihindari.
 - **Keterbatasan sumber:** Beberapa aplikasi hanya tersedia di App Store (iOS) dan ditandai sebagai referensi tambahan. Informasi fitur didasarkan pada deskripsi resmi Google Play Store dan situs pengembang. Tanggal penelitian: 2026-11-08; informasi aplikasi dapat berubah sewaktu-waktu.
 
 ---
 
-*File ini diperbarui berdasarkan hasil penelitian referensi APK sejenis pada 2026-11-08.*
+_File ini diperbarui berdasarkan hasil penelitian referensi APK sejenis pada 2026-11-08._

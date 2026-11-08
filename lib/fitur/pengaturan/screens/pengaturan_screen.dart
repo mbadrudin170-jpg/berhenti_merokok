@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/cadangan/screens/cadangan_screen.dart';
 import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
@@ -281,7 +282,7 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 16,
-          children: [_buildTema(), _buildNotifikasi()],
+          children: [_buildTema(), _buildNotifikasi(), _buildCadangan()],
         ),
       ),
     );
@@ -390,6 +391,29 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
           child: const Text('Uji coba notifikasi'),
         ),
       ],
+    );
+  }
+
+  Widget _buildCadangan() {
+    L.i('PengaturanScreen build cadangan');
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        'Cadangan & Ekspor Data',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        unawaited(
+          Nav.to(context, const CadanganScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Cadangan: $e $s');
+            return null;
+          }),
+        );
+      },
     );
   }
 }
