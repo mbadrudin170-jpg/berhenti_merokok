@@ -1,5 +1,127 @@
 # Saran Perbaikan
 
+## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
+
+### Prioritas: Tinggi
+
+**File:**
+
+- lib/fitur/pengaturan/screens/pengaturan_screen.dart:76-135
+
+**Masalah:**
+
+Method `_ubahNotifikasi()` tidak memiliki blok `finally` untuk mengembalikan flag `_sedangMemproses` dan menutup loading overlay. Pada jalur `return` (izin tidak diberikan pada baris 93-98, serta `!mounted` pada baris 92 dan 104), flag tetap `true` dan `EasyLoading` tidak ditutup, sehingga UI terkunci permanen dan loading tertinggal.
+
+**Bukti aturan atau SDK:**
+
+- .agents/rules/proyek/aturan_khusus.md: (aturan pengingat harian #16, penanganan double submit)
+- .agents/rules/global/optimasi_bug_runtime.md: (bagian 16 — Pengamanan Aksi dan Double Submit; bagian 6 — Try/Catch)
+- .agents/rules/global/optimasi_ux.md: (bagian 5 dan 12 — Kejelasan status operasi dan loading)
+
+**Dampak:**
+
+Pengguna tidak dapat menekan tombol pengaturan notifikasi lagi setelah satu kali upaya yang berakhir pada jalur return, dan overlay loading tetap tampil.
+
+**Rekomendasi:**
+
+Tambahkan blok `finally` yang memanggil `unawaited(EasyLoading.dismiss())` dan mengembalikan `_sedangMemproses = false` dengan pemeriksaan `mounted`, konsisten dengan `_pilihWaktu()` dan `_ujiNotifikasi()`.
+
+**Status:** Belum diperbaiki.
+
+---
+
+## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
+
+### Prioritas: Tinggi
+
+**File:**
+
+- lib/shared/notifikasi/notifikasi_service.dart:64-92
+- lib/app.dart (tidak memanggil `getNotificationAppLaunchDetails()`)
+
+**Masalah:**
+
+`_onTapNotifikasi()` memanggil `unawaited(Nav.pushAndRemoveUntil(context, const Home()))` tanpa `catchError`, padahal `Nav.pushAndRemoveUntil` mengembalikan `Future`. Selain itu, penanganan kondisi aplikasi diluncurkan dari keadaan terminated melalui notifikasi belum diimplementasikan: tidak ada pemanggilan `getNotificationAppLaunchDetails()` di `main()`/`app.dart`, sehingga tap notifikasi pada kondisi terminated tidak dinavigasi.
+
+**Bukti aturan atau SDK:**
+
+- .agents/rules/proyek/aturan_khusus.md: (aturan notifikasi #10 dan #14)
+- .agents/rules/global/optimasi_bug_runtime.md: (bagian 6 dan 10)
+- Source SDK: /home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/flutter_local_notifications_plugin.dart:217-232 (`getNotificationAppLaunchDetails`)
+
+**Dampak:**
+
+Kegagalan navigasi dari tap notifikasi dapat menjadi unhandled Future; pada kondisi terminated, tap notifikasi tidak mengarahkan pengguna ke beranda.
+
+**Rekomendasi:**
+
+Bungkus `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)` yang mencatat error melalui `L.e`, dan tambahkan pemanggilan `getNotificationAppLaunchDetails()` saat aplikasi siap (misalnya setelah navigator tersedia) untuk menangani kondisi terminated, sesuai contoh benar pada aturan #10.
+
+**Status:** Belum diperbaiki.
+
+---
+
+## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
+
+### Prioritas: Sedang
+
+**File:**
+
+- lib/fitur/pengaturan/screens/pengaturan_screen.dart:83-88, 128, 154-159, 190, 205-210, 220
+- lib/shared/notifikasi/notifikasi_service.dart:88
+
+**Masalah:**
+
+Beberapa `unawaited(EasyLoading.show(...))` dan `unawaited(EasyLoading.dismiss())` dilepas tanpa penanganan error, padahal keduanya mengembalikan `Future<void>`. Hal yang sama berlaku pada `unawaited(Nav.pushAndRemoveUntil(...))` di atas.
+
+**Bukti aturan atau SDK:**
+
+- .agents/rules/proyek/aturan_khusus.md: (aturan notifikasi #14)
+- .agents/rules/global/optimasi_bug_runtime.md: (bagian 10 — Penggunaan await dan unawaited)
+- Source SDK: /home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/easy_loading.dart:124, 276 (mengembalikan Future<void>)
+
+**Dampak:**
+
+Kegagalan pada overlay loading dapat menjadi unhandled Future (meskipun jarang).
+
+**Rekomendasi:**
+
+Bungkus setiap Future yang dilepas dengan `catchError` yang mencatat error via `L.e`, atau jalankan dalam fungsi dengan try/catch sebelum dilepas.
+
+**Status:** Belum diperbaiki.
+
+---
+
+## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
+
+### Prioritas: Sedang
+
+**File:**
+
+- lib/shared/notifikasi/notifikasi_service.dart:122-187
+- lib/fitur/pengaturan/screens/pengaturan_screen.dart:90-110
+
+**Masalah:**
+
+Ketika izin sistem dicabut pada saat `jadwalkanPengingatHarian()` berjalan, method tersebut memanggil `setAktif(false)` dan membatalkan jadwal, lalu melempar `Exception('Izin notifikasi tidak diberikan')`. Namun `_ubahNotifikasi()` telah menetapkan `_notifikasiAktif = true` sebelumnya dan pada jalur exception hanya menyetel `_notifikasiAktif = !value` (false), sehingga tampilan dan preferensi dapat tidak konsisten dengan jadwal sistem (aturan #12). Selain itu, pesan toast yang ditampilkan adalah "Gagal mengubah pengingat harian", bukan informasi izin.
+
+**Bukti aturan atau SDK:**
+
+- .agents/rules/proyek/aturan_khusus.md: (aturan notifikasi #12 dan #13)
+- Source SDK: flutter_local_notifications 22.3.3 (permission handling)
+
+**Dampak:**
+
+State UI, SharedPreferences, dan jadwal sistem operasi dapat tidak sinkron setelah izin dicabut.
+
+**Rekomendasi:**
+
+Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAktif` dengan `NotifikasiService.aktif()` (atau set false) dan tampilkan pesan yang menjelaskan izin tidak tersedia; pertimbangkan memanggil `_muatPreferensiNotifikasi()` untuk menyegarkan tampilan.
+
+**Status:** Belum diperbaiki.
+
+---
+
 ## 2026-11-08 — Dukungan macOS pada penjadwalan notifikasi harian
 
 - **Masalah:** Pada `lib/shared/notifikasi/notifikasi_service.dart`, method `jadwalkanPengingatHarian()` (baris 104-112) melempar `UnsupportedError` pada `TargetPlatform.macOS`, padahal plugin `flutter_local_notifications` v22.3.3 mendukung notifikasi terjadwal pada macOS melalui `zonedSchedule`. Aturan hanya melarang penjadwalan berulang pada Web dan Linux.
