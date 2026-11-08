@@ -237,6 +237,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
+  String _formatHariHilang(double hariHilang) {
+    if (hariHilang <= 365) {
+      return '${hariHilang.toStringAsFixed(1)} hari';
+    }
+    final totalHari = hariHilang.round();
+    final tahun = totalHari ~/ 365;
+    final sisaTahun = totalHari % 365;
+    final bulan = sisaTahun ~/ 30;
+    final hari = sisaTahun % 30;
+    return '$tahun'
+        'T $bulan'
+        'B $hari'
+        'H';
+  }
+
   String _formatDurasiSingkat(Duration d) {
     if (d.inDays > 0) {
       final hari = d.inDays;
@@ -339,7 +354,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
             _buildInfoKerugianKustom(
               CupertinoIcons.heart,
-              '${hariHilang.toStringAsFixed(1)} hari',
+              _formatHariHilang(hariHilang),
               'hidup yang hilang',
             ),
           ],
