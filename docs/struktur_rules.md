@@ -1,3 +1,7 @@
+# Ringkasan
+
+- semua aturan yang ada dibawah ini wajib dibaca oleh AI dengan hanya menggunakan tool read saja.
+
 ## 📁 .agents/rules
 
 ```
