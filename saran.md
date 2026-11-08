@@ -38,7 +38,7 @@
 - **Bukti SDK/paket:** Flutter 3.47.9 — `IconButton.tooltip` (`/google/flutter/packages/flutter/lib/src/material/icon_button.dart:205, 523, 764`); default `null`. Area sentuh default memenuhi 48 dp (`kMinInteractiveDimension`).
 - **Dampak:** Pengguna tidak mendapatkan petunjuk fungsi tombol melalui tooltip; aksesibilitas berkurang.
 - **Rekomendasi:** Tambahkan `tooltip: 'Urutkan'` pada `IconButton`.
-- **Riwayat status:** Belum diperbaiki (ditemukan pada audit commit `f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8`).
+- **Riwayat status:** Diperbaiki (menambahkan `tooltip: 'Urutkan'` pada `IconButton`).
 
 ## 2026-11-08 — Potensi overflow pada kartu impian saat menampilkan sisa dan target
 
@@ -175,3 +175,4 @@
 - **Referensi:** `setAktif()`, `setWaktu()`.
 - **Saran perbaikan:** Urutkan penyimpanan sehingga `setWaktu` sebelum `setAktif(true)`, atau bungkus keduanya dengan rollback saat gagal.
 - **Alasan:** Menjaga konsistensi antara jadwal sistem, SharedPreferences, dan tampilan.
+- **Riwayat status:** Diperbaiki (penyimpanan diurutkan: `setWaktu` sebelum `setAktif(true)`, dengan rollback preferensi dan pembatalan jadwal sistem saat gagal).

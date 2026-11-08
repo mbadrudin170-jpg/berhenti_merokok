@@ -174,6 +174,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         forceMaterialTransparency: false,
         actions: [
           IconButton(
+            tooltip: 'Urutkan',
             icon: const Icon(CupertinoIcons.sort_up),
             onPressed: () => _showModalSort(),
           ),

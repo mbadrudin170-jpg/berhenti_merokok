@@ -234,8 +234,32 @@ class NotifikasiService {
         await setAktif(false);
         throw Exception('Izin notifikasi tidak diberikan');
       }
-      await setAktif(true);
-      await setWaktu(jam, menit);
+      // Simpan nilai lama untuk rollback bila penyimpanan gagal.
+      final aktifLama = await aktif();
+      final jamLama = await NotifikasiService.jam();
+      final menitLama = await NotifikasiService.menit();
+      // Urutan: setWaktu terlebih dahulu, lalu setAktif, agar status
+      // aktif tidak tersimpan tanpa waktu yang sesuai. Bungkus keduanya
+      // dengan rollback saat gagal agar preferensi tetap konsisten.
+      try {
+        await setWaktu(jam, menit);
+        await setAktif(true);
+      } on Exception catch (e, s) {
+        L.e('Gagal menyimpan preferensi pengingat, rollback: $e $s');
+        try {
+          await setWaktu(jamLama, menitLama);
+          await setAktif(aktifLama);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal rollback preferensi pengingat: $e2 $s2');
+        }
+        // Batalkan jadwal sistem agar konsisten dengan preferensi.
+        try {
+          await _plugin.cancel(id: _idPengingatHarian);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal membatalkan jadwal saat rollback: $e2 $s2');
+        }
+        rethrow;
+      }
       L.s('Pengingat harian dijadwalkan jam=$jam:$menit');
     } on Exception catch (e, s) {
       L.e('Gagal menjadwalkan pengingat harian: $e $s');
