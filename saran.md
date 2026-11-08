@@ -57,7 +57,7 @@ Kegagalan navigasi dari tap notifikasi dapat menjadi unhandled Future; pada kond
 
 Bungkus `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)` yang mencatat error melalui `L.e`, dan tambahkan pemanggilan `getNotificationAppLaunchDetails()` saat aplikasi siap (misalnya setelah navigator tersedia) untuk menangani kondisi terminated, sesuai contoh benar pada aturan #10.
 
-**Status:** Belum diperbaiki.
+**Status:** Sudah diperbaiki. `_onTapNotifikasi()` kini mendelegasikan ke `_navigasiDariPayload()` yang membungkus `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)` mencatat error via `L.e`. Ditambahkan `cekNotifikasiSaatBuka()` yang memanggil `getNotificationAppLaunchDetails()` dan menavigasi setelah navigator siap (via `addPostFrameCallback`) untuk kondisi terminated. Pemanggilan dilakukan di `main.dart` setelah `runApp`. Verifikasi `flutter analyze` bersih.
 
 ---
 

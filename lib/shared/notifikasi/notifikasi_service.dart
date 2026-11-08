@@ -62,11 +62,15 @@ class NotifikasiService {
   }
 
   static void _onTapNotifikasi(NotificationResponse response) {
-    final payload = response.payload;
-    L.i('payload=$payload');
+    L.i('payload=${response.payload}');
+    _navigasiDariPayload(response.payload);
+  }
+
+  /// Navigasi berdasarkan payload notifikasi (foreground/background).
+  static void _navigasiDariPayload(String? payload) {
     final navigator = navigatorKey.currentState;
     if (navigator == null) {
-      L.w('navigator null saat tap notifikasi');
+      L.w('navigator null saat navigasi notifikasi');
       return;
     }
 
@@ -85,10 +89,42 @@ class NotifikasiService {
 
     final context = navigator.context;
     if (kategori == 'pengingat_harian') {
-      unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+      unawaited(
+        Nav.pushAndRemoveUntil(context, const Home()).catchError((
+          Object e,
+          StackTrace s,
+        ) {
+          L.e('Gagal navigasi dari notifikasi: $e $s');
+          return null;
+        }),
+      );
     } else {
       L.w('kategori notifikasi tidak dikenal: $kategori');
     }
+  }
+
+  /// Menangani kondisi aplikasi diluncurkan dari keadaan terminated
+  /// melalui notifikasi.
+  static void cekNotifikasiSaatBuka() {
+    unawaited(
+      Future(() async {
+        try {
+          final details = await _plugin.getNotificationAppLaunchDetails();
+          if (details?.didNotificationLaunchApp ?? false) {
+            final payload = details?.notificationResponse?.payload;
+            if (payload != null && payload.isNotEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _navigasiDariPayload(payload);
+              });
+            }
+          }
+        } catch (e, s) {
+          L.e('Gagal cek notifikasi saat buka: $e $s');
+        }
+      }).catchError((Object e, StackTrace s) {
+        L.e('Gagal cek notifikasi saat buka: $e $s');
+      }),
+    );
   }
 
   /// Meminta izin notifikasi sesuai platform.

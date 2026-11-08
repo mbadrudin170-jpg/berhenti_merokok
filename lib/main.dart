@@ -29,4 +29,7 @@ Future<void> main() async {
     p('Platform tidak mendukung notifikasi: $e $s');
   }
   runApp(const ProviderScope(child: App()));
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    NotifikasiService.cekNotifikasiSaatBuka();
+  });
 }
