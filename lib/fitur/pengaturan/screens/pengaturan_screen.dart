@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -72,13 +73,24 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     });
     try {
       if (value) {
+        final izin = await NotifikasiService.mintaIzin();
+        if (!mounted) return;
+        if (!izin) {
+          setState(() {
+            _notifikasiAktif = false;
+          });
+          AppToast.gagal(context, 'Izin notifikasi tidak diberikan');
+          return;
+        }
         await NotifikasiService.jadwalkanPengingatHarian(
           jam: _jam,
           menit: _menit,
         );
+        if (!mounted) return;
         AppToast.sukses(context, 'Pengingat harian diaktifkan');
       } else {
         await NotifikasiService.batalkanPengingatHarian();
+        if (!mounted) return;
         AppToast.info(context, 'Pengingat harian dinonaktifkan');
       }
     } on Exception catch (e, s) {
@@ -88,6 +100,14 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
           _notifikasiAktif = !value;
         });
         AppToast.gagal(context, 'Gagal mengubah pengingat harian');
+      }
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _notifikasiAktif = false;
+        });
+        AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
       }
     }
   }
@@ -110,10 +130,16 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
           jam: _jam,
           menit: _menit,
         );
+        if (!mounted) return;
         AppToast.sukses(context, 'Waktu pengingat diperbarui');
       } on Exception catch (e, s) {
         L.e('Gagal memperbarui waktu pengingat: $e $s');
+        if (!mounted) return;
         AppToast.gagal(context, 'Gagal memperbarui waktu pengingat');
+      } on UnsupportedError catch (e, s) {
+        L.e('Platform tidak mendukung notifikasi: $e $s');
+        if (!mounted) return;
+        AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
       }
     } else {
       await NotifikasiService.setWaktu(_jam, _menit);
@@ -124,9 +150,11 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     L.i('uji notifikasi');
     try {
       await NotifikasiService.tampilkanSekarang();
+      if (!mounted) return;
       AppToast.info(context, 'Notifikasi uji coba ditampilkan');
     } on Exception catch (e, s) {
       L.e('Gagal menampilkan notifikasi uji coba: $e $s');
+      if (!mounted) return;
       AppToast.gagal(context, 'Gagal menampilkan notifikasi');
     }
   }
@@ -196,6 +224,13 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
   Widget _buildNotifikasi() {
     if (_memuatNotifikasi) {
       return const Center(child: CircularProgressIndicator());
+    }
+    // Platform yang tidak mendukung notifikasi terjadwal.
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      return const SizedBox.shrink();
     }
     final waktu =
         '${_jam.toString().padLeft(2, '0')}:${_menit.toString().padLeft(2, '0')}';

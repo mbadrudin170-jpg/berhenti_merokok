@@ -17,6 +17,9 @@ class NotifikasiService {
   /// ID notifikasi pengingat harian.
   static const int _idPengingatHarian = 1001;
 
+  /// ID notifikasi uji coba (terpisah dari pengingat utama).
+  static const int _idUjiCoba = 1002;
+
   /// GlobalKey navigator untuk navigasi saat notifikasi ditekan.
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
@@ -32,7 +35,11 @@ class NotifikasiService {
     }
 
     const android = AndroidInitializationSettings('ic_launcher');
-    const darwin = DarwinInitializationSettings();
+    const darwin = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+    );
     const settings = InitializationSettings(
       android: android,
       iOS: darwin,
@@ -49,8 +56,6 @@ class NotifikasiService {
       L.e('Gagal inisialisasi plugin notifikasi: $e $s');
       rethrow;
     }
-
-    await mintaIzin();
   }
 
   static void _onTapNotifikasi(NotificationResponse response) {
@@ -66,26 +71,31 @@ class NotifikasiService {
   }
 
   /// Meminta izin notifikasi sesuai platform.
-  static Future<void> mintaIzin() async {
+  /// Mengembalikan true jika izin diberikan.
+  static Future<bool> mintaIzin() async {
     if (kIsWeb) {
-      await _plugin
+      final granted = await _plugin
           .resolvePlatformSpecificImplementation<
             WebFlutterLocalNotificationsPlugin
           >()
           ?.requestNotificationsPermission();
+      return granted ?? false;
     } else if (defaultTargetPlatform == TargetPlatform.android) {
-      await _plugin
+      final granted = await _plugin
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
           >()
           ?.requestNotificationsPermission();
+      return granted ?? false;
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      await _plugin
+      final granted = await _plugin
           .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin
           >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
+      return granted ?? false;
     }
+    return true;
   }
 
   /// Menjadwalkan pengingat harian pada jam dan menit tertentu.
@@ -94,6 +104,14 @@ class NotifikasiService {
     required int menit,
   }) async {
     L.i('jam=$jam, menit=$menit');
+    // Platform yang tidak mendukung notifikasi terjadwal.
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      L.w('platform tidak mendukung penjadwalan terjadwal');
+      throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
+    }
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(
       tz.local,
@@ -130,6 +148,14 @@ class NotifikasiService {
         payload: 'kategori=pengingat_harian&id=$_idPengingatHarian',
         matchDateTimeComponents: DateTimeComponents.time,
       );
+      // Periksa izin sebelum menyimpan status aktif.
+      final izinDiberikan = await _periksaIzinSistem();
+      if (!izinDiberikan) {
+        L.w('izin notifikasi tidak diberikan, batalkan penjadwalan');
+        await _plugin.cancel(id: _idPengingatHarian);
+        await setAktif(false);
+        return;
+      }
       await setAktif(true);
       await setWaktu(jam, menit);
       L.s('Pengingat harian dijadwalkan jam=$jam:$menit');
@@ -166,11 +192,11 @@ class NotifikasiService {
     );
     try {
       await _plugin.show(
-        id: _idPengingatHarian,
+        id: _idUjiCoba,
         title: 'Berhenti Merokok',
         body: 'Jaga semangat! Cek progres smoke-free Anda hari ini.',
         notificationDetails: details,
-        payload: 'kategori=pengingat_harian&id=$_idPengingatHarian',
+        payload: 'kategori=pengingat_harian&id=$_idUjiCoba',
       );
       L.s('Notifikasi langsung ditampilkan');
     } on Exception catch (e, s) {
@@ -209,11 +235,47 @@ class NotifikasiService {
 
   /// Jadwalkan ulang pengingat jika aktif (dipanggil saat app start).
   static Future<void> jadwalkanUlangJikaAktif() async {
-    final isAktif = await aktif();
-    L.i('isAktif=$isAktif');
-    if (!isAktif) return;
-    final j = await jam();
-    final m = await menit();
-    await jadwalkanPengingatHarian(jam: j, menit: m);
+    try {
+      final isAktif = await aktif();
+      L.i('isAktif=$isAktif');
+      if (!isAktif) return;
+      // Periksa izin sistem; pengguna dapat mencabutnya melalui pengaturan.
+      final izinDiberikan = await _periksaIzinSistem();
+      if (!izinDiberikan) {
+        L.w('izin notifikasi tidak diberikan, nonaktifkan pengingat');
+        await setAktif(false);
+        return;
+      }
+      final j = await jam();
+      final m = await menit();
+      await jadwalkanPengingatHarian(jam: j, menit: m);
+    } on Exception catch (e, s) {
+      L.e('Gagal menjadwalkan ulang pengingat harian: $e $s');
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung penjadwalan ulang: $e $s');
+    }
+  }
+
+  /// Memeriksa status izin notifikasi pada sistem tanpa meminta.
+  static Future<bool> _periksaIzinSistem() async {
+    if (kIsWeb) {
+      // Web tidak mendukung pengecekan izin tanpa prompt; anggap tersedia.
+      return true;
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      final impl = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      final enabled = await impl?.areNotificationsEnabled();
+      return enabled ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final impl = _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      final settings = await impl?.checkPermissions();
+      return settings?.isEnabled ?? false;
+    }
+    return true;
   }
 }

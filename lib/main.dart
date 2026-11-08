@@ -25,6 +25,8 @@ Future<void> main() async {
     await NotifikasiService.inisialisasi();
   } on Exception catch (e, s) {
     p('Gagal inisialisasi notifikasi: $e $s');
+  } on UnsupportedError catch (e, s) {
+    p('Platform tidak mendukung notifikasi: $e $s');
   }
   runApp(const ProviderScope(child: App()));
 }

@@ -1,24 +1,14 @@
 # Saran Perbaikan
 
-## 2026-11-08 — Konfigurasi receiver dan pemulihan jadwal Android pada notifikasi harian
+## 2026-11-08 — Dukungan macOS pada penjadwalan notifikasi harian
 
-- **Masalah:** `android/app/src/main/AndroidManifest.xml` hanya menambahkan `POST_NOTIFICATIONS`. Untuk notifikasi terjadwal dengan `flutter_local_notifications` 22.3.3, pemulihan jadwal setelah reboot memerlukan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver`. Konfigurasi tersebut belum terlihat pada commit.
-- **Prioritas:** Tinggi
-- **Path:** `android/app/src/main/AndroidManifest.xml`
-- **Aturan terkait:** `.agents/rules/global/aturan_notifikasi.md` (bagian 1 dan 5)
-- **Referensi:** README plugin v22.3.3, bagian AndroidManifest.xml setup: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
-- **Saran perbaikan:** Tambahkan `RECEIVE_BOOT_COMPLETED` dan deklarasi receiver sesuai dokumentasi. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
-- **Alasan:** Tanpa konfigurasi ini, jadwal pengingat harian berpotensi tidak dipulihkan setelah perangkat dinyalakan ulang.
-
-## 2026-11-08 — Pengaktifan core library desugaring Android untuk notifikasi terjadwal
-
-- **Masalah:** `android/app/build.gradle.kts` sudah menggunakan Java 17, tetapi belum mengaktifkan `isCoreLibraryDesugaringEnabled` dan dependency `coreLibraryDesugaring`. Plugin v22.3.3 memerlukan desugaring untuk notifikasi terjadwal dengan kompatibilitas mundur. `compileSdk` masih diatur melalui `flutter.compileSdkVersion`, sehingga nilai efektifnya perlu diverifikasi minimal 35. AGP yang digunakan adalah 9.1.0, sudah memenuhi batas minimum dokumentasi (8.11.1).
-- **Prioritas:** Tinggi
-- **Path:** `android/app/build.gradle.kts`; `android/settings.gradle.kts`
+- **Masalah:** Pada `lib/shared/notifikasi/notifikasi_service.dart`, method `jadwalkanPengingatHarian()` (baris 104-112) melempar `UnsupportedError` pada `TargetPlatform.macOS`, padahal plugin `flutter_local_notifications` v22.3.3 mendukung notifikasi terjadwal pada macOS melalui `zonedSchedule`. Aturan hanya melarang penjadwalan berulang pada Web dan Linux.
+- **Prioritas:** Rendah
+- **Path:** `lib/shared/notifikasi/notifikasi_service.dart:104-112`
 - **Aturan terkait:** `.agents/rules/global/aturan_notifikasi.md` (bagian 1)
-- **Referensi:** README plugin v22.3.3, bagian Gradle setup: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
-- **Saran perbaikan:** Evaluasi penambahan `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. Pertahankan AGP 9.1.0; jangan menurunkannya.
-- **Alasan:** Tanpa desugaring, notifikasi terjadwal dapat gagal pada versi Android yang lebih lama.
+- **Referensi:** `flutter_local_notifications_plugin.dart:409-470` (zonedSchedule mendukung macOS).
+- **Saran perbaikan:** Hapus `TargetPlatform.macOS` dari kondisi yang melempar `UnsupportedError`, atau pisahkan pengecekan berdasarkan kemampuan aktual platform.
+- **Alasan:** Plugin mendukung notifikasi terjadwal pada macOS, sehingga pengecualian macOS tidak diperlukan dan membatasi fungsionalitas pada platform yang sebenarnya mendukung.
 
 ## 2026-11-08 — Penanganan notifikasi pada Web
 
@@ -29,26 +19,7 @@
 - **Referensi:** README plugin v22.3.3, bagian Web limitations dan Web Setup: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
 - **Saran perbaikan:** Jangan meminta izin Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Pisahkan kemampuan notifikasi berdasarkan platform dan jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung. Tangani `UnsupportedError` secara eksplisit.
 - **Alasan:** Permintaan izin otomatis pada Web dapat ditolak atau diblokir browser, dan fitur terjadwal tidak tersedia pada Web.
-
-## 2026-11-08 — Waktu permintaan izin notifikasi iOS
-
-- **Masalah:** `DarwinInitializationSettings()` menggunakan nilai default `requestAlertPermission`, `requestSoundPermission`, dan `requestBadgePermission` bernilai `true`. Karena inisialisasi dilakukan saat aplikasi dibuka, dialog izin dapat muncul sebelum pengguna mengaktifkan fitur notifikasi.
-- **Prioritas:** Sedang
-- **Path:** `lib/main.dart`; `lib/shared/notifikasi/notifikasi_service.dart`
-- **Aturan terkait:** `.agents/rules/global/aturan_notifikasi.md` (bagian 1 dan 4)
-- **Referensi:** README/source plugin v22.3.3, `DarwinInitializationSettings`: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
-- **Saran perbaikan:** Pertimbangkan menonaktifkan permintaan izin otomatis saat inisialisasi dan minta izin ketika pengguna secara sadar mengaktifkan pengingat. Periksa hasil permintaan izin sebelum menyimpan status pengingat sebagai aktif.
-- **Alasan:** Dialog izin yang muncul terlalu awal dapat menurunkan pengalaman pengguna dan tidak sesuai dengan tujuan fitur.
-
-## 2026-11-08 — Pemeriksaan status izin sebelum mengaktifkan pengingat
-
-- **Masalah:** `mintaIzin()` tidak meneruskan hasil izin kepada proses aktivasi. `jadwalkanPengingatHarian()` memanggil `setAktif(true)` setelah penjadwalan, sehingga status preferensi dapat menjadi aktif meskipun izin sistem belum tersedia.
-- **Prioritas:** Tinggi
-- **Path:** `lib/shared/notifikasi/notifikasi_service.dart`
-- **Aturan terkait:** `.agents/rules/global/aturan_notifikasi.md` (bagian 4 dan 5); `.agents/rules/global/optimasi_bug_runtime.md` (bagian 6)
-- **Referensi:** README plugin v22.3.3, bagian requesting permissions: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
-- **Saran perbaikan:** Periksa status izin sesuai platform sebelum menyimpan status aktif. Jangan menyimpan status aktif jika izin sistem belum tersedia. Periksa kembali izin ketika aplikasi dibuka karena pengguna dapat mengubahnya melalui pengaturan sistem.
-- **Alasan:** Status preferensi aplikasi dapat tidak sesuai dengan status izin sistem.
+- **Status:** Sebagian diperbaiki pada perubahan terbaru (izin tidak lagi diminta saat inisialisasi, pengaturan disembunyikan pada Web/Linux/Windows/macOS, UnsupportedError ditangani). Masih perlu verifikasi perilaku pada Web.
 
 ## 2026-11-08 — Konsistensi perubahan waktu pengingat
 
@@ -59,6 +30,7 @@
 - **Referensi:** Aturan proyek UX; dokumentasi plugin tidak relevan langsung.
 - **Saran perbaikan:** Simpan waktu sebelumnya sebelum perubahan. Terapkan waktu baru setelah penyimpanan atau penjadwalan berhasil. Jika gagal, pulihkan nilai sebelumnya dan tampilkan pesan kegagalan yang jelas.
 - **Alasan:** Menjaga kesesuaian antara tampilan, preferensi, dan jadwal aktif.
+- **Status:** Sebagian diperbaiki (pemeriksaan mounted ditambahkan pada `_ubahNotifikasi`). Masih perlu menyimpan waktu sebelumnya dan memulihkannya jika penjadwalan gagal.
 
 ## 2026-11-08 — Pemeriksaan mounted setelah operasi asynchronous pada pengaturan notifikasi
 
@@ -69,16 +41,7 @@
 - **Referensi:** Aturan proyek runtime.
 - **Saran perbaikan:** Periksa `mounted` setelah setiap operasi asynchronous sebelum menggunakan `setState()` atau `context`.
 - **Alasan:** Mencegah penggunaan widget yang sudah tidak terpasang.
-
-## 2026-11-08 — Penanganan error Future saat penjadwalan ulang notifikasi
-
-- **Masalah:** `jadwalkanUlangJikaAktif()` dipanggil menggunakan `unawaited()` dari `initState()` pada `app.dart`. Pemanggil tidak menangani error. `main.dart` tetap menjalankan aplikasi ketika inisialisasi notifikasi gagal, sehingga status kegagalan inisialisasi tidak diketahui sebelum penjadwalan ulang dijalankan.
-- **Prioritas:** Sedang
-- **Path:** `lib/main.dart`; `lib/app.dart`; `lib/shared/notifikasi/notifikasi_service.dart`
-- **Aturan terkait:** `.agents/rules/global/optimasi_bug_runtime.md` (bagian 6, 10, dan 15)
-- **Referensi:** Aturan proyek runtime.
-- **Saran perbaikan:** Pastikan status inisialisasi layanan diketahui sebelum penjadwalan ulang dijalankan. Tangani kegagalan Future yang dilepas secara eksplisit dan catat melalui logger proyek. Pastikan kegagalan fitur notifikasi tidak mengganggu fitur utama aplikasi.
-- **Alasan:** Error dapat menjadi unhandled atau tidak tercatat, dan penjadwalan ulang dapat dijalankan pada layanan yang belum siap.
+- **Status:** Sebagian diperbaiki (mounted check ditambahkan pada `_ubahNotifikasi`, `_pilihWaktu`, dan `_ujiNotifikasi`). Masih perlu verifikasi konsistensi pada seluruh await.
 
 ## 2026-11-08 — Implementasi ketika notifikasi harian ditekan
 
@@ -99,16 +62,6 @@
 - **Referensi:** Package `timezone` 0.11.2; README plugin v22.3.3: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
 - **Saran perbaikan:** Tentukan apakah waktu pengingat harus selalu mengikuti WIB atau mengikuti zona waktu perangkat. Jika aplikasi ditujukan untuk pengguna di seluruh Indonesia, pertimbangkan zona waktu lokal perangkat agar mendukung WIB, WITA, dan WIT. Periksa mekanisme platform atau package tambahan yang diperlukan karena package timezone tidak otomatis mendeteksi zona waktu perangkat.
 - **Alasan:** Pengingat dapat muncul pada waktu yang tidak sesuai untuk pengguna di luar WIB.
-
-## 2026-11-08 — Pemisahan ID notifikasi uji coba dan pengingat harian
-
-- **Masalah:** `tampilkanSekarang()` dan `jadwalkanPengingatHarian()` menggunakan ID notifikasi yang sama, yaitu `1001`. Notifikasi uji coba dapat memperbarui atau menggantikan notifikasi pengingat utama.
-- **Prioritas:** Rendah
-- **Path:** `lib/shared/notifikasi/notifikasi_service.dart`
-- **Aturan terkait:** `.agents/rules/global/aturan_notifikasi.md` (bagian 5)
-- **Referensi:** Aturan ID notifikasi proyek; perilaku plugin perlu diverifikasi.
-- **Saran perbaikan:** Evaluasi penggunaan ID terpisah untuk notifikasi uji coba dan pengingat harian. Pastikan notifikasi uji coba tidak memperbarui atau menggantikan jadwal utama. Verifikasi perilaku berdasarkan cara plugin menggunakan ID notifikasi sebelum menyatakan adanya kerusakan jadwal.
-- **Alasan:** Menghindari efek samping pada jadwal pengingat utama.
 
 ## 2026-11-08 — Pengujian fitur notifikasi
 

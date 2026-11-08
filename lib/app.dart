@@ -26,7 +26,14 @@ class _MyAppState extends ConsumerState<App> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     L.init(ref.container);
-    unawaited(NotifikasiService.jadwalkanUlangJikaAktif());
+    unawaited(
+      NotifikasiService.jadwalkanUlangJikaAktif().catchError((
+        Object error,
+        StackTrace stackTrace,
+      ) {
+        L.e('Gagal menjadwalkan ulang notifikasi: $error $stackTrace');
+      }),
+    );
   }
 
   @override
