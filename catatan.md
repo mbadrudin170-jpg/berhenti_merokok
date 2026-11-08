@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 08746b52ce1855792f0f1981d5f50ee0522b99ae
+Commit terakhir dievaluasi penuh: 64dc7758c35b46458f2bd4e36aada77f2362896e
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: eee7e6b5df247b4c83a59b863fdf7fc545d2678f sampai 08746b52ce1855792f0f1981d5f50ee0522b99ae
+Rentang evaluasi: 4952b13b4b26ebf338f2b3d2cbc512915f413e8f sampai 64dc7758c35b46458f2bd4e36aada77f2362896e
 Jumlah commit yang dievaluasi: 2
 Status evaluasi: Selesai
-Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + task status). 08746b5 menghapus log berulang pada fitur tapering (mode_berhenti, biodata_model, biodata_screen) dan merapikan indentasi form_biodata; menandai Task Kelompok 4 Task 1-2 dan Kelompok 11 Task 1 sebagai Selesai. Commit 08746b5 juga menyertakan file backup (.bak/.backup task) ke repo (clutter). flutter analyze: No issues found. Tidak ada API SDK/package baru. Status task sempat "kerjakan" (tidak valid) pada eee7e6b, diperbaiki pada 08746b5.
+Ringkasan: Audit 2 commit (4952b13, 64dc775). 4952b13 hanya whitespace/format + pembaruan catatan checkpoint ke 08746b5 (biodata_screen blank line, impian_screen AppBar). 64dc775 menghapus entri task yang sudah Selesai (Kelompok 4 Task 1-2, Kelompok 11 Task 1). Temuan: Kelompok 11 Task 1 (ketidaksesuaian versi flutter_local_notifications 23.0.0 vs aturan 22.3.3) belum benar-benar diselesaikan, sehingga penghapusan entri mengurangi pelacakan; re-ditambahkan sebagai task Belum dikerjakan. flutter analyze: No issues found. Tidak ada API SDK/package baru. Backup .bak tracked masih ada (clutter, pre-existing).
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
@@ -138,7 +138,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Tanggal: 2026-11-08
 - Judul: chore(docs): sinkronkan dokumentasi proyek dan perbarui status task
 - Status evaluasi: Selesai
-- Ringkasan: Memperbarui AGENTS.md, docs/*, info.md, task.md (sinkronisasi dokumentasi proyek).
+- Ringkasan: Memperbarui AGENTS.md, docs/\*, info.md, task.md (sinkronisasi dokumentasi proyek).
 - Temuan penting: Tidak ada perubahan kode sumber.
 
 ### Commit: e6b97ab
@@ -160,6 +160,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 # Commit terakhir yang dievaluasi oleh commands [evaluasi_aturan_khusus.md](.kilo/commands/evaluasi_aturan_khusus.md)
 
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
+
 - Branch evaluasi: master
 - Commit terakhir yang dievaluasi: 94c4ec92c3221e0f845639aab41f0c38c84350da
 - SHA lengkap: 94c4ec92c3221e0f845639aab41f0c38c84350da
@@ -170,6 +171,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 ## Riwayat Evaluasi
 
 ### Commit: 73ecb2d17ae95a5a798e2b57ef96940ea287623b
+
 - Tanggal: 2026-11-08
 - Pesan commit: docs(catatan): rapikan indentasi path file dan tambahkan newline akhir
 - File yang berubah: catatan.md
@@ -179,6 +181,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: 24a8659261bbf8406852adf60564b794066341c3
+
 - Tanggal: 2026-11-08
 - Pesan commit: chore(commands): perbarui batasan, tujuan, dan instruksi evaluasi commit
 - File yang berubah: .kilo/commands/cek_perubahan_sekarang.md
@@ -188,15 +191,17 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: 2a5a357429d44d7302ce54d46b378fe2ce6a0cb6
+
 - Tanggal: 2026-11-08
 - Pesan commit: feat(notifikasi): tangani navigasi dari tap notifikasi termasuk kondisi terminated
 - File yang berubah: lib/main.dart, lib/shared/notifikasi/notifikasi_service.dart, saran.md
-- Ringkasan evaluasi: Menambahkan addPostFrameCallback di main.dart untuk memanggil cekNotifikasiSaatBuka(). Memfaktorkan _onTapNotifikasi menjadi _navigasiDariPayload() dengan catchError. Menambah cekNotifikasiSaatBuka() menggunakan getNotificationAppLaunchDetails() untuk kondisi terminated. Payload divalidasi; kategori tidak dikenal dicatat peringatan. Sumber SDK flutter_local_notifications 22.3.3 diverifikasi: getNotificationAppLaunchDetails() menangani platform secara internal.
+- Ringkasan evaluasi: Menambahkan addPostFrameCallback di main.dart untuk memanggil cekNotifikasiSaatBuka(). Memfaktorkan \_onTapNotifikasi menjadi \_navigasiDariPayload() dengan catchError. Menambah cekNotifikasiSaatBuka() menggunakan getNotificationAppLaunchDetails() untuk kondisi terminated. Payload divalidasi; kategori tidak dikenal dicatat peringatan. Sumber SDK flutter_local_notifications 22.3.3 diverifikasi: getNotificationAppLaunchDetails() menangani platform secara internal.
 - Aturan khusus yang diperbarui: Tidak ada (prinsip sudah tercakup aturan notifikasi #10 dan #14).
 - Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai (dengan temuan minor)
 
 ### Commit: 992a624711948b58124483b57acea3520e3a1930
+
 - Tanggal: 2026-11-08
 - Pesan commit: chore(docs): bersihkan entri perbaikan notifikasi yang sudah selesai dari saran.md
 - File yang berubah: saran.md
@@ -206,6 +211,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: 9f3e88936232b3b837218db3ae22d9d835a1aa99
+
 - Tanggal: 2026-11-08
 - Pesan commit: fix(pengaturan): tambahkan penanganan error pada pemanggilan EasyLoading show dan dismiss
 - File yang berubah: catatan.md, lib/fitur/pengaturan/screens/pengaturan_screen.dart, saran.md
@@ -215,6 +221,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: ced76201f202414be2bd4d4e50843b7a319ce80f
+
 - Tanggal: 2026-11-08
 - Pesan commit: fix(notifikasi): sinkronkan status toggle dengan preferensi saat kegagalan izin dan perbarui dokumentasi aturan
 - File yang berubah: lib/fitur/pengaturan/screens/pengaturan_screen.dart, saran.md
@@ -224,6 +231,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: 19882cea6b7fa464ee934f11cd5a4baef0cdf1c4
+
 - Tanggal: 2026-11-08
 - Pesan commit: fix(pengaturan): tunda pembaruan waktu pengingat hingga operasi penjadwalan berhasil dan tandai saran selesai
 - File yang berubah: lib/fitur/pengaturan/screens/pengaturan_screen.dart
@@ -233,6 +241,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: d5fea977fb96cd7ad816ae0d1377dfeb04e3263b
+
 - Tanggal: 2026-11-08
 - Pesan commit: feat(impian): tampilkan nominal target di samping sisa tabungan pada kartu impian
 - File yang berubah: lib/fitur/impian/screens/impian_screen.dart
@@ -242,6 +251,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: 493954ea80e3aaf495dd18ce123b73a4a8342d5a
+
 - Tanggal: 2026-11-08
 - Pesan commit: chore(docs): tambahkan panduan analisa perubahan terbaru dan bersihkan entri saran yang selesai
 - File yang berubah: gpt/cek_perubahan_terbaru.md, saran.md
@@ -251,6 +261,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: ea73e3321d03c2d5af6c063ccaac9a35ebb0e74f
+
 - Tanggal: 2026-11-08
 - Pesan commit: docs(kilo): tambahkan referensi perintah cek perubahan sekarang pada panduan analisa
 - File yang berubah: gpt/cek_perubahan_terbaru.md
@@ -260,6 +271,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: 19eece75351cd8deee5a2a01cf65464a8e2a1bc1
+
 - Tanggal: 2026-11-08
 - Pesan commit: chore: tambahkan dependensi flutter_timezone dan perbarui referensi catatan pada panduan analisa
 - File yang berubah: pubspec.yaml, pubspec.lock, gpt/cek_perubahan_terbaru.md
@@ -269,6 +281,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: dfe09414f80b5779414feccadefcd96039a6cc2e
+
 - Tanggal: 2026-11-08
 - Pesan commit: docs(gpt): tambahkan instruksi analisa perubahan untuk pembaruan aturan bersama dan khusus
 - File yang berubah: gpt/cek_perubahan_terbaru.md
@@ -278,6 +291,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: d42422ba65a0f3c90b46a0736a197af572b62c33
+
 - Tanggal: 2026-11-08
 - Pesan commit: feat(notifikasi): deteksi zona waktu perangkat untuk penjadwalan pengingat dengan fallback Asia/Jakarta
 - File yang berubah: lib/shared/notifikasi/notifikasi_service.dart
@@ -287,15 +301,17 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8
+
 - Tanggal: 2026-11-08
 - Pesan commit: feat(impian): tambahkan enum SortImpian dan tombol pengurutan pada AppBar layar impian
 - File yang berubah: lib/fitur/impian/enum/sort_impian.dart, lib/fitur/impian/screens/impian_screen.dart
-- Ringkasan evaluasi: Menambahkan enum pengurutan impian (SortImpian) dan tombol pengurutan di AppBar. Ditemukan _showModalSort() masih kosong (implementasi pengurutan belum lengkap). Potensi overflow pada kartu impian sudah tercakup optimasi_ui.md. Pencocokan pesan exception untuk mendeteksi kegagalan izin merupakan temuan yang belum cukup kuat untuk dijadikan aturan umum baru. Tidak ada aturan baru.
+- Ringkasan evaluasi: Menambahkan enum pengurutan impian (SortImpian) dan tombol pengurutan di AppBar. Ditemukan \_showModalSort() masih kosong (implementasi pengurutan belum lengkap). Potensi overflow pada kartu impian sudah tercakup optimasi_ui.md. Pencocokan pesan exception untuk mendeteksi kegagalan izin merupakan temuan yang belum cukup kuat untuk dijadikan aturan umum baru. Tidak ada aturan baru.
 - Aturan khusus yang diperbarui: Tidak ada.
 - Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai
 
 ### Commit: e6b97abd5aa1b2f264c6aa7e783448703e1383fa
+
 - Tanggal: 2026-11-08
 - Pesan commit: chore: sinkronkan status implementasi badge, selesaikan task notifikasi, dan tambahkan pengujian preferensi
 - File yang berubah: refrensi_apk.md, task.md, test/notifikasi_service_test.dart
@@ -305,6 +321,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: ceacc6a1c388b24b7647a37ccde411d6c85ee01c
+
 - Tanggal: 2026-11-08
 - Pesan commit: feat(biodata): implementasi mode berhenti bertahap (tapering) dengan target rokok per hari
 - File yang berubah: lib/fitur/biodata/enum/mode_berhenti.dart, lib/fitur/biodata/model/biodata_model.dart, lib/fitur/biodata/model/biodata_model.freezed.dart, lib/fitur/biodata/screens/biodata_screen.dart, lib/fitur/biodata/screens/form_biodata.dart, lib/shared/db/sqflite/sqflite.dart, lib/shared/konstanta/nama_kolom.dart, refrensi_apk.md
@@ -314,6 +331,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: 94c4ec92c3221e0f845639aab41f0c38c84350da
+
 - Tanggal: 2026-11-08
 - Pesan commit: docs(eval): perbarui checkpoint evaluasi dan catatan pengujian notifikasi
 - File yang berubah: catatan.md, task.md
@@ -327,6 +345,7 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Status evaluasi: Selesai
 
 ### Commit: eee7e6b5df247b4c83a59b863fdf7fc545d2678f
+
 - Tanggal: 2026-11-08
 - Judul: chore(notes): perbarui checkpoint evaluasi dan tambahkan task baru
 - Status evaluasi: Selesai
@@ -334,8 +353,25 @@ Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + t
 - Temuan penting: Tidak ada perubahan kode sumber.
 
 ### Commit: 08746b52ce1855792f0f1981d5f50ee0522b99ae
+
 - Tanggal: 2026-11-08
 - Judul: fix(biodata): hilangkan pencatatan log berulang dan rapikan indentasi form
 - Status evaluasi: Selesai
 - Ringkasan: Menghapus L.i berulang pada mode_berhenti.dart, biodata_model.dart, biodata_screen.dart; merapikan indentasi form_biodata.dart; menandai Task Kelompok 4 Task 1-2 dan Kelompok 11 Task 1 sebagai Selesai. Commit menyertakan file backup (.bak/.backup task). flutter analyze: No issues found.
 - Temuan penting: Backup files ter-commit (clutter); format minor pada biodata_screen.dart (trailing whitespace) masih ada.
+
+### Commit: 4952b13b4b26ebf338f2b3d2cbc512915f413e8f
+
+- Tanggal: 2026-11-08
+- Judul: a
+- Status evaluasi: Selesai
+- Ringkasan: Hanya whitespace/format (biodata_screen blank line, impian_screen AppBar) dan pembaruan catatan checkpoint ke 08746b5. Tidak ada perubahan logika.
+- Temuan penting: Tidak ada.
+
+### Commit: 64dc7758c35b46458f2bd4e36aada77f2362896e
+
+- Tanggal: 2026-11-08
+- Judul: chore(task): hapus entri tugas yang telah selesai dari daftar
+- Status evaluasi: Selesai (dengan temuan)
+- Ringkasan: Menghapus entri task Selesai (Kelompok 4 Task 1-2, Kelompok 11 Task 1). Kelompok 4 Task 1-2 memang sudah diperbaiki. Kelompok 11 Task 1 (ketidaksesuaian versi notifikasi) belum benar-benar diperbaiki, sehingga penghapusan mengurangi pelacakan; re-ditambahkan sebagai task Belum dikerjakan.
+- Temuan penting: Versi notifikasi masih tidak sinkron (23.0.0 vs aturan 22.3.3).

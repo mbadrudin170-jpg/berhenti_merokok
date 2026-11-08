@@ -127,3 +127,11 @@ Tidak ada temuan.
 
 ## Sedang
 
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Referensi versi `flutter_local_notifications` pada aturan proyek (`aturan_notifikasi.md`, `aturan_khusus.md`) masih menyebut `22.3.3`, tetapi `pubspec.yaml`/`pubspec.lock` menggunakan `23.0.0`. Selain itu, perubahan dependensi sebelumnya dilakukan langsung pada `pubspec.yaml` (bukan melalui `flutter pub add`), sehingga pelacakan dan konsistensi dokumentasi belum selesai. Entri task sebelumnya (Kelompok 11 Task 1) ditandai Selesai dan dihapus pada commit `64dc775`, padahal ketidaksesuaian masih ada.
+- Solusi: Sinkronkan referensi versi pada aturan/dokumentasi notifikasi dengan versi yang benar-benar terpasang (`23.0.0`), atau sesuaikan dependensi sesuai mekanisme resmi (`flutter pub add flutter_local_notifications`) dan perbarui `pubspec.lock`; pastikan aturan dan kode konsisten. Jangan mengubah kode Dart tanpa persetujuan.
+- Aturan dilanggar: [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L5); [aturan_notifikasi.md](.agents/rules/global/aturan_notifikasi.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L762)
+- File bermasalah: [pubspec.yaml](pubspec.yaml)
+- Prompt:
