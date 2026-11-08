@@ -7,6 +7,7 @@ import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -122,27 +123,30 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     final uangDihemat = biodata?.uangDihemat ?? 0;
     L.i('uangDihemat=$uangDihemat');
 
-    final List<ImpianModel> listImpian = [...listImpianAsli]
-      ..sort((a, b) {
-        switch (_sortImpian) {
-          case SortImpian.namaAz:
-            return a.nama.compareTo(b.nama);
-          case SortImpian.namaZa:
-            return b.nama.compareTo(a.nama);
-          case SortImpian.jumlahAz:
-            return a.jumlah.compareTo(b.jumlah);
-          case SortImpian.jumlahZa:
-            return b.jumlah.compareTo(a.jumlah);
-          case SortImpian.mendekatiTerkumpulAz:
-            final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
-            final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
-            return sisaA.compareTo(sisaB);
-          case SortImpian.mendekatiTerkumpulZa:
-            final sisaA = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
-            final sisaB = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
-            return sisaB.compareTo(sisaA);
-        }
-      });
+    final List<ImpianModel> listImpian = listImpianAsli.sorted((a, b) {
+      switch (_sortImpian) {
+        case SortImpian.namaAz:
+          return a.nama.compareTo(b.nama);
+        case SortImpian.namaZa:
+          return b.nama.compareTo(a.nama);
+        case SortImpian.jumlahAz:
+          return a.jumlah.compareTo(b.jumlah);
+        case SortImpian.jumlahZa:
+          return b.jumlah.compareTo(a.jumlah);
+        case SortImpian.mendekatiTerkumpulAz:
+          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          return sisaA.compareTo(sisaB);
+        case SortImpian.mendekatiTerkumpulZa:
+          final sisaA = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaB = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          return sisaB.compareTo(sisaA);
+      }
+    });
+    final jumlahTercapai = listImpian
+        .where((item) => uangDihemat >= item.jumlah)
+        .length;
+    L.i('jumlahTercapai=$jumlahTercapai/${listImpian.length}');
 
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
@@ -182,6 +186,11 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
             spacing: 8,
             children: [
               _buildSaldoTerkumpul(uangDihemat),
+              Text(
+                '$jumlahTercapai dari ${listImpian.length} impian tercapai',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
               Expanded(
                 child: ListView.separated(
                   itemCount: listImpian.length,

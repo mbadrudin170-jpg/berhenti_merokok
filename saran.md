@@ -175,4 +175,3 @@
 - **Referensi:** `setAktif()`, `setWaktu()`.
 - **Saran perbaikan:** Urutkan penyimpanan sehingga `setWaktu` sebelum `setAktif(true)`, atau bungkus keduanya dengan rollback saat gagal.
 - **Alasan:** Menjaga konsistensi antara jadwal sistem, SharedPreferences, dan tampilan.
-
