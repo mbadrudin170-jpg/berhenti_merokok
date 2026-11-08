@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 03078905dc263d4df82a6c1d3a1314dd0984e331
+Commit terakhir dievaluasi penuh: 08746b52ce1855792f0f1981d5f50ee0522b99ae
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 041ac914199c12874c5b87b4de975cc17ae78ad7 sampai 03078905dc263d4df82a6c1d3a1314dd0984e331
-Jumlah commit yang dievaluasi: 8
+Rentang evaluasi: eee7e6b5df247b4c83a59b863fdf7fc545d2678f sampai 08746b52ce1855792f0f1981d5f50ee0522b99ae
+Jumlah commit yang dievaluasi: 2
 Status evaluasi: Selesai
-Ringkasan: Audit 8 commit (041ac91, 079c7f7, c545343, d0226fd, b0b43c7, 9f00b9f, 5da7c7e, 0307890). Perubahan kode sumber: c545343 (validasi form biodata + keepAlive biodata notifier + import reorder + EasyLoading catchError pada form_alasan_berhenti), d0226fd (hapus log berulang badge/dashboard + normalisasi selisih tanggal merokok), 041ac91 (bump flutter_local_notifications ^22.3.3 -> ^23.0.0). Temuan baru: (1) Sedang - dependensi flutter_local_notifications diubah manual di pubspec.yaml (task Kelompok 11); (2) Rendah - form_biodata.dart tidak terformat dart format (task Kelompok 4 Task 2). flutter analyze: No issues found. Backup .bak ter-commit (catatan laporan saja). Aturan notifikasi masih mereferensikan v22.3.3.
+Ringkasan: Audit 2 commit (eee7e6b, 08746b5). eee7e6b hanya docs (checkpoint + task status). 08746b5 menghapus log berulang pada fitur tapering (mode_berhenti, biodata_model, biodata_screen) dan merapikan indentasi form_biodata; menandai Task Kelompok 4 Task 1-2 dan Kelompok 11 Task 1 sebagai Selesai. Commit 08746b5 juga menyertakan file backup (.bak/.backup task) ke repo (clutter). flutter analyze: No issues found. Tidak ada API SDK/package baru. Status task sempat "kerjakan" (tidak valid) pada eee7e6b, diperbaiki pada 08746b5.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
@@ -322,11 +322,20 @@ Ringkasan: Audit 8 commit (041ac91, 079c7f7, c545343, d0226fd, b0b43c7, 9f00b9f,
 - Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai
 
-### Commit: f478c36cc405e214abdba6accfe89680d1d90ce7
-- Tanggal: 2026-11-08
-- Pesan commit: fix(biodata): perbaiki type promotion dan tambahkan log debug pada fitur tapering
-- File yang berubah: lib/fitur/biodata/screens/biodata_screen.dart, lib/fitur/biodata/enum/mode_berhenti.dart, lib/fitur/biodata/model/biodata_model.dart, lib/fitur/biodata/screens/form_biodata.dart, lib/shared/db/sqflite/sqflite.dart, AGENTS.md, task.md, catatan.md
-- Ringkasan evaluasi: Memperbaiki type promotion `tanggalMulaiTapering` (salin ke variabel lokal) dan menambahkan log debug pada fitur tapering. Ditemukan temuan baru: validasi form (Sedang), log berulang (Rendah), L.i sebelum L.init (Rendah), format Dart (Rendah). Tercatat di task.md Kelompok 4. Source lokal diverifikasi: share_global_saya L.i dan InputAngka.
 - Aturan khusus yang diperbarui: Tidak ada.
 - Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai
+
+### Commit: eee7e6b5df247b4c83a59b863fdf7fc545d2678f
+- Tanggal: 2026-11-08
+- Judul: chore(notes): perbarui checkpoint evaluasi dan tambahkan task baru
+- Status evaluasi: Selesai
+- Ringkasan: Hanya dokumentasi (catatan.md, task.md). Mengubah checkpoint ke 0307890 dan menambah Kelompok 11 (dependensi notifikasi). Status task sempat "kerjakan" (tidak sesuai format_task.md) sebelum diperbaiki.
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 08746b52ce1855792f0f1981d5f50ee0522b99ae
+- Tanggal: 2026-11-08
+- Judul: fix(biodata): hilangkan pencatatan log berulang dan rapikan indentasi form
+- Status evaluasi: Selesai
+- Ringkasan: Menghapus L.i berulang pada mode_berhenti.dart, biodata_model.dart, biodata_screen.dart; merapikan indentasi form_biodata.dart; menandai Task Kelompok 4 Task 1-2 dan Kelompok 11 Task 1 sebagai Selesai. Commit menyertakan file backup (.bak/.backup task). flutter analyze: No issues found.
+- Temuan penting: Backup files ter-commit (clutter); format minor pada biodata_screen.dart (trailing whitespace) masih ada.

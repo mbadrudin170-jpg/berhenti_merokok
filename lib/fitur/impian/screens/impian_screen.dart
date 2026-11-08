@@ -151,10 +151,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Impian'),
-          scrolledUnderElevation: 2,
-        ),
+        appBar: AppBar(title: const Text('Impian'), scrolledUnderElevation: 2),
         body: const _EmptyImpian(),
         floatingActionButton: FloatingActionButton(
           onPressed: () => unawaited(Nav.to(context, const FormImpian())),

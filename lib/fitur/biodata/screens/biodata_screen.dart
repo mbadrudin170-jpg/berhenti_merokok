@@ -16,7 +16,6 @@ class BiodataScreen extends ConsumerStatefulWidget {
 }
 
 class _BiodataScreenState extends ConsumerState<BiodataScreen> {
-  
   @override
   void initState() {
     super.initState();
