@@ -111,6 +111,7 @@
 - **Referensi:** Aturan testing proyek.
 - **Saran perbaikan:** Evaluasi pengujian untuk izin diberikan/ditolak, mengaktifkan/menonaktifkan pengingat, mengubah waktu, kegagalan penjadwalan dan penyimpanan preferensi, penjadwalan ulang saat aplikasi dibuka, platform yang tidak mendukung notifikasi terjadwal, dan pemulihan jadwal setelah perangkat restart. Gunakan mock atau fake pada batas plugin dan penyimpanan. Jangan menyimpulkan seluruh proyek belum memiliki pengujian hanya karena commit ini tidak menyertakan file pengujian.
 - **Alasan:** Memastikan perilaku fitur notifikasi dapat diverifikasi tanpa bergantung pada notifikasi perangkat sebenarnya.
+- **Riwayat status:** Evaluasi selesai — `test/` hanya berisi `widget_test.dart`; tidak ada pengujian untuk notifikasi. Implementasi pengujian ditangguhkan karena `NotifikasiService` menggunakan anggota statis dan bergantung pada plugin platform (`FlutterLocalNotificationsPlugin`) serta `SharedPreferences`, sehingga memerlukan refactor dependency injection dan mock/fake pada batas plugin/penyimpanan sebelum dapat diuji secara bermakna. Tidak ada dependensi baru ditambahkan.
 
 ## 2026-11-08 — Parameter AppBar redundan (opsional) pada dashboard dan impian
 
