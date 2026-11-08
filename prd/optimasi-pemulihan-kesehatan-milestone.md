@@ -4,8 +4,8 @@
 
 - **Nama fitur:** Optimasi Pemulihan Kesehatan (Milestone)
 - **Jenis fitur:** Pembaruan fitur (penyempurnaan fitur yang sudah ada)
-- **Status PRD:** Draft (menunggu persetujuan final)
-- **Status persetujuan:** Belum disetujui
+- **Status PRD:** Final
+- **Status persetujuan:** Disetujui (persetujuan eksplisit pengguna, 2026-11-08)
 - **Status implementasi:** Belum dimulai
 - **Tanggal pembaruan:** 2026-11-08
 
@@ -207,4 +207,5 @@ double progresMilestone(Duration durasi, Duration target) {
 | Tanggal | Perubahan | Oleh |
 |---|---|---|
 | 2026-11-08 | PRD draft awal dibuat berdasarkan `refrensi_apk.md:279-291`, pemeriksaan read-only implementasi aktual, dan analisis file terdampak. Status: Draft, belum disetujui. | AI (analisis/diskusi) |
-| 2026-11-08 | Keputusan pengguna dicatat: (1) metrik "hari hidup diperoleh" **ditunda**; (2) progress bar menampilkan **persentase + sisa waktu**. Ruang lingkup, KF, kriteria penerimaan, dan pertanyaan terbuka diperbarui. Menunggu persetujuan final. | AI berdasarkan keputusan pengguna |
+| 2026-11-08 | Keputusan pengguna dicatat: (1) metrik "hari hidup diperoleh" **ditunda**; (2) progress bar menampilkan **persentase + sisa waktu**. Ruang lingkup, KF, kriteria penerimaan, dan pertanyaan terbuka diperbarui. | AI berdasarkan keputusan pengguna |
+| 2026-11-08 | Klarifikasi: progres dihitung **per milestone** dari durasi smoke-free vs `m.target` (clamp 0–100%), ditampilkan di halaman **Pemulihan Kesehatan** (bukan dashboard). Pengguna memberikan persetujuan eksplisit. Status PRD: **Final**, persetujuan: **Disetujui**. | AI berdasarkan persetujuan pengguna |

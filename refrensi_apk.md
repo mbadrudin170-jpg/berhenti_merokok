@@ -266,6 +266,8 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 #### 8. Pemulihan Kesehatan (Milestone)
 
+Status PRD: Sudah dibuat — `prd/optimasi-pemulihan-kesehatan-milestone.md`
+
 - **Kondisi fitur pada proyek:** Daftar milestone dengan status tercapai/belum dan waktu target sudah tersedia.
 - **Status implementasi:** Sudah diimplementasikan (metrik dasar); penambahan "hari hidup yang diperoleh" belum.
 - **Path implementasi proyek:** `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/shared/konstanta/milestone_kesehatan.dart`.
