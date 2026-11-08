@@ -2,67 +2,6 @@
 
 ## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
 
-### Prioritas: Tinggi
-
-**File:**
-
-- lib/fitur/pengaturan/screens/pengaturan_screen.dart:76-135
-
-**Masalah:**
-
-Method `_ubahNotifikasi()` tidak memiliki blok `finally` untuk mengembalikan flag `_sedangMemproses` dan menutup loading overlay. Pada jalur `return` (izin tidak diberikan pada baris 93-98, serta `!mounted` pada baris 92 dan 104), flag tetap `true` dan `EasyLoading` tidak ditutup, sehingga UI terkunci permanen dan loading tertinggal.
-
-**Bukti aturan atau SDK:**
-
-- .agents/rules/proyek/aturan_khusus.md: (aturan pengingat harian #16, penanganan double submit)
-- .agents/rules/global/optimasi_bug_runtime.md: (bagian 16 — Pengamanan Aksi dan Double Submit; bagian 6 — Try/Catch)
-- .agents/rules/global/optimasi_ux.md: (bagian 5 dan 12 — Kejelasan status operasi dan loading)
-
-**Dampak:**
-
-Pengguna tidak dapat menekan tombol pengaturan notifikasi lagi setelah satu kali upaya yang berakhir pada jalur return, dan overlay loading tetap tampil.
-
-**Rekomendasi:**
-
-Tambahkan blok `finally` yang memanggil `unawaited(EasyLoading.dismiss())` dan mengembalikan `_sedangMemproses = false` dengan pemeriksaan `mounted`, konsisten dengan `_pilihWaktu()` dan `_ujiNotifikasi()`.
-
-**Status:** Sudah diperbaiki. Blok `finally` sudah ada pada `_ubahNotifikasi()` (baris 127-134), memanggil `unawaited(EasyLoading.dismiss())` dan mengembalikan `_sedangMemproses = false` dengan pemeriksaan `mounted`, konsisten dengan `_pilihWaktu()` dan `_ujiNotifikasi()`. Verifikasi `flutter analyze` bersih.
-
----
-
-## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
-
-### Prioritas: Tinggi
-
-**File:**
-
-- lib/shared/notifikasi/notifikasi_service.dart:64-92
-- lib/app.dart (tidak memanggil `getNotificationAppLaunchDetails()`)
-
-**Masalah:**
-
-`_onTapNotifikasi()` memanggil `unawaited(Nav.pushAndRemoveUntil(context, const Home()))` tanpa `catchError`, padahal `Nav.pushAndRemoveUntil` mengembalikan `Future`. Selain itu, penanganan kondisi aplikasi diluncurkan dari keadaan terminated melalui notifikasi belum diimplementasikan: tidak ada pemanggilan `getNotificationAppLaunchDetails()` di `main()`/`app.dart`, sehingga tap notifikasi pada kondisi terminated tidak dinavigasi.
-
-**Bukti aturan atau SDK:**
-
-- .agents/rules/proyek/aturan_khusus.md: (aturan notifikasi #10 dan #14)
-- .agents/rules/global/optimasi_bug_runtime.md: (bagian 6 dan 10)
-- Source SDK: /home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/flutter_local_notifications_plugin.dart:217-232 (`getNotificationAppLaunchDetails`)
-
-**Dampak:**
-
-Kegagalan navigasi dari tap notifikasi dapat menjadi unhandled Future; pada kondisi terminated, tap notifikasi tidak mengarahkan pengguna ke beranda.
-
-**Rekomendasi:**
-
-Bungkus `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)` yang mencatat error melalui `L.e`, dan tambahkan pemanggilan `getNotificationAppLaunchDetails()` saat aplikasi siap (misalnya setelah navigator tersedia) untuk menangani kondisi terminated, sesuai contoh benar pada aturan #10.
-
-**Status:** Sudah diperbaiki. `_onTapNotifikasi()` kini mendelegasikan ke `_navigasiDariPayload()` yang membungkus `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)` mencatat error via `L.e`. Ditambahkan `cekNotifikasiSaatBuka()` yang memanggil `getNotificationAppLaunchDetails()` dan menavigasi setelah navigator siap (via `addPostFrameCallback`) untuk kondisi terminated. Pemanggilan dilakukan di `main.dart` setelah `runApp`. Verifikasi `flutter analyze` bersih.
-
----
-
-## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
-
 ### Prioritas: Sedang
 
 **File:**
