@@ -13,53 +13,6 @@
 
 ## 1. Referensi Fitur Baru
 
-### Timer Smoke-Free Real-Time
-
-- **Prioritas:** Tinggi
-- **Status implementasi:** Sudah diimplementasikan (dashboard menampilkan durasi smoke-free real-time melalui `_DurasiBerhenti`, diperbarui tiap detik).
-- **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); Smoke Free (Portable Pixels); Quit Tracker (despDev)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.despdev.quitsmoking
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store masing-masing aplikasi.
-- **Tujuan fitur:** Menampilkan durasi smoke-free secara real-time agar pengguna mendapat umpan balik langsung dan motivasi berkelanjutan.
-- **Penerapan pada aplikasi referensi:** Menampilkan penghitung hari/jam/menit sejak tanggal berhenti, seringkali pada halaman utama dengan angka besar.
-- **Relevansi terhadap proyek:** Proyek sudah menyimpan `tanggalMulaiBerhentiMerokok` pada biodata, tetapi belum menampilkan penghitung smoke-free real-time.
-- **Rekomendasi:** Tambahkan penghitung smoke-free (hari, jam, menit) pada Dashboard, dihitung dari `tanggalMulaiBerhentiMerokok`.
-
-### Milestone Kesehatan (Pemulihan Tubuh)
-
-- **Prioritas:** Tinggi
-- **Status implementasi:** Sudah diimplementasikan (layar Pemulihan Kesehatan menampilkan milestone berdasarkan durasi smoke-free; kartu ringkasan di Dashboard).
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store.
-- **Tujuan fitur:** Menunjukkan perubahan kesehatan tubuh berdasarkan waktu tanpa rokok (mis. 20 menit tekanan darah normal, 48 jam pengecapan membaik, 72 jam nikotin hilang, 1 tahun risiko jantung turun).
-- **Penerapan pada aplikasi referensi:** Daftar milestone dengan waktu target dan status tercapai/belum, sering ditampilkan sebagai timeline atau progress bar.
-- **Relevansi terhadap proyek:** Proyek belum memiliki informasi kesehatan pemulihan. Data tanggal berhenti sudah tersedia sehingga milestone dapat dihitung.
-- **Rekomendasi:** Tambahkan halaman/section "Pemulihan Kesehatan" yang menampilkan milestone berdasarkan durasi smoke-free.
-
-### SOS Craving (Bantuan Saat Dorongan Merokok)
-
-- **Prioritas:** Tinggi
-- **Status implementasi:** Sudah diimplementasikan (`SosCravingScreen`: latihan napas 4-7-8, timer craving 3 menit, daftar distraksi).
-- **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); QUIT Smoking Cessation SOS (ANKO Solutions); Expire (FitCal)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking ; https://play.google.com/store/apps/details?id=com.virex.expire
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store.
-- **Tujuan fitur:** Memberikan bantuan cepat saat craving (timer 3 menit, latihan napas 4-7-8, distraksi) untuk mencegah relapse.
-- **Penerapan pada aplikasi referensi:** Tombol SOS satu ketukan yang membuka latihan napas, timer, atau mini-game.
-- **Relevansi terhadap proyek:** Proyek belum memiliki fitur bantuan craving. Fitur ini langsung mendukung tujuan utama aplikasi.
-- **Rekomendasi:** Tambahkan tombol SOS yang membuka latihan napas (4-7-8) dan timer craving 3 menit.
-
-### Diary Pemicu dan Craving (Trigger Tracking)
-
-- **Prioritas:** Tinggi
-- **Status implementasi:** Sudah diimplementasikan (tabel `diary_craving`, layar daftar, form pencatatan, enum pemicu).
-- **Aplikasi referensi:** EasyQuit (Herzberg); QuitSure (RapidKart); Kwit (Kwit SAS)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking ; https://play.google.com/store/apps/details?id=org.instaquit.app ; https://play.google.com/store/apps/details?id=fr.kwit.android
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store.
-- **Tujuan fitur:** Mencatat pemicu (stres, kopi, alkohol, sosial) dan craving untuk mengidentifikasi pola dan mencegah relapse.
-- **Penerapan pada aplikasi referensi:** Form pencatatan craving dengan kategori pemicu, kadang ditampilkan sebagai pie chart (EasyQuit).
-- **Relevansi terhadap proyek:** Proyek belum mencatat pemicu/craving. Data ini berguna untuk analisis dan personalisasi.
-- **Rekomendasi:** Tambahkan fitur pencatatan craving dengan pilihan pemicu, disimpan ke database (tabel baru + migrasi).
-
 ### Badge dan Pencapaian (Gamifikasi)
 
 - **Prioritas:** Sedang
@@ -71,18 +24,6 @@
 - **Penerapan pada aplikasi referensi:** Badge otomatis saat mencapai durasi/uang tertentu, ditampilkan di profil atau dashboard.
 - **Relevansi terhadap proyek:** Proyek belum memiliki sistem pencapaian. Dapat meningkatkan engagement.
 - **Rekomendasi:** Tambahkan sistem badge sederhana berbasis durasi smoke-free dan jumlah impian tercapai.
-
-### Notifikasi Harian dan Pengingat
-
-- **Prioritas:** Sedang
-- **Status implementasi:** Sudah diimplementasikan (NotifikasiService, pengingat harian terjadwal, toggle di Pengaturan).
-- **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); Kick It (UC San Diego)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.kickitca
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store.
-- **Tujuan fitur:** Pengingat pagi, check-in harian, dan notifikasi motivasi untuk menjaga konsistensi.
-- **Penerapan pada aplikasi referensi:** Notifikasi terjadwal (morning check-in, pengingat craving) yang dapat disesuaikan.
-- **Relevansi terhadap proyek:** Proyek belum memiliki notifikasi. Aturan proyek sudah menyediakan `flutter_local_notifications` dan `NotifikasiService`.
-- **Rekomendasi:** Tambahkan notifikasi harian (check-in) dan pengingat craving menggunakan infrastruktur notifikasi yang sudah ada.
 
 ### Widget Layar Beranda
 
@@ -175,33 +116,9 @@
 - **Potensi peningkatan:** Ganti field dashboard menjadi: hari smoke-free, uang tersimpan, rokok tidak terhisap, impian tercapai, milestone kesehatan terdekat.
 - **Tujuan peningkatan:** Menyelaraskan dashboard dengan tujuan aplikasi dan memberikan informasi yang bermakna.
 
-### Kalender Smoke-Free
-
-- **Prioritas:** Sedang
-- **Status implementasi:** Sudah diimplementasikan.
-- **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); Flamy (Offlinefirst)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=net.offlinefirst.flamy
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store.
-- **Penerapan pada aplikasi referensi:** Tampilan kalender bulanan/tahunan yang menandai hari smoke-free dan hari relapse.
-- **Perbandingan:** Proyek belum memiliki visualisasi kalender smoke-free.
-- **Potensi peningkatan:** Tambahkan tampilan kalender smoke-free pada tab Dashboard atau halaman terpisah.
-- **Tujuan peningkatan:** Memberikan gambaran visual progres jangka panjang.
-
 ---
 
 ## 3. Referensi UI dan UX
-
-### Counter Besar pada Halaman Utama
-
-- **Prioritas:** Tinggi
-- **Status implementasi:** Sudah diimplementasikan.
-- **Aplikasi referensi:** QuitNow (Fewlaps); Smoke Free (Portable Pixels); Quit It (Antonis Evmorfopoulos)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.quititapp
-- **Link sumber pendukung:** Deskripsi dan tangkapan layar Google Play Store.
-- **Bagian yang menjadi referensi:** Angka besar (hari smoke-free) di bagian atas halaman, diikuti metrik sekunder (uang, rokok).
-- **Tujuan UI/UX:** Memberikan fokus visual pada pencapaian utama dan motivasi instan.
-- **Relevansi terhadap proyek:** Dashboard proyek belum menampilkan counter smoke-free yang menonjol.
-- **Rekomendasi:** Jadikan hari smoke-free sebagai elemen utama (typography besar) pada Dashboard.
 
 ### Timeline Milestone Kesehatan
 
@@ -215,18 +132,6 @@
 - **Relevansi terhadap proyek:** Dapat ditambahkan sebagai section di Dashboard atau halaman terpisah.
 - **Rekomendasi:** Tampilkan milestone sebagai list dengan status (tercapai/belum) dan waktu target.
 
-### Tombol SOS Satu Ketukan
-
-- **Prioritas:** Tinggi
-- **Status implementasi:** Sudah diimplementasikan (ikon SOS satu ketukan menuju layar SOS Craving).
-- **Aplikasi referensi:** QUIT SOS (ANKO Solutions); Quit Smoking : Tracker & Timer (H2M apps)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking ; https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store.
-- **Bagian yang menjadi referensi:** Tombol SOS yang mudah diakses (floating atau bottom bar) saat craving.
-- **Tujuan UI/UX:** Memberikan akses cepat ke bantuan saat momen kritis.
-- **Relevansi terhadap proyek:** Proyek belum memiliki aksi craving; tombol SOS dapat ditambahkan sebagai FAB di Dashboard.
-- **Rekomendasi:** Tambahkan FAB "SOS" yang membuka latihan napas/timer craving.
-
 ### Empty State dan Onboarding yang Jelas
 
 - **Prioritas:** Sedang
@@ -239,52 +144,22 @@
 - **Relevansi terhadap proyek:** Proyek sudah memiliki flow FormBiodata awal, tetapi onboarding bisa lebih informatif.
 - **Rekomendasi:** Tambahkan tips singkat pada FormBiodata awal (mis. "Tentukan tanggal berhenti dan target").
 
-### Feedback dan Status Operasi yang Jelas
-
-- **Prioritas:** Sedang
-- **Status implementasi:** Sudah diimplementasikan (AppToast, EasyLoading, loading/retry).
-- **Aplikasi referensi:** Kick It (UC San Diego); Expire (FitCal)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.kickitca ; https://play.google.com/store/apps/details?id=com.virex.expire
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store.
-- **Bagian yang menjadi referensi:** Daily check-in dengan mood/craving dan feedback langsung.
-- **Tujuan UI/UX:** Memberikan kepastian status (berhasil/gagal) dan motivasi.
-- **Relevansi terhadap proyek:** Proyek sudah menggunakan AppToast dan EasyLoading; dapat ditambahkan feedback personalisasi.
-- **Rekomendasi:** Tampilkan pesan motivasi personal setelah menyimpan biodata atau impian.
-
-### Konsistensi Tema (Terang/Gelap)
-
-- **Prioritas:** Rendah
-- **Status implementasi:** Sudah diimplementasikan (pengaturan tema terang/gelap/sistem).
-- **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps)
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke
-- **Link sumber pendukung:** Deskripsi resmi Google Play Store (16 tema background).
-- **Bagian yang menjadi referensi:** Pilihan tema personalisasi (warna background/aksen).
-- **Tujuan UI/UX:** Personalisasi tampilan sesuai preferensi pengguna.
-- **Relevansi terhadap proyek:** Proyek sudah mendukung tema terang/gelap/sistem. Personalisasi warna tambahan bersifat opsional.
-- **Rekomendasi:** Pertahankan tema saat ini; personalisasi warna dapat ditambahkan nanti.
-
 ---
 
 ## 4. Rekomendasi Utama
 
 ### Fitur Baru yang Paling Layak Dipertimbangkan
 
-1. Timer smoke-free real-time (Hari/Jam/Menit) pada Dashboard. (Sudah diimplementasikan)
-2. Milestone kesehatan (pemulihan tubuh) berdasarkan durasi smoke-free. (Belum diimplementasikan)
-3. SOS craving (latihan napas 4-7-8 + timer 3 menit). (Sudah diimplementasikan)
-4. Diary pemicu/craving dengan kategori pemicu. (Sudah diimplementasikan)
+1. Milestone kesehatan (pemulihan tubuh) berdasarkan durasi smoke-free. (Belum diimplementasikan)
 
 ### Peningkatan Fitur yang Sudah Ada
 
 1. Sesuaikan Dashboard agar menampilkan metrik smoke-free (bukan km/jadwal service). (Sebagian)
 2. Tambahkan visualisasi progres tabungan pada Impian (progress bar menuju target). (Sebagian)
-3. Tambahkan kalender smoke-free untuk gambaran progres jangka panjang. (Sudah diimplementasikan)
 
 ### Peningkatan UI dan UX
 
-1. Jadikan counter smoke-free sebagai elemen utama Dashboard (typography besar). (Sudah diimplementasikan)
-2. Tambahkan tombol SOS yang mudah diakses. (Sudah diimplementasikan)
-3. Tambahkan onboarding tips pada FormBiodata awal. (Sebagian; empty state ada, tips belum jelas)
+1. Tambahkan onboarding tips pada FormBiodata awal. (Sebagian; empty state ada, tips belum jelas)
 
 ---
 
