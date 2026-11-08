@@ -126,3 +126,104 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 **Sumber evaluasi:**
 - Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
 - File: `lib/fitur/biodata/screens/biodata_screen.dart`
+
+
+## Migrasi Skema Database SQLite
+
+**Aturan:**
+1. Setiap perubahan skema wajib menaikkan versi database (increment satu per migrasi).
+2. Metode `onCreate` wajib membuat seluruh tabel yang dibutuhkan aplikasi, termasuk tabel baru.
+3. Metode `onUpgrade` wajib menangani setiap versi lama secara kondisional (`if (oldVersion < N)`).
+4. Tabel baru pada versi tertentu wajib dibuat baik di `onCreate` maupun di `onUpgrade`.
+5. Nama tabel dan kolom wajib didefinisikan sebagai konstanta terpusat, bukan string literal.
+6. Perubahan kolom pada tabel lama wajib menggunakan `ALTER TABLE ... ADD COLUMN` di `onUpgrade` dengan kondisi versi yang sesuai.
+
+**Alasan:**
+Migrasi skema yang konsisten memastikan pengguna baru maupun lama memiliki skema database yang sama tanpa kehilangan data. Commit `3b67d309` menunjukkan pola migrasi v4 ke v5 yang membuat tabel baru di `onCreate` dan `onUpgrade`.
+
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 5;
+// onCreate: buat semua tabel.
+// onUpgrade:
+if (oldVersion < 5) {
+  await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.baru}(...)');
+}
+```
+
+**Contoh salah:**
+```dart
+// Hanya membuat tabel di onCreate, lupa onUpgrade.
+```
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/shared/db/sqflite/sqflite.dart`
+
+
+## Pola Notifier CRUD pada Database
+
+**Aturan:**
+1. Notifier database wajib menggunakan `@Riverpod(keepAlive: true)`.
+2. Method `build()` wajib memanggil `_ambilSemua()` yang mengambil seluruh data dan memetakan ke model.
+3. Setiap method CRUD (`tambah`, `ubah`, `hapus`) wajib:
+   a. Mengambil state lama melalui `await future`.
+   b. Menjalankan operasi database terlebih dahulu.
+   c. Memperbarui `state` dengan `AsyncValue.data(...)` setelah operasi database berhasil.
+   d. Menangkap `Exception`, mencatat dengan logger, lalu `rethrow`.
+4. Gunakan lapisan akses database (`SqfliteOp` atau setara); jangan memanggil `openDatabase` langsung di notifier.
+5. Operasi batch (banyak data) wajib menggunakan `batch(...)` agar atomik dan efisien.
+
+**Alasan:**
+State hanya diperbarui setelah operasi database berhasil, mencegah UI tidak sinkron dengan database ketika operasi gagal. Pola ini konsisten pada `ImpianNotifier` dan `DiaryCravingNotifier`.
+
+**Contoh benar:**
+```dart
+Future<void> tambah(Model model) async {
+  try {
+    final dataLama = await future;
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.tabel, model.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    state = AsyncValue.data(StateBaru(list: [model, ...dataLama.list]));
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan: $e $s');
+    rethrow;
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Memperbarui state sebelum operasi database selesai.
+state = AsyncValue.data(StateBaru(list: [model, ...list]));
+await op.tambah(NamaTabel.tabel, model.toMap());
+```
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+
+
+## Penggunaan `withValues` untuk Opacity Warna
+
+**Aturan:**
+1. Gunakan `withValues(alpha: ...)` alih-alih `withOpacity(...)` untuk mengatur opacity warna, sesuai API Flutter terpasang.
+2. Pertahankan konsistensi penggunaan pada seluruh widget.
+
+**Alasan:**
+Flutter versi terpasang (3.47+) menyediakan `withValues` sebagai pengganti `withOpacity` yang deprecated. Commit `3b67d309` menggunakan `warna.withValues(alpha: 0.2)`.
+
+**Contoh benar:**
+```dart
+warna.withValues(alpha: 0.2)
+```
+
+**Contoh salah:**
+```dart
+warna.withOpacity(0.2)
+```
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`

@@ -274,3 +274,254 @@ final konfirmasi = await showOkCancelAlertDialog(
   cancelLabel: 'Batal',
 );
 ```
+
+
+## Migrasi Skema Database SQLite
+
+**Cakupan:**
+- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase`, `_versiDatabase`, `onCreate`, `onUpgrade`.
+- `lib/shared/konstanta/nama_tabel.dart` — `NamaTabel`.
+- `lib/shared/konstanta/nama_kolom.dart` — `NamaKolom`.
+
+**Aturan wajib:**
+1. Setiap perubahan skema wajib menaikkan konstanta `_versiDatabase` (increment satu per migrasi).
+2. Metode `onCreate` wajib membuat seluruh tabel yang dibutuhkan aplikasi, termasuk tabel baru, agar instalasi baru memiliki skema lengkap.
+3. Metode `onUpgrade` wajib menangani setiap versi lama secara kondisional menggunakan `if (oldVersion < N)` untuk setiap versi yang ditambahkan.
+4. Tabel baru pada versi tertentu wajib dibuat baik di `onCreate` maupun di `onUpgrade` (agar pengguna lama mendapatkan tabel baru).
+5. Nama tabel dan kolom baru wajib didefinisikan di `NamaTabel` dan `NamaKolom`, bukan string literal di kode database.
+6. Perubahan kolom pada tabel lama wajib menggunakan `ALTER TABLE ... ADD COLUMN` di `onUpgrade` dengan kondisi versi yang sesuai.
+
+**Larangan:**
+- Jangan menaikkan versi database tanpa memperbarui `onCreate` dan `onUpgrade`.
+- Jangan membuat tabel baru hanya di `onCreate` tanpa menangani `onUpgrade` (pengguna lama tidak akan mendapatkan tabel).
+- Jangan menggunakan string literal untuk nama tabel/kolom baru.
+- Jangan menghapus data pengguna saat migrasi kecuali memang diperlukan dan terdokumentasi.
+
+**Alasan:**
+Commit `3b67d309` menaikkan skema dari v4 ke v5 untuk menambah tabel `diary_craving`. Tabel baru dibuat di `onCreate` (instalasi baru) dan di `onUpgrade` dengan kondisi `oldVersion < 5` (pengguna lama). Pola ini memastikan seluruh pengguna, baru maupun lama, memiliki skema yang konsisten tanpa kehilangan data.
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_tabel.dart`, `lib/shared/konstanta/nama_kolom.dart`
+
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 5;
+
+// onCreate: buat semua tabel.
+await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(...)');
+
+// onUpgrade:
+if (oldVersion < 5) {
+  await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(...)');
+}
+```
+
+**Contoh salah:**
+```dart
+// Hanya membuat tabel di onCreate, lupa onUpgrade: pengguna lama tidak mendapatkan tabel.
+static const int _versiDatabase = 5;
+// onCreate: create table diary_craving
+// onUpgrade: (kosong / tidak menangani v5)
+```
+
+
+## Pola Notifier CRUD pada Database
+
+**Cakupan:**
+- `lib/fitur/impian/notifier/impian_notifier.dart` — `ImpianNotifier`.
+- `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart` — `DiaryCravingNotifier`.
+
+**Aturan wajib:**
+1. Notifier database wajib menggunakan `@Riverpod(keepAlive: true)` agar state tidak hilang saat tidak ada listener.
+2. Method `build()` wajib memanggil `_ambilSemua()` yang mengambil seluruh data dari database dan memetakan ke model.
+3. Setiap method CRUD (`tambah`, `ubah`, `hapus`) wajib:
+   a. Mencatat parameter/log awal dengan `L.i`.
+   b. Mengambil state lama melalui `await future`.
+   c. Menjalankan operasi database terlebih dahulu.
+   d. Memperbarui `state` dengan `AsyncValue.data(...)` setelah operasi database berhasil.
+   e. Mencatat keberhasilan dengan `L.s`.
+   f. Menangkap `Exception` dengan `on Exception catch (e, s)`, mencatat dengan `L.e`, lalu `rethrow`.
+4. Gunakan `SqfliteOp` sebagai lapisan akses database; jangan memanggil `openDatabase` langsung di notifier.
+5. Operasi batch (banyak data) wajib menggunakan `op.batch(...)` agar atomik dan efisien.
+
+**Larangan:**
+- Jangan memperbarui `state` sebelum operasi database selesai (kecuali mengikuti pola optimistic update pada aturan Riverpod #9).
+- Jangan menelan exception; wajib `rethrow` agar UI dapat menangani.
+- Jangan membuat instance database baru di notifier.
+
+**Alasan:**
+Pola ini konsisten antara `ImpianNotifier` dan `DiaryCravingNotifier`: state hanya diperbarui setelah operasi database berhasil, dengan penanganan error yang terstruktur. Hal ini mencegah state UI tidak sinkron dengan database ketika operasi gagal.
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+
+**Contoh benar:**
+```dart
+Future<void> tambah(DiaryCravingModel craving) async {
+  L.i('craving.id=${craving.id}');
+  try {
+    final dataLama = await future;
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.diaryCraving, craving.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    state = AsyncValue.data(
+      DiaryCravingState(
+        listCraving: [craving, ...dataLama.listCraving],
+        jumlahCraving: dataLama.jumlahCraving + 1,
+      ),
+    );
+    L.s('Diary craving berhasil disimpan');
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan diary craving: $e $s');
+    rethrow;
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Memperbarui state sebelum operasi database selesai.
+state = AsyncValue.data(DiaryCravingState(listCraving: [craving, ...list]));
+await op.tambah(NamaTabel.diaryCraving, craving.toSqflite()); // jika gagal, state sudah berubah
+```
+
+
+## Model dan State Freezed menggunakan `abstract class`
+
+**Cakupan:**
+- `lib/fitur/diary_craving/model/diary_craving_model.dart` — `DiaryCravingModel`.
+- `lib/fitur/diary_craving/state/diary_craving_state.dart` — `DiaryCravingState`.
+
+**Aturan wajib:**
+1. Model dan state yang dibuat dengan Freezed pada proyek ini wajib menggunakan `abstract class`, bukan `class` biasa.
+2. Model database wajib menyediakan factory `fromSqflite(Map<String, Object?> row)` dan method `toSqflite()` untuk konversi ke/dari SQLite.
+3. Parsing nilai dari database wajib menggunakan `ParserUtil`.
+4. Konversi tanggal ke UTC wajib dilakukan di `toSqflite()` (`toUtc().toIso8601String()`), dan konversi ke lokal wajib dilakukan di `fromSqflite()` (`parseDateTime(...)?.toLocal()`).
+
+**Larangan:**
+- Jangan membuat model/state Freezed dengan `class` biasa.
+- Jangan melakukan parsing `dynamic` dari database secara langsung tanpa `ParserUtil`.
+- Jangan menyimpan waktu lokal seolah-olah UTC.
+
+**Alasan:**
+Commit `3b67d309` membuat `DiaryCravingModel` dan `DiaryCravingState` dengan `abstract class` Freezed. Model menyediakan `fromSqflite`/`toSqflite` yang menggunakan `ParserUtil` dan konversi UTC, konsisten dengan aturan penyimpanan tanggal.
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/model/diary_craving_model.dart`, `lib/fitur/diary_craving/state/diary_craving_state.dart`
+
+**Contoh benar:**
+```dart
+@freezed
+abstract class DiaryCravingModel with _$DiaryCravingModel {
+  const DiaryCravingModel._();
+  const factory DiaryCravingModel({...}) = _DiaryCravingModel;
+
+  factory DiaryCravingModel.fromSqflite(Map<String, Object?> row) {...}
+  Map<String, Object?> toSqflite() {...}
+}
+```
+
+**Contoh salah:**
+```dart
+@freezed
+class DiaryCravingModel with _$DiaryCravingModel { ... } // class biasa, bukan abstract
+```
+
+
+## Konfirmasi sebelum Menyimpan pada Form
+
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/form_diary_craving.dart` — `_FormDiaryCravingState._simpan`.
+
+**Aturan wajib:**
+1. Sebelum menyimpan data, tampilkan dialog konfirmasi (`showOkCancelAlertDialog`) yang menjelaskan tindakan yang akan dilakukan.
+2. Hanya jalankan penyimpanan jika pengguna menekan OK.
+3. Selama proses penyimpanan, aktifkan flag `_isLoading` dan tampilkan loading overlay (`EasyLoading`).
+4. Setelah selesai (berhasil/gagal), hentikan loading dan kembalikan flag.
+
+**Larangan:**
+- Jangan menyimpan data tanpa konfirmasi pengguna.
+- Jangan membiarkan proses penyimpanan berjalan tanpa indikator loading.
+
+**Alasan:**
+Commit `3b67d309` menambahkan dialog konfirmasi "Apakah Anda yakin ingin menyimpan catatan craving ini?" sebelum menyimpan, serta flag `_isLoading` dan `EasyLoading` selama proses. Pola ini konsisten dengan UX yang jelas.
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/screens/form_diary_craving.dart`
+
+**Contoh benar:**
+```dart
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Simpan Craving',
+  message: 'Apakah Anda yakin ingin menyimpan catatan craving ini?',
+  okLabel: 'Simpan',
+  cancelLabel: 'Batal',
+);
+if (konfirmasi != OkCancelResult.ok) return;
+```
+
+**Contoh salah:**
+```dart
+// Menyimpan langsung tanpa konfirmasi.
+await ref.read(diaryCravingProvider.notifier).tambah(model);
+```
+
+
+## Empty State pada Daftar
+
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/diary_craving_screen.dart` — `_EmptyDiaryCraving`.
+
+**Aturan wajib:**
+1. Ketika daftar data kosong, tampilkan widget empty state yang informatif (ikon, judul, deskripsi singkat).
+2. Sertakan call-to-action (mis. tombol FAB) agar pengguna dapat menambah data.
+3. Empty state wajib dibungkus `SafeArea` dan memiliki padding tepi layar.
+
+**Larangan:**
+- Jangan menampilkan layar kosong tanpa informasi atau CTA.
+
+**Alasan:**
+Commit `3b67d309` menambahkan `_EmptyDiaryCraving` dengan ikon, judul "Belum ada catatan craving", deskripsi, dan FAB untuk menambah data. Pola ini meningkatkan UX.
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`
+
+**Contoh benar:**
+```dart
+class _EmptyDiaryCraving extends StatelessWidget {
+  const _EmptyDiaryCraving();
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.book, size: 48),
+              Text('Belum ada catatan craving',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Tekan tombol + untuk mencatat craving pertama.',
+                  textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Menampilkan layar kosong tanpa informasi.
+if (list.isEmpty) return const Scaffold(body: SizedBox.shrink());
+```
