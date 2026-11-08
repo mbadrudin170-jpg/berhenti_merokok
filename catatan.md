@@ -113,8 +113,8 @@ Ringkasan: Evaluasi sembilan commit setelah checkpoint sebelumnya. Audit perubah
 
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
 - Branch evaluasi: master
-- Commit terakhir yang dievaluasi: 9f3e88936232b3b837218db3ae22d9d835a1aa99
-- SHA lengkap: 9f3e88936232b3b837218db3ae22d9d835a1aa99
+- Commit terakhir yang dievaluasi: f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8
+- SHA lengkap: f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8
 - Tanggal evaluasi: 2026-11-08
 - Status: Selesai
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_END -->
@@ -164,4 +164,85 @@ Ringkasan: Evaluasi sembilan commit setelah checkpoint sebelumnya. Audit perubah
 - Ringkasan evaluasi: Menambahkan .catchError pada EasyLoading.show() dan EasyLoading.dismiss() yang dilepas dengan unawaited(). Sumber aturan notifikasi #14 disempurnakan dengan contoh EasyLoading.
 - Aturan khusus yang diperbarui: Aturan notifikasi #14 (contoh benar/salah dan larangan diperbarui).
 - Aturan bersama yang diperbarui: Tidak ada (sudah tercakup optimasi_bug_runtime.md bagian 6 dan 10).
+- Status evaluasi: Selesai
+
+### Commit: ced76201f202414be2bd4d4e50843b7a319ce80f
+- Tanggal: 2026-11-08
+- Pesan commit: fix(notifikasi): sinkronkan status toggle dengan preferensi saat kegagalan izin dan perbarui dokumentasi aturan
+- File yang berubah: lib/fitur/pengaturan/screens/pengaturan_screen.dart, saran.md
+- Ringkasan evaluasi: Sinkronisasi status toggle pengingat dengan preferensi ketika izin notifikasi gagal, serta penyempurnaan aturan penanganan Future unawaited. Tidak ada aturan baru; merupakan penerapan aturan notifikasi #7, #12, dan #14 yang sudah ada.
+- Aturan khusus yang diperbarui: Tidak ada (sudah tercakup aturan notifikasi #7, #12, dan #14).
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: 19882cea6b7fa464ee934f11cd5a4baef0cdf1c4
+- Tanggal: 2026-11-08
+- Pesan commit: fix(pengaturan): tunda pembaruan waktu pengingat hingga operasi penjadwalan berhasil dan tandai saran selesai
+- File yang berubah: lib/fitur/pengaturan/screens/pengaturan_screen.dart
+- Ringkasan evaluasi: Waktu pengingat baru baru diterapkan setelah operasi penjadwalan atau penyimpanan berhasil. Prinsip menyimpan nilai lama dan menerapkan nilai baru setelah operasi berhasil sudah tercakup aturan notifikasi #13.
+- Aturan khusus yang diperbarui: Tidak ada (sudah tercakup aturan notifikasi #13).
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: d5fea977fb96cd7ad816ae0d1377dfeb04e3263b
+- Tanggal: 2026-11-08
+- Pesan commit: feat(impian): tampilkan nominal target di samping sisa tabungan pada kartu impian
+- File yang berubah: lib/fitur/impian/screens/impian_screen.dart
+- Ringkasan evaluasi: Menampilkan nominal target pada kartu impian bersama informasi sisa tabungan. Potensi overflow pada tampilan sudah tercakup optimasi_ui.md (penanganan text overflow). Implementasi tampilan fitur, bukan prinsip baru.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: 493954ea80e3aaf495dd18ce123b73a4a8342d5a
+- Tanggal: 2026-11-08
+- Pesan commit: chore(docs): tambahkan panduan analisa perubahan terbaru dan bersihkan entri saran yang selesai
+- File yang berubah: gpt/cek_perubahan_terbaru.md, saran.md
+- Ringkasan evaluasi: Penambahan panduan GPT dan pembersihan saran perbaikan yang sudah selesai. Perubahan dokumentasi, tidak ada aturan baru.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: ea73e3321d03c2d5af6c063ccaac9a35ebb0e74f
+- Tanggal: 2026-11-08
+- Pesan commit: docs(kilo): tambahkan referensi perintah cek perubahan sekarang pada panduan analisa
+- File yang berubah: gpt/cek_perubahan_terbaru.md
+- Ringkasan evaluasi: Penambahan referensi command evaluasi commit pada panduan analisis. Perubahan dokumentasi, tidak ada aturan baru.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: 19eece75351cd8deee5a2a01cf65464a8e2a1bc1
+- Tanggal: 2026-11-08
+- Pesan commit: chore: tambahkan dependensi flutter_timezone dan perbarui referensi catatan pada panduan analisa
+- File yang berubah: pubspec.yaml, pubspec.lock, gpt/cek_perubahan_terbaru.md
+- Ringkasan evaluasi: Penambahan dependensi flutter_timezone: ^5.1.1. Merupakan bagian dari implementasi deteksi zona waktu perangkat yang diselesaikan pada commit berikutnya (d42422b). Referensi untuk aturan khusus zona waktu perangkat.
+- Aturan khusus yang diperbarui: Referensi dependensi untuk aturan zona waktu perangkat (ditambahkan bersama commit d42422b).
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: dfe09414f80b5779414feccadefcd96039a6cc2e
+- Tanggal: 2026-11-08
+- Pesan commit: docs(gpt): tambahkan instruksi analisa perubahan untuk pembaruan aturan bersama dan khusus
+- File yang berubah: gpt/cek_perubahan_terbaru.md
+- Ringkasan evaluasi: Penambahan instruksi GPT untuk menganalisis perubahan commit dan menyiapkan pembaruan aturan. Perubahan dokumentasi, tidak ada aturan baru.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: d42422ba65a0f3c90b46a0736a197af572b62c33
+- Tanggal: 2026-11-08
+- Pesan commit: feat(notifikasi): deteksi zona waktu perangkat untuk penjadwalan pengingat dengan fallback Asia/Jakarta
+- File yang berubah: lib/shared/notifikasi/notifikasi_service.dart
+- Ringkasan evaluasi: Menerapkan deteksi zona waktu perangkat pada NotifikasiService menggunakan FlutterTimezone.getLocalTimezone(), TimezoneInfo.identifier, tz.getLocation(identifier), tz.setLocalLocation(...), dengan fallback Asia/Jakarta. Menambahkan aturan khusus zona waktu perangkat pada aturan_khusus.md.
+- Aturan khusus yang diperbarui: Aturan baru "Zona Waktu Perangkat untuk Pengingat Harian" ditambahkan.
+- Aturan bersama yang diperbarui: Tidak ada (aturan khusus proyek).
+- Status evaluasi: Selesai
+
+### Commit: f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8
+- Tanggal: 2026-11-08
+- Pesan commit: feat(impian): tambahkan enum SortImpian dan tombol pengurutan pada AppBar layar impian
+- File yang berubah: lib/fitur/impian/enum/sort_impian.dart, lib/fitur/impian/screens/impian_screen.dart
+- Ringkasan evaluasi: Menambahkan enum pengurutan impian (SortImpian) dan tombol pengurutan di AppBar. Ditemukan _showModalSort() masih kosong (implementasi pengurutan belum lengkap). Potensi overflow pada kartu impian sudah tercakup optimasi_ui.md. Pencocokan pesan exception untuk mendeteksi kegagalan izin merupakan temuan yang belum cukup kuat untuk dijadikan aturan umum baru. Tidak ada aturan baru.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai

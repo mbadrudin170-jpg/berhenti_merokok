@@ -8,4 +8,5 @@
 8. disini gpt cukup membuat prompt/instruksi untuk memperbarui kedua file tersebut. jadi AI kilo code tidak perlu analisa ulang untuk menghemat waktu.
 9. didalam instruksi tersebut suruh AI kilo code untuk memperbarui file `catatan.md` nya juga.
 10. target kan awal cek commit apa dan target commit apa, biar nanti kilo code punya arahan, tanpa menyentuh commit yang tidak diinginkan.
-11. agar commit terbaru yang tidak gpt cek tidak di baca kilo code
+11. agar commit terbaru yang tidak gpt cek tidak di baca kilo code.
+12. suruh kilo code jaalnkan script untuk memperbarui agents.md

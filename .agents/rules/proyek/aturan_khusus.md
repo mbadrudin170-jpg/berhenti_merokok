@@ -867,3 +867,67 @@ unawaited(EasyLoading.dismiss());
 **Sumber evaluasi:**
 - Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`, `9dff35ade58c73784ce27927efad98b429ee97cb`, `a30b6b6e4377b55eadecb6b83b0e4c05faa985b5`, `2a5a357429d44d7302ce54d46b378fe2ce6a0cb6`, `9f3e88936232b3b837218db3ae22d9d835a1aa99`
 - File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/main.dart`, `lib/app.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `android/app/src/main/AndroidManifest.xml`, `saran.md`
+
+
+## Zona Waktu Perangkat untuk Pengingat Harian
+
+**Cakupan:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — inisialisasi layanan notifikasi dan penentuan zona waktu lokal.
+
+**Catatan versi:**
+
+Implementasi yang dievaluasi menggunakan:
+- `flutter_timezone` versi `5.1.1`.
+- `timezone` versi `0.11.2`.
+
+Jika versi package berubah, periksa kembali API, struktur nilai balik, serta dukungan platform pada versi yang benar-benar digunakan.
+
+**Aturan wajib:**
+
+1. Pengingat harian wajib mengikuti zona waktu lokal perangkat pengguna, bukan menggunakan `Asia/Jakarta` sebagai zona waktu utama secara permanen.
+
+2. Inisialisasi database zona waktu melalui `tz.initializeTimeZones()` sebelum melakukan pencarian dan penetapan lokasi zona waktu.
+
+3. Gunakan `FlutterTimezone.getLocalTimezone()` untuk memperoleh informasi zona waktu perangkat.
+
+4. Gunakan properti `identifier` dari hasil `TimezoneInfo` sebagai identitas zona waktu ketika mencari lokasi melalui `tz.getLocation(identifier)`.
+
+5. Setelah lokasi berhasil ditemukan, tetapkan dengan `tz.setLocalLocation(...)` sebelum membuat atau menjadwalkan waktu berbasis `TZDateTime`.
+
+6. Jangan menggunakan singkatan zona waktu seperti WIB, WITA, atau WIT sebagai identifier database zona waktu tanpa memastikan bahwa identifier tersebut benar-benar didukung. Utamakan identifier yang diberikan oleh package.
+
+7. `Asia/Jakarta` hanya digunakan sebagai fallback yang telah ditentukan proyek apabila deteksi zona waktu perangkat atau pencarian identifier tidak berhasil. Jangan menjadikannya zona waktu utama ketika zona perangkat berhasil dideteksi.
+
+8. Penanganan kegagalan harus mencakup tahapan penting:
+   - Inisialisasi database zona waktu.
+   - Pemanggilan API deteksi zona waktu perangkat.
+   - Pencarian lokasi berdasarkan identifier perangkat.
+   - Penetapan lokasi zona waktu.
+   - Pencarian dan penetapan lokasi fallback.
+
+9. Catat informasi identifier zona waktu yang berhasil dideteksi menggunakan sistem logging proyek. Jika terjadi fallback, catat penyebabnya menggunakan `L.w()` atau `L.e()` sesuai tingkat kesalahan.
+
+10. Pastikan lokasi zona waktu berhasil ditetapkan sebelum proses penjadwalan dilanjutkan. Jangan diam-diam melanjutkan penjadwalan menggunakan zona waktu yang belum berhasil ditentukan.
+
+11. Apabila fallback `Asia/Jakarta` juga gagal ditemukan atau ditetapkan, tangani sebagai kegagalan inisialisasi yang harus dilaporkan. Jangan menganggap inisialisasi berhasil ketika tidak ada zona waktu valid yang berhasil ditetapkan.
+
+12. Gunakan jenis exception dan mekanisme penanganan yang sesuai dengan API package aktual. Jangan mengandalkan `catch (Exception)` untuk menangani semua kemungkinan kegagalan apabila API terkait dapat menghasilkan jenis kesalahan lain yang perlu ditangani secara khusus.
+
+13. Jangan menggunakan penanganan error yang terlalu luas untuk menelan kesalahan fatal atau membuat aplikasi seolah-olah berhasil padahal zona waktu belum berhasil diinisialisasi.
+
+**Larangan:**
+
+- Jangan menetapkan `Asia/Jakarta` sebagai zona utama secara permanen tanpa mencoba mendeteksi zona waktu perangkat.
+- Jangan menggunakan singkatan zona waktu sebagai identifier IANA tanpa validasi.
+- Jangan melanjutkan penjadwalan jika lokasi zona waktu belum berhasil ditetapkan.
+- Jangan mengabaikan kegagalan deteksi atau pencarian zona waktu tanpa pencatatan.
+- Jangan membiarkan kegagalan fallback tidak ditangani.
+- Jangan menambah package lain untuk menyelesaikan kebutuhan yang sudah dapat dipenuhi oleh package yang digunakan, kecuali ada bukti teknis bahwa diperlukan.
+
+**Alasan:**
+
+Commit `19eece7` menambahkan dependensi `flutter_timezone` dan commit `d42422b` menerapkannya pada `NotifikasiService`. Package `timezone` menyediakan database lokasi zona waktu, sedangkan `flutter_timezone` digunakan untuk memperoleh zona waktu perangkat. Kombinasi ini membuat pengingat dapat mengikuti zona waktu lokal pengguna. Fallback `Asia/Jakarta` menjaga perilaku yang sudah digunakan proyek apabila deteksi atau pencarian zona waktu perangkat gagal.
+
+**Sumber evaluasi:**
+- Commit: `19eece75351cd8deee5a2a01cf65464a8e2a1bc1`, `d42422ba65a0f3c90b46a0736a197af572b62c33`.
+- File: `pubspec.yaml`, `pubspec.lock`, `lib/shared/notifikasi/notifikasi_service.dart`, `saran.md`.
