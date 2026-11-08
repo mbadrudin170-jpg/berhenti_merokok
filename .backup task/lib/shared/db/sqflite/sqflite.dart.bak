@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
 import 'package:path/path.dart';
@@ -15,7 +16,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 6;
+  static const int _versiDatabase = 7;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -75,6 +76,14 @@ class AppDatabase {
         ${NamaKolom.dibuat} TEXT
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.teks} TEXT NOT NULL,
+        ${NamaKolom.dibuat} TEXT
+      )
+    ''');
   }
 
   /// Memperbarui skema database saat versi meningkat.
@@ -83,6 +92,9 @@ class AppDatabase {
     int oldVersion,
     int newVersion,
   ) async {
+    if (kDebugMode) {
+      debugPrint('oldVersion=$oldVersion, newVersion=$newVersion');
+    }
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
@@ -131,6 +143,15 @@ class AppDatabase {
         'ALTER TABLE ${NamaTabel.biodata} '
         'ADD COLUMN ${NamaKolom.tanggalMulaiTapering} TEXT',
       );
+    }
+    if (oldVersion < 7) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.teks} TEXT NOT NULL,
+          ${NamaKolom.dibuat} TEXT
+        )
+      ''');
     }
   }
 

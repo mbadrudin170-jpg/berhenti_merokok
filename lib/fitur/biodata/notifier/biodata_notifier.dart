@@ -8,14 +8,14 @@ import 'package:uuid/uuid.dart';
 
 part 'biodata_notifier.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BiodataNotifier extends _$BiodataNotifier {
   @override
   Future<BiodataModel?> build() async {
-    return await _ambilData();
+    return await _ambilSemua();
   }
 
-  Future<BiodataModel?> _ambilData() async {
+  Future<BiodataModel?> _ambilSemua() async {
     try {
       final op = const SqfliteOp();
       final row = await op.ambilSatu(NamaTabel.biodata);
@@ -31,14 +31,14 @@ class BiodataNotifier extends _$BiodataNotifier {
   }
 
   Future<void> simpan(BiodataModel biodata) async {
-    L.i('biodata.id=${biodata.id}, biodata.nama=${biodata.nama}');
+    L.i('biodata=$biodata');
     try {
       final existing = await future;
-      L.i('existing=${existing?.id}');
+      L.i('existing=$existing');
       final model = biodata.id.isEmpty
           ? biodata.copyWith(id: existing?.id ?? const Uuid().v4())
           : biodata;
-      L.i('model.id=${model.id}');
+      L.i('model=$model');
       final op = const SqfliteOp();
       await op.tambah(
         NamaTabel.biodata,

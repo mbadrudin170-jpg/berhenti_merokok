@@ -20,7 +20,7 @@ final class BiodataNotifierProvider
         argument: null,
         retry: null,
         name: r'biodataProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -33,7 +33,7 @@ final class BiodataNotifierProvider
   BiodataNotifier create() => BiodataNotifier();
 }
 
-String _$biodataNotifierHash() => r'0c65d0ffc5c031ac2b64c5d50fc938f5dc17ed0f';
+String _$biodataNotifierHash() => r'0821afc28680b0106506fa538c6c756698cc915b';
 
 abstract class _$BiodataNotifier extends $AsyncNotifier<BiodataModel?> {
   FutureOr<BiodataModel?> build();

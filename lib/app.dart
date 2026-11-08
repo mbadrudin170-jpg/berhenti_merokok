@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/home.dart';
-import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';

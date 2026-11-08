@@ -71,7 +71,10 @@ class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
       EasyLoading.show(
         status: 'Menyimpan...',
         maskType: EasyLoadingMaskType.black,
-      ),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+        return null;
+      }),
     );
     try {
       final teks = _teksController.text.trim();
@@ -98,7 +101,12 @@ class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
         AppToast.gagal(context, 'Gagal menyimpan alasan berhenti');
       }
     } finally {
-      unawaited(EasyLoading.dismiss());
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+          return null;
+        }),
+      );
       if (mounted) {
         setState(() => _isLoading = false);
         L.i('_isLoading=$_isLoading');

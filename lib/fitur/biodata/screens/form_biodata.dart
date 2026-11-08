@@ -184,31 +184,49 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
         return null;
       }),
     );
-    try {
-      final model = BiodataModel(
-        id: widget.biodataModel?.id ?? '',
-        nama: _namaController.text.trim(),
-        tanggalLahir: _tanggalLahir,
-        jumlahRokokPerHari:
-            int.tryParse(_jumlahRokokController.text.trim()) ?? 0,
-        hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
-            ? 0.0
-            : InputRupiah.parse(_hargaRokokController.text),
-        batangPerBungkus:
-            double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
-        tanggalMulaiMerokok: _tanggalMulaiMerokok,
-        tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
-        modeBerhenti: _modeBerhenti,
-        penurunanPerMinggu: int.parse(
-          _penurunanPerMingguController.text.trim().replaceAll(
-            RegExp(r'[^0-9]'),
-            '',
-          ),
-        ),
-        tanggalMulaiTapering: _tanggalMulaiTapering,
-      );
-      L.i('model=$model');
-      await ref.read(biodataProvider.notifier).simpan(model);
+     try {
+       final jumlahRokokPerHari = int.tryParse(
+         _jumlahRokokController.text.trim(),
+       );
+       if (jumlahRokokPerHari == null || jumlahRokokPerHari <= 0) {
+         AppToast.gagal(context, 'Jumlah rokok per hari tidak valid');
+         return;
+       }
+       final batangPerBungkus = double.tryParse(
+         _batangPerBungkusController.text.trim(),
+       );
+       if (batangPerBungkus == null || batangPerBungkus <= 0) {
+         AppToast.gagal(context, 'Batang per bungkus tidak valid');
+         return;
+       }
+       int penurunanPerMinggu = 0;
+       if (_modeBerhenti == ModeBerhenti.bertahap) {
+         final parsedPenurunan = int.tryParse(
+           _penurunanPerMingguController.text.trim(),
+         );
+         if (parsedPenurunan == null || parsedPenurunan <= 0) {
+           AppToast.gagal(context, 'Penurunan per minggu tidak valid');
+           return;
+         }
+         penurunanPerMinggu = parsedPenurunan;
+       }
+       final model = BiodataModel(
+         id: widget.biodataModel?.id ?? '',
+         nama: _namaController.text.trim(),
+         tanggalLahir: _tanggalLahir,
+         jumlahRokokPerHari: jumlahRokokPerHari,
+         hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
+             ? 0.0
+             : InputRupiah.parse(_hargaRokokController.text),
+         batangPerBungkus: batangPerBungkus,
+         tanggalMulaiMerokok: _tanggalMulaiMerokok,
+         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
+         modeBerhenti: _modeBerhenti,
+         penurunanPerMinggu: penurunanPerMinggu,
+         tanggalMulaiTapering: _tanggalMulaiTapering,
+       );
+       L.i('model=$model');
+       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
       if (widget.buatPertama) {
         unawaited(
@@ -293,25 +311,47 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                     return null;
                   },
                 ),
-                InputAngka(
-                  controller: _jumlahRokokController,
-                  label: 'Jumlah rokok per hari',
-                  hintText: 'Masukkan jumlah rokok per hari',
-                  focusNode: _jumlahRokokFocusNode,
-                  nextFocusNode: _hargaRokokFocusNode,
-                ),
+                 InputAngka(
+                   controller: _jumlahRokokController,
+                   label: 'Jumlah rokok per hari',
+                   hintText: 'Masukkan jumlah rokok per hari',
+                   focusNode: _jumlahRokokFocusNode,
+                   nextFocusNode: _hargaRokokFocusNode,
+                   validator: (value) {
+                     final cleaned = (value ?? '').replaceAll(
+                       RegExp(r'[^0-9]'),
+                       '',
+                     );
+                     final n = int.tryParse(cleaned);
+                     if (n == null || n <= 0) {
+                       return 'Wajib bilangan bulat positif';
+                     }
+                     return null;
+                   },
+                 ),
                 InputRupiah(
                   controller: _hargaRokokController,
                   label: 'Harga rokok per bungkus',
                   hintText: 'Masukkan harga rokok per bungkus',
                   focusNode: _hargaRokokFocusNode,
                 ),
-                InputAngka(
-                  controller: _batangPerBungkusController,
-                  label: 'Batang per bungkus',
-                  hintText: 'Masukkan jumlah batang per bungkus',
-                  focusNode: _batangPerBungkusFocusNode,
-                ),
+                 InputAngka(
+                   controller: _batangPerBungkusController,
+                   label: 'Batang per bungkus',
+                   hintText: 'Masukkan jumlah batang per bungkus',
+                   focusNode: _batangPerBungkusFocusNode,
+                   validator: (value) {
+                     final cleaned = (value ?? '').replaceAll(
+                       RegExp(r'[^0-9.]'),
+                       '',
+                     );
+                     final n = double.tryParse(cleaned);
+                     if (n == null || n <= 0) {
+                       return 'Wajib bilangan positif';
+                     }
+                     return null;
+                   },
+                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.cake_outlined),

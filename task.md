@@ -65,7 +65,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Pada `form_biodata.dart`, parsing `penurunanPerMinggu` menggunakan `int.parse(...replaceAll(RegExp(r'[^0-9]'), ''))` yang dapat melempar `FormatException` jika input kosong/tidak valid, dan pembersihan karakter non-digit dapat menyembunyikan input yang tidak valid. Selain itu, field `jumlahRokokPerHari` dan `batangPerBungkus` tidak memiliki validator khusus dan parsingnya menggunakan `tryParse(...) ?? 0`/`?? 20.0`, yang dapat menyembunyikan input tidak valid menjadi nilai default. Hal ini bertentangan dengan aturan validasi form yang mewajibkan validasi aturan bisnis (nilai positif) sebelum penyimpanan dan larangan mengganti input tidak valid dengan nilai default.
 - Solusi: Gunakan `int.tryParse` dengan penanganan null yang eksplisit (tanpa penggantian senyap), tambahkan validator pada field `jumlahRokokPerHari` dan `batangPerBungkus` (mis. nilai > 0), dan pastikan validasi `Form` dijalankan sebelum parsing/penyimpanan. Jika parsing gagal, tampilkan pesan error dan hentikan penyimpanan.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L492); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L937)
@@ -86,7 +86,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Pada `sqflite.dart`, import `package:flutter/foundation.dart` ditempatkan sebelum import `package:berhenti_merokok/...`, sehingga urutan import tidak mengikuti urutan alfabetis berdasarkan path package. Aturan proyek mewajibkan import diurutkan secara alfabetis berdasarkan path package lengkap.
 - Solusi: Pindahkan import `package:flutter/foundation.dart` ke posisi yang sesuai secara alfabetis (setelah import `package:berhenti_merokok/...` dan sebelum/sesuai urutan `package:path` dan `package:sqflite`), tanpa mengubah logika.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
@@ -104,7 +104,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status:kerjakan
+- Status: Selesai
 - Masalah: Pada `app.dart`, import tidak diurutkan secara alfabetis berdasarkan path package. Import `package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart` dan `package:berhenti_merokok/fitur/tema/...` muncul sebelum `package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart`, sehingga urutan import tidak sesuai aturan.
 - Solusi: Urutkan import pada `app.dart` secara alfabetis berdasarkan path package lengkap, misalnya `fitur/biodata/notifier/...` sebelum `fitur/biodata/screens/...` dan `fitur/tema/...`, tanpa mengubah logika.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
@@ -139,7 +139,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Pada `biodata_notifier.dart`, `BiodataNotifier` menggunakan anotasi `@riverpod` (auto-dispose) padahal notifier ini mengakses database; aturan proyek mewajibkan notifier database menggunakan `@Riverpod(keepAlive: true)`. Selain itu, `build()` memanggil `_ambilData()` bukan `_ambilSemua()` sesuai pola notifier CRUD, dan log pada `simpan()` mencatat properti model (`biodata.id`, `biodata.nama`) secara terurai alih-alih menampilkan objek model langsung.
 - Solusi: Ubah anotasi menjadi `@Riverpod(keepAlive: true)`, sesuaikan method pengambilan data awal dengan pola `_ambilSemua()`, dan ganti log properti model dengan `L.i('biodata=$biodata')` (atau logging objek secara langsung). Regenerasi file `.g.dart` sesuai sumber.
 - Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L348); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1)
@@ -194,7 +194,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Pada `form_alasan_berhenti.dart`, pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` dilepas dengan `unawaited(...)` tanpa penanganan error (`.catchError(...)`). Aturan notifikasi #14 dan optimasi bug runtime mewajibkan penanganan error pada Future yang dilepas, agar kegagalan menampilkan/menutup loading tidak menjadi unhandled error.
 - Solusi: Bungkus pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `.catchError((Object e, StackTrace s) { L.e('...: $e $s'); })`, sesuai pola pada `pengaturan_screen.dart`.
 - Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L6)
