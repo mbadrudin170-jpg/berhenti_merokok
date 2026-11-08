@@ -8,6 +8,18 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 
+/// Daftar pilihan cepat alasan umum (snippet) yang dapat dipilih pengguna.
+const List<String> _snippetAlasan = [
+  'Menjaga kesehatan paru-paru dan jantung',
+  'Menghemat uang untuk kebutuhan keluarga',
+  'Memberi contoh baik bagi anak/keluarga',
+  'Menghindari bau rokok dan gigi kuning',
+  'Meningkatkan stamina dan kebugaran',
+  'Menepati janji pada diri sendiri',
+  'Mengurangi risiko penyakit serius',
+  'Hidup lebih lama dan berkualitas',
+];
+
 class FormAlasanBerhenti extends ConsumerStatefulWidget {
   final AlasanBerhentiModel? alasan;
   const FormAlasanBerhenti({super.key, this.alasan});
@@ -129,6 +141,29 @@ class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 12,
               children: [
+                Text(
+                  'Pilihan cepat (opsional)',
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _snippetAlasan.map((snippet) {
+                    final terpilih = _teksController.text.trim() == snippet;
+                    L.i('snippet=$snippet, terpilih=$terpilih');
+                    return FilterChip(
+                      label: Text(snippet),
+                      selected: terpilih,
+                      onSelected: (dipilih) {
+                        L.i('snippet dipilih=$snippet, dipilih=$dipilih');
+                        setState(() {
+                          _teksController.text = dipilih ? snippet : '';
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
                 InputTeks(
                   controller: _teksController,
                   label: 'Alasan berhenti',

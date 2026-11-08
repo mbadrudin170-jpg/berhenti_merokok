@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/badge/screens/badge_screen.dart';
-
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
@@ -132,7 +133,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ),
               ),
+              _buildCardSosCraving(),
               _buildCardProgres(biodata),
+              _buildCardAlasanBerhenti(),
               _buildCardMilestone(biodata),
               _buildCardBadge(),
               _buildInfoKerugian(biodata),
@@ -185,6 +188,62 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardSosCraving() {
+    return Card(
+      color: Theme.of(context).colorScheme.errorContainer,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => unawaited(
+          Nav.to(context, const SosCravingScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke SOS Craving: $e $s');
+            return null;
+          }),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            spacing: 12,
+            children: [
+              Icon(
+                Icons.sos,
+                size: 32,
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      'SOS Craving',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
+                    ),
+                    Text(
+                      'Butuh bantuan saat craving? Tekan untuk bantuan cepat.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                CupertinoIcons.chevron_right,
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -245,6 +304,58 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// Membangun kartu pintasan alasan berhenti dengan jumlah alasan tersimpan.
+  Widget _buildCardAlasanBerhenti() {
+    return Consumer(
+      builder: (context, ref, _) {
+        final alasanAsync = ref.watch(alasanBerhentiProvider);
+        final jumlah = alasanAsync.asData?.value.jumlahAlasan ?? 0;
+        L.i('jumlahAlasan=$jumlah');
+        return Card(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => unawaited(
+              Nav.to(context, const AlasanBerhentiScreen()).catchError((
+                Object e,
+                StackTrace s,
+              ) {
+                L.e('Gagal navigasi ke Alasan Berhenti: $e $s');
+                return null;
+              }),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                spacing: 12,
+                children: [
+                  const Icon(CupertinoIcons.heart_fill, size: 32),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4,
+                      children: [
+                        Text(
+                          'Alasan Berhenti',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '$jumlah alasan tersimpan',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(CupertinoIcons.chevron_right),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

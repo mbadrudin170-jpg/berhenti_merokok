@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -29,6 +30,54 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
     super.dispose();
   }
 
+  /// Membangun kartu pengingat alasan berhenti terbaru (penguat motivasi).
+  Widget _buildKartuAlasanBerhenti() {
+    final alasanAsync = ref.watch(alasanBerhentiProvider);
+    final listAlasan = alasanAsync.asData?.value.listAlasan;
+    L.i('listAlasan.length=${listAlasan?.length}');
+    if (listAlasan == null || listAlasan.isEmpty) {
+      L.w('alasan kosong, kartu motivasi tidak ditampilkan');
+      return const SizedBox.shrink();
+    }
+    final terbaru = listAlasan.first;
+    L.i('terbaru=$terbaru');
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 12,
+            children: [
+              Icon(
+                Icons.favorite,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      'Ingat alasanmu',
+                      style: Theme.of(context).textTheme.titleSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      terbaru.teks,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -46,11 +95,18 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
           ),
         ),
         body: SafeArea(
-          child: TabBarView(
+          child: Column(
             children: [
-              _Napas478View(textTheme: textTheme),
-              const _TimerCravingView(),
-              const _DistraksiView(),
+              _buildKartuAlasanBerhenti(),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _Napas478View(textTheme: textTheme),
+                    const _TimerCravingView(),
+                    const _DistraksiView(),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

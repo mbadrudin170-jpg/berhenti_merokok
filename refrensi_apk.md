@@ -45,19 +45,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Perlu penanganan izin penyimpanan berkas dan format ekspor yang jelas.
 - **Alasan prioritas:** Relevan dan bermanfaat, tetapi memerlukan pertimbangan tambahan terkait format dan izin.
 
-#### 3. Catatan Alasan Berhenti (Reasons Vault)
-
-- **Tujuan:** Menyimpan alasan personal pengguna untuk berhenti merokok agar dapat dibaca kembali saat motivasi menurun.
-- **Masalah pengguna:** Pengguna tidak memiliki tempat terpusat untuk mencatat motivasi personal selain impian finansial.
-- **Cara kerja di mobile:** Daftar alasan singkat yang dapat ditambah/diubah dan ditampilkan kembali pada Dashboard atau saat craving.
-- **Aplikasi referensi:** Quit Smoking: Progress Tracker (Inspector Studios); Quitzilla; Quit It.
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker ; https://quitzilla.com/ ; https://www.quit-it-web.com/
-- **Link bukti:** Deskripsi resmi (personal reasons vault, keep reasons close).
-- **Manfaat untuk proyek:** Memperkuat motivasi dan personalisasi pengalaman.
-- **Ketergantungan/keterbatasan:** Dapat disimpan lokal; tidak membutuhkan backend.
-- **Alasan prioritas:** Relevan, dampak terbatas namun bermanfaat.
-
-#### 4. Pencatatan Slip/Relapse yang Suportif
+#### 3. Pencatatan Slip/Relapse yang Suportif
 
 - **Tujuan:** Memungkinkan pengguna mencatat jika sempat merokok lagi tanpa kehilangan seluruh progres, dengan pesan yang tidak menghakimi.
 - **Masalah pengguna:** Saat ini progres dihitung dari satu tanggal berhenti; jika pengguna merokok lagi, tidak ada mekanisme pencatatan slip yang mempertahankan riwayat.
@@ -69,7 +57,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Memerlukan penyesuaian perhitungan smoke-free dan riwayat.
 - **Alasan prioritas:** Relevan dan bermanfaat, memerlukan pertimbangan tambahan.
 
-#### 5. Kuis Onboarding dan Rencana Berhenti
+#### 4. Kuis Onboarding dan Rencana Berhenti
 
 - **Tujuan:** Membantu pengguna baru menyusun rencana berhenti merokok (tanggal berhenti, pemicu, strategi) sejak awal.
 - **Masalah pengguna:** Form biodata saat ini hanya mencatat data dasar tanpa panduan menyusun rencana.
@@ -81,7 +69,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Memerlukan konten dan logika tambahan.
 - **Alasan prioritas:** Relevan, dampak terbatas pada sebagian pengguna.
 
-#### 6. Widget Layar Beranda (Home Widget)
+#### 5. Widget Layar Beranda (Home Widget)
 
 - **Tujuan:** Menampilkan penghitung smoke-free dan tabungan langsung di layar beranda tanpa membuka aplikasi.
 - **Masalah pengguna:** Pengguna harus membuka aplikasi untuk melihat progres terkini.
@@ -95,7 +83,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 ### Prioritas Rendah
 
-#### 7. Permainan Kecil untuk Distraksi (Mini-games)
+#### 6. Permainan Kecil untuk Distraksi (Mini-games)
 
 - **Tujuan:** Memberikan distraksi interaktif saat craving (selain daftar aktivitas statis).
 - **Masalah pengguna:** Daftar distraksi saat ini berupa teks statis tanpa interaksi.
@@ -107,7 +95,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Memerlukan pengembangan UI/game tambahan.
 - **Alasan prioritas:** Bersifat tambahan; dampak belum terlalu kuat.
 
-#### 8. Pelacakan Toxin yang Dihindari
+#### 7. Pelacakan Toxin yang Dihindari
 
 - **Tujuan:** Menampilkan zat berbahaya (tar, karbon monoksida, dll.) yang dihindari dengan tidak merokok.
 - **Masalah pengguna:** Pengguna hanya melihat jumlah rokok dan uang, belum zat berbahaya.
@@ -119,7 +107,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Memerlukan data faktor konversi yang akurat.
 - **Alasan prioritas:** Bersifat tambahan; bukti terbatas.
 
-#### 9. Dukungan Perangkat Wearable (Wear OS)
+#### 8. Dukungan Perangkat Wearable (Wear OS)
 
 - **Tujuan:** Menampilkan progres smoke-free di jam tangan.
 - **Masalah pengguna:** Pengguna harus membuka ponsel untuk melihat progres.
@@ -131,7 +119,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Memerlukan pengembangan platform Wear OS yang signifikan.
 - **Alasan prioritas:** Kompleksitas lebih besar dibanding manfaatnya.
 
-#### 10. Komunitas dan Sesi Ahli
+#### 9. Komunitas dan Sesi Ahli
 
 - **Tujuan:** Dukungan sosial dari sesama pengguna dan akses ke sesi ahli.
 - **Masalah pengguna:** Pengguna berhenti merokok sendirian tanpa dukungan komunitas.
@@ -143,7 +131,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Membutuhkan backend, moderasi, dan sumber daya yang belum tersedia.
 - **Alasan prioritas:** Di luar ruang lingkup aplikasi lokal saat ini.
 
-#### 11. AI Coach / Panduan Personal
+#### 10. AI Coach / Panduan Personal
 
 - **Tujuan:** Memberikan saran personal berdasarkan profil dan pola pengguna.
 - **Masalah pengguna:** Pengguna tidak mendapatkan panduan personal selain data statis.
@@ -155,7 +143,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Ketergantungan/keterbatasan:** Membutuhkan backend/AI yang belum tersedia.
 - **Alasan prioritas:** Kompleksitas tinggi untuk proyek lokal.
 
-#### 12. Misi Harian dan Tantangan
+#### 11. Misi Harian dan Tantangan
 
 - **Tujuan:** Memberikan tantangan harian untuk menjaga keterlibatan.
 - **Masalah pengguna:** Tidak ada tantangan terstruktur untuk menjaga motivasi jangka panjang.
