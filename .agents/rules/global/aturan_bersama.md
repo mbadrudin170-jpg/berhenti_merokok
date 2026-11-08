@@ -409,36 +409,6 @@ await setAktif(true);
 - Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
 - File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `saran.md`
 
-## Penanganan Error pada Future yang Menggunakan `unawaited()`
-
-**Aturan:**
-1. `unawaited()` hanya menandai bahwa Future sengaja tidak ditunggu oleh pemanggil. Fungsi tersebut tidak menangani error secara otomatis.
-2. Future yang dilepas dengan `unawaited()` tetap wajib memiliki penanganan error.
-3. Gunakan `catchError` atau bungkus proses dalam fungsi yang memiliki `try/catch` sebelum dilepas.
-4. Jangan gunakan `unawaited()` hanya untuk menghilangkan peringatan analyzer.
-
-**Alasan:**
-Commit notifikasi (`774431d`) memanggil `unawaited(NotifikasiService.jadwalkanUlangJikaAktif())` dari `initState()` tanpa penanganan error, sehingga kegagalan penjadwalan ulang dapat menjadi unhandled. Aturan runtime sudah mewajibkan penanganan error pada Future yang tidak ditunggu.
-
-**Contoh benar:**
-```dart
-unawaited(
-  prosesAsync().catchError((Object error, StackTrace stackTrace) {
-    L.e('Gagal menjalankan proses: $error $stackTrace');
-  }),
-);
-```
-
-**Contoh salah:**
-```dart
-// Future dapat gagal, tetapi tidak memiliki penanganan error.
-unawaited(prosesAsync());
-```
-
-**Sumber evaluasi:**
-- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`
-- File: `lib/app.dart`, `lib/shared/notifikasi/notifikasi_service.dart`, `saran.md`
-
 ## Prinsip Umum Penanganan Beberapa `AsyncValue` pada Satu Layar
 
 **Aturan:**

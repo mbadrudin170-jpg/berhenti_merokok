@@ -1,11 +1,14 @@
+import 'dart:async';
+
+import 'package:berhenti_merokok/home.dart';
+import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:share_global_saya/core_shared.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
-import 'package:share_global_saya/core_shared.dart';
 
 /// Layanan notifikasi lokal untuk pengingat harian aplikasi.
 class NotifikasiService {
@@ -61,13 +64,31 @@ class NotifikasiService {
   static void _onTapNotifikasi(NotificationResponse response) {
     final payload = response.payload;
     L.i('payload=$payload');
-    // Navigasi default ke beranda; tumpukan route dibersihkan.
     final navigator = navigatorKey.currentState;
     if (navigator == null) {
       L.w('navigator null saat tap notifikasi');
       return;
     }
-    L.i('notifikasi ditekan, kembali ke beranda');
+
+    String? kategori;
+    String? id;
+    if (payload != null) {
+      for (final part in payload.split('&')) {
+        final kv = part.split('=');
+        if (kv.length == 2) {
+          if (kv[0] == 'kategori') kategori = kv[1];
+          if (kv[0] == 'id') id = kv[1];
+        }
+      }
+    }
+    L.i('kategori=$kategori, id=$id');
+
+    final context = navigator.context;
+    if (kategori == 'pengingat_harian') {
+      unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+    } else {
+      L.w('kategori notifikasi tidak dikenal: $kategori');
+    }
   }
 
   /// Meminta izin notifikasi sesuai platform.
@@ -154,7 +175,7 @@ class NotifikasiService {
         L.w('izin notifikasi tidak diberikan, batalkan penjadwalan');
         await _plugin.cancel(id: _idPengingatHarian);
         await setAktif(false);
-        return;
+        throw Exception('Izin notifikasi tidak diberikan');
       }
       await setAktif(true);
       await setWaktu(jam, menit);

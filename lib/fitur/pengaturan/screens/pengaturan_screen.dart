@@ -5,6 +5,7 @@ import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 
@@ -21,11 +22,17 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
   int _jam = 8;
   int _menit = 0;
   bool _memuatNotifikasi = true;
+  bool _sedangMemproses = false;
 
   @override
   void initState() {
     super.initState();
-    _muatPreferensiNotifikasi();
+    unawaited(
+      Future.microtask(_muatPreferensiNotifikasi)
+          .catchError((Object e, StackTrace s) {
+            L.e('Gagal memuat preferensi notifikasi: $e $s');
+          }),
+    );
   }
 
   Future<void> _muatPreferensiNotifikasi() async {
@@ -67,10 +74,18 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
   }
 
   Future<void> _ubahNotifikasi(bool value) async {
+    if (_sedangMemproses) return;
     L.i('value=$value');
     setState(() {
+      _sedangMemproses = true;
       _notifikasiAktif = value;
     });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
     try {
       if (value) {
         final izin = await NotifikasiService.mintaIzin();
@@ -109,45 +124,90 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
         });
         AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
       }
+    } finally {
+      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
     }
   }
 
   Future<void> _pilihWaktu() async {
+    if (_sedangMemproses) return;
     L.i('jam=$_jam, menit=$_menit');
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: _jam, minute: _menit),
     );
+    if (!mounted) return;
     if (picked == null) return;
     L.i('picked=${picked.hour}:${picked.minute}');
+    final jamLama = _jam;
+    final menitLama = _menit;
     setState(() {
       _jam = picked.hour;
       _menit = picked.minute;
+      _sedangMemproses = true;
     });
-    if (_notifikasiAktif) {
-      try {
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      if (_notifikasiAktif) {
         await NotifikasiService.jadwalkanPengingatHarian(
           jam: _jam,
           menit: _menit,
         );
         if (!mounted) return;
         AppToast.sukses(context, 'Waktu pengingat diperbarui');
-      } on Exception catch (e, s) {
-        L.e('Gagal memperbarui waktu pengingat: $e $s');
-        if (!mounted) return;
+      } else {
+        await NotifikasiService.setWaktu(_jam, _menit);
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal memperbarui waktu pengingat: $e $s');
+      if (mounted) {
+        setState(() {
+          _jam = jamLama;
+          _menit = menitLama;
+        });
         AppToast.gagal(context, 'Gagal memperbarui waktu pengingat');
-      } on UnsupportedError catch (e, s) {
-        L.e('Platform tidak mendukung notifikasi: $e $s');
-        if (!mounted) return;
+      }
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _jam = jamLama;
+          _menit = menitLama;
+        });
         AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
       }
-    } else {
-      await NotifikasiService.setWaktu(_jam, _menit);
+    } finally {
+      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
     }
   }
 
   Future<void> _ujiNotifikasi() async {
+    if (_sedangMemproses) return;
     L.i('uji notifikasi');
+    setState(() {
+      _sedangMemproses = true;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
     try {
       await NotifikasiService.tampilkanSekarang();
       if (!mounted) return;
@@ -156,6 +216,13 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
       L.e('Gagal menampilkan notifikasi uji coba: $e $s');
       if (!mounted) return;
       AppToast.gagal(context, 'Gagal menampilkan notifikasi');
+    } finally {
+      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
     }
   }
 
@@ -247,9 +314,11 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
             ),
             Switch(
               value: _notifikasiAktif,
-              onChanged: (value) {
-                unawaited(_ubahNotifikasi(value));
-              },
+              onChanged: _sedangMemproses
+                  ? null
+                  : (value) {
+                      unawaited(_ubahNotifikasi(value));
+                    },
             ),
           ],
         ),
@@ -258,17 +327,21 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
           children: [
             Text('Waktu: $waktu', style: Theme.of(context).textTheme.bodySmall),
             OutlinedButton(
-              onPressed: () {
-                unawaited(_pilihWaktu());
-              },
+              onPressed: _sedangMemproses
+                  ? null
+                  : () {
+                      unawaited(_pilihWaktu());
+                    },
               child: const Text('Ubah waktu'),
             ),
           ],
         ),
         OutlinedButton(
-          onPressed: () {
-            unawaited(_ujiNotifikasi());
-          },
+          onPressed: _sedangMemproses
+              ? null
+              : () {
+                  unawaited(_ujiNotifikasi());
+                },
           child: const Text('Uji coba notifikasi'),
         ),
       ],
