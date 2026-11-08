@@ -21,7 +21,7 @@ class ImpianScreen extends ConsumerStatefulWidget {
 }
 
 class _ImpianScreenState extends ConsumerState<ImpianScreen> {
-  SortImpian _sortImpian = SortImpian.mendekatiTerkumpulZa;
+  SortImpian _sortImpian = SortImpian.mendekatiTerkumpulAz;
 
   @override
   void initState() {
