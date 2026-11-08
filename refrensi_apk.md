@@ -75,7 +75,7 @@
 ### Notifikasi Harian dan Pengingat
 
 - **Prioritas:** Sedang
-- **Status implementasi:** Belum diimplementasikan.
+- **Status implementasi:** Sudah diimplementasikan (NotifikasiService, pengingat harian terjadwal, toggle di Pengaturan).
 - **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); Kick It (UC San Diego)
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.kickitca
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.

@@ -1,5 +1,6 @@
 import 'package:berhenti_merokok/app.dart';
 import 'package:berhenti_merokok/shared/db/sqflite/sqflite.dart';
+import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,11 @@ Future<void> main() async {
   } on Exception catch (e, s) {
     p('Gagal inisialisasi database: $e $s');
     rethrow;
+  }
+  try {
+    await NotifikasiService.inisialisasi();
+  } on Exception catch (e, s) {
+    p('Gagal inisialisasi notifikasi: $e $s');
   }
   runApp(const ProviderScope(child: App()));
 }
