@@ -366,6 +366,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.aura.stopsmoking ; https://play.google.com/store/apps/details?id=com.quititapp
 - **Link screenshot atau sumber visual:** Deskripsi resmi Google Play Store.
 - **Alasan prioritas:** Relevan, dampak terbatas.
+- **Status PRD:** Sudah dibuat — prd/optimasi-impian-tabungan.md
 
 #### 4. Grafik dan Insight Pemicu
 
