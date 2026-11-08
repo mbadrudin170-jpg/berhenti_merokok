@@ -4,3 +4,4 @@
 4. semua commit tersebut harus sesuai dengan aturan yang ada di file `AGENTS.md` dan harus sesuai dengan `SDK`nya.
 5. walaupun perubahan tersebut bersifat sederhana wajib baca `SDK` dan `AGENTS.md`.
 6. yang di periksa cukup perubahan selain file `md`.
+7. jangan lupa baca dulu file `.kilo/commands/cek_perubahan_sekarang.md`.
