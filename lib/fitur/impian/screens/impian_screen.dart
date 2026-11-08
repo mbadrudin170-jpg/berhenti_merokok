@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/enum/sort_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
@@ -19,6 +20,8 @@ class ImpianScreen extends ConsumerStatefulWidget {
 }
 
 class _ImpianScreenState extends ConsumerState<ImpianScreen> {
+  SortImpian _sortImpian = SortImpian.mendekatiTerkumpulZa;
+
   @override
   void initState() {
     super.initState();
@@ -29,8 +32,45 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     super.dispose();
   }
 
-  void _showModalSort() {}
-  
+  void _showModalSort() {
+    L.i('sortImpian=$_sortImpian');
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                Text(
+                  'Urutkan',
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                ...SortImpian.values.map((sort) {
+                  return ListTile(
+                    leading: Icon(sort.icon),
+                    title: Text(sort.label),
+                    trailing: _sortImpian == sort
+                        ? const Icon(Icons.check)
+                        : null,
+                    onTap: () {
+                      setState(() => _sortImpian = sort);
+                      Nav.pop(context);
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final impianAsync = ref.watch(impianProvider);
@@ -65,9 +105,9 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     }
 
     final impianState = impianAsync.requireValue;
-    final List<ImpianModel> listImpian = impianState.listImpian;
+    final List<ImpianModel> listImpianAsli = impianState.listImpian;
     L.i(
-      'listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}',
+      'listImpian.length=${listImpianAsli.length}, totalJumlah=${impianState.totalJumlah}',
     );
 
     // Saldo terkumpul = uang yang dihemat dari tidak merokok (berdasarkan biodata).
@@ -81,6 +121,28 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     }
     final uangDihemat = biodata?.uangDihemat ?? 0;
     L.i('uangDihemat=$uangDihemat');
+
+    final List<ImpianModel> listImpian = [...listImpianAsli]
+      ..sort((a, b) {
+        switch (_sortImpian) {
+          case SortImpian.namaAz:
+            return a.nama.compareTo(b.nama);
+          case SortImpian.namaZa:
+            return b.nama.compareTo(a.nama);
+          case SortImpian.jumlahAz:
+            return a.jumlah.compareTo(b.jumlah);
+          case SortImpian.jumlahZa:
+            return b.jumlah.compareTo(a.jumlah);
+          case SortImpian.mendekatiTerkumpulAz:
+            final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+            final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+            return sisaA.compareTo(sisaB);
+          case SortImpian.mendekatiTerkumpulZa:
+            final sisaA = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+            final sisaB = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+            return sisaB.compareTo(sisaA);
+        }
+      });
 
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');

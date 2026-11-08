@@ -7,3 +7,4 @@
 7. jangan lupa baca dulu file `.kilo/commands/cek_perubahan_sekarang.md`.
 8. target kan awal cek commit apa dan target commit apa, biar nanti kilo code punya arahan, tanpa menyentuh commit yang tidak diinginkan.
 9. agar commit terbaru yang tidak gpt cek tidak di baca kilo code
+10. perbarui atau tambahkan isi file `saran.md` nya.

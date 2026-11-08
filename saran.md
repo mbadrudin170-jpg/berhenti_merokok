@@ -30,7 +30,7 @@
 - **Saran perbaikan:** Bungkus `tz.initializeTimeZones()` dan fallback `tz.getLocation('Asia/Jakarta')` dalam `try/catch`, serta tangkap `UnsupportedError`/`Error` yang relevan atau validasi hasil sebelum penggunaan.
 - **Alasan:** Memastikan inisialisasi timezone tidak menjadi unhandled error pada platform yang tidak mendukung.
 
-"
+## 2026-11-08 — Dukungan macOS pada penjadwalan notifikasi harian
 
 - **Masalah:** Pada `lib/shared/notifikasi/notifikasi_service.dart`, method `jadwalkanPengingatHarian()` (baris 104-112) melempar `UnsupportedError` pada `TargetPlatform.macOS`, padahal plugin `flutter_local_notifications` v22.3.3 mendukung notifikasi terjadwal pada macOS melalui `zonedSchedule`. Aturan hanya melarang penjadwalan berulang pada Web dan Linux.
 - **Prioritas:** Rendah
@@ -116,9 +116,23 @@
 - **Alasan:** Menjaga konsistensi dengan aturan penanganan platform dan error Future.
 - **Status:** Belum diperbaiki.
 
-## 2026-11-07 — Progress menampilkan 0 saat biodata masih loading
+## 2026-11-08 — Panggilan asynchronous di dalam blok catch pada pengaturan notifikasi
 
-- **Masalah:** Pada `lib/fitur/impian/screens/impian_screen.dart:71-80`, `uangDihemat` dihitung sebagai 0 selama `biodataAsync` masih loading atau error. Akibatnya progress bar dan "Sisa" menampilkan 0 sementara, baru diperbarui setelah biodata selesai dimuat.
-- **Path dan baris:** `lib/fitur/impian/screens/impian_screen.dart:71-80`, `:114`, `:116`
-- **Saran perbaikan:** Pertimbangkan menampilkan indikator loading pada area "Saldo terkumpul" atau menunda perhitungan hingga biodata tersedia, agar pengguna tidak melihat nilai 0 yang menyesatkan.
-- **Alasan:** Meningkatkan kejelasan status operasi (aturan UX) tanpa mengubah logika utama.
+- **Masalah:** Pada `lib/fitur/pengaturan/screens/pengaturan_screen.dart` (baris 117 dan 124), `_ubahNotifikasi()` memanggil `NotifikasiService.aktif()` dan `_muatPreferensiNotifikasi()` di dalam blok `on Exception catch` tanpa `try/catch`. Jika salah satu melempar, exception keluar dari method yang dipanggil via `unawaited` dan menjadi unhandled.
+- **Prioritas:** Sedang
+- **Path:** `lib/fitur/pengaturan/screens/pengaturan_screen.dart:113-129`
+- **Aturan terkait:** `.agents/rules/global/optimasi_bug_runtime.md` (bagian 6 dan 10)
+- **Referensi:** `NotifikasiService.aktif()`, `_muatPreferensiNotifikasi()`.
+- **Saran perbaikan:** Bungkus kedua pemanggilan dalam `try/catch` terpisah dan catat dengan `L.e(...)`; pertahankan pemeriksaan `mounted`.
+- **Alasan:** Mencegah unhandled Future dan menjaga konsistensi UI saat kegagalan izin.
+
+## 2026-11-08 — Inkonsistensi preferensi waktu pengingat saat penyimpanan gagal
+
+- **Masalah:** Pada `lib/shared/notifikasi/notifikasi_service.dart`, `jadwalkanPengingatHarian()` memanggil `setAktif(true)` lalu `setWaktu(jam, menit)`. Jika `setWaktu` gagal setelah `setAktif(true)` berhasil, status aktif tersimpan tetapi waktu tidak diperbarui.
+- **Prioritas:** Rendah
+- **Path:** `lib/shared/notifikasi/notifikasi_service.dart` (method `jadwalkanPengingatHarian`)
+- **Aturan terkait:** `.agents/rules/proyek/aturan_khusus.md` (aturan notifikasi #7 dan #13)
+- **Referensi:** `setAktif()`, `setWaktu()`.
+- **Saran perbaikan:** Urutkan penyimpanan sehingga `setWaktu` sebelum `setAktif(true)`, atau bungkus keduanya dengan rollback saat gagal.
+- **Alasan:** Menjaga konsistensi antara jadwal sistem, SharedPreferences, dan tampilan.
+
