@@ -67,7 +67,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Log debug yang ditambahkan pada fitur tapering dicatat pada getter dan `build()` yang dapat dipanggil berulang. `ModeBerhentiExtension.label` memanggil `L.i('mode=$this')` pada setiap akses (termasuk saat `biodata.modeBerhenti.label` dibaca di `build()`), `BiodataModelPerhitungan.targetRokokHariIni` memanggil `L.i` pada setiap akses (termasuk saat dibaca di `build()`), dan `biodata_screen.dart` memanggil `L.i` dengan field tanggal di dalam `build()`. Hal ini menyebabkan pencatatan berulang pada setiap rebuild meskipun nilai tidak berubah, menambah noise log.
 - Solusi: Pindahkan logging ke titik perubahan data atau proses yang tidak berfrekuensi tinggi (mis. `initState`, method helper, perhitungan yang dipicu aksi), dan hindari log di dalam getter/`build()` yang dipanggil berulang.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
@@ -76,7 +76,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: File [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart) tidak mengikuti format kode (`dart format` melaporkan perubahan), terutama indentasi blok validasi/manual parsing pada `_simpan` yang tidak konsisten. Hal ini menyebabkan inkonsistensi format dengan aturan proyek.
 - Solusi: Jalankan `dart format` pada file tersebut agar indentasi dan format mengikuti standar Dart, tanpa mengubah logika.
 - Aturan dilanggar: [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L15)
@@ -146,7 +146,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Commit `041ac91` mengubah entri dependensi `flutter_local_notifications` dari `^22.3.3` menjadi `^23.0.0` secara langsung pada `pubspec.yaml` (bukan melalui `flutter pub add`), sehingga melanggar aturan manajemen dependensi. Selain itu, aturan proyek (`aturan_notifikasi.md`) dan dokumentasi masih mereferensikan versi `22.3.3`, sehingga tidak konsisten dengan versi yang terpasang (`23.0.0`).
 - Solusi: Sesuaikan versi dependensi dengan mekanisme resmi (`flutter pub add flutter_local_notifications`), perbarui `pubspec.lock`, dan sinkronkan referensi versi pada aturan/dokumentasi notifikasi agar sesuai dengan versi yang benar-benar digunakan.
 - Aturan dilanggar: [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L5); [aturan_notifikasi.md](.agents/rules/global/aturan_notifikasi.md#L1)

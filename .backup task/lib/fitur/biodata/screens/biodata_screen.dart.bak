@@ -16,6 +16,7 @@ class BiodataScreen extends ConsumerStatefulWidget {
 }
 
 class _BiodataScreenState extends ConsumerState<BiodataScreen> {
+  
   @override
   void initState() {
     super.initState();
@@ -69,6 +70,12 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     final tanggalLahir = biodata?.tanggalLahir;
     final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
     final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+    final tanggalMulaiTapering = biodata?.tanggalMulaiTapering;
+    L.i(
+      'tanggalLahir=$tanggalLahir, tanggalMulaiMerokok=$tanggalMulaiMerokok, '
+      'tanggalMulaiBerhentiMerokok=$tanggalMulaiBerhentiMerokok, '
+      'tanggalMulaiTapering=$tanggalMulaiTapering',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
@@ -87,7 +94,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                           Nav.to(
                             context,
                             const FormBiodata(buatPertama: false),
-                          ),
+                          ).catchError((Object e, StackTrace s) {
+                            L.e('Gagal navigasi ke Form Biodata: $e $s');
+                            return null;
+                          }),
                         ),
                         child: const Text('Isi Biodata'),
                       ),
@@ -143,11 +153,9 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                       ),
                       _buildItem(
                         'Tanggal mulai penurunan',
-                        biodata.tanggalMulaiTapering == null
+                        tanggalMulaiTapering == null
                             ? 'Belum dipilih'
-                            : FormatTanggal.formatDasar(
-                                biodata.tanggalMulaiTapering!,
-                              ),
+                            : FormatTanggal.formatDasar(tanggalMulaiTapering),
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton(
@@ -158,7 +166,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                               buatPertama: false,
                               biodataModel: biodata,
                             ),
-                          ),
+                          ).catchError((Object e, StackTrace s) {
+                            L.e('Gagal navigasi ke Form Biodata: $e $s');
+                            return null;
+                          }),
                         ),
                         child: const Text('Ubah Biodata'),
                       ),
