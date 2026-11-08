@@ -1,6 +1,36 @@
 # Saran Perbaikan
 
-## 2026-11-08 — Dukungan macOS pada penjadwalan notifikasi harian
+## 2026-11-08 — Potensi overflow pada kartu impian saat menampilkan sisa dan target
+
+- **Masalah:** Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 139-147, kondisi HEAD), `Row` dengan `MainAxisAlignment.spaceBetween` menampilkan dua `Text` tanpa `Flexible`/`Expanded`. Pada layar sempit atau skala teks besar, total lebar teks dapat melebihi lebar kartu dan menyebabkan overflow. Nominal target juga ditampilkan tanpa label, sehingga maknanya kurang jelas dibanding "Sisa".
+- **Prioritas:** Rendah
+- **Path:** `lib/fitur/impian/screens/impian_screen.dart:139-147`
+- **Aturan terkait:** `.agents/rules/global/optimasi_ui.md` (bagian 3 — Penanganan Text Overflow)
+- **Referensi:** Flutter SDK `Row` (`packages/flutter/lib/src/widgets/basic.dart`) dan `Text` (`packages/flutter/lib/src/widgets/text.dart`); `MainAxisAlignment.spaceBetween` tidak membatasi lebar anak.
+- **Saran perbaikan:** Bungkus salah satu atau kedua `Text` dengan `Flexible`/`Expanded`, atau gunakan `Wrap`/`FittedBox` sesuai kebutuhan. Tambahkan label singkat (mis. "Target") pada nominal kanan agar maknanya jelas.
+- **Alasan:** Mencegah overflow horizontal dan menjaga kejelasan informasi pada berbagai ukuran layar dan skala teks.
+
+## 2026-11-08 — Identifikasi kegagalan izin melalui pencocokan string
+
+- **Masalah:** Pada `lib/fitur/pengaturan/screens/pengaturan_screen.dart` (baris 116), kegagalan izin dideteksi dengan `e.toString().contains('Izin notifikasi tidak diberikan')`. Pencocokan string bergantung pada teks exception yang sama persis, sehingga rentan jika pesan berubah.
+- **Prioritas:** Rendah
+- **Path:** `lib/fitur/pengaturan/screens/pengaturan_screen.dart:113-129`
+- **Aturan terkait:** Tidak ditemukan pelanggaran aturan tertulis
+- **Referensi:** `NotifikasiService.jadwalkanPengingatHarian()` melempar `Exception('Izin notifikasi tidak diberikan')`.
+- **Saran perbaikan:** Gunakan tipe exception khusus atau hasil boolean dari operasi izin, bukan pencocokan string, agar deteksi kegagalan tidak bergantung pada teks.
+- **Alasan:** Membuat penanganan error lebih stabil terhadap perubahan pesan.
+
+## 2026-11-08 — Ketahanan inisialisasi zona waktu dan fallback
+
+- **Masalah:** Pada `lib/shared/notifikasi/notifikasi_service.dart` (baris 34), `tz.initializeTimeZones()` dipanggil di luar `try`. Fallback `tz.getLocation('Asia/Jakarta')` pada baris 48 tidak dibungkus `try` secara langsung, dan `catch (e, s)` pada baris 50 hanya menangkap `Exception`, bukan `Error` seperti `ArgumentError` yang mungkin dilempar `FlutterTimezone.getLocalTimezone()`.
+- **Prioritas:** Rendah
+- **Path:** `lib/shared/notifikasi/notifikasi_service.dart:33-59`
+- **Aturan terkait:** `.agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md` (bagian 4.3.C — Penanganan Kesalahan)
+- **Referensi:** `timezone` 0.11.2 (`initializeTimeZones()`, `getLocation()`), `flutter_timezone` 5.1.1 (`getLocalTimezone()`).
+- **Saran perbaikan:** Bungkus `tz.initializeTimeZones()` dan fallback `tz.getLocation('Asia/Jakarta')` dalam `try/catch`, serta tangkap `UnsupportedError`/`Error` yang relevan atau validasi hasil sebelum penggunaan.
+- **Alasan:** Memastikan inisialisasi timezone tidak menjadi unhandled error pada platform yang tidak mendukung.
+
+"
 
 - **Masalah:** Pada `lib/shared/notifikasi/notifikasi_service.dart`, method `jadwalkanPengingatHarian()` (baris 104-112) melempar `UnsupportedError` pada `TargetPlatform.macOS`, padahal plugin `flutter_local_notifications` v22.3.3 mendukung notifikasi terjadwal pada macOS melalui `zonedSchedule`. Aturan hanya melarang penjadwalan berulang pada Web dan Linux.
 - **Prioritas:** Rendah
@@ -31,17 +61,6 @@
 - **Saran perbaikan:** Periksa `mounted` setelah setiap operasi asynchronous sebelum menggunakan `setState()` atau `context`.
 - **Alasan:** Mencegah penggunaan widget yang sudah tidak terpasang.
 - **Status:** Sebagian diperbaiki (mounted check ditambahkan pada `_ubahNotifikasi`, `_pilihWaktu`, dan `_ujiNotifikasi`). Masih perlu verifikasi konsistensi pada seluruh await.
-
-## 2026-11-08 — Penentuan zona waktu pengingat harian
-
-- **Masalah:** Zona waktu ditetapkan permanen menggunakan `Asia/Jakarta` melalui `tz.setLocalLocation(tz.getLocation('Asia/Jakarta'))`.
-- **Prioritas:** Sedang, bergantung pada cakupan pengguna
-- **Path:** `lib/shared/notifikasi/notifikasi_service.dart`
-- **Aturan terkait:** -
-- **Referensi:** Package `timezone` 0.11.2; README plugin v22.3.3: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
-- **Saran perbaikan:** Tentukan apakah waktu pengingat harus selalu mengikuti WIB atau mengikuti zona waktu perangkat. Jika aplikasi ditujukan untuk pengguna di seluruh Indonesia, pertimbangkan zona waktu lokal perangkat agar mendukung WIB, WITA, dan WIT. Periksa mekanisme platform atau package tambahan yang diperlukan karena package timezone tidak otomatis mendeteksi zona waktu perangkat.
-- **Alasan:** Pengingat dapat muncul pada waktu yang tidak sesuai untuk pengguna di luar WIB.
-- **Status:** Diperbaiki — deteksi zona waktu perangkat menggunakan package `flutter_timezone`; `tz.setLocalLocation` memakai identifier perangkat (WIB/WITA/WIT/dll.) dengan fallback `Asia/Jakarta` jika deteksi atau pencarian lokasi gagal.
 
 ## 2026-11-08 — Pengujian fitur notifikasi
 

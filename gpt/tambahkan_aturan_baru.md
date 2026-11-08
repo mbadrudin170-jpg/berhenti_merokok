@@ -7,3 +7,5 @@
 7. kedua file tersebut isinya jangan di hapus cukup di perbarui atau di tambahkan saja karena aturan lama mungkin bisa berguna di masa mendatang.
 8. disini gpt cukup membuat prompt/instruksi untuk memperbarui kedua file tersebut. jadi AI kilo code tidak perlu analisa ulang untuk menghemat waktu.
 9. didalam instruksi tersebut suruh AI kilo code untuk memperbarui file `catatan.md` nya juga.
+10. target kan awal cek commit apa dan target commit apa, biar nanti kilo code punya arahan, tanpa menyentuh commit yang tidak diinginkan.
+11. agar commit terbaru yang tidak gpt cek tidak di baca kilo code

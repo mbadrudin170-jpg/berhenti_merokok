@@ -29,6 +29,8 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     super.dispose();
   }
 
+  void _showModalSort() {}
+  
   @override
   Widget build(BuildContext context) {
     final impianAsync = ref.watch(impianProvider);
@@ -104,6 +106,12 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         elevation: 0,
         scrolledUnderElevation: 2,
         forceMaterialTransparency: false,
+        actions: [
+          IconButton(
+            icon: const Icon(CupertinoIcons.sort_up),
+            onPressed: () => _showModalSort(),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
