@@ -1,181 +1,258 @@
 ---
-description: Hapus task yang sudah selesai atau telah diimplementasikan dari task.md
+description: Hapus task yang sudah selesai atau implementasinya telah terbukti tuntas dari task.md.
 agent: code
 ---
 
-# Prompt
+<!-- Lokasi file di repository: .kilo/commands/hapus_task_selesai.md -->
 
-Bersihkan daftar task pada file `task.md` dengan menghapus task yang memenuhi salah satu kondisi berikut:
+# Prompt: Bersihkan Task yang Sudah Selesai
 
-1. Task yang statusnya sudah dinyatakan selesai di `task.md`.
-2. Task yang belum ditandai selesai, tetapi implementasinya sudah benar-benar selesai dan sesuai dengan tujuan serta kebutuhan yang dijelaskan dalam task tersebut.
+## 1. Tujuan
 
-Untuk task yang belum ditandai selesai, jangan langsung menghapusnya. Periksa kode sumber proyek untuk memastikan implementasinya benar-benar sudah tersedia dan berfungsi sesuai maksud task.
+Bersihkan daftar pekerjaan pada file `task.md` dengan menghapus dua jenis task:
 
-Tujuan utama perintah ini adalah memastikan `task.md` hanya berisi task yang masih perlu dikerjakan.
+1. Task yang statusnya sudah dinyatakan **Selesai**.
+2. Task yang statusnya belum dinyatakan selesai, tetapi setelah diperiksa ternyata seluruh implementasinya sudah benar-benar dikerjakan dan memenuhi kebutuhan task tersebut.
 
-# Ruang Lingkup
+Tujuan akhir adalah memastikan `task.md` hanya berisi pekerjaan yang memang masih perlu diselesaikan.
 
-1. File utama yang boleh diubah:
-   - `task.md`
+**Penting:** Jangan menghapus task hanya karena terlihat pernah dikerjakan. Untuk task yang belum berstatus selesai, wajib periksa implementasi aktual pada kode proyek sebelum mengambil keputusan.
 
-2. File yang boleh dibaca untuk memverifikasi implementasi:
-   - Kode sumber proyek.
-   - File pengujian yang berkaitan.
-   - Dokumentasi teknis yang relevan.
+## 2. Aturan Membaca Repository
 
-3. Seluruh perubahan hanya boleh dilakukan pada `task.md`.
+Sebelum memulai pekerjaan:
 
-4. Jangan mengubah file kode, pengujian, dokumentasi, konfigurasi, maupun file lainnya.
+1. Pastikan direktori aktif merupakan root repository.
+2. Baca seluruh isi `AGENTS.md` di root repository.
+3. Ikuti instruksi dan referensi aturan yang terdapat di `AGENTS.md`.
+4. Baca aturan global dan aturan khusus proyek yang relevan dengan task yang akan diverifikasi.
+5. Periksa apakah terdapat `AGENTS.md` tambahan pada direktori kode yang berkaitan.
+6. Baca seluruh isi `task.md` agar memahami struktur dan semua task yang tercatat.
+7. Baca dokumentasi atau catatan teknis yang relevan apabila diperlukan untuk memahami maksud task.
 
-# Prosedur
+Jangan mengambil keputusan berdasarkan ingatan dari sesi sebelumnya, ringkasan AI, atau asumsi mengenai kondisi kode.
 
-## 1. Periksa task.md
+Gunakan kondisi repository dan implementasi aktual ketika command dijalankan.
 
-- Baca seluruh isi `task.md` terlebih dahulu.
-- Pahami struktur, kategori, pengelompokan, hierarki, dan format penulisan task.
-- Identifikasi seluruh task yang statusnya sudah selesai.
-- Identifikasi task yang belum ditandai selesai dan perlu diperiksa implementasinya.
-- Jangan hanya membaca sebagian isi file.
+## 3. Pemeriksaan Kondisi Awal
 
-## 2. Identifikasi task yang sudah selesai
+Sebelum mengubah `task.md`:
 
-Hapus task yang secara eksplisit memiliki status selesai.
+1. Periksa branch dan commit HEAD.
+2. Periksa kondisi Git menggunakan `git status --short`.
+3. Periksa perubahan sebelumnya pada `task.md` menggunakan `git diff -- task.md` dan `git diff --cached -- task.md`.
+4. Pastikan tidak ada perubahan lokal pengguna pada `task.md` yang berisiko tertimpa.
 
-Kenali penanda penyelesaian berdasarkan format yang digunakan dalam `task.md`, misalnya:
+Apabila terdapat perubahan staged atau unstaged pada `task.md` yang belum di-commit, hentikan pengeditan dan laporkan kondisi tersebut. Jangan menimpa atau menggabungkan perubahan pengguna berdasarkan asumsi.
+
+Jangan mengubah file sebelum seluruh pemeriksaan awal selesai.
+
+## 4. Identifikasi Task yang Sudah Selesai
+
+Baca seluruh task dan identifikasi status masing-masing berdasarkan struktur yang benar-benar digunakan dalam `task.md`.
+
+Penanda penyelesaian dapat berupa:
 
 - `[x]`
-- `Selesai`
-- `Done`
-- `Completed`
+- `Status: Selesai`
+- `Status: Done`
+- `Status: Completed`
+- Penanda lain yang secara eksplisit menyatakan bahwa task telah selesai.
 
-Sesuaikan pemeriksaan dengan struktur dan format status yang benar-benar digunakan dalam file.
+Sesuaikan dengan format aktual file. Jangan menganggap kata-kata tersebut sebagai status apabila hanya muncul dalam deskripsi atau pembahasan task.
 
-Jangan menganggap task berstatus dikerjakan, proses, tertunda, atau belum dikerjakan sebagai task selesai.
+**Aturan keputusan:**
 
-## 3. Verifikasi task yang belum ditandai selesai
+| Kondisi task                                                    | Tindakan                 |
+| --------------------------------------------------------------- | ------------------------ |
+| Status secara eksplisit Selesai                                 | Hapus task               |
+| Status belum selesai, tetapi implementasi terbukti sudah tuntas | Hapus task               |
+| Status Dikerjakan, tetapi implementasi baru sebagian            | Pertahankan              |
+| Status Belum dan implementasi belum tersedia                    | Pertahankan              |
+| Implementasi belum dapat dipastikan                             | Pertahankan              |
+| Status atau struktur task ambigu                                | Pertahankan dan laporkan |
 
-Untuk setiap task yang belum berstatus selesai:
+Jangan mengubah status task menjadi Selesai sebagai pengganti penghapusan.
 
-1. Pahami tujuan dan maksud task secara menyeluruh.
-2. Identifikasi kriteria atau hasil yang harus dicapai berdasarkan deskripsi task.
-3. Telusuri kode sumber yang berkaitan dengan kebutuhan task tersebut.
-4. Periksa apakah implementasinya benar-benar sudah tersedia.
-5. Pastikan implementasi memenuhi seluruh kebutuhan yang dijelaskan dalam task.
-6. Periksa keterhubungan implementasi dengan bagian lain yang diperlukan agar fitur atau perbaikan benar-benar dapat digunakan.
+## 5. Verifikasi Task yang Belum Berstatus Selesai
 
-Jangan hanya menyimpulkan task sudah selesai karena menemukan nama fungsi, class, variabel, widget, atau file yang mirip dengan deskripsi task.
+Untuk setiap task yang belum mempunyai status selesai, periksa apakah implementasinya sudah benar-benar tersedia.
 
-Jika tersedia, gunakan kode pengujian yang relevan sebagai informasi pendukung untuk memverifikasi implementasi.
+Lakukan langkah berikut:
 
-## 4. Tentukan apakah task boleh dihapus
+### A. Pahami kebutuhan task
 
-Hapus task yang belum ditandai selesai hanya apabila seluruh kebutuhan task sudah terbukti diimplementasikan.
+1. Baca deskripsi masalah.
+2. Pahami solusi atau hasil yang diharapkan.
+3. Identifikasi file yang terdampak.
+4. Identifikasi fungsi, class, widget, provider, notifier, database, atau komponen lain yang berkaitan.
+5. Tentukan kriteria yang harus terpenuhi agar task dapat dianggap selesai.
 
-Pertahankan task apabila ditemukan kondisi berikut:
+Jangan mengurangi atau mengubah maksud task saat melakukan verifikasi.
+
+### B. Periksa implementasi aktual
+
+1. Buka file kode yang berkaitan.
+2. Periksa apakah perubahan yang diminta benar-benar sudah diterapkan.
+3. Telusuri hubungan implementasi dengan bagian lain yang menggunakannya.
+4. Periksa apakah fungsi atau fitur sudah terhubung dengan alur aplikasi yang seharusnya.
+5. Periksa kemungkinan adanya placeholder, implementasi sementara, atau kode yang belum selesai.
+6. Periksa apakah implementasi masih mempunyai kekurangan terhadap kebutuhan task.
+7. Baca pengujian yang relevan apabila tersedia.
+8. Gunakan hasil pengujian atau bukti teknis lainnya sebagai pendukung kesimpulan apabila diperlukan.
+
+Jangan hanya mengandalkan pencarian nama fungsi, nama file, class, variabel, atau komentar yang mirip dengan deskripsi task.
+
+Keberadaan kode tidak otomatis membuktikan bahwa task sudah selesai.
+
+### C. Tentukan hasil verifikasi
+
+Task hanya boleh dihapus apabila seluruh kebutuhan yang dijelaskan telah terpenuhi.
+
+Gunakan kriteria berikut:
+
+**Hapus apabila:**
+
+- Seluruh implementasi yang diminta sudah tersedia.
+- Implementasi sudah terhubung dengan alur aplikasi yang diperlukan.
+- Tidak ada bagian kebutuhan task yang masih tertunda.
+- Tidak ditemukan placeholder atau implementasi sementara yang menunjukkan pekerjaan belum selesai.
+- Bukti dari kode aktual cukup untuk memastikan penyelesaian.
+
+**Pertahankan apabila:**
 
 - Implementasi baru selesai sebagian.
-- Masih ada kebutuhan yang belum diimplementasikan.
-- Kode hanya berupa kerangka, placeholder, atau implementasi sementara.
-- Implementasi belum terhubung dengan bagian yang seharusnya menggunakannya.
-- Hasil implementasi belum memenuhi maksud task.
-- Bukti implementasi tidak cukup untuk memastikan task sudah selesai.
-- AI masih memiliki keraguan apakah task benar-benar sudah terpenuhi.
+- Masih ada kebutuhan yang belum dikerjakan.
+- Kode baru berupa kerangka atau placeholder.
+- Implementasi belum terhubung dengan bagian aplikasi yang seharusnya.
+- Implementasi belum memenuhi tujuan task.
+- Terdapat keraguan atau bukti belum mencukupi.
+- Verifikasi tidak dapat dilakukan.
 
-Apabila terdapat keraguan, jangan menghapus task tersebut.
+**Prinsip utama: Lebih baik mempertahankan task yang masih meragukan daripada menghapus pekerjaan yang sebenarnya belum selesai.**
 
-## 5. Perbarui task.md
+## 6. Penanganan Task Induk dan Task Turunan
 
-Setelah seluruh task diperiksa:
+Perhatikan hubungan hierarki antar-task.
 
-- Hapus task yang sudah memenuhi kriteria penghapusan.
-- Jangan sekadar mengubah status task menjadi selesai. Task yang memenuhi kriteria harus benar-benar dihapus dari daftar.
-- Pertahankan seluruh task yang masih perlu dikerjakan.
-- Pertahankan deskripsi task yang belum selesai tanpa mengubah maksudnya.
-- Pertahankan urutan, hierarki, dan format penulisan task yang masih tersisa.
-- Jangan menghapus catatan atau informasi lain yang bukan merupakan task selesai.
-- Jangan mengubah kategori atau menyusun ulang task yang masih tersisa.
+1. Task turunan yang sudah selesai boleh dihapus secara independen.
+2. Task turunan yang belum selesai wajib dipertahankan.
+3. Task induk hanya boleh dihapus apabila seluruh kebutuhan dan task turunannya sudah selesai.
+4. Jika task induk dinyatakan selesai tetapi masih terdapat task turunan yang belum selesai, jangan langsung menghapus task induk. Pertahankan struktur yang diperlukan dan laporkan ketidaksesuaian status tersebut.
+5. Jangan menghapus task yang masih menjadi konteks penting bagi pekerjaan turunan yang belum selesai.
 
-Jika sebuah task induk memiliki beberapa task turunan:
+Jangan menghapus kelompok, kategori, atau catatan bersama apabila masih diperlukan oleh task lain.
 
-- Hapus task turunan yang sudah selesai secara independen.
-- Hapus task induk hanya apabila seluruh kebutuhan dan seluruh task turunannya sudah selesai.
-- Pertahankan task induk apabila masih ada bagian yang belum selesai.
+## 7. Memperbarui task.md
 
-## 6. Pemeriksaan akhir
+Setelah seluruh task diperiksa, lakukan penghapusan pada file:
 
-Setelah memperbarui `task.md`:
+`task.md`
 
-1. Baca kembali seluruh isi file.
-2. Pastikan semua task yang seharusnya dihapus sudah tidak ada.
-3. Pastikan tidak ada task yang belum selesai ikut terhapus.
-4. Pastikan struktur dan format file tetap konsisten.
-5. Pastikan tidak ada file lain yang berubah akibat menjalankan perintah ini.
-6. Periksa perubahan akhir menggunakan Git apabila proyek menggunakan Git.
+Ketentuan:
 
-# Larangan
+1. Hapus seluruh task yang secara eksplisit berstatus selesai.
+2. Hapus task yang belum berstatus selesai apabila implementasinya terbukti sudah tuntas.
+3. Pertahankan semua task yang masih perlu dikerjakan.
+4. Pertahankan deskripsi dan maksud task yang tersisa tanpa perubahan.
+5. Pertahankan urutan task yang masih tersisa.
+6. Pertahankan kategori, prioritas, dan struktur pengelompokan.
+7. Pertahankan informasi file terdampak apabila masih relevan dengan task yang tersisa.
+8. Jangan menambahkan task baru.
+9. Jangan mengubah solusi atau rekomendasi task yang masih tersisa.
+10. Jangan mengubah status task yang tersisa.
+11. Jangan menghapus informasi lain yang bukan bagian dari task selesai.
+12. Jangan menulis ulang seluruh file apabila cukup menghapus blok task tertentu.
 
-1. Dilarang mengubah kode sumber proyek.
+Apabila setelah penghapusan terdapat kelompok atau kategori kosong, pertahankan struktur aslinya kecuali penghapusan bagian tersebut benar-benar diperlukan dan tidak menghilangkan informasi pengguna.
+
+## 8. Larangan
+
+1. Dilarang mengubah kode Dart atau kode sumber bahasa pemrograman lainnya.
 2. Dilarang mengubah file selain `task.md`.
 3. Dilarang mengimplementasikan task yang belum selesai.
 4. Dilarang memperbaiki bug atau melakukan refactoring.
-5. Dilarang menghapus task hanya berdasarkan perkiraan atau kemiripan nama.
-6. Dilarang menghapus task yang implementasinya baru selesai sebagian.
-7. Dilarang menghapus task yang bukti penyelesaiannya belum cukup.
-8. Dilarang mengubah deskripsi task yang masih tersisa tanpa alasan.
-9. Dilarang mengubah urutan atau kategori task yang masih tersisa.
-10. Dilarang menghapus catatan, rencana, atau informasi lain yang bukan task selesai.
-11. Dilarang mengubah status task menjadi selesai sebagai pengganti penghapusan.
-12. Dilarang menghapus atau membatalkan perubahan milik pengguna yang sudah ada sebelumnya.
-13. Dilarang melakukan commit atau push Git.
+5. Dilarang mengubah konfigurasi, dependency, database, atau file pengujian.
+6. Dilarang menghapus task hanya berdasarkan kemiripan nama atau deskripsi.
+7. Dilarang menghapus task yang implementasinya baru selesai sebagian.
+8. Dilarang menghapus task apabila bukti penyelesaiannya belum cukup.
+9. Dilarang mengubah maksud atau deskripsi task yang masih tersisa.
+10. Dilarang mengubah urutan, prioritas, atau kategori task yang masih tersisa.
+11. Dilarang menghapus catatan atau informasi lain yang bukan merupakan task selesai.
+12. Dilarang mengubah status task menjadi selesai sebagai pengganti penghapusan.
+13. Dilarang menghapus, menimpa, atau membatalkan perubahan lokal pengguna.
+14. Dilarang membuat file backup, laporan, atau file tambahan.
+15. Dilarang melakukan commit, push, reset, rebase, checkout, switch, merge, atau operasi Git lain yang mengubah repository.
+16. Dilarang menjalankan perintah terminal atau skrip untuk mengedit isi file secara langsung.
+17. Dilarang menyatakan task telah selesai tanpa bukti implementasi aktual.
 
-# Ketentuan
+## 9. Ketentuan Pelaksanaan
 
-1. Gunakan kondisi proyek dan kode sumber yang tersedia saat perintah dijalankan. Jangan mengandalkan ingatan dari sesi sebelumnya untuk menyatakan suatu task sudah diimplementasikan.
-2. Periksa perubahan yang sudah ada pada `task.md` sebelum mengedit agar perubahan milik pengguna tidak tertimpa atau hilang.
-3. Gunakan bukti dari kode sumber untuk menentukan apakah task yang belum ditandai selesai benar-benar sudah diimplementasikan.
-4. Apabila implementasi task belum dapat dipastikan, pertahankan task tersebut.
-5. Jangan menambahkan task baru.
-6. Jangan mengubah cakupan atau maksud task yang masih tersisa.
-7. Jangan menjalankan pemeriksaan atau pengujian yang tidak berkaitan dengan verifikasi task.
-8. Jangan membuat file tambahan seperti backup, laporan, atau dokumentasi baru.
+1. Fokus hanya pada pembersihan task yang sudah selesai.
+2. Gunakan kode aktual sebagai dasar verifikasi task yang belum berstatus selesai.
+3. Jika task membutuhkan pemeriksaan beberapa file, telusuri seluruh alur yang relevan.
+4. Jika bukti belum cukup, pertahankan task.
+5. Jangan membuat asumsi untuk menyelesaikan ambiguitas.
+6. Jangan menambah ruang lingkup pekerjaan.
+7. Gunakan tool edit untuk menghapus bagian tertentu dari `task.md`.
+8. Pertahankan seluruh isi file yang tidak termasuk dalam penghapusan.
+9. Apabila tidak ada task yang memenuhi kriteria penghapusan, jangan mengubah `task.md`.
+10. Hentikan pekerjaan jika ditemukan kondisi yang membuat perubahan tidak aman.
 
-# Laporan Hasil
+## 10. Pemeriksaan Akhir
 
-Setelah selesai, sampaikan laporan kepada pengguna dengan format berikut:
+Setelah penghapusan:
 
-## Ringkasan
+1. Baca kembali seluruh isi `task.md`.
+2. Pastikan semua task yang berstatus selesai sudah dihapus.
+3. Pastikan task yang implementasinya sudah tuntas juga sudah dihapus.
+4. Pastikan task yang belum selesai tidak ikut terhapus.
+5. Pastikan tidak ada perubahan pada deskripsi, kategori, prioritas, dan urutan task yang tersisa.
+6. Pastikan struktur kelompok tetap konsisten.
+7. Periksa `git diff -- task.md`.
+8. Periksa `git status --short`.
+9. Pastikan tidak ada file selain `task.md` yang berubah akibat command ini.
+10. Pastikan perubahan sebelumnya milik pengguna tetap terjaga.
 
-- Jumlah task yang diperiksa.
-- Jumlah task yang dihapus karena sudah berstatus selesai.
-- Jumlah task yang dihapus karena implementasinya sudah selesai tetapi statusnya belum diperbarui.
+Jika pemeriksaan akhir menemukan task yang seharusnya dipertahankan tetapi telah terhapus, batalkan hanya penghapusan yang dilakukan oleh command ini dengan mempertahankan seluruh perubahan pengguna. Jika pemulihan tidak aman, hentikan dan laporkan masalahnya.
+
+## 11. Laporan Hasil
+
+Setelah pekerjaan selesai, berikan laporan dengan format berikut.
+
+### A. Ringkasan
+
+- Jumlah seluruh task yang diperiksa.
+- Jumlah task yang dihapus karena berstatus selesai.
+- Jumlah task yang dihapus karena implementasinya sudah selesai tetapi status belum diperbarui.
 - Jumlah task yang dipertahankan.
 
-## Daftar Task yang Dihapus
+### B. Daftar Task yang Dihapus
 
-Untuk setiap task yang dihapus, tampilkan:
+Untuk setiap task, tampilkan:
 
 - Nama atau deskripsi task.
-- Alasan penghapusan.
 - Status sebelumnya.
-- Untuk task yang belum ditandai selesai, sertakan bukti implementasi berupa path file dan nama fungsi, class, atau bagian kode yang relevan.
+- Alasan penghapusan.
+- Untuk task yang belum berstatus selesai, bukti implementasi berupa path file dan nama fungsi, class, atau komponen terkait.
 
-## Daftar Task yang Dipertahankan
+### C. Daftar Task yang Dipertahankan
 
-Tampilkan task yang belum dihapus karena:
+Untuk setiap task yang masih ada, tampilkan:
 
-- Implementasinya belum selesai.
-- Implementasinya baru sebagian.
-- Bukti implementasi belum cukup.
-- Penyelesaiannya masih diragukan.
+- Nama atau deskripsi task.
+- Status.
+- Alasan dipertahankan.
+- Bagian implementasi yang masih belum selesai atau belum dapat diverifikasi.
 
-Berikan alasan secara singkat untuk setiap kondisi tersebut.
-
-## Status Perubahan
+### D. Status Perubahan
 
 Sampaikan:
 
 - Apakah `task.md` berhasil diperbarui.
 - Apakah perubahan hanya terjadi pada `task.md`.
 - Apakah masih ada task yang perlu dikerjakan.
+- Apakah terdapat kondisi yang menghambat pembersihan.
 - Apabila tidak ada task yang dihapus, jelaskan alasannya.
+
+**Kriteria keberhasilan:** `task.md` hanya kehilangan task yang benar-benar sudah selesai. Seluruh task yang masih membutuhkan pekerjaan atau belum mempunyai bukti penyelesaian harus tetap dipertahankan.

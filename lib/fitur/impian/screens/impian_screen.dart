@@ -153,10 +153,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Impian'),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 0,
           scrolledUnderElevation: 2,
-          forceMaterialTransparency: false,
         ),
         body: const _EmptyImpian(),
         floatingActionButton: FloatingActionButton(
@@ -168,10 +165,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Impian'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
         scrolledUnderElevation: 2,
-        forceMaterialTransparency: false,
         actions: [
           IconButton(
             tooltip: 'Urutkan',
@@ -216,13 +210,21 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                                   ? 0
                                   : (uangDihemat / item.jumlah).clamp(0.0, 1.0),
                             ),
+                            // Bungkus Text dengan Flexible agar tidak overflow pada layar sempit.
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                                Flexible(
+                                  child: Text(
+                                    'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                                  ),
                                 ),
-                                Text(FormatUang.formatRupiah(item.jumlah)),
+                                Flexible(
+                                  child: Text(
+                                    'Target: ${FormatUang.formatRupiah(item.jumlah)}',
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ),
                               ],
                             ),
                           ],

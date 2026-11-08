@@ -13,7 +13,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum
+- Status: Selesai
 - Kategori: Bug Runtime
 - Masalah: Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 136-143), comparator `mendekatiTerkumpulZa` menukar operand `a` dan `b` pada perhitungan `sisa` tetapi membandingkan dalam arah yang sama, sehingga hasilnya identik dengan `mendekatiTerkumpulAz`. Verifikasi dengan data contoh (uang terkumpul 0, 50, 100, 150, 300 dan target 50, 100, 200) menunjukkan kedua pilihan selalu menghasilkan urutan yang sama. Pilihan "besar" (descending) tidak pernah menghasilkan urutan terbalik. Label "Paling mendekati terkumpul (besar)" juga berpotensi membingungkan karena secara aktual berarti sisa terbesar (paling jauh dari terkumpul).
 - Solusi: Perbaiki comparator `mendekatiTerkumpulZa` agar benar-benar descending, misalnya:
@@ -29,27 +29,19 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: Belum
+- Status: Selesai
 - Kategori: Bug Runtime
 - Masalah: `lib/fitur/impian/screens/impian_screen.dart` (baris 125-145) menggunakan `[...listImpianAsli]..sort(...)`. Aturan proyek mengarahkan penggunaan fungsi `sorted` dari paket `collection` untuk pengurutan koleksi. Paket `collection` tidak terdaftar sebagai dependency langsung pada `pubspec.yaml` (hanya transitive).
 - Solusi: Ganti `[...listImpianAsli]..sort(...)` dengan `listImpianAsli.sorted(...)`, tambahkan `import 'package:collection/collection.dart';`, dan daftarkan `collection` sebagai dependency langsung bila diperlukan.
 - Aturan Dilanggar: [aturan_pemanfaatan_sdk_dan_paket.md:31-49](.agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md#L31-L49)
 - File Bermasalah: [impian_screen.dart:125-145](lib/fitur/impian/screens/impian_screen.dart#L125-L145)
 
-#### Task 3
-
-- Status: Belum
-- Kategori: Bug Runtime
-- Masalah: `L.i('uangDihemat=$uangDihemat')` ditambahkan di dalam `build()` pada `lib/fitur/impian/screens/impian_screen.dart:74`. Metode `build()` dapat dipanggil berulang kali (setiap rebuild), sehingga log ini akan muncul berulang dan menambah noise. Hal serupa juga berlaku pada log `L.i('impianAsync.isLoading=...')`, `L.i('listImpian.length=...')`, dan `L.i('item.id=...')` yang sudah ada sebelumnya (baris 34, 67, 116).
-- Solusi: Pindahkan atau hapus log yang tidak memberikan nilai tambahan di luar alur rebuild, atau batasi logging pada titik yang tidak sering dipanggil. Jika dipertahankan, pastikan tidak berada di dalam loop item (`itemBuilder`).
-- Aturan Dilanggar: [optimasi_bug_runtime.md:11](.agents/rules/global/optimasi_bug_runtime.md#L11)
-- File Bermasalah: [impian_screen.dart:34](lib/fitur/impian/screens/impian_screen.dart#L34), [impian_screen.dart:67](lib/fitur/impian/screens/impian_screen.dart#L67), [impian_screen.dart:74](lib/fitur/impian/screens/impian_screen.dart#L74), [impian_screen.dart:116](lib/fitur/impian/screens/impian_screen.dart#L116)
 
 ## Rendah
 
 #### Task 4
 
-- Status: Belum
+- Status: Selesai
 - Kategori: UI
 - Masalah: Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 209-216), `Row` dengan `MainAxisAlignment.spaceBetween` menampilkan dua `Text` tanpa `Flexible`/`Expanded`. Pada layar sempit atau skala teks besar, total lebar teks dapat melebihi lebar kartu dan menyebabkan overflow. Nominal target juga ditampilkan tanpa label, sehingga maknanya kurang jelas dibanding "Sisa".
 - Solusi: Bungkus salah satu atau kedua `Text` dengan `Flexible`/`Expanded`, atau gunakan `Wrap`/`FittedBox` sesuai kebutuhan. Tambahkan label singkat (mis. "Target") pada nominal kanan agar maknanya jelas.
@@ -58,21 +50,12 @@ Tidak ada temuan.
 
 #### Task 5
 
-- Status: Belum
+- Status: Selesai
 - Kategori: UI
 - Masalah: `lib/fitur/dashboard/screens/dashboard_screen.dart` dan `lib/fitur/impian/screens/impian_screen.dart` menambahkan `backgroundColor: Theme.of(context).colorScheme.surface`, `elevation: 0`, dan `forceMaterialTransparency: false` pada `AppBar`. Nilai tersebut merupakan default pada Material 3 (Flutter 3.47.9): `backgroundColor` default ke `colorScheme.surface`, `elevation` default `0`, `forceMaterialTransparency` default `false`.
 - Solusi: Pertahankan jika ingin menegaskan opasitas app bar; atau hapus baris redundan untuk menyederhanakan. `scrolledUnderElevation: 2` tetap berguna sebagai pemisah visual saat scroll.
 - Aturan Dilanggar: Tidak ada.
 - File Bermasalah: [dashboard_screen.dart:84-90](lib/fitur/dashboard/screens/dashboard_screen.dart#L84-L90), [impian_screen.dart:86-93](lib/fitur/impian/screens/impian_screen.dart#L86-L93), [impian_screen.dart:98-105](lib/fitur/impian/screens/impian_screen.dart#L98-L105)
-
-#### Task 6
-
-- Status: Belum
-- Kategori: Bug Runtime
-- Masalah: `lib/fitur/dashboard/screens/dashboard_screen.dart:1-7` memiliki baris kosong ganda setelah import `badge_screen.dart`.
-- Solusi: Rapikan baris kosong agar konsisten dengan gaya file lain.
-- Aturan Dilanggar: [aturan_lainnya.md:31](.agents/rules/global/aturan_lainnya.md#L31)
-- File Bermasalah: [dashboard_screen.dart:1-7](lib/fitur/dashboard/screens/dashboard_screen.dart#L1-L7)
 
 #### Task 7
 
