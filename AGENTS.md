@@ -1,6 +1,6 @@
 # Berhenti Merokok
 
-Flutter app (Android-first, offline-first) for smoking-cessation tracking: biodata, smoke-free progress, dreams/goals, craving diary, health recovery milestones, badges, SOS craving, daily local notifications.
+Flutter app (Android-first, offline-first) for smoking-cessation tracking: biodata, smoke-free progress, reason-to-quit notes, dreams/goals, craving diary, health recovery milestones, badges, SOS craving, kalender smoke-free, daily local notifications.
 
 ## Commands
 
@@ -20,14 +20,14 @@ Flutter app (Android-first, offline-first) for smoking-cessation tracking: bioda
 
 ## Key conventions (non-obvious)
 
-- Logging: use `L` from `lib/shared/utils/l.dart` (`L.i/w/e/s`), never `print`/`debugPrint`.
+- Logging: use `L` from `lib/shared/utils/l.dart` (`L.i/w/e/s`), never `print`/`debugPrint`. Before `L.init()` (in `lib/app.dart`), use `p` from `core_shared`.
 - Navigation: use `Nav` from `core_shared`, never `Navigator.push/pop` directly.
 - Imports: `package:` only, no relative imports; sort alphabetically by full path.
 - Naming: Indonesian for app-defined identifiers; snake_case files.
 - DB access: use `SqfliteOp`; never `openDatabase` directly in notifiers. Notifiers use `@Riverpod(keepAlive: true)` and `_ambilSemua()`.
 - Freezed models/state use `abstract class`, not `class`.
 - DB rows ↔ model via `fromSqflite`/`toSqflite`; parse `dynamic` via `ParserUtil`; store datetimes UTC, display local.
-- DB schema changes: bump `_versiDatabase`, update both `onCreate` and `onUpgrade` (`if (oldVersion < N)`); table/column names as constants in `NamaTabel`/`NamaKolom`.
+- DB schema changes: bump `_versiDatabase` (currently 7), update both `onCreate` and `onUpgrade` (`if (oldVersion < N)`); table/column names as constants in `NamaTabel`/`NamaKolom`.
 - Generated files (`.g.dart`, `.freezed.dart`) are never edited by hand; change source + run build_runner.
 - Tests live flat in `test/*_state_test.dart`; use mockito and dummy data from `lib/fitur/*/dummy_data/`.
 
