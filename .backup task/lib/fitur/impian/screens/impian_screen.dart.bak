@@ -3,15 +3,18 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/enum/sort_impian.dart';
+import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ImpianScreen extends ConsumerStatefulWidget {
   const ImpianScreen({super.key});
@@ -22,15 +25,44 @@ class ImpianScreen extends ConsumerStatefulWidget {
 
 class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   SortImpian _sortImpian = SortImpian.mendekatiTerkumpulAz;
+  final Set<String> _sudahDiraikan = <String>{};
 
   @override
   void initState() {
     super.initState();
+    _muatSudahDiraikan();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> _muatSudahDiraikan() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final daftar = prefs.getStringList('impian_diraikan') ?? <String>[];
+      if (mounted) {
+        setState(() {
+          _sudahDiraikan.addAll(daftar);
+        });
+      }
+    } catch (e, s) {
+      L.e('Gagal memuat daftar impian diraikan: $e $s');
+    }
+  }
+
+  Future<void> _tandaiSudahDiraikan(String id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final daftar = prefs.getStringList('impian_diraikan') ?? <String>[];
+      if (!daftar.contains(id)) {
+        daftar.add(id);
+        await prefs.setStringList('impian_diraikan', daftar);
+      }
+    } catch (e, s) {
+      L.e('Gagal menyimpan impian diraikan: $e $s');
+    }
   }
 
   void _showModalSort() {
@@ -134,30 +166,41 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         case SortImpian.jumlahZa:
           return b.jumlah.compareTo(a.jumlah);
         case SortImpian.mendekatiTerkumpulAz:
-          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
-          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaA = ImpianProgresHelper.sisa(uangDihemat, a.jumlah);
+          final sisaB = ImpianProgresHelper.sisa(uangDihemat, b.jumlah);
           return sisaA.compareTo(sisaB);
         case SortImpian.mendekatiTerkumpulZa:
-          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
-          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaA = ImpianProgresHelper.sisa(uangDihemat, a.jumlah);
+          final sisaB = ImpianProgresHelper.sisa(uangDihemat, b.jumlah);
           return sisaB.compareTo(sisaA);
       }
     });
     final jumlahTercapai = listImpian
-        .where((item) => uangDihemat >= item.jumlah)
+        .where((item) => ImpianProgresHelper.tercapai(uangDihemat, item.jumlah))
         .length;
     L.i('jumlahTercapai=$jumlahTercapai/${listImpian.length}');
+
+    // Cek impian yang baru tercapai dan tampilkan toast perayaan.
+    for (final item in listImpian) {
+      final sudahTercapai = ImpianProgresHelper.tercapai(
+        uangDihemat,
+        item.jumlah,
+      );
+      if (sudahTercapai && !_sudahDiraikan.contains(item.id)) {
+        if (mounted) {
+          AppToast.sukses(
+            context,
+            'Selamat! Impian "${item.nama}" telah tercapai!',
+          );
+        }
+        unawaited(_tandaiSudahDiraikan(item.id));
+      }
+    }
 
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Impian'),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 0,
-          scrolledUnderElevation: 2,
-          forceMaterialTransparency: false,
-        ),
+        appBar: AppBar(title: const Text('Impian'), scrolledUnderElevation: 2),
         body: const _EmptyImpian(),
         floatingActionButton: FloatingActionButton(
           onPressed: () => unawaited(Nav.to(context, const FormImpian())),
@@ -168,10 +211,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Impian'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
         scrolledUnderElevation: 2,
-        forceMaterialTransparency: false,
         actions: [
           IconButton(
             tooltip: 'Urutkan',
@@ -200,6 +240,18 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                     L.i(
                       'item.id=${item.id}, item.nama=${item.nama}, item.jumlah=${item.jumlah}',
                     );
+                    final rasio = ImpianProgresHelper.rasio(
+                      uangDihemat,
+                      item.jumlah,
+                    );
+                    final sudahTercapai = ImpianProgresHelper.tercapai(
+                      uangDihemat,
+                      item.jumlah,
+                    );
+                    final sisa = ImpianProgresHelper.sisa(
+                      uangDihemat,
+                      item.jumlah,
+                    );
                     return Card(
                       key: ValueKey(item.id),
                       child: ListTile(
@@ -211,18 +263,36 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 4,
                           children: [
-                            LinearProgressIndicator(
-                              value: uangDihemat <= 0 || item.jumlah <= 0
-                                  ? 0
-                                  : (uangDihemat / item.jumlah).clamp(0.0, 1.0),
+                            VisualTabunganImpian(
+                              rasio: rasio,
+                              tercapai: sudahTercapai,
                             ),
+                            if (sudahTercapai)
+                              Text(
+                                'Tercapai',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            // Bungkus Text dengan Flexible agar tidak overflow pada layar sempit.
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                                Flexible(
+                                  child: Text(
+                                    'Sisa: ${FormatUang.formatRupiah(sisa)}',
+                                  ),
                                 ),
-                                Text(FormatUang.formatRupiah(item.jumlah)),
+                                Flexible(
+                                  child: Text(
+                                    'Target: ${FormatUang.formatRupiah(item.jumlah)}',
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -251,13 +321,20 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Saldo terkumpul'),
-            Text(
-              '${FormatUang.formatRupiah(saldoTerkumpul)}',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+            const Icon(Icons.savings_outlined),
+            const SizedBox(width: 8),
+            Column(
+              children: [
+                const Text('Saldo terkumpul'),
+                Text(
+                  FormatUang.formatRupiah(saldoTerkumpul),
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           ],
         ),

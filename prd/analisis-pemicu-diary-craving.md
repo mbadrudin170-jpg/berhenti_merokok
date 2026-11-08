@@ -40,7 +40,7 @@ Bukti:
 2. Jika loading → tampilkan indikator loading
 3. Jika error → tampilkan pesan error + tombol retry (`ref.refresh(diaryCravingProvider)`)
 4. Jika kosong → tampilkan empty state (tetap)
-5. Jika ada data → tampilkan ringkasan pemicu teratas (berdasarkan frekuensi) di atas daftar, lalu daftar seperti biasa
+5. Jika ada data → tampilkan ringkasan pemicu teratas (3 pemicu) di atas daftar, langsung terlihat (bukan collapsible). Jika ada pemicu di luar top 3, tampilkan label "Lainnya" + jumlah sisa.
 6. Ringkasan hanya berbasis data lokal yang sudah ada
 
 ## 7. Kebutuhan Data
@@ -78,14 +78,16 @@ Mengikuti pola `L` untuk logging jika diperlukan, `Nav` tidak diperlukan di bagi
 - [ ] UI konsisten dengan tema
 
 ## 12. Risiko dan Pertanyaan Terbuka
-- [BELUM FINAL] Posisi ringkasan (di atas daftar vs collapsible)?
-- [BELUM FINAL] Jumlah top pemicu (3 atau 5)?
-- [BELUM FINAL] Apakah perlu label "Lainnya" jika ada pemicu lain?
+- [SELESAI] Posisi: Di atas daftar (langsung terlihat)
+- [SELESAI] Jumlah top pemicu: 3
+- [SELESAI] Tampilkan 'Lainnya' + jumlah sisa: Ya
 
 ## 13. Catatan Keputusan Diskusi
 | pertanyaan | keputusan | tanggal |
 |---|---|---|
-| - | - | - |
+| Posisi ringkasan | Di atas daftar (langsung terlihat) | 2026-11-08 |
+| Jumlah top pemicu | 3 | 2026-11-08 |
+| Tampilkan 'Lainnya' + jumlah sisa | Ya | 2026-11-08 |
 
 Status: DRAFT
 Terakhir diperbarui: 2026-11-08

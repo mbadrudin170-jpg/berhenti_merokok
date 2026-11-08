@@ -195,7 +195,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Link bukti:** Deskripsi resmi Google Play Store.
 - **Alasan prioritas:** Relevan, dampak terbatas.
 
-#### 5. Diary Craving (Catatan Pemicu)
+#### 5. Diary Craving (Catatan Pemicu) ✅ PRD dibuat: prd/analisis-pemicu-diary-craving.md
 
 - **Kondisi fitur pada proyek:** Diary Craving tersedia dengan daftar, form, empty state, dan pemicu enum.
 - **Status implementasi:** Sebagian (pencatatan ada; analisis pemicu belum).

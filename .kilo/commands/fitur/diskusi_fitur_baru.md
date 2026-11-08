@@ -13,7 +13,7 @@ Tugasmu: membuat PRD untuk satu fitur dari `referensi_apk.md`, lalu berdiskusi d
    - satu file PRD di folder `prd/` di root proyek (buat baru atau perbarui), dan
    - penanda "sudah dibuatkan PRD" di `referensi_apk.md` (langkah 9).
      Tidak ada file lain.
-3. Jangan menebak. Kalau ada hal yang tidak jelas, tanyakan lewat tool `todowrite` (lihat bagian DISKUSI).
+3. Jangan menebak. Kalau ada hal yang tidak jelas, tanyakan lewat tool `question` (lihat bagian DISKUSI).
 4. Contoh kode di PRD hanya potongan ilustrasi di dalam dokumen PRD, bukan perubahan pada file kode.
 5. Semua keputusan PRD harus sesuai `docs/struktur_rules.md`.
 
@@ -37,7 +37,7 @@ Tujuannya agar fitur-fitur bisa dikerjakan paralel tanpa konflik file.
 2. Untuk setiap fitur kandidat, perkirakan file apa saja yang akan terdampak (file baru dan file yang diubah).
 3. Jika ada satu saja file terdampak yang sama dengan file terdampak di PRD lain, SKIP fitur itu dan coba fitur berikutnya.
 4. Pilih fitur pertama yang SEMUA file terdampaknya tidak tumpang tindih dengan PRD mana pun.
-5. Jika tidak ada fitur yang lolos, berhenti dan laporkan kepada saya: sebutkan tiap kandidat, file yang bentrok, dan PRD yang bentrok dengannya. Tanyakan apakah saya mau memilih salah satu, atau menunggu PRD yang bentrok selesai diimplementasikan.
+5. Jika tidak ada fitur yang lolos, berhenti dan laporkan kepada saya: sebutkan tiap kandidat, file yang bentrok, dan PRD yang bentrok dengannya. Lalu gunakan tool `question` untuk menanyakan apakah saya mau memilih salah satu, atau menunggu PRD yang bentrok selesai diimplementasikan.
 6. Sebutkan hasil seleksi ke saya dalam beberapa baris: fitur yang dipilih, alasan, dan fitur mana yang di-skip beserta alasannya.
 
 ## LANGKAH 4: Cek apakah fitur sudah diimplementasikan
@@ -46,14 +46,14 @@ Sebelum menulis PRD, periksa kode yang ada:
 
 1. Cari di `lib/` (nama fitur, kata kunci, nama class atau provider yang mungkin dipakai) dan baca file yang relevan.
 2. Simpulkan salah satu: BELUM ada, SEBAGIAN ada, atau SUDAH ada.
-3. Jika SUDAH ada sepenuhnya, jangan buat PRD. Laporkan ke saya bukti file dan barisnya, lalu tanyakan apakah mau pindah ke fitur lain.
+3. Jika SUDAH ada sepenuhnya, jangan buat PRD. Laporkan ke saya bukti file dan barisnya, lalu gunakan tool `question` untuk menanyakan apakah mau pindah ke fitur lain.
 4. Jika SEBAGIAN, PRD hanya mencakup bagian yang belum ada. Tulis bagian yang sudah ada di bagian "Status Implementasi Saat Ini".
 
 ## LANGKAH 5: Pelajari gambaran fitur dari link aplikasi
 
 1. Ambil link aplikasi untuk fitur itu dari `referensi_apk.md` lalu buka dan baca halamannya (gunakan tool pengambil halaman web bila tersedia).
 2. Catat: alur layar, elemen UI, perilaku, dan data yang dipakai.
-3. Jika link tidak bisa dibuka atau isinya tidak cukup, JANGAN mengarang. Catat sebagai pertanyaan untuk saya dan minta saya mendeskripsikannya.
+3. Jika link tidak bisa dibuka atau isinya tidak cukup, JANGAN mengarang. Tanyakan lewat tool `question` dan minta saya mendeskripsikannya.
 
 ## LANGKAH 6: Tentukan file terdampak
 
@@ -119,19 +119,20 @@ Terakhir diperbarui: <tanggal>
 - Setiap kutipan atau acuan ke `referensi_apk.md` harus menyertakan path dan nomor barisnya, contoh: `referensi_apk.md:L34-L41`.
 - Bagian "Contoh Implementasi" berisi beberapa potongan singkat (bukan file utuh), cukup untuk memperlihatkan pendekatannya.
 
-## DISKUSI: pakai tool `todowrite`
+## DISKUSI: pakai tool `question`
 
-Gunakan tool `todowrite` untuk menampung semua pertanyaan kepadaku:
+Gunakan tool `question` untuk semua pertanyaan kepadaku. Jangan bertanya lewat teks biasa di akhir jawaban.
 
-1. Setiap pertanyaan dibuat sebagai satu item todo dengan status `pending`.
-2. Ajukan pertanyaan secara bertahap (maksimal 3 sekaligus), dengan opsi jawaban jika memungkinkan beserta rekomendasimu dan alasannya singkat.
-3. Setelah aku menjawab: tandai item itu `completed`, perbarui bagian terkait di file PRD, dan catat di "Catatan Keputusan Diskusi".
-4. Tambahkan item baru kapan pun muncul pertanyaan baru.
-5. Lanjutkan sampai tidak ada item `pending` dan aku menyatakan PRD sudah final.
+1. Ajukan pertanyaan bertahap, maksimal 3 pertanyaan per pemanggilan tool.
+2. Untuk setiap pertanyaan, sediakan opsi jawaban yang jelas dan saling berbeda, dengan opsi rekomendasimu di urutan pertama beserta alasan singkat.
+3. Prioritaskan pertanyaan yang paling mempengaruhi isi PRD lebih dulu: ruang lingkup, alur, data, lalu detail kecil.
+4. Setelah aku menjawab: perbarui bagian terkait di file PRD saat itu juga, hapus penanda `[BELUM FINAL]` pada bagian yang sudah terjawab, dan catat di bagian 13 "Catatan Keputusan Diskusi".
+5. Pertanyaan yang belum sempat ditanyakan dicatat di bagian 12 "Risiko dan Pertanyaan Terbuka" supaya tidak hilang.
+6. Lanjutkan siklus tanya, jawab, perbarui PRD, sampai tidak ada lagi pertanyaan terbuka dan aku menyatakan PRD sudah final. Jangan mengakhiri sesi sebelum itu.
 
 ## LANGKAH 8: Finalisasi
 
-Jika semua todo selesai dan aku setuju:
+Jika semua pertanyaan terbuka sudah terjawab, gunakan tool `question` untuk meminta konfirmasi akhir dariku. Jika aku setuju:
 
 1. Ubah `Status` di PRD menjadi `FINAL`, hapus semua penanda `[BELUM FINAL]`.
 2. Pastikan bagian "File Terdampak" sudah akhir dan sama sekali tidak ada tumpang tindih dengan PRD lain di `prd/`.
@@ -152,5 +153,5 @@ Setiap kali selesai satu putaran, tampilkan:
 - Status implementasi saat ini (belum/sebagian/sudah)
 - Path file PRD yang dibuat atau diubah
 - Daftar file terdampak
-- Pertanyaan yang masih `pending`
+- Pertanyaan yang masih terbuka
 - Konfirmasi bahwa tidak ada file kode yang diubah

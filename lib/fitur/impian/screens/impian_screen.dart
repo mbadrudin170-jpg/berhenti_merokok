@@ -321,11 +321,13 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
+        // Jarak seragam antar-anak Row diatur dengan properti spacing
+        // (optimasi_ui.md #4), bukan SizedBox individual.
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 8,
           children: [
             const Icon(Icons.savings_outlined),
-            const SizedBox(width: 8),
             Column(
               children: [
                 const Text('Saldo terkumpul'),
