@@ -219,6 +219,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 #### 4. Dashboard (Ringkasan Progres)
 
+- **Status PRD:** Sudah dibuat — `prd/optimasi-dashboard-ringkasan-progres.md`
 - **Kondisi fitur pada proyek:** Dashboard menampilkan metrik smoke-free (uang dihemat, rokok tidak dihisap), milestone kesehatan terdekat, dan shortcut pencapaian.
 - **Status implementasi:** Sebagian (metrik dasar dan milestone ada; jumlah impian/impian tercapai dan streak terpanjang belum ditampilkan).
 - **Path implementasi proyek:** `lib/fitur/dashboard/screens/dashboard_screen.dart`.

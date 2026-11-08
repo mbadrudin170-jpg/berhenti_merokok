@@ -5,8 +5,8 @@
 - **Nama fitur:** Optimasi Impian (Goals/Tabungan) — visualisasi progres tabungan (piggy bank) dan perayaan saat impian tercapai.
 - **Jenis pengembangan:** Pembaruan fitur (fitur inti impian sudah tersedia; peningkatan visual/motivasi belum).
 - **Status implementasi:** Sebagian (CRUD impian, progress bar berbasis saldo terkumpul, empty state, dan detail sudah tersedia; visual piggy bank/reward belum).
-- **Status PRD:** Dalam Diskusi.
-- **Tanggal pembuatan/pembaruan:** 2026-11-08 (dibuat).
+- **Status PRD:** Dalam Diskusi (keputusan visual/posisi ikon dan perayaan notifikasi dicatat; detail/scope masih perlu konfirmasi).
+- **Tanggal pembuatan/pembaruan:** 2026-11-08 (dibuat; diperbarui keputusan visual/posisi ikon).
 - **Sumber referensi:** `refrensi_apk.md` (riset referensi APK sejenis, 2026-11-08), bagian B.2 dan C.3; halaman resmi Flamy dan Quit It di Google Play; `docs/PRD/impian.md` (PRD lama, konteks berbeda — tidak diubah oleh dokumen ini).
 
 ## 2. Tujuan Fitur
@@ -208,7 +208,7 @@ Rentang `L192-L204` mencakup judul, kondisi proyek, status implementasi, path im
 
 ## 14. Gambaran Teknis
 
-Pendekatan usulan (tidak diimplementasikan): gunakan saldo global `uangDihemat` yang sudah ada, hitung progres per impian secara lokal (`item.jumlah`), tampilkan visual sederhana berbasis **komponen Flutter bawaan** (`Stack` + `ClipRRect`/`LinearProgressIndicator` + ikon `Icons.savings*`) tanpa Lottie, CSV, atau aset gambar baru kecuali disetujui, dan beri label "Tercapai" saat progres >= 1. Ikon bersifat **inline (di dalam kartu/item)**, **tidak melayang** sebagai FAB/overlay halaman (FAB tambah impian sudah ada di `impian_screen.dart`). Ikon disarankan **selalu tampil**; state visual berubah saat tercapai (mis. outlined → filled + warna `colorScheme.primary`). Perayaan, jika disetujui, harus memakai mekanisme yang idempotent agar tidak muncul pada setiap rebuild.
+Pendekatan usulan (tidak diimplementasikan): gunakan saldo global `uangDihemat` yang sudah ada, hitung progres per impian secara lokal (`item.jumlah`), tampilkan visual sederhana berbasis **komponen Flutter bawaan** (`Stack` + `ClipRRect`/`LinearProgressIndicator` + ikon `Icons.savings*`) tanpa Lottie, CSV, atau aset gambar baru kecuali disetujui, dan beri label "Tercapai" saat progres >= 1. Ikon bersifat **inline (di dalam kartu/item)**, **tidak melayang** sebagai FAB/overlay halaman (FAB tambah impian sudah ada di `impian_screen.dart`). **Keputusan (2026-11-08):** ikon **selalu tampil**; pembedaan state terutama pada **ikon** (`Icons.savings_outlined` saat belum tercapai → `Icons.savings` saat tercapai; dapat dipertegas warna `colorScheme`/label). **Posisi (keputusan):** (1) **item daftar** Impian (Stack di atas progress), (2) **halaman detail** Impian, (3) **kartu saldo terkumpul**. **Perayaan/feedback tercapai (keputusan, 2026-11-08):** cukup tampilkan **notifikasi (toast)** saat impian tercapai; gunakan utilitas proyek `AppToast` (bukan `Fluttertoast` langsung), jangan tampilkan berulang akibat rebuild/navigasi — mekanisme pencegahan duplikasi (mis. penanda lokal per impian) **perlu diputuskan saat implementasi**.
 
 ### Contoh 1 — Helper progres impian (ilustrasi)
 
@@ -412,11 +412,11 @@ Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
 
 ## 15. Kriteria Penerimaan (usulan, dapat diperiksa saat implementasi)
 
-- [ ] **PF-1:** Setiap item impian menampilkan visual progres tabungan menggunakan komponen Flutter bawaan (tanpa Lottie/CSV/aset gambar baru kecuali disetujui), konsisten dengan `uangDihemat` global dan `item.jumlah`. Visual menggunakan `Stack` (ikon tabungan dilapis di area progres), inline, **bukan FAB/overlay melayang**.
-- [ ] **PF-1a (usulan):** Ikon tabungan tampil konsisten (disarankan selalu tampil); state visual membedakan belum tercapai dan tercapai (mis. outlined/filled + warna tema).
+- [ ] **PF-1:** Item daftar impian, halaman detail impian, dan kartu “Saldo terkumpul” menampilkan visual progres tabungan menggunakan komponen Flutter bawaan (tanpa Lottie/CSV/aset gambar baru kecuali disetujui), konsisten dengan `uangDihemat` global dan `item.jumlah`. Visual menggunakan `Stack` (ikon tabungan dilapis di area progres), inline, **bukan FAB/overlay melayang**. (Posisi opsi 3, 2026-11-08)
+- [ ] **PF-1a:** Ikon tabungan **selalu tampil** (0–100%); state visual membedakan belum tercapai dan tercapai terutama pada **ikon** (`Icons.savings_outlined` → `Icons.savings`; warna `colorScheme`/label “Tercapai” dapat dipertegas). (2026-11-08)
 - [ ] **PF-2:** Impian dengan `uangDihemat >= jumlah` (dan `jumlah > 0`) ditandai tercapai secara jelas.
-- [ ] **PF-3:** `DetailImpianScreen` menampilkan progres/sisa/status tercapai menggunakan sumber data yang sama dengan daftar (jika disetujui masuk ruang lingkup).
-- [ ] **PF-4 (opsional, keputusan pengguna):** Saat impian tercapai, pengguna menerima perayaan ringan yang tidak mengganggu dan tidak berulang tanpa kontrol.
+- [ ] **PF-3:** `DetailImpianScreen` menampilkan progres, sisa, dan status tercapai menggunakan sumber data yang sama dengan daftar (selaras opsi 3).
+- [ ] **PF-4 (opsional, keputusan pengguna):** Saat impian tercapai, pengguna menerima **notifikasi (toast)** via `AppToast` (cukup notif; bukan dialog/banner/animasi berat). Notifikasi tidak boleh berulang tanpa kontrol (mekanisme pencegahan duplikasi ditentukan saat implementasi). (2026-11-08)
 - [ ] **PF-5:** Optimasi tidak mengubah perhitungan `uangDihemat`/`hariBerhenti` di `BiodataModelPerhitungan`.
 - [ ] **PF-6:** Semua perubahan UI mengikuti tema (`textTheme`/`colorScheme`), aksesibilitas, dan aturan padding/spacing proyek.
 
@@ -432,7 +432,12 @@ Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
 
 ### Keputusan yang Sudah Disetujui
 
-- Tidak ada (PRD ini status **Dalam Diskusi**).
+- **Visual:** komponen Flutter bawaan, `Stack` inline (progress bar layer bawah, ikon tabungan layer atas/center), **bukan FAB/overlay melayang**, bukan Lottie/CSV/aset gambar baru kecuali disetujui kemudian (2026-11-08).
+- **Visibilitas ikon:** ikon **selalu tampil** (0–100%).
+- **Pembedaan state:** saat tercapai, bedakan **ikon** (`Icons.savings_outlined` → `Icons.savings`); warna `colorScheme`/label teks “Tercapai” dapat dipertegas saat implementasi (2026-11-08).
+- **Posisi ikon:** opsi **3** — **item daftar Impian** (Stack di atas progress), **halaman detail Impian**, dan **kartu “Saldo terkumpul”** (inline) (2026-11-08).
+
+- **Perayaan/feedback tercapai:** cukup **notifikasi (toast)** saat impian tercapai, menggunakan `AppToast` sesuai pola proyek; tidak menampilkan dialog/banner/animasi berat kecuali disetujui kemudian. Perlu mekanisme agar tidak muncul berulang tanpa kendali (2026-11-08).
 
 ### Rekomendasi yang Belum Disetujui
 
@@ -447,14 +452,9 @@ Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
 - Kebutuhan pengguna terhadap perayaan (apakah dianggap membantu atau mengganggu).
 - Kontras warna ikon yang dilapis di atas `LinearProgressIndicator` pada tema terang/gelap (perlu verifikasi visual saat implementasi).
 
-### Pertanyaan untuk Keputusan Pengguna
-
-1. Apakah visual tahap awal disetujui sebagai **komponen Flutter bawaan** dengan `Stack` (ikon dilapis, inline, tidak melayang), bukan Lottie/CSV/gambar?
-2. Apakah ikon **selalu tampil** (disarankan) atau hanya saat tercapai/progres > 0?
-3. Posisi ikon: **item daftar (Stack progress)** saja, atau ditambah **kartu saldo** dan/atau **detail impian**?
-4. Apakah "pesan perayaan saat impian tercapai" diperlukan pada tahap ini? Jika ya, bagaimana aturan kemunculannya (sekali per impian/sesi/dapat dimatikan)?
-5. Apakah `DetailImpianScreen` harus menampilkan progres/sisa/status tercapai pada pembaruan yang sama?
-6. Apakah ruang lingkup ini fokus pada optimasi impian berbasis `uangDihemat` global saat ini (tidak mengadopsi scope `docs/PRD/impian.md` kendaraan/tabungan harian)?
+1. ~~Perayaan saat impian tercapai~~ — **diputuskan (2026-11-08):** cukup tampilkan **notifikasi (toast)** via `AppToast`. Rincian: kapan dianggap “baru tercapai” dan pencegahan duplikasi (sekali per impian/sesi/penanda lokal) **perlu dirinci saat implementasi**.
+2. Apakah `DetailImpianScreen` harus menampilkan progres/sisa/status tercapai pada pembaruan yang sama dengan penambahan ikon Stack (selaras opsi 3)?
+3. Apakah ruang lingkup ini fokus pada optimasi impian berbasis `uangDihemat` global saat ini (tidak mengadopsi scope `docs/PRD/impian.md` kendaraan/tabungan harian)?
 
 ## 18. Riwayat Perubahan PRD
 
@@ -462,3 +462,4 @@ Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
 | --- | --- | --- |
 | 2026-11-08 | Seluruh dokumen (awal) | Pembuatan PRD awal hasil diskusi referensi `refrensi_apk.md` B.2/C.3 dan pemeriksaan implementasi aktual fitur impian. |
 | 2026-11-08 | §14 Gambaran Teknis, §11 PF, §17 | Menambahkan contoh kode ilustratif `Stack` inline (ikon tidak melayang), klarifikasi bukan Lottie/CSV/gambar, posisi ikon (item/saldo/detail), dan pertanyaan keputusan visibilitas/posisi. |
+| 2026-11-08 | §1, §14, §17 | Mencatat keputusan pengguna: **opsi 3** (posisi item daftar + detail + kartu saldo), ikon **selalu tampil**, pembedaan state terutama pada **ikon** (`savings_outlined` → `savings`). |
