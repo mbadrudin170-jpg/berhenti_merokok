@@ -36,7 +36,6 @@ Tidak ada temuan.
 - Aturan Dilanggar: [aturan_pemanfaatan_sdk_dan_paket.md:31-49](.agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md#L31-L49)
 - File Bermasalah: [impian_screen.dart:125-145](lib/fitur/impian/screens/impian_screen.dart#L125-L145)
 
-
 ## Rendah
 
 #### Task 4
