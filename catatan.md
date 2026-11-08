@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 95a521a81f1bb58af0b075a03cbbf2adb6be9f49
+Commit terakhir dievaluasi penuh: 03078905dc263d4df82a6c1d3a1314dd0984e331
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 28faabe017443b1513975374d3ec2a9a4f8b7a49 sampai 95a521a81f1bb58af0b075a03cbbf2adb6be9f49
-Jumlah commit yang dievaluasi: 2
+Rentang evaluasi: 041ac914199c12874c5b87b4de975cc17ae78ad7 sampai 03078905dc263d4df82a6c1d3a1314dd0984e331
+Jumlah commit yang dievaluasi: 8
 Status evaluasi: Selesai
-Ringkasan: Audit 2 commit (222fb5a, 95a521a). Perubahan kode sumber: 222fb5a (fitur alasan_berhenti CRUD + migrasi v6->v7 + integrasi lainnya_screen). 95a521a hanya command docs. Temuan baru: (1) Rendah - EasyLoading.show/dismiss unawaited tanpa catchError pada form_alasan_berhenti.dart; (2) Rendah - L.i di build()/itemBuilder pada alasan_berhenti_screen.dart (noise + destrukturasi properti model). Pola migrasi dan notifier konsisten dengan aturan. flutter analyze tidak dijalankan (tidak ada perubahan kode analisis).
+Ringkasan: Audit 8 commit (041ac91, 079c7f7, c545343, d0226fd, b0b43c7, 9f00b9f, 5da7c7e, 0307890). Perubahan kode sumber: c545343 (validasi form biodata + keepAlive biodata notifier + import reorder + EasyLoading catchError pada form_alasan_berhenti), d0226fd (hapus log berulang badge/dashboard + normalisasi selisih tanggal merokok), 041ac91 (bump flutter_local_notifications ^22.3.3 -> ^23.0.0). Temuan baru: (1) Sedang - dependensi flutter_local_notifications diubah manual di pubspec.yaml (task Kelompok 11); (2) Rendah - form_biodata.dart tidak terformat dart format (task Kelompok 4 Task 2). flutter analyze: No issues found. Backup .bak ter-commit (catatan laporan saja). Aturan notifikasi masih mereferensikan v22.3.3.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
