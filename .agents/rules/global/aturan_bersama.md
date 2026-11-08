@@ -13,7 +13,7 @@ Gunakan sistem logging yang sudah tersedia di proyek (mis. `L.i()`, `L.w()`, `L.
 8. Jangan menambahkan log yang tidak memberikan informasi nilai aktual.
 9. Jangan menggunakan `print()` sebagai pengganti logger yang tersedia.
 10. Pada `catch`, catat error dengan konteks proses yang gagal dan sertakan stack trace apabila tersedia.
-11. Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali. Log pada `build()` dihindari apabila memungkinkan karena `build()` dapat dipanggil berulang dan menambah noise; prioritaskan log pada titik yang tidak berfrekuensi tinggi (initState, dispose, method helper, perhitungan).
+11. Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali. Log pada `build()` dihindari apabila memungkinkan karena `build()` dapat dipanggil berulang dan menambah noise; prioritaskan log pada titik yang tidak berfrekuensi tinggi (initState, dispose, method helper, perhitungan). Log pada getter/properti turunan yang dapat dipanggil berulang saat `build()` (mis. `targetRokokHariIni`, label Enum) juga dihindari.
 
 **Larangan:**
 - Jangan membuat sistem logging baru.
@@ -550,3 +550,39 @@ await ref.read(biodataProvider.notifier).simpan(model);
 **Sumber evaluasi:**
 - Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
 - File: `lib/fitur/biodata/screens/form_biodata.dart`.
+
+## Penanganan Error pada Future yang Dilepas (unawaited)
+
+**Cakupan:**
+- Seluruh pemanggilan `unawaited(...)` pada Future yang berpotensi gagal (navigasi, loading overlay, operasi asynchronous lain).
+
+**Aturan wajib:**
+1. Future yang dilepas dengan `unawaited()` dan berpotensi gagal wajib memiliki penanganan error melalui `catchError(...)` atau `try/catch` yang mencatat error melalui logger proyek.
+2. Jangan melepas `unawaited(...)` tanpa penanganan error hanya untuk menghilangkan peringatan analyzer.
+3. Jangan mengandalkan keberhasilan implisit pada Future yang dilepas.
+
+**Larangan:**
+- Jangan memanggil `unawaited(Nav.to(...))`, `unawaited(EasyLoading.show(...))`, atau sejenisnya tanpa `.catchError(...)`/`try/catch`.
+- Jangan mengabaikan error pada Future yang dilepas.
+
+**Alasan:**
+Commit `fd6b45a` menambahkan `.catchError(...)` pada pemanggilan `Nav.to(...)` yang dilepas di `dashboard_screen.dart`, dan commit `d80e637` menambahkan `.catchError(...)` pada `EasyLoading.show/dismiss` serta `Nav.pushAndRemoveUntil` di `form_biodata.dart`. Pola ini mencegah unhandled error pada Future yang dilepas dan menjaga konsistensi penanganan error.
+
+**Contoh benar:**
+```dart
+unawaited(
+  Nav.to(context, const HalamanLain()).catchError((Object e, StackTrace s) {
+    L.e('Gagal navigasi: $e $s');
+    return null;
+  }),
+);
+```
+
+**Contoh salah:**
+```dart
+unawaited(Nav.to(context, const HalamanLain()));
+```
+
+**Sumber evaluasi:**
+- Commit: `fd6b45afbb4064038b4bc1131aaf6125dae538ec`, `d80e637179ed969c19c97f2cc2ced3d3d5fa2d12`.
+- File: `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/biodata/screens/form_biodata.dart`.
