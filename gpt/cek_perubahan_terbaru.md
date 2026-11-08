@@ -1,5 +1,5 @@
 1. saya ingin gpt menganalisa perubahan terbaru pada commit,
-2. cukup analisa commit sebelum chekpoint terkahir pada file `saran.md` di root.
+2. cukup analisa commit sebelum chekpoint terkahir pada file `catatan.md` di root.
 3. lalu buatkan instruksinya agar AI kilo code menganalisa perubahan tersebut.
 4. semua commit tersebut harus sesuai dengan aturan yang ada di file `AGENTS.md` dan harus sesuai dengan `SDK`nya.
 5. walaupun perubahan tersebut bersifat sederhana wajib baca `SDK` dan `AGENTS.md`.
