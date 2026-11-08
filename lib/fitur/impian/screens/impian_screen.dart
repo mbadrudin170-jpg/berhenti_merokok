@@ -138,8 +138,8 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
           return sisaA.compareTo(sisaB);
         case SortImpian.mendekatiTerkumpulZa:
-          final sisaA = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
-          final sisaB = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
           return sisaB.compareTo(sisaA);
       }
     });

@@ -25,7 +25,7 @@ extension SortImpianExtension on SortImpian {
       case SortImpian.mendekatiTerkumpulAz:
         return 'Paling mendekati terkumpul (kecil)';
       case SortImpian.mendekatiTerkumpulZa:
-        return 'Paling mendekati terkumpul (besar)';
+        return 'Sisa terbesar';
     }
   }
 
