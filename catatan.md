@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 5d65728309ca31615120653d3f533a1986eb8f60
-Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: c7337d1519d495d0ccd022fb18d63f72d443866a sampai 5d65728309ca31615120653d3f533a1986eb8f60
+Commit terakhir dievaluasi penuh: 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
+ Tanggal evaluasi: 2026-11-08
+Rentang evaluasi: 7a2163b338ae7b037186a3880c4992af4127d282 sampai 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
 Jumlah commit yang dievaluasi: 2
-Status evaluasi: Selesai (dengan temuan)
-Ringkasan: 2 commit. c7337d1 = fitur baru (visualisasi progres tabungan impian + perayaan pencapaian, 4 file Dart), 5d65728 = dokumen saja (PRD biodata final, command diskusi, refrensi). Temuan: (1) urutan import di detail_impian_screen.dart tidak alfabetis (notifier harusnya sebelum screens/widget); (2) `SizedBox(width: 8)` di _buildSaldoTerkumpul bisa diganti spacing (minor). SDK diverifikasi (Flutter 3.47.9): Icons.savings/savings_outlined valid, LinearProgressIndicator.minHeight valid, ColorScheme.onPrimary/onSurfaceVariant valid. Tidak ada API deprecated.
+ Status evaluasi: Selesai (dengan temuan)
+Ringkasan: 2 commit. 7a2163b = dokumen saja (command kerjakan_prd, PRD analisis pemicu diary craving DRAFT, catatan, task). 0b0b564 = perbaikan UI impian (Row.spacing mengganti SizedBox width:8 di impian_screen.dart; reorder impor detail_impian_screen.dart). Temuan: (1) Row.spacing valid SDK Flutter 3.47.9, tidak deprecated, mengikuti optimasi_ui.md #4 (terselesaikan); (2) impor detail_impian_screen.dart masih tidak sepenuhnya alfabetis: screens/form_impian.dart (baris 7) sebelum notifier/impian_notifier.dart (baris 8), padahal notifier < screens; (3) file .bak dan .backup task/ ter-commit (clutter repo, mirip temuan commit 08746b5). Tidak ada API SDK deprecated.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
@@ -31,7 +31,7 @@ Ringkasan: 2 commit. c7337d1 = fitur baru (visualisasi progres tabungan impian +
 
 - Tanggal: 2026-11-08
 - Status evaluasi: Selesai
-- Ringkasan: 20 commit dokumen/rules/commands/task.md. Tidak ada perubahan kode sumber. Perubahan: penulisan/penyederhanaan aturan notifikasi (aturan_notifikasi.md), aturan bersama penanganan error Future unawaited (aturan_bersama.md), perbarui command evaluasi (cek_perubahan_sekarang.md, evaluasi_aturan_khusus.md, evaluasi_struktur_rules.md), penambahan/penyusunan PRD (alasan-berhenti, penyimpanan-cadangan, optimasi-pemulihan-kesehatan-milestone, optimasi-dashboard-ringkasan-progres, optimasi-impian-tabungan, akses-cepat-sos-craving), perbarui refrensi_apk.md, hapus task batal, dan tambah task versi notifikasi. Tidak ada pelanggaran aturan atau SDK.
+- Ringkasan: 20 commit dokumen/rules/commands/task.md. Tidak ada perubahan kode sumber. Perubahan: penulisan/penyederhanaan aturan notifikasi (aturan_notifikasi.md), aturan bersama penanganan error Future unawaited (aturan_bersama.md), perbarui command evaluasi (cek_perubahan_sekarang.md, evaluasi_aturan_khusus.md, evaluasi_struktur_rules.md), penambahan/penyusunan PRD (alasan-berhenti, penyimpanan-cadangan, optimasi-pemulihan-kesehatan-milestone, optimasi-dashboard-ringkasan-progres, optimasi-impian-tabungan), perbarui refrensi_apk.md, hapus task batal, dan tambah task versi notifikasi. Tidak ada pelanggaran aturan atau SDK.
 
 ### Commit: 4b39928
 
@@ -186,8 +186,8 @@ Ringkasan: 2 commit. c7337d1 = fitur baru (visualisasi progres tabungan impian +
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
 
 - Branch evaluasi: master
-- Commit terakhir yang dievaluasi: 6a8e42111e2f4b8c0360ca25beabb2099877a6dc
-- SHA lengkap: 6a8e42111e2f4b8c0360ca25beabb2099877a6dc
+- Commit terakhir yang dievaluasi: 7a2163b338ae7b037186a3880c4992af4127d282
+- SHA lengkap: 7a2163b338ae7b037186a3880c4992af4127d282
 - Tanggal evaluasi: 2026-11-08
 - Status: Selesai
 

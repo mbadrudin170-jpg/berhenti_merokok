@@ -71,7 +71,9 @@ Mengikuti pola `L` untuk logging jika diperlukan, `Nav` tidak diperlukan di bagi
 - Menggunakan bahasa Indonesia formal untuk UI
 
 ## 11. Kriteria Selesai
-- [ ] Ringkasan pemicu teratas ditampilkan saat ada data
+- [ ] Ringkasan pemicu teratas (3) ditampilkan di atas daftar saat ada data
+- [ ] Label "Lainnya" + jumlah sisa ditampilkan jika ada di luar top 3
+- [ ] Ringkasan langsung terlihat (tidak collapsible)
 - [ ] Empty state tetap berfungsi saat kosong
 - [ ] Loading/error state tetap berfungsi
 - [ ] Tidak ada crash jika data tidak lengkap
@@ -89,5 +91,5 @@ Mengikuti pola `L` untuk logging jika diperlukan, `Nav` tidak diperlukan di bagi
 | Jumlah top pemicu | 3 | 2026-11-08 |
 | Tampilkan 'Lainnya' + jumlah sisa | Ya | 2026-11-08 |
 
-Status: DRAFT
+Status: FINAL
 Terakhir diperbarui: 2026-11-08

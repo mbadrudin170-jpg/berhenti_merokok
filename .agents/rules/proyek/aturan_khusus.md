@@ -1014,3 +1014,230 @@ penurunanPerMinggu: int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0
 **Sumber evaluasi:**
 - Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
 - File: `lib/fitur/biodata/enum/mode_berhenti.dart`, `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_kolom.dart`, `refrensi_apk.md`.
+
+
+## Ekspor dan Pemulihan Data Cadangan Lokal
+
+**Cakupan:**
+- `lib/fitur/cadangan/helper/cadangan_helper.dart` — `CadanganHelper`, `BerkasCadanganTidakValidException`.
+- `lib/fitur/cadangan/screens/cadangan_screen.dart` — `_CadanganScreenState`, `_eksporData`, `_pulihkanData`, `_refreshProviderSetelahRestore`.
+- `lib/fitur/pengaturan/screens/pengaturan_screen.dart` — `_buildCadangan`.
+
+**Aturan wajib:**
+1. Operasi pemulihan data wajib dilakukan dalam satu transaksi database (`op.transaksi`) yang menghapus seluruh data lama sebelum memasukkan data baru, agar atomik dan konsisten.
+2. Setiap berkas cadangan yang tidak valid wajib ditangani melalui tipe exception khusus (`class ... implements Exception`), bukan pencocokan string pesan error.
+3. Sebelum melakukan operasi berkas (ekspor/pemulihan), wajib diperiksa dukungan platform (`kIsWeb`, `defaultTargetPlatform`); platform yang tidak didukung harus ditangani dengan pesan peringatan, tidak crash.
+4. Setiap operasi asynchronous yang berpotensi berulang (ekspor, pemulihan) wajib dilindungi flag (mis. `_sedangMemproses`) yang dicek di awal dan dikembalikan ke false di `finally`, termasuk saat error.
+5. Future yang dilepas dengan `unawaited()` (EasyLoading show/dismiss, Nav.to) wajib dilengkapi `.catchError(...)` yang mencatat error melalui `L.e`.
+6. Setelah setiap `await` operasi asynchronous, wajib memeriksa `mounted` sebelum mengakses `context` atau memanggil `setState`.
+7. Setelah pemulihan data berhasil, semua provider terkait (`biodataProvider`, `impianProvider`, `diaryCravingProvider`, `alasanBerhentiProvider`) wajib direfresh dengan `ref.refresh()`, masing-masing dibungkus try/catch dengan `L.e`.
+8. Operasi destruktif (pemulihan yang mengganti data) wajib memiliki dialog konfirmasi (`showOkCancelAlertDialog` dengan `isDestructiveAction: true`) yang menjelaskan konsekuensi penggantian data.
+9. Feedback hasil operasi wajib menggunakan `AppToast` (sukses/gagal/info), bukan `Fluttertoast` langsung.
+10. Berkas parsial yang gagal ditulis wajib dihapus untuk mencegah berkas cadangan yang corrupt tertinggal.
+
+**Larangan:**
+- Jangan melakukan pemulihan data tanpa transaksi database (risiko data tidak konsisten jika gagal setengah jalan).
+- Jangan menggunakan string literal untuk nama exception deteksi; gunakan tipe exception khusus dan `is`.
+- Jangan menampilkan kontrol ekspor/pemulihan pada platform yang tidak mendukung operasi berkas.
+- Jangan melepas `unawaited(EasyLoading.show(...))` atau `unawaited(EasyLoading.dismiss())` tanpa `.catchError(...)`.
+- Jangan mengabaikan pemeriksaan `mounted` setelah `await` dalam alur ekspor/pemulihan.
+- Jangan menyimpan status operasi berhasil sebelum penulisan berkas atau pemulihan database benar-benar selesai.
+
+**Alasan:**
+Commit `338a021` mengimplementasikan fitur Cadangan & Ekspor Data dengan pola transaksi atomic untuk pemulihan, tipe exception khusus `BerkasCadanganTidakValidException`, pemeriksaan platform, flag pencegahan double submit, `unawaited` dengan `catchError` untuk EasyLoading dan navigasi, pemeriksaan `mounted` setelah setiap `await`, refresh provider setelah restore, dan konfirmasi dialog untuk operasi destruktif. Pola ini memastikan data tidak rusak, UI tidak crash, dan pengguna mendapatkan feedback yang jelas.
+
+**Sumber evaluasi:**
+- Commit: `338a0216257bb9f75617f144fd2fae0d7faf63d2`
+- File: `lib/fitur/cadangan/helper/cadangan_helper.dart`, `lib/fitur/cadangan/screens/cadangan_screen.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`
+
+**Contoh benar:**
+```dart
+// Tipe exception khusus untuk deteksi error.
+class BerkasCadanganTidakValidException implements Exception {
+  const BerkasCadanganTidakValidException(this.pesan);
+  final String pesan;
+  @override
+  String toString() => 'Berkas cadangan tidak valid: $pesan';
+}
+
+// Pemulihan dalam transaksi atomic.
+await op.transaksi((txn) async {
+  for (final tabel in tabelCadangan) {
+    await txn.delete(tabel);
+    L.i('Hapus data lama tabel $tabel');
+  }
+  for (final tabel in tabelCadangan) {
+    final rows = payload[tabel];
+    if (rows is! List) continue;
+    for (final row in rows) {
+      if (row is! Map) continue;
+      await txn.insert(tabel, Map<String, Object?>.from(row));
+    }
+    L.i('Pulihkan ${rows.length} baris tabel $tabel');
+  }
+});
+
+// Flag pencegahan double submit.
+if (_sedangMemproses) return;
+setState(() { _sedangMemproses = true; });
+try {
+  // ... operasi ...
+} finally {
+  unawaited(EasyLoading.dismiss().catchError((e, s) {
+    L.e('Gagal menutup loading: $e $s');
+  }));
+  if (mounted) setState(() { _sedangMemproses = false; });
+}
+```
+
+**Contoh salah:**
+```dart
+// Memulihan data tanpa transaksi (risiko inkonsistensi).
+for (final tabel in tabelCadangan) {
+  await txn.delete(tabel);
+  await txn.insert(tabel, row); // jika gagal di tengah, data rusak
+}
+
+// Melepas EasyLoading tanpa penanganan error.
+unawaited(EasyLoading.show(status: 'Memproses...'));
+unawaited(EasyLoading.dismiss());
+```
+
+
+## Visualisasi Progres Impian dan Perayaan Pencapaian
+
+**Cakupan:**
+- `lib/fitur/impian/helper/impian_progres_helper.dart` — `ImpianProgresHelper`.
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`, daftar impian, toast perayaan.
+- `lib/fitur/impian/screens/detail_impian_screen.dart` — `DetailImpianScreen`, detail impian dengan progres.
+- `lib/fitur/impian/widget/visual_tabungan_impian.dart` — `VisualTabunganImpian`.
+
+**Aturan wajib:**
+1. Perhitungan progres impian (rasio, sisa, status tercapai) wajib diekstrak ke helper murni (`class` dengan metode static, konstruktor privat, tidak bergantung pada `BuildContext` atau provider), bukan dihitung inline di layar.
+2. Helper progres wajib memiliki guard pembagian dengan nol (mis. `if (target <= 0) return 0.0;` / `return false;`).
+3. Penandaan impian yang sudah diraikan (perayaan ditampilkan sekali) wajib disimpan di `SharedPreferences` (mis. `impian_diraikan`), bukan di variabel memori yang hilang saat restart.
+4. Saat impian baru tercapai, wajib ditampilkan `AppToast.sukses` sebagai perayaan, dan penandaan wajib dilakukan dengan `unawaited()` agar tidak memblokir UI.
+5. Layar yang menampilkan progres impian wajib memantau `biodataProvider` untuk memperoleh `uangDihemat` sebagai saldo terkumpul, bukan `totalJumlah` dari `ImpianState`.
+6. Widget visual progres (mis. `VisualTabunganImpian`) wajib menggunakan komponen Flutter bawaan (Stack, LinearProgressIndicator, Icon) tanpa menambahkan aset gambar baru.
+7. Rasio progres wajib diklem (clamp) ke rentang 0.0–1.0 sebelum diteruskan ke `LinearProgressIndicator`.
+
+**Larangan:**
+- Jangan menghitung rasio/sisa/tercapai inline di layar dengan formula yang berbeda antara daftar dan detail.
+- Jangan menggunakan `totalJumlah` dari `ImpianState` sebagai saldo terkumpul untuk progres impian.
+- Jangan menampilkan toast perayaan berulang untuk impian yang sama (gunakan penandaan via SharedPreferences).
+- Jangan menambahkan aset gambar/Lottie baru untuk widget visual progres; gunakan komponen bawaan.
+
+**Alasan:**
+Commit `c7337d1` menambahkan `ImpianProgresHelper` sebagai helper murni untuk perhitungan rasio, sisa, dan status tercapai dengan guard pembagian dengan nol. Visualisasi progres menggunakan `VisualTabunganImpian` dengan Stack dan LinearProgressIndicator tanpa aset baru. Perayaan pencapaian impian menggunakan `AppToast.sukses` dan penandaan melalui `SharedPreferences` (`impian_diraikan`) agar toast hanya ditampilkan sekali per impian. Saldo terkumpul diambil dari `biodata.uangDihemat`, konsisten dengan aturan penggunaan biodata untuk saldo terkumpul.
+
+**Sumber evaluasi:**
+- Commit: `c7337d1519d495d0ccd022fb18d63f72d443866a`
+- File: `lib/fitur/impian/helper/impian_progres_helper.dart`, `lib/fitur/impian/screens/detail_impian_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/widget/visual_tabungan_impian.dart`
+
+**Contoh benar:**
+```dart
+// Helper murni tanpa BuildContext/provider.
+class ImpianProgresHelper {
+  const ImpianProgresHelper._();
+  static double rasio(double saldo, double target) {
+    if (target <= 0) return 0.0;
+    return (saldo / target).clamp(0.0, 1.0);
+  }
+  static bool tercapai(double saldo, double target) {
+    if (target <= 0) return false;
+    return saldo >= target;
+  }
+}
+
+// Penandaan pencapaian via SharedPreferences.
+final prefs = await SharedPreferences.getInstance();
+final daftar = prefs.getStringList('impian_diraikan') ?? <String>[];
+if (!daftar.contains(id)) {
+  daftar.add(id);
+  await prefs.setStringList('impian_diraikan', daftar);
+}
+unawaited(_tandaiSudahDiraikan(item.id));
+AppToast.sukses(context, 'Selamat! Impian "${item.nama}" telah tercapai!');
+```
+
+**Contoh salah:**
+```dart
+// Perhitungan inline di layar (duplikasi, tidak konsisten).
+final rasio = uangDihemat <= 0 || item.jumlah <= 0
+    ? 0
+    : (uangDihemat / item.jumlah).clamp(0.0, 1.0);
+
+// Menggunakan totalJumlah sebagai saldo terkumpul (salah).
+final rasio = ImpianProgresHelper.rasio(impianState.totalJumlah, item.jumlah);
+
+// Toast perayaan tanpa penandaan (akan muncul berulang setiap rebuild).
+AppToast.sukses(context, 'Impian tercapai!'); // tidak ada cek _sudahDiraikan
+```
+
+
+## Kartu Motivasi dan Pintasan Aksi Cepat pada Dashboard dan SOS Craving
+
+**Cakupan:**
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardSosCraving`, `_buildCardAlasanBerhenti`.
+- `lib/fitur/sos_craving/screens/sos_craving_screen.dart` — `_buildKartuAlasanBerhenti`.
+- `lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart` — `_snippetAlasan`, FilterChip pilihan cepat.
+
+**Aturan wajib:**
+1. Pintasan navigasi (SOS Craving, Alasan Berhenti) pada dashboard wajib menggunakan `unawaited(Nav.to(...).catchError(...))` dengan penanganan error melalui `L.e`.
+2. Akses ke data async yang bersifat opsional (mis. jumlah alasan, daftar alasan terbaru) wajib menggunakan `alasanAsync.asData?.value ?? fallback`, bukan `requireValue`, agar UI tidak crash saat data belum tersedia.
+3. Setiap variabel yang relevan dalam method UI (mis. snippet terpilih, daftar alasan) wajib dicatat log dengan `L.i` atau `L.w` sesuai aturan logging bersama.
+4. FilterChip pilihan cepat pada form alasan berhenti wajib mencatat pilihan pengguna dengan `L.i('snippet=$snippet, terpilih=$terpilih')` dan `L.i('snippet dipilih=$snippet, dipilih=$dipilih')`.
+5. Jika data opsional kosong (mis. daftar alasan kosong), widget wajib mengembalikan `const SizedBox.shrink()` dengan peringatan `L.w`, bukan menampilkan error atau crash.
+
+**Larangan:**
+- Jangan memanggil `alasanAsync.requireValue` untuk data opsional yang tidak wajib menunda rendering halaman.
+- Jangan menampilkan widget kartu motivasi tanpa pengecekan data kosong terlebih dahulu.
+- Jangan menambahkan navigasi pintasan tanpa `.catchError(...)` pada `unawaited()`.
+
+**Alasan:**
+Commit `e659574` menambahkan kartu SOS Craving dan kartu Alasan Berhenti pada dashboard dengan navigasi yang dilengkapi `.catchError()`, serta kartu motivasi alasan terbaru pada SOS Craving yang menggunakan `alasanAsync.asData?.value` untuk akses data aman tanpa blokir UI. Form alasan berhenti ditambahkan 8 snippet FilterChip dengan logging pada setiap variabel terpilih. Semua pola mengikuti aturan logging, unawaited Future, dan penanganan AsyncValue yang sudah ada.
+
+**Sumber evaluasi:**
+- Commit: `e6595744b3840998d840e398ca1782e7be7d50b4`
+- File: `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart`
+
+**Contoh benar:**
+```dart
+// Akses data opsional dengan asData?.value (tidak memblokir UI).
+final alasanAsync = ref.watch(alasanBerhentiProvider);
+final jumlah = alasanAsync.asData?.value.jumlahAlasan ?? 0;
+L.i('jumlahAlasan=$jumlah');
+
+// Navigasi pintasan dengan catchError.
+onTap: () => unawaited(
+  Nav.to(context, const SosCravingScreen()).catchError(
+    (Object e, StackTrace s) {
+      L.e('Gagal navigasi ke SOS Craving: $e $s');
+      return null;
+    },
+  ),
+);
+
+// FilterChip dengan logging.
+L.i('snippet=$snippet, terpilih=$terpilih');
+return FilterChip(
+  label: Text(snippet),
+  selected: terpilih,
+  onSelected: (dipilih) {
+    L.i('snippet dipilih=$snippet, dipilih=$dipilih');
+    setState(() { _teksController.text = dipilih ? snippet : ''; });
+  },
+);
+```
+
+**Contoh salah:**
+```dart
+// requireValue pada data opsional (berisiko crash saat loading/error).
+final jumlah = alasanAsync.requireValue.jumlahAlasan;
+
+// Navigasi tanpa catchError.
+onTap: () => unawaited(Nav.to(context, const SosCravingScreen()));
+
+// Tidak ada pengecekan data kosong.
+return Padding(...); // crash jika listAlasan null
+```

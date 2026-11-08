@@ -84,6 +84,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Alasan prioritas:** Bersifat tambahan; dampak belum terlalu kuat.
 
 #### 7. Pelacakan Toxin yang Dihindari
+✅ PRD dibuat: prd/pelacakan-toxin-yang-dihindari.md
 
 - **Tujuan:** Menampilkan zat berbahaya (tar, karbon monoksida, dll.) yang dihindari dengan tidak merokok.
 - **Masalah pengguna:** Pengguna hanya melihat jumlah rokok dan uang, belum zat berbahaya.

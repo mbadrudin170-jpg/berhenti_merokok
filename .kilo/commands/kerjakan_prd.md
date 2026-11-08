@@ -69,6 +69,7 @@ Lakukan HANYA jika LANGKAH 6 lolos sepenuhnya.
 ## LAPORAN AKHIR
 
 Tampilkan:
+
 - PRD yang dikerjakan
 - Daftar file yang dibuat dan diubah (path lengkap)
 - Output mentah `flutter analyze` terakhir
