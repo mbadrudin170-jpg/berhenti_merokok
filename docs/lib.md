@@ -158,6 +158,525 @@ class _MaterialUiLocalizationsDelegate
 
 
 // ============================================================
+// FILE: lib/fitur/alasan_berhenti/model/alasan_berhenti_model.dart
+// ============================================================
+
+```dart
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+part 'alasan_berhenti_model.freezed.dart';
+
+@freezed
+abstract class AlasanBerhentiModel with _$AlasanBerhentiModel {
+  const AlasanBerhentiModel._();
+
+  const factory AlasanBerhentiModel({
+    required String id,
+    required String teks,
+    required DateTime dibuat,
+  }) = _AlasanBerhentiModel;
+
+  /// Membuat [AlasanBerhentiModel] dari baris database SQLite.
+  factory AlasanBerhentiModel.fromSqflite(Map<String, Object?> row) {
+    return AlasanBerhentiModel(
+      id: ParserUtil.parseString(row[NamaKolom.id]),
+      teks: ParserUtil.parseString(row[NamaKolom.teks]),
+      dibuat:
+          ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
+          DateTime.now(),
+    );
+  }
+
+  /// Mengonversi [AlasanBerhentiModel] menjadi Map untuk disimpan ke SQLite.
+  Map<String, Object?> toSqflite() {
+    return <String, Object?>{
+      NamaKolom.id: id,
+      NamaKolom.teks: teks,
+      NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
+    };
+  }
+}
+```
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart
+// ============================================================
+
+```dart
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/state/alasan_berhenti_state.dart';
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
+
+part 'alasan_berhenti_notifier.g.dart';
+
+@Riverpod(keepAlive: true)
+class AlasanBerhentiNotifier extends _$AlasanBerhentiNotifier {
+  @override
+  Future<AlasanBerhentiState> build() async {
+    return await _ambilSemua();
+  }
+
+  Future<AlasanBerhentiState> _ambilSemua() async {
+    try {
+      final op = const SqfliteOp();
+      final rows = await op.ambilSemua(
+        NamaTabel.alasanBerhenti,
+        orderBy: '${NamaKolom.dibuat} DESC',
+      );
+      final daftar = rows.map(AlasanBerhentiModel.fromSqflite).toList();
+      L.i('daftar.length=${daftar.length}');
+      return AlasanBerhentiState(
+        listAlasan: daftar,
+        jumlahAlasan: daftar.length,
+      );
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> tambah(String teks) async {
+    L.i('teks=$teks');
+    try {
+      final dataLama = await future;
+      final model = AlasanBerhentiModel(
+        id: const Uuid().v4(),
+        teks: teks,
+        dibuat: DateTime.now(),
+      );
+      final op = const SqfliteOp();
+      await op.tambah(
+        NamaTabel.alasanBerhenti,
+        model.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      state = AsyncValue.data(
+        AlasanBerhentiState(
+          listAlasan: [model, ...dataLama.listAlasan],
+          jumlahAlasan: dataLama.jumlahAlasan + 1,
+        ),
+      );
+      L.s('Alasan berhenti berhasil disimpan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> ubah(AlasanBerhentiModel model) async {
+    L.i('model=$model');
+    try {
+      final dataLama = await future;
+      final op = const SqfliteOp();
+      await op.ubah(
+        NamaTabel.alasanBerhenti,
+        model.toSqflite(),
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [model.id],
+      );
+      final baru = dataLama.listAlasan
+          .map((e) => e.id == model.id ? model : e)
+          .toList();
+      state = AsyncValue.data(
+        AlasanBerhentiState(listAlasan: baru, jumlahAlasan: baru.length),
+      );
+      L.s('Alasan berhenti berhasil diubah');
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> hapus(String id) async {
+    L.i('id=$id');
+    try {
+      final dataLama = await future;
+      final op = const SqfliteOp();
+      await op.hapus(
+        NamaTabel.alasanBerhenti,
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [id],
+      );
+      final baru = dataLama.listAlasan.where((e) => e.id != id).toList();
+      state = AsyncValue.data(
+        AlasanBerhentiState(listAlasan: baru, jumlahAlasan: baru.length),
+      );
+      L.s('Alasan berhenti berhasil dihapus');
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+}
+```
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart
+// ============================================================
+
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class AlasanBerhentiScreen extends ConsumerStatefulWidget {
+  const AlasanBerhentiScreen({super.key});
+
+  @override
+  ConsumerState<AlasanBerhentiScreen> createState() =>
+      _AlasanBerhentiScreenState();
+}
+
+class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('AlasanBerhentiScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('AlasanBerhentiScreen dispose');
+    super.dispose();
+  }
+
+  Future<void> _hapus(AlasanBerhentiModel item) async {
+    L.i('item.id=${item.id}');
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Hapus Alasan',
+      message: 'Apakah Anda yakin ingin menghapus alasan berhenti ini?',
+      okLabel: 'Hapus',
+      cancelLabel: 'Batal',
+      isDestructiveAction: true,
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!mounted) return;
+    try {
+      await ref.read(alasanBerhentiProvider.notifier).hapus(item.id);
+      if (mounted) {
+        AppToast.sukses(context, 'Alasan berhenti berhasil dihapus');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus alasan berhenti: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menghapus alasan berhenti');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final alasanAsync = ref.watch(alasanBerhentiProvider);
+    L.i(
+      'alasanAsync.isLoading=${alasanAsync.isLoading}, hasError=${alasanAsync.hasError}',
+    );
+
+    if (alasanAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (alasanAsync.hasError) {
+      L.w('alasanBerhentiProvider error=${alasanAsync.error}');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Alasan Berhenti')),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              const Text('Gagal memuat data alasan berhenti'),
+              OutlinedButton(
+                onPressed: () {
+                  final _ = ref.refresh(alasanBerhentiProvider);
+                },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final state = alasanAsync.requireValue;
+    final list = state.listAlasan;
+    L.i('list.length=${list.length}');
+
+    if (list.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Alasan Berhenti')),
+        body: const _EmptyAlasanBerhenti(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () =>
+              unawaited(Nav.to(context, const FormAlasanBerhenti())),
+          child: const Icon(CupertinoIcons.add),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Alasan Berhenti')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView.separated(
+            itemCount: list.length,
+            itemBuilder: (context, index) {
+              final item = list[index];
+              L.i('item.id=${item.id}, item.teks=${item.teks}');
+              return Card(
+                key: ValueKey(item.id),
+                child: ListTile(
+                  title: Text(item.teks),
+                  subtitle: Text(FormatWaktuLengkap.formatSingkat(item.dibuat)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Hapus',
+                    onPressed: () => unawaited(_hapus(item)),
+                  ),
+                  onTap: () => unawaited(
+                    Nav.to(context, FormAlasanBerhenti(alasan: item)),
+                  ),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => unawaited(Nav.to(context, const FormAlasanBerhenti())),
+        child: const Icon(CupertinoIcons.add),
+      ),
+    );
+  }
+}
+
+class _EmptyAlasanBerhenti extends StatelessWidget {
+  const _EmptyAlasanBerhenti();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.heart, size: 48),
+              Text(
+                'Belum ada alasan berhenti',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Tekan tombol + untuk mencatat alasan berhenti pertama.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart
+// ============================================================
+
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class FormAlasanBerhenti extends ConsumerStatefulWidget {
+  final AlasanBerhentiModel? alasan;
+  const FormAlasanBerhenti({super.key, this.alasan});
+
+  @override
+  ConsumerState<FormAlasanBerhenti> createState() => _FormAlasanBerhentiState();
+}
+
+class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
+  final _formKey = GlobalKey<FormState>();
+  final _teksController = TextEditingController();
+  final _teksFocusNode = FocusNode();
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final alasan = widget.alasan;
+    L.i('alasan=$alasan');
+    if (alasan != null) {
+      _teksController.text = alasan.teks;
+      L.i('_teksController.text=${_teksController.text}');
+    }
+  }
+
+  @override
+  void dispose() {
+    _teksController.dispose();
+    _teksFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _simpan() async {
+    if (_isLoading) {
+      L.w('Form alasan berhenti masih loading, simpan diabaikan');
+      return;
+    }
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      L.w('validasi form gagal');
+      return;
+    }
+
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Simpan Alasan',
+      message: 'Apakah Anda yakin ingin menyimpan alasan berhenti ini?',
+      okLabel: 'Simpan',
+      cancelLabel: 'Batal',
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      L.w('konfirmasi bukan ok');
+      return;
+    }
+    if (!mounted) return;
+
+    setState(() => _isLoading = true);
+    L.i('_isLoading=$_isLoading');
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      final teks = _teksController.text.trim();
+      L.i('teks=$teks');
+      if (widget.alasan == null) {
+        L.i('alasan null, tambah');
+        await ref.read(alasanBerhentiProvider.notifier).tambah(teks);
+      } else {
+        L.i('alasan tidak null, ubah');
+        final model = AlasanBerhentiModel(
+          id: widget.alasan!.id,
+          teks: teks,
+          dibuat: widget.alasan!.dibuat,
+        );
+        await ref.read(alasanBerhentiProvider.notifier).ubah(model);
+      }
+      if (!mounted) return;
+      if (Navigator.of(context).canPop()) {
+        Nav.pop(context);
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan alasan berhenti: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menyimpan alasan berhenti');
+      }
+    } finally {
+      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        setState(() => _isLoading = false);
+        L.i('_isLoading=$_isLoading');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.alasan == null ? 'Tambah Alasan' : 'Ubah Alasan'),
+      ),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                InputTeks(
+                  controller: _teksController,
+                  label: 'Alasan berhenti',
+                  hintText: 'Tulis alasan Anda berhenti merokok',
+                  focusNode: _teksFocusNode,
+                  wajib: true,
+                  minLines: 2,
+                  maxLines: 4,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/state/alasan_berhenti_state.dart
+// ============================================================
+
+```dart
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'alasan_berhenti_state.freezed.dart';
+
+@freezed
+abstract class AlasanBerhentiState with _$AlasanBerhentiState {
+  const AlasanBerhentiState._();
+
+  const factory AlasanBerhentiState({
+    @Default([]) List<AlasanBerhentiModel> listAlasan,
+    @Default(0) int jumlahAlasan,
+  }) = _AlasanBerhentiState;
+}
+```
+
+
+// ============================================================
 // FILE: lib/fitur/badge/helper/badge_helper.dart
 // ============================================================
 
@@ -814,6 +1333,7 @@ class BiodataScreen extends ConsumerStatefulWidget {
 }
 
 class _BiodataScreenState extends ConsumerState<BiodataScreen> {
+  
   @override
   void initState() {
     super.initState();
@@ -6194,6 +6714,7 @@ class _HomeState extends ConsumerState<Home> {
 // ============================================================
 
 ```dart
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
 import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
 import 'package:berhenti_merokok/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart';
@@ -6231,6 +6752,10 @@ class LainnyaScreen extends StatelessWidget {
             _buildTombolCustom(
               () => Nav.to(context, const DiaryCravingScreen()),
               'Diary Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const AlasanBerhentiScreen()),
+              'Alasan Berhenti',
             ),
             _buildTombolCustom(
               () => Nav.to(context, const KalenderSmokeFreeScreen()),
@@ -6319,7 +6844,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 6;
+  static const int _versiDatabase = 7;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -6376,6 +6901,14 @@ class AppDatabase {
         ${NamaKolom.pemicu} TEXT NOT NULL,
         ${NamaKolom.intensitas} INTEGER,
         ${NamaKolom.catatan} TEXT,
+        ${NamaKolom.dibuat} TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.teks} TEXT NOT NULL,
         ${NamaKolom.dibuat} TEXT
       )
     ''');
@@ -6438,6 +6971,15 @@ class AppDatabase {
         'ALTER TABLE ${NamaTabel.biodata} '
         'ADD COLUMN ${NamaKolom.tanggalMulaiTapering} TEXT',
       );
+    }
+    if (oldVersion < 7) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.teks} TEXT NOT NULL,
+          ${NamaKolom.dibuat} TEXT
+        )
+      ''');
     }
   }
 
@@ -6908,6 +7450,9 @@ class NamaKolom {
 
   /// Kolom catatan craving.
   static const String catatan = 'catatan';
+
+  /// Kolom teks alasan berhenti.
+  static const String teks = 'teks';
 }
 ```
 
@@ -6929,6 +7474,9 @@ class NamaTabel {
 
   /// Tabel diary craving (pemicu).
   static const String diaryCraving = 'diary_craving';
+
+  /// Tabel catatan alasan berhenti (reasons vault).
+  static const String alasanBerhenti = 'alasan_berhenti';
 }
 ```
 

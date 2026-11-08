@@ -68,6 +68,15 @@ Tidak ada temuan.
 
 ## Sedang
 
+#### Task 1
+
+- Status: kerjakan
+- Masalah: Pada `form_biodata.dart`, parsing `penurunanPerMinggu` menggunakan `int.parse(...replaceAll(RegExp(r'[^0-9]'), ''))` yang dapat melempar `FormatException` jika input kosong/tidak valid, dan pembersihan karakter non-digit dapat menyembunyikan input yang tidak valid. Selain itu, field `jumlahRokokPerHari` dan `batangPerBungkus` tidak memiliki validator khusus dan parsingnya menggunakan `tryParse(...) ?? 0`/`?? 20.0`, yang dapat menyembunyikan input tidak valid menjadi nilai default. Hal ini bertentangan dengan aturan validasi form yang mewajibkan validasi aturan bisnis (nilai positif) sebelum penyimpanan dan larangan mengganti input tidak valid dengan nilai default.
+- Solusi: Gunakan `int.tryParse` dengan penanganan null yang eksplisit (tanpa penggantian senyap), tambahkan validator pada field `jumlahRokokPerHari` dan `batangPerBungkus` (mis. nilai > 0), dan pastikan validasi `Form` dijalankan sebelum parsing/penyimpanan. Jika parsing gagal, tampilkan pesan error dan hentikan penyimpanan.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L492); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L937)
+- File bermasalah: [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L199)
+- Prompt:
+
 ## Rendah
 
 #### Task 1
@@ -79,6 +88,15 @@ Tidak ada temuan.
 - File bermasalah: [mode_berhenti.dart](lib/fitur/biodata/enum/mode_berhenti.dart#L9); [biodata_model.dart](lib/fitur/biodata/model/biodata_model.dart#L124); [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L69)
 - Prompt:
 
+
+#### Task 2
+
+- Status: kerjakan
+- Masalah: Pada `sqflite.dart`, import `package:flutter/foundation.dart` ditempatkan sebelum import `package:berhenti_merokok/...`, sehingga urutan import tidak mengikuti urutan alfabetis berdasarkan path package. Aturan proyek mewajibkan import diurutkan secara alfabetis berdasarkan path package lengkap.
+- Solusi: Pindahkan import `package:flutter/foundation.dart` ke posisi yang sesuai secara alfabetis (setelah import `package:berhenti_merokok/...` dan sebelum/sesuai urutan `package:path` dan `package:sqflite`), tanpa mengubah logika.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
+- File bermasalah: [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L1)
+- Prompt:
 
 
 # Kelompok 5
@@ -169,6 +187,33 @@ Tidak ada temuan.
 
 ## Rendah
 
+
+# Kelompok 10
+
+## File terdampak
+
+- [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart)
+- [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart)
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `form_alasan_berhenti.dart`, pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` dilepas dengan `unawaited(...)` tanpa penanganan error (`.catchError(...)`). Aturan notifikasi #14 dan optimasi bug runtime mewajibkan penanganan error pada Future yang dilepas, agar kegagalan menampilkan/menutup loading tidak menjadi unhandled error.
+- Solusi: Bungkus pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `.catchError((Object e, StackTrace s) { L.e('...: $e $s'); })`, sesuai pola pada `pengaturan_screen.dart`.
+- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L6)
+- File bermasalah: [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart#L70); [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart#L101)
+- Prompt:
+
+#### Task 2
+
+- Status: Belum dikerjakan
+- Masalah: Pada `alasan_berhenti_screen.dart`, pemanggilan `L.i(...)` berada langsung di dalam `build()` (baris 64-67) dan di dalam `itemBuilder` (baris 119), sehingga log berulang pada setiap rebuild dan setiap item, meskipun nilai tidak berubah, menambah noise. Selain itu, log pada `itemBuilder` menguraikan properti model (`item.id`, `item.teks`) alih-alih menampilkan objek model langsung.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan untuk objek model gunakan `$model` alih-alih menguraikan properti. Hindari log di dalam `build()` dan `itemBuilder`.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L3); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
+- File bermasalah: [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart#L64); [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart#L119)
+- Prompt:
 
 
 
@@ -352,6 +397,7 @@ Future<void> main() async {
 // FILE: lib/lainnya_screen.dart
 // ============================================================
 ```dart
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
 import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
 import 'package:berhenti_merokok/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart';
@@ -389,6 +435,10 @@ class LainnyaScreen extends StatelessWidget {
             _buildTombolCustom(
               () => Nav.to(context, const DiaryCravingScreen()),
               'Diary Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const AlasanBerhentiScreen()),
+              'Alasan Berhenti',
             ),
             _buildTombolCustom(
               () => Nav.to(context, const KalenderSmokeFreeScreen()),
@@ -434,7 +484,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 6;
+  static const int _versiDatabase = 7;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -491,6 +541,14 @@ class AppDatabase {
         ${NamaKolom.pemicu} TEXT NOT NULL,
         ${NamaKolom.intensitas} INTEGER,
         ${NamaKolom.catatan} TEXT,
+        ${NamaKolom.dibuat} TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.teks} TEXT NOT NULL,
         ${NamaKolom.dibuat} TEXT
       )
     ''');
@@ -553,6 +611,15 @@ class AppDatabase {
         'ALTER TABLE ${NamaTabel.biodata} '
         'ADD COLUMN ${NamaKolom.tanggalMulaiTapering} TEXT',
       );
+    }
+    if (oldVersion < 7) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.teks} TEXT NOT NULL,
+          ${NamaKolom.dibuat} TEXT
+        )
+      ''');
     }
   }
 
@@ -1489,6 +1556,9 @@ class NamaKolom {
 
   /// Kolom catatan craving.
   static const String catatan = 'catatan';
+
+  /// Kolom teks alasan berhenti.
+  static const String teks = 'teks';
 }
 ```
 
@@ -1510,6 +1580,9 @@ class NamaTabel {
 
   /// Tabel diary craving (pemicu).
   static const String diaryCraving = 'diary_craving';
+
+  /// Tabel catatan alasan berhenti (reasons vault).
+  static const String alasanBerhenti = 'alasan_berhenti';
 }
 ```
 
@@ -4900,7 +4973,7 @@ final class DiaryCravingNotifierProvider
 }
 
 String _$diaryCravingNotifierHash() =>
-    r'948055ed735be99f190c74dbc018877a80a57340';
+    r'629d09bf6bccb40f09d3aea73a98e53158c574c3';
 
 abstract class _$DiaryCravingNotifier
     extends $AsyncNotifier<DiaryCravingState> {
@@ -7344,6 +7417,1180 @@ class _HeaderPemulihanState extends State<_HeaderPemulihan> {
 
 
 // ============================================================
+// FILE: lib/fitur/alasan_berhenti/model/alasan_berhenti_model.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'alasan_berhenti_model.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$AlasanBerhentiModel {
+
+ String get id; String get teks; DateTime get dibuat;
+/// Create a copy of AlasanBerhentiModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AlasanBerhentiModelCopyWith<AlasanBerhentiModel> get copyWith => _$AlasanBerhentiModelCopyWithImpl<AlasanBerhentiModel>(this as AlasanBerhentiModel, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as AlasanBerhentiModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlasanBerhentiModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.teks, _this.teks) || other.teks == _this.teks)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as AlasanBerhentiModel;
+  return Object.hash(runtimeType,_this.id,_this.teks,_this.dibuat);
+}
+
+@override
+String toString() {
+  final _this = this as AlasanBerhentiModel;
+  return 'AlasanBerhentiModel(id: ${_this.id}, teks: ${_this.teks}, dibuat: ${_this.dibuat})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AlasanBerhentiModelCopyWith<$Res>  {
+  factory $AlasanBerhentiModelCopyWith(AlasanBerhentiModel value, $Res Function(AlasanBerhentiModel) _then) = _$AlasanBerhentiModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String teks, DateTime dibuat
+});
+
+
+
+
+}
+/// @nodoc
+class _$AlasanBerhentiModelCopyWithImpl<$Res>
+    implements $AlasanBerhentiModelCopyWith<$Res> {
+  _$AlasanBerhentiModelCopyWithImpl(this._self, this._then);
+
+  final AlasanBerhentiModel _self;
+  final $Res Function(AlasanBerhentiModel) _then;
+
+/// Create a copy of AlasanBerhentiModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? teks = null,Object? dibuat = null,}) {
+  return _then(AlasanBerhentiModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,teks: null == teks ? _self.teks : teks // ignore: cast_nullable_to_non_nullable
+as String,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AlasanBerhentiModel].
+extension AlasanBerhentiModelPatterns on AlasanBerhentiModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AlasanBerhentiModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AlasanBerhentiModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AlasanBerhentiModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _AlasanBerhentiModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AlasanBerhentiModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AlasanBerhentiModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String teks,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AlasanBerhentiModel() when $default != null:
+return $default(_that.id,_that.teks,_that.dibuat);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String teks,  DateTime dibuat)  $default,) {final _that = this;
+switch (_that) {
+case _AlasanBerhentiModel():
+return $default(_that.id,_that.teks,_that.dibuat);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String teks,  DateTime dibuat)?  $default,) {final _that = this;
+switch (_that) {
+case _AlasanBerhentiModel() when $default != null:
+return $default(_that.id,_that.teks,_that.dibuat);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _AlasanBerhentiModel extends AlasanBerhentiModel {
+  const _AlasanBerhentiModel({required this.id, required this.teks, required this.dibuat}): super._();
+  
+
+@override final  String id;
+@override final  String teks;
+@override final  DateTime dibuat;
+
+/// Create a copy of AlasanBerhentiModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AlasanBerhentiModelCopyWith<_AlasanBerhentiModel> get copyWith => __$AlasanBerhentiModelCopyWithImpl<_AlasanBerhentiModel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AlasanBerhentiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.teks, teks) || other.teks == teks)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,id,teks,dibuat);
+}
+
+@override
+String toString() {
+    return 'AlasanBerhentiModel(id: $id, teks: $teks, dibuat: $dibuat)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AlasanBerhentiModelCopyWith<$Res> implements $AlasanBerhentiModelCopyWith<$Res> {
+  factory _$AlasanBerhentiModelCopyWith(_AlasanBerhentiModel value, $Res Function(_AlasanBerhentiModel) _then) = __$AlasanBerhentiModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String teks, DateTime dibuat
+});
+
+
+
+
+}
+/// @nodoc
+class __$AlasanBerhentiModelCopyWithImpl<$Res>
+    implements _$AlasanBerhentiModelCopyWith<$Res> {
+  __$AlasanBerhentiModelCopyWithImpl(this._self, this._then);
+
+  final _AlasanBerhentiModel _self;
+  final $Res Function(_AlasanBerhentiModel) _then;
+
+/// Create a copy of AlasanBerhentiModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? teks = null,Object? dibuat = null,}) {
+  return _then(_AlasanBerhentiModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,teks: null == teks ? _self.teks : teks // ignore: cast_nullable_to_non_nullable
+as String,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/model/alasan_berhenti_model.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+part 'alasan_berhenti_model.freezed.dart';
+
+@freezed
+abstract class AlasanBerhentiModel with _$AlasanBerhentiModel {
+  const AlasanBerhentiModel._();
+
+  const factory AlasanBerhentiModel({
+    required String id,
+    required String teks,
+    required DateTime dibuat,
+  }) = _AlasanBerhentiModel;
+
+  /// Membuat [AlasanBerhentiModel] dari baris database SQLite.
+  factory AlasanBerhentiModel.fromSqflite(Map<String, Object?> row) {
+    return AlasanBerhentiModel(
+      id: ParserUtil.parseString(row[NamaKolom.id]),
+      teks: ParserUtil.parseString(row[NamaKolom.teks]),
+      dibuat:
+          ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
+          DateTime.now(),
+    );
+  }
+
+  /// Mengonversi [AlasanBerhentiModel] menjadi Map untuk disimpan ke SQLite.
+  Map<String, Object?> toSqflite() {
+    return <String, Object?>{
+      NamaKolom.id: id,
+      NamaKolom.teks: teks,
+      NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
+    };
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class AlasanBerhentiScreen extends ConsumerStatefulWidget {
+  const AlasanBerhentiScreen({super.key});
+
+  @override
+  ConsumerState<AlasanBerhentiScreen> createState() =>
+      _AlasanBerhentiScreenState();
+}
+
+class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('AlasanBerhentiScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('AlasanBerhentiScreen dispose');
+    super.dispose();
+  }
+
+  Future<void> _hapus(AlasanBerhentiModel item) async {
+    L.i('item.id=${item.id}');
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Hapus Alasan',
+      message: 'Apakah Anda yakin ingin menghapus alasan berhenti ini?',
+      okLabel: 'Hapus',
+      cancelLabel: 'Batal',
+      isDestructiveAction: true,
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!mounted) return;
+    try {
+      await ref.read(alasanBerhentiProvider.notifier).hapus(item.id);
+      if (mounted) {
+        AppToast.sukses(context, 'Alasan berhenti berhasil dihapus');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus alasan berhenti: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menghapus alasan berhenti');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final alasanAsync = ref.watch(alasanBerhentiProvider);
+    L.i(
+      'alasanAsync.isLoading=${alasanAsync.isLoading}, hasError=${alasanAsync.hasError}',
+    );
+
+    if (alasanAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (alasanAsync.hasError) {
+      L.w('alasanBerhentiProvider error=${alasanAsync.error}');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Alasan Berhenti')),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              const Text('Gagal memuat data alasan berhenti'),
+              OutlinedButton(
+                onPressed: () {
+                  final _ = ref.refresh(alasanBerhentiProvider);
+                },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final state = alasanAsync.requireValue;
+    final list = state.listAlasan;
+    L.i('list.length=${list.length}');
+
+    if (list.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Alasan Berhenti')),
+        body: const _EmptyAlasanBerhenti(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () =>
+              unawaited(Nav.to(context, const FormAlasanBerhenti())),
+          child: const Icon(CupertinoIcons.add),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Alasan Berhenti')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView.separated(
+            itemCount: list.length,
+            itemBuilder: (context, index) {
+              final item = list[index];
+              L.i('item.id=${item.id}, item.teks=${item.teks}');
+              return Card(
+                key: ValueKey(item.id),
+                child: ListTile(
+                  title: Text(item.teks),
+                  subtitle: Text(FormatWaktuLengkap.formatSingkat(item.dibuat)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Hapus',
+                    onPressed: () => unawaited(_hapus(item)),
+                  ),
+                  onTap: () => unawaited(
+                    Nav.to(context, FormAlasanBerhenti(alasan: item)),
+                  ),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => unawaited(Nav.to(context, const FormAlasanBerhenti())),
+        child: const Icon(CupertinoIcons.add),
+      ),
+    );
+  }
+}
+
+class _EmptyAlasanBerhenti extends StatelessWidget {
+  const _EmptyAlasanBerhenti();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.heart, size: 48),
+              Text(
+                'Belum ada alasan berhenti',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Tekan tombol + untuk mencatat alasan berhenti pertama.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class FormAlasanBerhenti extends ConsumerStatefulWidget {
+  final AlasanBerhentiModel? alasan;
+  const FormAlasanBerhenti({super.key, this.alasan});
+
+  @override
+  ConsumerState<FormAlasanBerhenti> createState() => _FormAlasanBerhentiState();
+}
+
+class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
+  final _formKey = GlobalKey<FormState>();
+  final _teksController = TextEditingController();
+  final _teksFocusNode = FocusNode();
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final alasan = widget.alasan;
+    L.i('alasan=$alasan');
+    if (alasan != null) {
+      _teksController.text = alasan.teks;
+      L.i('_teksController.text=${_teksController.text}');
+    }
+  }
+
+  @override
+  void dispose() {
+    _teksController.dispose();
+    _teksFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _simpan() async {
+    if (_isLoading) {
+      L.w('Form alasan berhenti masih loading, simpan diabaikan');
+      return;
+    }
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      L.w('validasi form gagal');
+      return;
+    }
+
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Simpan Alasan',
+      message: 'Apakah Anda yakin ingin menyimpan alasan berhenti ini?',
+      okLabel: 'Simpan',
+      cancelLabel: 'Batal',
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      L.w('konfirmasi bukan ok');
+      return;
+    }
+    if (!mounted) return;
+
+    setState(() => _isLoading = true);
+    L.i('_isLoading=$_isLoading');
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      final teks = _teksController.text.trim();
+      L.i('teks=$teks');
+      if (widget.alasan == null) {
+        L.i('alasan null, tambah');
+        await ref.read(alasanBerhentiProvider.notifier).tambah(teks);
+      } else {
+        L.i('alasan tidak null, ubah');
+        final model = AlasanBerhentiModel(
+          id: widget.alasan!.id,
+          teks: teks,
+          dibuat: widget.alasan!.dibuat,
+        );
+        await ref.read(alasanBerhentiProvider.notifier).ubah(model);
+      }
+      if (!mounted) return;
+      if (Navigator.of(context).canPop()) {
+        Nav.pop(context);
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan alasan berhenti: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menyimpan alasan berhenti');
+      }
+    } finally {
+      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        setState(() => _isLoading = false);
+        L.i('_isLoading=$_isLoading');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.alasan == null ? 'Tambah Alasan' : 'Ubah Alasan'),
+      ),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                InputTeks(
+                  controller: _teksController,
+                  label: 'Alasan berhenti',
+                  hintText: 'Tulis alasan Anda berhenti merokok',
+                  focusNode: _teksFocusNode,
+                  wajib: true,
+                  minLines: 2,
+                  maxLines: 4,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/state/alasan_berhenti_state.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'alasan_berhenti_state.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$AlasanBerhentiState {
+
+ List<AlasanBerhentiModel> get listAlasan; int get jumlahAlasan;
+/// Create a copy of AlasanBerhentiState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AlasanBerhentiStateCopyWith<AlasanBerhentiState> get copyWith => _$AlasanBerhentiStateCopyWithImpl<AlasanBerhentiState>(this as AlasanBerhentiState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as AlasanBerhentiState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlasanBerhentiState&&const DeepCollectionEquality().equals(other.listAlasan, _this.listAlasan)&&(identical(other.jumlahAlasan, _this.jumlahAlasan) || other.jumlahAlasan == _this.jumlahAlasan));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as AlasanBerhentiState;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listAlasan),_this.jumlahAlasan);
+}
+
+@override
+String toString() {
+  final _this = this as AlasanBerhentiState;
+  return 'AlasanBerhentiState(listAlasan: ${_this.listAlasan}, jumlahAlasan: ${_this.jumlahAlasan})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AlasanBerhentiStateCopyWith<$Res>  {
+  factory $AlasanBerhentiStateCopyWith(AlasanBerhentiState value, $Res Function(AlasanBerhentiState) _then) = _$AlasanBerhentiStateCopyWithImpl;
+@useResult
+$Res call({
+ List<AlasanBerhentiModel> listAlasan, int jumlahAlasan
+});
+
+
+
+
+}
+/// @nodoc
+class _$AlasanBerhentiStateCopyWithImpl<$Res>
+    implements $AlasanBerhentiStateCopyWith<$Res> {
+  _$AlasanBerhentiStateCopyWithImpl(this._self, this._then);
+
+  final AlasanBerhentiState _self;
+  final $Res Function(AlasanBerhentiState) _then;
+
+/// Create a copy of AlasanBerhentiState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? listAlasan = null,Object? jumlahAlasan = null,}) {
+  return _then(AlasanBerhentiState(
+listAlasan: null == listAlasan ? _self.listAlasan : listAlasan // ignore: cast_nullable_to_non_nullable
+as List<AlasanBerhentiModel>,jumlahAlasan: null == jumlahAlasan ? _self.jumlahAlasan : jumlahAlasan // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AlasanBerhentiState].
+extension AlasanBerhentiStatePatterns on AlasanBerhentiState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AlasanBerhentiState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AlasanBerhentiState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AlasanBerhentiState value)  $default,){
+final _that = this;
+switch (_that) {
+case _AlasanBerhentiState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AlasanBerhentiState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AlasanBerhentiState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<AlasanBerhentiModel> listAlasan,  int jumlahAlasan)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AlasanBerhentiState() when $default != null:
+return $default(_that.listAlasan,_that.jumlahAlasan);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<AlasanBerhentiModel> listAlasan,  int jumlahAlasan)  $default,) {final _that = this;
+switch (_that) {
+case _AlasanBerhentiState():
+return $default(_that.listAlasan,_that.jumlahAlasan);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<AlasanBerhentiModel> listAlasan,  int jumlahAlasan)?  $default,) {final _that = this;
+switch (_that) {
+case _AlasanBerhentiState() when $default != null:
+return $default(_that.listAlasan,_that.jumlahAlasan);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _AlasanBerhentiState extends AlasanBerhentiState {
+  const _AlasanBerhentiState({ List<AlasanBerhentiModel> listAlasan = const [], this.jumlahAlasan = 0}): _listAlasan = listAlasan,super._();
+  
+
+ final  List<AlasanBerhentiModel> _listAlasan;
+@override@JsonKey() List<AlasanBerhentiModel> get listAlasan {
+  if (_listAlasan is EqualUnmodifiableListView) return _listAlasan;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_listAlasan);
+}
+
+@override@JsonKey() final  int jumlahAlasan;
+
+/// Create a copy of AlasanBerhentiState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AlasanBerhentiStateCopyWith<_AlasanBerhentiState> get copyWith => __$AlasanBerhentiStateCopyWithImpl<_AlasanBerhentiState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AlasanBerhentiState&&const DeepCollectionEquality().equals(other.listAlasan, _listAlasan)&&(identical(other.jumlahAlasan, jumlahAlasan) || other.jumlahAlasan == jumlahAlasan));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listAlasan),jumlahAlasan);
+}
+
+@override
+String toString() {
+    return 'AlasanBerhentiState(listAlasan: $listAlasan, jumlahAlasan: $jumlahAlasan)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AlasanBerhentiStateCopyWith<$Res> implements $AlasanBerhentiStateCopyWith<$Res> {
+  factory _$AlasanBerhentiStateCopyWith(_AlasanBerhentiState value, $Res Function(_AlasanBerhentiState) _then) = __$AlasanBerhentiStateCopyWithImpl;
+@override @useResult
+$Res call({
+ List<AlasanBerhentiModel> listAlasan, int jumlahAlasan
+});
+
+
+
+
+}
+/// @nodoc
+class __$AlasanBerhentiStateCopyWithImpl<$Res>
+    implements _$AlasanBerhentiStateCopyWith<$Res> {
+  __$AlasanBerhentiStateCopyWithImpl(this._self, this._then);
+
+  final _AlasanBerhentiState _self;
+  final $Res Function(_AlasanBerhentiState) _then;
+
+/// Create a copy of AlasanBerhentiState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? listAlasan = null,Object? jumlahAlasan = null,}) {
+  return _then(_AlasanBerhentiState(
+listAlasan: null == listAlasan ? _self._listAlasan : listAlasan // ignore: cast_nullable_to_non_nullable
+as List<AlasanBerhentiModel>,jumlahAlasan: null == jumlahAlasan ? _self.jumlahAlasan : jumlahAlasan // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/state/alasan_berhenti_state.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'alasan_berhenti_state.freezed.dart';
+
+@freezed
+abstract class AlasanBerhentiState with _$AlasanBerhentiState {
+  const AlasanBerhentiState._();
+
+  const factory AlasanBerhentiState({
+    @Default([]) List<AlasanBerhentiModel> listAlasan,
+    @Default(0) int jumlahAlasan,
+  }) = _AlasanBerhentiState;
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.g.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'alasan_berhenti_notifier.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(AlasanBerhentiNotifier)
+final alasanBerhentiProvider = AlasanBerhentiNotifierProvider._();
+
+final class AlasanBerhentiNotifierProvider
+    extends
+        $AsyncNotifierProvider<AlasanBerhentiNotifier, AlasanBerhentiState> {
+  AlasanBerhentiNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'alasanBerhentiProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$alasanBerhentiNotifierHash();
+
+  @$internal
+  @override
+  AlasanBerhentiNotifier create() => AlasanBerhentiNotifier();
+}
+
+String _$alasanBerhentiNotifierHash() =>
+    r'381a7cb023af2281ced5e39eec9a6c888d5512fb';
+
+abstract class _$AlasanBerhentiNotifier
+    extends $AsyncNotifier<AlasanBerhentiState> {
+  FutureOr<AlasanBerhentiState> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<AlasanBerhentiState>, AlasanBerhentiState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<AlasanBerhentiState>, AlasanBerhentiState>,
+              AsyncValue<AlasanBerhentiState>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/state/alasan_berhenti_state.dart';
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
+
+part 'alasan_berhenti_notifier.g.dart';
+
+@Riverpod(keepAlive: true)
+class AlasanBerhentiNotifier extends _$AlasanBerhentiNotifier {
+  @override
+  Future<AlasanBerhentiState> build() async {
+    return await _ambilSemua();
+  }
+
+  Future<AlasanBerhentiState> _ambilSemua() async {
+    try {
+      final op = const SqfliteOp();
+      final rows = await op.ambilSemua(
+        NamaTabel.alasanBerhenti,
+        orderBy: '${NamaKolom.dibuat} DESC',
+      );
+      final daftar = rows.map(AlasanBerhentiModel.fromSqflite).toList();
+      L.i('daftar.length=${daftar.length}');
+      return AlasanBerhentiState(
+        listAlasan: daftar,
+        jumlahAlasan: daftar.length,
+      );
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> tambah(String teks) async {
+    L.i('teks=$teks');
+    try {
+      final dataLama = await future;
+      final model = AlasanBerhentiModel(
+        id: const Uuid().v4(),
+        teks: teks,
+        dibuat: DateTime.now(),
+      );
+      final op = const SqfliteOp();
+      await op.tambah(
+        NamaTabel.alasanBerhenti,
+        model.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      state = AsyncValue.data(
+        AlasanBerhentiState(
+          listAlasan: [model, ...dataLama.listAlasan],
+          jumlahAlasan: dataLama.jumlahAlasan + 1,
+        ),
+      );
+      L.s('Alasan berhenti berhasil disimpan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> ubah(AlasanBerhentiModel model) async {
+    L.i('model=$model');
+    try {
+      final dataLama = await future;
+      final op = const SqfliteOp();
+      await op.ubah(
+        NamaTabel.alasanBerhenti,
+        model.toSqflite(),
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [model.id],
+      );
+      final baru = dataLama.listAlasan
+          .map((e) => e.id == model.id ? model : e)
+          .toList();
+      state = AsyncValue.data(
+        AlasanBerhentiState(listAlasan: baru, jumlahAlasan: baru.length),
+      );
+      L.s('Alasan berhenti berhasil diubah');
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> hapus(String id) async {
+    L.i('id=$id');
+    try {
+      final dataLama = await future;
+      final op = const SqfliteOp();
+      await op.hapus(
+        NamaTabel.alasanBerhenti,
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [id],
+      );
+      final baru = dataLama.listAlasan.where((e) => e.id != id).toList();
+      state = AsyncValue.data(
+        AlasanBerhentiState(listAlasan: baru, jumlahAlasan: baru.length),
+      );
+      L.s('Alasan berhenti berhasil dihapus');
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus alasan berhenti: $e $s');
+      rethrow;
+    }
+  }
+}
+```
+
+
+
+// ============================================================
 // FILE: lib/fitur/pengaturan/screens/pengaturan_screen.dart
 // ============================================================
 ```dart
@@ -8260,6 +9507,7 @@ class BiodataScreen extends ConsumerStatefulWidget {
 }
 
 class _BiodataScreenState extends ConsumerState<BiodataScreen> {
+  
   @override
   void initState() {
     super.initState();
@@ -9709,7 +10957,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_easyloading: ^4.0.2
-  flutter_local_notifications: ^22.3.3
+  flutter_local_notifications: ^23.0.0
   flutter_riverpod: ^3.5.0
   flutter_timezone: ^5.1.1
   freezed_annotation: ^3.1.0
@@ -13540,14 +14788,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  appkit_ui_element_colors:
-    dependency: transitive
-    description:
-      name: appkit_ui_element_colors
-      sha256: b88a7c35d440fa3ac75222d0e2b7e3259200e531e33b5d2468e358119f3481dc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   args:
     dependency: transitive
     description:
@@ -13648,10 +14888,10 @@ packages:
     dependency: transitive
     description:
       name: code_assets
-      sha256: bf394f466ba9205f1812a0433b392d6af280f155f56651eda7c18cc32ed493b8
+      sha256: "1ef22a0be3af9370bd9481ac76db114db92bfe75d5ca2b2d7bc911764478a4d9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.1"
+    version: "2.2.0"
   collection:
     dependency: "direct main"
     description:
@@ -13728,10 +14968,10 @@ packages:
     dependency: transitive
     description:
       name: equatable
-      sha256: "3bce007a596ff8b3119c45d68aaef631272537c03d30e5d4534dd24bf4c5eaa2"
+      sha256: ea36e500cbf0ec18361deabca755434f73e42fe53c5130021c7e2d6b5ebe1702
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "3.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -13789,42 +15029,42 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: fd5fc8966a8b34337ac182dc394f3506139b69d8138d4e9e174a13d6468adcd4
+      sha256: e99e9c6078d1359ba131b2c1eb8d68837170836a01bf2cea3cf2fa13e62ac2ac
       url: "https://pub.dev"
     source: hosted
-    version: "22.3.3"
+    version: "23.0.0"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
       name: flutter_local_notifications_linux
-      sha256: "3b89a4bf095fa5f8a99beeabf982c5bd506c3ad25e7b9e61da945e994dc5b615"
+      sha256: bcbcf3c15e33b6866805092308f5f6ef27e1191874f6a92ef59213a0812a79a2
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.2"
+    version: "9.0.0"
   flutter_local_notifications_platform_interface:
     dependency: transitive
     description:
       name: flutter_local_notifications_platform_interface
-      sha256: "43c3761d916c9bd3d5c7ebbc44d82f4990329840c0c5d62ad5260cc1b5d399bd"
+      sha256: "4a49db4ce3d633ebc85c85b5fa959572600ec10bd097419c454579444308a0a0"
       url: "https://pub.dev"
     source: hosted
-    version: "12.2.0"
+    version: "13.0.0"
   flutter_local_notifications_web:
     dependency: transitive
     description:
       name: flutter_local_notifications_web
-      sha256: "516afaf97a2d1e67a036c6617321b00d205d72f7a67b6eccf936cd565f985878"
+      sha256: ef117694fbfcd82308ab0e324cfc9282fa50c192e24ec54a58173ae327ebc544
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "2.0.0"
   flutter_local_notifications_windows:
     dependency: transitive
     description:
       name: flutter_local_notifications_windows
-      sha256: "6f43bdd03b171b7a90f22647506fea33e2bb12294b7c7c7a3d690e960a382945"
+      sha256: c2d6efe9ba585d5f560d8b329131f00fe745834848e6221b22d1f62e0f0b16e2
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "4.0.0"
   flutter_localizations:
     dependency: transitive
     description: flutter
@@ -13896,14 +15136,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  gradient_borders:
-    dependency: transitive
-    description:
-      name: gradient_borders
-      sha256: c65c9b2169cb32fa7164625fc438a597409576e4b5bee498655152abea4a93cc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   graphs:
     dependency: transitive
     description:
@@ -13916,10 +15148,10 @@ packages:
     dependency: transitive
     description:
       name: hooks
-      sha256: "9a62a50b50b769a737bc0a8ff381f333529df3ab746b2f6b02e83760231455ba"
+      sha256: eaac480a35ec0814146c2c48d96aaa829e0e44a7662c88ae84c9edf4bc35651f
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.2.0"
   http:
     dependency: transitive
     description:
@@ -14036,10 +15268,10 @@ packages:
     dependency: transitive
     description:
       name: macos_ui
-      sha256: "09fb51d65b6a2d328ba5aa429ba0f7aabad5bc770193ea6e49da9f29bf95d835"
+      sha256: b739149b812c47e5ff10a00c9fdf7315f22ac5cd1fdbd447a6b7ffee31472717
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.2"
+    version: "2.0.0"
   macos_window_utils:
     dependency: transitive
     description:
@@ -14076,10 +15308,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: c82594181e3312f3d0695fc95aaaf7758d75b8d4ae2bbecf223b9fd5109a059d
+      sha256: "307249ce4ff29d58a18e97f6345f539382eb9c9c29ecda628900f31de0443dd9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.18.3"
+    version: "1.19.0"
   mime:
     dependency: transitive
     description:
@@ -14092,10 +15324,18 @@ packages:
     dependency: transitive
     description:
       name: native_toolchain_c
-      sha256: f9c168717100ae6d9fee9ffb0be379bf1f8b26b0f6bcbd4fdddcd931993a6a72
+      sha256: "120b6fc66acd8a5ddeaeb1e59b78836bb3ec9919bd9d9dfb1e2401985710c2c0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.19.2"
+    version: "0.19.6"
+  objective_c:
+    dependency: transitive
+    description:
+      name: objective_c
+      sha256: "322d5f1f0680534acaf557c5d68e97b40c3800ee5e15b63dcacc3c31504674c2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.6.3"
   package_config:
     dependency: transitive
     description:
@@ -14140,10 +15380,10 @@ packages:
     dependency: transitive
     description:
       name: petitparser
-      sha256: "91bd59303e9f769f108f8df05e371341b15d59e995e6806aefab827b58336675"
+      sha256: "2f1564aadb14215e478563b5406cb80729d022158c01dc50c96013c2f7eb4790"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.2"
+    version: "7.1.0"
   platform:
     dependency: transitive
     description:
@@ -14168,6 +15408,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.3"
+  process:
+    dependency: transitive
+    description:
+      name: process
+      sha256: "4242ba3508d37e01808bdf71ad1d5bb93a8d671bf2e7450e6b1b353fb0808891"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.6"
   process_run:
     dependency: transitive
     description:
@@ -14196,10 +15444,10 @@ packages:
     dependency: transitive
     description:
       name: record_use
-      sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
+      sha256: "1cb8564af8d43b464294411db9217f5ec04891c6f22ee2c32d73ae05e88a6bd2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "1.1.1"
   riverpod:
     dependency: transitive
     description:
@@ -14259,10 +15507,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_foundation
-      sha256: "2ec3934efa51e46117f23031cc141b8fc878e8525b94ec1ea4f7f586cf1b47ea"
+      sha256: "4e396ac6f8751ab7d2d6e27f22f32c8350b07006028d534f5221503382f1fa69"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.7"
+    version: "2.6.1"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -14392,10 +15640,10 @@ packages:
     dependency: transitive
     description:
       name: sqlite3
-      sha256: "4c7fe79840389aaeaf05fd093f795b631b5a98e2bd28d54e555c100f4a9c7a1c"
+      sha256: "8765980411f9b6733534efe9d014fad0750fa649590598772c04692deb34886b"
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.2"
+    version: "3.9.1"
   stack_trace:
     dependency: transitive
     description:
@@ -14488,10 +15736,10 @@ packages:
     dependency: transitive
     description:
       name: vector_math
-      sha256: "1d774bbdf6b72a0b12122fc1560c9c2d2a67db5a4a4cc2bd8a5c990ab20e3188"
+      sha256: fa49e1674cb84acb900141714e6c6e1f9ae099827c24d141430ff6819db4e1bc
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.4"
   vm_service:
     dependency: transitive
     description:
@@ -14544,10 +15792,10 @@ packages:
     dependency: transitive
     description:
       name: xml
-      sha256: "67f0aff7be013d107995e9b75bf4e7f2c3ef2dfdb2c8e68024bba0a7fd5756a4"
+      sha256: "0fe8cc98946def31cbcbc8734aa4067031e6f65ea3a78a508060bfed2200bfeb"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.1"
+    version: "7.1.0"
   yaml:
     dependency: transitive
     description:
@@ -14565,5 +15813,5 @@ sdks:
 // ============================================================
 // STATISTIK
 // ============================================================
-// Total file yang diproses : 59
-// Total baris kode        : 14096
+// Total file yang diproses : 67
+// Total baris kode        : 15280

@@ -1,6 +1,11 @@
 ## 📁 lib
 
 - `lib/app.dart`
+- `lib/fitur/alasan_berhenti/model/alasan_berhenti_model.dart`
+- `lib/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart`
+- `lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart`
+- `lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart`
+- `lib/fitur/alasan_berhenti/state/alasan_berhenti_state.dart`
 - `lib/fitur/badge/helper/badge_helper.dart`
 - `lib/fitur/badge/screens/badge_screen.dart`
 - `lib/fitur/biodata/enum/mode_berhenti.dart`

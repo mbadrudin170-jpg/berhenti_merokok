@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 28faabe017443b1513975374d3ec2a9a4f8b7a49
+Commit terakhir dievaluasi penuh: 95a521a81f1bb58af0b075a03cbbf2adb6be9f49
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: f478c36cc405e214abdba6accfe89680d1d90ce7 sampai 28faabe017443b1513975374d3ec2a9a4f8b7a49
-Jumlah commit yang dievaluasi: 14
+Rentang evaluasi: 28faabe017443b1513975374d3ec2a9a4f8b7a49 sampai 95a521a81f1bb58af0b075a03cbbf2adb6be9f49
+Jumlah commit yang dievaluasi: 2
 Status evaluasi: Selesai
-Ringkasan: Audit 14 commit (a68a3d4..28faabe). Perubahan kode sumber: fd6b45a (dashboard catchError navigasi, guard pembagian nol uangTerbuang, sqflite debugPrint, diary_craving log) dan d80e637 (form biodata Form/validate, penurunan validator, EasyLoading catchError, biodata_screen catchError). Temuan baru: (1) Sedang - validasi form pada form_biodata.dart (int.parse risk, field lain tanpa validator/default senyap); (2) Rendah - urutan import pada sqflite.dart (flutter/foundation sebelum berhenti_merokok). flutter analyze bersih. Commit lainnya dokumentasi/commands/tracker.
+Ringkasan: Audit 2 commit (222fb5a, 95a521a). Perubahan kode sumber: 222fb5a (fitur alasan_berhenti CRUD + migrasi v6->v7 + integrasi lainnya_screen). 95a521a hanya command docs. Temuan baru: (1) Rendah - EasyLoading.show/dismiss unawaited tanpa catchError pada form_alasan_berhenti.dart; (2) Rendah - L.i di build()/itemBuilder pada alasan_berhenti_screen.dart (noise + destrukturasi properti model). Pola migrasi dan notifier konsisten dengan aturan. flutter analyze tidak dijalankan (tidak ada perubahan kode analisis).
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
