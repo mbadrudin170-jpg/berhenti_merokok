@@ -178,8 +178,7 @@
 ### Kalender Smoke-Free
 
 - **Prioritas:** Sedang
-- **Status implementasi:** Belum diimplementasikan.
-- **Fitur pada proyek:** Belum ada; daftar impian menggunakan ListView.
+- **Status implementasi:** Sudah diimplementasikan.
 - **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); Flamy (Offlinefirst)
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=net.offlinefirst.flamy
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
@@ -279,7 +278,7 @@
 
 1. Sesuaikan Dashboard agar menampilkan metrik smoke-free (bukan km/jadwal service). (Sebagian)
 2. Tambahkan visualisasi progres tabungan pada Impian (progress bar menuju target). (Sebagian)
-3. Tambahkan kalender smoke-free untuk gambaran progres jangka panjang. (Belum diimplementasikan)
+3. Tambahkan kalender smoke-free untuk gambaran progres jangka panjang. (Sudah diimplementasikan)
 
 ### Peningkatan UI dan UX
 
