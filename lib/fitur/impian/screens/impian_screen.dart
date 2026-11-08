@@ -136,8 +136,14 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                                   ? 0
                                   : (uangDihemat / item.jumlah).clamp(0.0, 1.0),
                             ),
-                            Text(
-                              'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                                ),
+                                Text(FormatUang.formatRupiah(item.jumlah)),
+                              ],
                             ),
                           ],
                         ),
