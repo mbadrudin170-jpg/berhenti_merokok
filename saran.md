@@ -41,6 +41,7 @@
 - **Referensi:** Package `timezone` 0.11.2; README plugin v22.3.3: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
 - **Saran perbaikan:** Tentukan apakah waktu pengingat harus selalu mengikuti WIB atau mengikuti zona waktu perangkat. Jika aplikasi ditujukan untuk pengguna di seluruh Indonesia, pertimbangkan zona waktu lokal perangkat agar mendukung WIB, WITA, dan WIT. Periksa mekanisme platform atau package tambahan yang diperlukan karena package timezone tidak otomatis mendeteksi zona waktu perangkat.
 - **Alasan:** Pengingat dapat muncul pada waktu yang tidak sesuai untuk pengguna di luar WIB.
+- **Status:** Diperbaiki — deteksi zona waktu perangkat menggunakan package `flutter_timezone`; `tz.setLocalLocation` memakai identifier perangkat (WIB/WITA/WIT/dll.) dengan fallback `Asia/Jakarta` jika deteksi atau pencarian lokasi gagal.
 
 ## 2026-11-08 — Pengujian fitur notifikasi
 

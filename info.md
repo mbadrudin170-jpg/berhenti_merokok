@@ -11,37 +11,27 @@ Tidak ada temuan.
 
 ## Sedang
 
-- Status: Belum dikerjakan
-- Masalah: `TemaNotifier` mengembalikan `String` kosong (`""`) alih-alih menggunakan `TemaEnum` yang sudah didefinisikan di `lib/fitur/tema/enum/tema_enum.dart`. Enum `TemaEnum` (dengan nilai `sistem`, `terang`, `gelap`) tidak digunakan di mana pun, sehingga tipe state notifier tidak konsisten dengan model enum yang tersedia.
-- Solusi: Ubah tipe pengembalian `build()` pada `TemaNotifier` dari `String` ke `TemaEnum` (misalnya `TemaEnum.sistem` sebagai nilai awal), dan pastikan enum `TemaEnum` digunakan sebagai sumber kebenaran tipe tema.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Pengelolaan Tema melalui TemaNotifier (Riverpod Generator)" poin 1 dan 2.
-- File terkait: [tema_notifier.dart#L5](lib/fitur/tema/notifier/tema_notifier.dart#L5), [tema_notifier.dart#L8](lib/fitur/tema/notifier/tema_notifier.dart#L8), [tema_enum.dart#L1](lib/fitur/tema/enum/tema_enum.dart#L1)
+- Status: Selesai
+- Masalah: `Home` (`lib/home.dart`) menggunakan `IndexedStack` dengan daftar halaman yang dibangun sekaligus sejak awal (`_pages = [const DashboardScreen(), const LainnyaScreen()]`), sehingga tab yang belum pernah dibuka tetap dibangun dan state/provider-nya aktif. Hal ini melanggar pola lazy loading yang mewajibkan tab hanya dibuat saat pertama kali dipilih.
+- Solusi: Terapkan lazy loading dengan `Set<int> _tabTerbuka` (awal `{0}`), representasikan tab yang belum dibuka sebagai `SizedBox.shrink()`, dan pertahankan `GlobalKey` per tab untuk fitur scroll-to-top. Deteksi double-tap dengan jendela waktu <= 500ms.
+- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Navigasi Tab Utama (Home) — Inisialisasi Lazy dan Retensi State".
+- File terkait: [home.dart#L12](lib/home.dart#L12), [home.dart#L16](lib/home.dart#L16), [home.dart#L30](lib/home.dart#L30)
 
 - Status: Belum dikerjakan
-- Masalah: `SharedKeys.tema` (kunci penyimpanan preferensi tema) sudah didefinisikan di `lib/shared/helper/shared_keys.dart`, namun `TemaNotifier` tidak membaca maupun menyimpan nilai preferensi tema menggunakan kunci tersebut. State tema tidak persisten antar sesi aplikasi.
-- Solusi: Integrasikan `SharedKeys.tema` ke dalam `TemaNotifier` agar preferensi tema dibaca saat `build()` dan disimpan setiap kali tema diubah, menggunakan `SharedPreferences` sesuai pola proyek.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Sentralisasi Kunci Penyimpanan di SharedKeys" poin 1 dan 2.
-- File terkait: [tema_notifier.dart#L5](lib/fitur/tema/notifier/tema_notifier.dart#L5), [shared_keys.dart#L9](lib/shared/helper/shared_keys.dart#L9)
+- Masalah: Metode `initState()` dan `dispose()` pada `_DashboardScreenState` (`lib/fitur/dashboard/screens/dashboard_screen.dart`) masih mengandung komentar `// TODO: implement initState` dan `// TODO: implement dispose`, menandakan implementasi siklus hidup belum selesai.
+- Solusi: Hapus komentar TODO setelah implementasi selesai, atau implementasikan logika yang diperlukan. Jika tidak ada logika tambahan, cukup hapus komentar TODO.
+- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Layar dengan Siklus Hidup Menggunakan ConsumerStatefulWidget" poin 3.
+- File terkait: [dashboard_screen.dart#L15](lib/fitur/dashboard/screens/dashboard_screen.dart#L15), [dashboard_screen.dart#L20](lib/fitur/dashboard/screens/dashboard_screen.dart#L20)
+
+- Status: Belum dikerjakan
+- Masalah: State `TemaNotifier` menggunakan `AsyncNotifier<TemaEnum>` dengan tipe `TemaEnum` (enum) langsung, bukan state Freezed. Aturan proyek mewajibkan seluruh state menggunakan Freezed.
+- Solusi: Pertimbangkan pembuatan state Freezed untuk tema (mis. `TemaState` dengan field `TemaEnum mode`) jika konsistensi dengan aturan boilerplate diperlukan; atau dokumentasikan pengecualian karena state tema sederhana. Verifikasi apakah aturan Freezed berlaku untuk state sederhana berbasis enum.
+- Aturan dilanggar: `.agents/rules/global/optimasi_boilerplate.md` — poin 1 "State dan Model".
+- File terkait: [tema_notifier.dart#L9](lib/fitur/tema/notifier/tema_notifier.dart#L9), [tema_notifier.dart#L10](lib/fitur/tema/notifier/tema_notifier.dart#L10)
 
 ## Rendah
 
-- Status: Belum dikerjakan
-- Masalah: Metode `initState()` dan `dispose()` pada `_HomeState` masih mengandung komentar `// TODO: implement initState` dan `// TODO: implement dispose`, menandakan implementasi siklus hidup belum selesai.
-- Solusi: Hapus komentar TODO setelah implementasi selesai, atau implementasikan logika yang diperlukan (misalnya inisialisasi resource di `initState` dan pembersihan di `dispose`). Jika tidak ada logika tambahan yang diperlukan, cukup hapus komentar TODO.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Layar Home sebagai ConsumerStatefulWidget dengan Siklus Hidup" poin 3.
-- File terkait: [home.dart#L15](lib/home.dart#L15), [home.dart#L20](lib/home.dart#L20)
-
-- Status: Belum dikerjakan
-- Masalah: `MyApp` dideklarasikan sebagai `ConsumerStatefulWidget`, namun `_MyAppState.build` tidak mengamati provider apa pun melalui `ref`. Tidak ada kebutuhan akses provider pada root widget saat ini.
-- Solusi: Ubah `MyApp` dan `_MyAppState` menjadi `StatelessWidget` jika tidak membutuhkan akses provider. Jika nantinya root perlu mengamati provider (misalnya tema), kembalikan menjadi `ConsumerStatefulWidget`.
-- Aturan dilanggar: `.agents/rules/proyek/aturan_khusus.md` — bagian "Root App Widget sebagai ConsumerStatefulWidget" poin 3.
-- File terkait: [app.dart#L5](lib/app.dart#L5), [app.dart#L12](lib/app.dart#L12)
-
-- Status: Belum dikerjakan
-- Masalah: Enum `TemaEnum` tidak memiliki getter `label` melalui extension. Jika nilai enum ini ditampilkan kepada pengguna (misalnya pada pengaturan tema), representasi teksnya tidak dapat dikelola secara terpusat.
-- Solusi: Tambahkan extension pada `TemaEnum` dengan getter `label` (dan `icon` jika diperlukan) sesuai aturan. Terapkan hanya jika enum ini akan ditampilkan kepada pengguna.
-- Aturan dilanggar: `.agents/rules/global/optimasi_boilerplate.md` — bagian 9 "Enum yang Ditampilkan kepada Pengguna".
-- File terkait: [tema_enum.dart#L1](lib/fitur/tema/enum/tema_enum.dart#L1)
+Tidak ada temuan.
 
 # UX
 
@@ -51,25 +41,21 @@ Tidak ada temuan.
 
 ## Sedang
 
-- Status: Belum dikerjakan
-- Masalah: `MaterialApp` pada `lib/app.dart` tidak mendeklarasikan `supportedLocales` maupun `localizationsDelegates`. Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit agar teks sistem (dialog, date picker, toolbar pemilihan teks) mengikuti locale yang didukung.
-- Solusi: Tambahkan `supportedLocales: const [Locale('id', 'ID')]` dan `localizationsDelegates` yang mencakup `GlobalMaterialLocalizations.delegate`, `GlobalWidgetsLocalizations.delegate`, dan `GlobalCupertinoLocalizations.delegate` pada `MaterialApp`. Impor `flutter_localizations` dari Flutter SDK.
-- Aturan dilanggar: `.agents/rules/global/aturan_lainnya.md` — poin 33 "Lokalisasi Aplikasi".
-- File terkait: [app.dart#L16](lib/app.dart#L16), [app.dart#L22](lib/app.dart#L22)
+Tidak ada temuan.
 
 ## Rendah
 
 - Status: Belum dikerjakan
-- Masalah: Judul `AppBar` pada halaman Home menampilkan teks "data" yang tidak informatif dan tidak bermakna bagi pengguna.
-- Solusi: Ganti teks "data" dengan judul yang sesuai dan bermakna untuk halaman Home (misalnya nama aplikasi atau judul halaman).
-- Aturan dilanggar: Bukan pelanggaran aturan tertulis — teks yang ditampilkan kepada pengguna seharusnya mudah dipahami dan bermakna (optimasi_ux.md bagian 2 "Bahasa yang ditampilkan kepada pengguna").
-- File terkait: [home.dart#L27](lib/home.dart#L27)
+- Masalah: Judul `AppBar` pada halaman Home (`lib/home.dart`) dan `DashboardScreen` (`lib/fitur/dashboard/screens/dashboard_screen.dart`) menampilkan teks "data" yang tidak informatif dan tidak bermakna bagi pengguna.
+- Solusi: Ganti teks "data" dengan judul yang sesuai dan bermakna untuk setiap halaman (misalnya nama aplikasi atau judul halaman).
+- Aturan dilanggar: Bukan pelanggaran aturan tertulis — teks yang ditampilkan kepada pengguna seharusnya mudah dipahami dan bermakna (`.agents/rules/global/optimasi_ux.md` bagian 2 "Bahasa yang ditampilkan kepada pengguna").
+- File terkait: [home.dart#L27](lib/home.dart#L27), [dashboard_screen.dart#L27](lib/fitur/dashboard/screens/dashboard_screen.dart#L27)
 
 - Status: Belum dikerjakan
-- Masalah: Body halaman Home hanya menampilkan teks "Home" tanpa konten yang bermakna, sehingga pengguna tidak memperoleh informasi atau tindakan yang berguna.
-- Solusi: Tambahkan konten yang sesuai untuk halaman Home sesuai tujuan aplikasi (misalnya ringkasan, navigasi, atau informasi utama).
-- Aturan dilanggar: Bukan pelanggaran aturan tertulis — tampilan harus dirancang agar pengguna dapat memahami informasi dan tindakan yang tersedia (optimasi_ux.md bagian 3 "Kejelasan tampilan").
-- File terkait: [home.dart#L28](lib/home.dart#L28)
+- Masalah: `LainnyaScreen` (`lib/lainnya_screen.dart`) masih berupa `Placeholder` tanpa konten yang bermakna, sehingga pengguna tidak memperoleh informasi atau tindakan yang berguna.
+- Solusi: Tambahkan konten yang sesuai untuk layar Lainnya sesuai tujuan aplikasi.
+- Aturan dilanggar: Bukan pelanggaran aturan tertulis — tampilan harus dirancang agar pengguna dapat memahami informasi dan tindakan yang tersedia (`.agents/rules/global/optimasi_ux.md` bagian 3 "Kejelasan tampilan").
+- File terkait: [lainnya_screen.dart#L8](lib/lainnya_screen.dart#L8)
 
 # UI
 
@@ -85,15 +71,27 @@ Tidak ada temuan.
 
 - Status: Belum dikerjakan
 - Masalah: Body `Scaffold` pada halaman Home tidak dibungkus dengan `SafeArea` dan tidak memiliki padding tepi layar. Konten dapat tertutup oleh notch, status bar, atau navigation bar, dan dapat menempel pada tepi layar.
-- Solusi: Bungkus konten body dengan `SafeArea` dan tambahkan `Padding` dengan nilai yang sesuai dari referensi desain (optimasi_ui.md) pada lapisan yang bertanggung jawab (container halaman), bukan pada widget reusable.
+- Solusi: Bungkus konten body dengan `SafeArea` dan tambahkan `Padding` dengan nilai yang sesuai pada lapisan container halaman, bukan pada widget reusable.
 - Aturan dilanggar: `.agents/rules/global/optimasi_ux.md` — bagian 10 "Padding tepi layar" dan bagian 14 "SafeArea".
 - File terkait: [home.dart#L26](lib/home.dart#L26), [home.dart#L28](lib/home.dart#L28), [home.dart#L29](lib/home.dart#L29)
 
 - Status: Belum dikerjakan
-- Masalah: Widget `Text('data')` pada `AppBar` dan `Text('Home')` pada body tidak menggunakan konstruktor `const`, padahal nilai teksnya statis dan tidak bergantung pada runtime.
-- Solusi: Tambahkan keyword `const` pada kedua widget `Text` untuk meningkatkan efisiensi rebuild dan mengikuti praktik terbaik Flutter.
-- Aturan dilanggar: Bukan pelanggaran aturan tertulis — praktik terbaik performa Flutter (linter `prefer_const_constructors`).
-- File terkait: [home.dart#L27](lib/home.dart#L27), [home.dart#L28](lib/home.dart#L28)
+- Masalah: Body `Scaffold` pada `DashboardScreen` (`lib/fitur/dashboard/screens/dashboard_screen.dart`) tidak dibungkus dengan `SafeArea` dan tidak memiliki padding tepi layar. Konten dapat tertutup oleh notch, status bar, atau navigation bar, dan dapat menempel pada tepi layar.
+- Solusi: Bungkus konten body dengan `SafeArea` dan tambahkan `Padding` dengan nilai yang sesuai pada lapisan container halaman, bukan pada widget reusable.
+- Aturan dilanggar: `.agents/rules/global/optimasi_ux.md` — bagian 10 "Padding tepi layar" dan bagian 14 "SafeArea".
+- File terkait: [dashboard_screen.dart#L26](lib/fitur/dashboard/screens/dashboard_screen.dart#L26), [dashboard_screen.dart#L28](lib/fitur/dashboard/screens/dashboard_screen.dart#L28), [dashboard_screen.dart#L29](lib/fitur/dashboard/screens/dashboard_screen.dart#L29)
+
+- Status: Belum dikerjakan
+- Masalah: Body `Scaffold` pada `LainnyaScreen` (`lib/lainnya_screen.dart`) tidak dibungkus dengan `SafeArea` dan tidak memiliki padding tepi layar.
+- Solusi: Bungkus konten body dengan `SafeArea` dan tambahkan `Padding` dengan nilai yang sesuai pada lapisan container halaman, bukan pada widget reusable.
+- Aturan dilanggar: `.agents/rules/global/optimasi_ux.md` — bagian 10 "Padding tepi layar" dan bagian 14 "SafeArea".
+- File terkait: [lainnya_screen.dart#L7](lib/lainnya_screen.dart#L7), [lainnya_screen.dart#L9](lib/lainnya_screen.dart#L9)
+
+- Status: Belum dikerjakan
+- Masalah: `Text('DashboardScreen')` pada body DashboardScreen tidak menggunakan konstruktor `const`, padahal nilai teksnya statis.
+- Solusi: Tambahkan keyword `const` pada widget `Text` untuk meningkatkan efisiensi rebuild.
+- Atura dilanggar: Bukan pelanggaran aturan tertulis — praktik terbaik performa Flutter (linter `prefer_const_constructors`).
+- File terkait: [dashboard_screen.dart#L28](lib/fitur/dashboard/screens/dashboard_screen.dart#L28)
 
 
 
@@ -101,6 +99,11 @@ Tidak ada temuan.
 // FILE: lib/home.dart
 // ============================================================
 ```dart
+import 'package:berhenti_merokok/fitur/biodata/screens/biodata_screen.dart';
+import 'package:berhenti_merokok/fitur/dashboard/screens/dashboard_screen.dart';
+import 'package:berhenti_merokok/fitur/impian/screens/impian_screen.dart';
+import 'package:berhenti_merokok/lainnya_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -112,23 +115,109 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
+  int _selectedIndex = 0;
+
+  // Tab yang sudah pernah dibuka; awalnya hanya tab 0 (Dashboard).
+  final Set<int> _tabTerbuka = {0};
+
+  // GlobalKey per tab agar currentState tetap dapat diakses untuk
+  // fitur scroll-to-top setelah tab dibuka. LainnyaScreen adalah
+  // StatelessWidget sehingga key-nya tidak bertipe State.
+  final GlobalKey _kunciDashboard = GlobalKey();
+  final GlobalKey _kunciBiodata = GlobalKey();
+  final GlobalKey _kunciImpian = GlobalKey();
+  final GlobalKey _kunciLainnya = GlobalKey();
+
+  // Waktu tap terakhir untuk deteksi double-tap pada tab aktif.
+  DateTime? _lastTapTime;
+  static const Duration _durasiDoubleTap = Duration(milliseconds: 500);
+
   @override
   void initState() {
     super.initState();
-    // TODO: implement initState
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
+  }
+
+  void _saatPilihTab(int i) {
+    final sekarang = DateTime.now();
+    final lastTap = _lastTapTime;
+    final tabSama = i == _selectedIndex;
+    final doubleTap =
+        tabSama &&
+        lastTap != null &&
+        sekarang.difference(lastTap) <= _durasiDoubleTap;
+    if (doubleTap) {
+      _scrollKeAtas(i);
+      _lastTapTime = null;
+      return;
+    }
+    if (!tabSama) {
+      setState(() {
+        _tabTerbuka.add(i);
+        _selectedIndex = i;
+      });
+    }
+    _lastTapTime = sekarang;
+  }
+
+  void _scrollKeAtas(int i) {
+    // Periksa state == null terlebih dahulu (tab belum dibuka) agar tidak crash.
+    final state = switch (i) {
+      0 => _kunciDashboard.currentState,
+      1 => _kunciBiodata.currentState,
+      2 => _kunciImpian.currentState,
+      _ => _kunciLainnya.currentState,
+    };
+    if (state == null) {
+      return;
+    }
+    // Hanya panggil scrollToTop() apabila state mengimplementasikan
+    // ScrollKeAtas; pada proyek ini layar tab belum menyediakannya.
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('data')),
-      body: Center(child: Text('Home')),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: List<Widget>.generate(4, (i) {
+          if (!_tabTerbuka.contains(i)) {
+            return const SizedBox.shrink();
+          }
+          return switch (i) {
+            0 => DashboardScreen(key: _kunciDashboard),
+            1 => BiodataScreen(key: _kunciBiodata),
+            2 => ImpianScreen(key: _kunciImpian),
+            _ => LainnyaScreen(key: _kunciLainnya),
+          };
+        }),
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: _saatPilihTab,
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(CupertinoIcons.home),
+            label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: const Icon(CupertinoIcons.person),
+            label: 'Biodata',
+          ),
+          NavigationDestination(
+            icon: const Icon(CupertinoIcons.star),
+            label: 'Impian',
+          ),
+          NavigationDestination(
+            icon: const Icon(CupertinoIcons.ellipsis),
+            label: 'Lainnya',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -141,13 +230,863 @@ class _HomeState extends ConsumerState<Home> {
 // ============================================================
 ```dart
 import 'package:berhenti_merokok/app.dart';
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite.dart';
+import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 export 'package:berhenti_merokok/app.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
+  try {
+    await AppDatabase.database;
+  } on Exception catch (e, s) {
+    p('Gagal inisialisasi database: $e $s');
+    rethrow;
+  }
+  try {
+    await NotifikasiService.inisialisasi();
+  } on Exception catch (e, s) {
+    p('Gagal inisialisasi notifikasi: $e $s');
+  } on UnsupportedError catch (e, s) {
+    p('Platform tidak mendukung notifikasi: $e $s');
+  }
+  runApp(const ProviderScope(child: App()));
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    NotifikasiService.cekNotifikasiSaatBuka();
+  });
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/lainnya_screen.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
+import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
+import 'package:berhenti_merokok/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart';
+import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
+import 'package:berhenti_merokok/fitur/pengaturan/screens/pengaturan_screen.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class LainnyaScreen extends StatelessWidget {
+  const LainnyaScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Lainnya')),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildTombolCustom(
+              () => Nav.to(context, const PengaturanScreen()),
+              'Pengaturan',
+            ),
+            _buildTombolCustom(() => Nav.to(context, DummyScreen()), 'Dummy'),
+            _buildTombolCustom(
+              () => Nav.to(context, const SosCravingScreen()),
+              'SOS Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const PemulihanKesehatanScreen()),
+              'Pemulihan Kesehatan',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const DiaryCravingScreen()),
+              'Diary Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const KalenderSmokeFreeScreen()),
+              'Kalender Smoke-Free',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTombolCustom(VoidCallback ontap, String title) {
+    return ListTile(
+      onTap: ontap,
+      title: Text(title),
+      trailing: Icon(CupertinoIcons.chevron_right),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/shared/db/sqflite/sqflite.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+/// Konfigurasi dan akses database SQLite untuk aplikasi berhenti_merokok.
+///
+/// Database menggunakan factory default sqflite yang didukung Android.
+class AppDatabase {
+  AppDatabase._();
+
+  static Database? _database;
+
+  /// Nama file database SQLite.
+  static const String _namaDatabase = 'berhenti_merokok.db';
+
+  /// Versi skema database.
+  static const int _versiDatabase = 5;
+
+  /// Mengembalikan instance database, membuatnya jika belum tersedia.
+  static Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _inisialisasiDatabase();
+    return _database!;
+  }
+
+  /// Membuka dan menginisialisasi database SQLite.
+  static Future<Database> _inisialisasiDatabase() async {
+    final pathDatabase = await getDatabasesPath();
+    final path = join(pathDatabase, _namaDatabase);
+
+    return await openDatabase(
+      path,
+      version: _versiDatabase,
+      onCreate: _buatTabel,
+      onUpgrade: _onUpgrade,
+    );
+  }
+
+  /// Membuat tabel-tabel saat database pertama kali dibuat.
+  static Future<void> _buatTabel(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE ${NamaTabel.biodata}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.nama} TEXT NOT NULL,
+        ${NamaKolom.tanggalLahir} TEXT,
+        ${NamaKolom.jumlahRokokPerHari} INTEGER,
+        ${NamaKolom.hargaRokokPerBungkus} REAL,
+        ${NamaKolom.batangPerBungkus} REAL,
+        ${NamaKolom.tanggalMulaiMerokok} TEXT,
+        ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.nama} TEXT NOT NULL,
+        ${NamaKolom.targetTanggal} TEXT,
+        ${NamaKolom.dibuat} TEXT,
+        ${NamaKolom.jumlah} REAL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.tanggal} TEXT,
+        ${NamaKolom.pemicu} TEXT NOT NULL,
+        ${NamaKolom.intensitas} INTEGER,
+        ${NamaKolom.catatan} TEXT,
+        ${NamaKolom.dibuat} TEXT
+      )
+    ''');
+  }
+
+  /// Memperbarui skema database saat versi meningkat.
+  static Future<void> _onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.nama} TEXT NOT NULL,
+          ${NamaKolom.targetTanggal} TEXT,
+          ${NamaKolom.dibuat} TEXT,
+          ${NamaKolom.jumlah} REAL
+        )
+      ''');
+    }
+    if (oldVersion < 3) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT',
+      );
+    }
+    if (oldVersion < 4) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.batangPerBungkus} REAL',
+      );
+    }
+    if (oldVersion < 5) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.tanggal} TEXT,
+          ${NamaKolom.pemicu} TEXT NOT NULL,
+          ${NamaKolom.intensitas} INTEGER,
+          ${NamaKolom.catatan} TEXT,
+          ${NamaKolom.dibuat} TEXT
+        )
+      ''');
+    }
+  }
+
+  /// Menutup database jika sedang terbuka.
+  static Future<void> tutupDatabase() async {
+    if (_database != null) {
+      await _database!.close();
+      _database = null;
+    }
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/shared/db/sqflite/sqflite_op.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+
+/// Operasi CRUD generik untuk database SQLite aplikasi.
+///
+/// Kelas ini membungkus akses ke [AppDatabase] dan menyediakan
+/// metode standar untuk menambah, membaca, mengubah, dan menghapus
+/// baris pada tabel yang ditentukan.
+class SqfliteOp {
+  const SqfliteOp();
+
+  /// Menambahkan satu baris baru ke [tabel].
+  ///
+  /// Mengembalikan ID baris yang baru dimasukkan.
+  Future<int> tambah(
+    String tabel,
+    Map<String, Object?> data, {
+    String? nullColumnHack,
+    ConflictAlgorithm? conflictAlgorithm,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      final hasil = await db.insert(
+        tabel,
+        data,
+        nullColumnHack: nullColumnHack,
+        conflictAlgorithm: conflictAlgorithm,
+      );
+      L.s('Berhasil menambahkan data ke tabel $tabel');
+      return hasil;
+    } on Exception catch (e, s) {
+      L.e('Gagal menambahkan data ke tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Mengambil seluruh baris dari [tabel].
+  Future<List<Map<String, Object?>>> ambilSemua(
+    String tabel, {
+    String? orderBy,
+    int? limit,
+    int? offset,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      return await db.query(
+        tabel,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
+      );
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data dari tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Mengambil baris dari [tabel] dengan filter opsional.
+  Future<List<Map<String, Object?>>> ambil(
+    String tabel, {
+    String? where,
+    List<Object?>? whereArgs,
+    String? orderBy,
+    int? limit,
+    int? offset,
+    List<String>? columns,
+    String? groupBy,
+    String? having,
+    bool? distinct,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      return await db.query(
+        tabel,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
+        distinct: distinct,
+      );
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data dari tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Mengambil satu baris pertama dari [tabel] dengan filter opsional.
+  Future<Map<String, Object?>?> ambilSatu(
+    String tabel, {
+    String? where,
+    List<Object?>? whereArgs,
+    String? orderBy,
+    List<String>? columns,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      final rows = await db.query(
+        tabel,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        orderBy: orderBy,
+        limit: 1,
+      );
+      if (rows.isEmpty) {
+        return null;
+      }
+      return rows.first;
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil satu data dari tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Mengubah baris pada [tabel] sesuai filter [where].
+  ///
+  /// Mengembalikan jumlah baris yang terpengaruh.
+  Future<int> ubah(
+    String tabel,
+    Map<String, Object?> data, {
+    String? where,
+    List<Object?>? whereArgs,
+    ConflictAlgorithm? conflictAlgorithm,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      final hasil = await db.update(
+        tabel,
+        data,
+        where: where,
+        whereArgs: whereArgs,
+        conflictAlgorithm: conflictAlgorithm,
+      );
+      L.s('Berhasil mengubah $hasil baris pada tabel $tabel');
+      return hasil;
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah data pada tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menghapus baris pada [tabel] sesuai filter [where].
+  ///
+  /// Mengembalikan jumlah baris yang terhapus.
+  Future<int> hapus(
+    String tabel, {
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      final hasil = await db.delete(tabel, where: where, whereArgs: whereArgs);
+      L.s('Berhasil menghapus $hasil baris pada tabel $tabel');
+      return hasil;
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus data pada tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menghitung jumlah baris pada [tabel] dengan filter opsional.
+  Future<int> hitung(
+    String tabel, {
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      final result = await db.rawQuery(
+        'SELECT COUNT(*) AS jumlah FROM $tabel'
+        '${where == null ? '' : ' WHERE $where'}',
+        whereArgs,
+      );
+      final jumlah = Sqflite.firstIntValue(result) ?? 0;
+      return jumlah;
+    } on Exception catch (e, s) {
+      L.e('Gagal menghitung baris pada tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menjalankan beberapa operasi dalam satu transaksi.
+  Future<T> transaksi<T>(Future<T> Function(Transaction txn) aksi) async {
+    try {
+      final db = await AppDatabase.database;
+      final hasil = await db.transaction(aksi);
+      L.i('Transaksi pada database berhasil');
+      return hasil;
+    } on Exception catch (e, s) {
+      L.e('Transaksi pada database gagal: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menjalankan SQL mentah (SELECT) dan mengembalikan hasilnya.
+  Future<List<Map<String, Object?>>> queryRaw(
+    String sql, [
+    List<Object?>? arguments,
+  ]) async {
+    try {
+      final db = await AppDatabase.database;
+      return await db.rawQuery(sql, arguments);
+    } on Exception catch (e, s) {
+      L.e('Gagal menjalankan query mentah: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menjalankan SQL mentah (INSERT/UPDATE/DELETE) dan mengembalikan
+  /// jumlah baris yang terpengaruh.
+  Future<int> executeRaw(String sql, [List<Object?>? arguments]) async {
+    try {
+      final db = await AppDatabase.database;
+      return await db.rawUpdate(sql, arguments);
+    } on Exception catch (e, s) {
+      L.e('Gagal menjalankan perintah mentah: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menjalankan beberapa operasi dalam satu [Batch].
+  ///
+  /// Callback [isiBatch] digunakan untuk mengisi batch (insert/update/delete).
+  /// Mengembalikan daftar hasil operasi.
+  Future<List<Object?>> batch(
+    void Function(Batch batch) isiBatch, {
+    bool? noResult,
+    bool? continueOnError,
+  }) async {
+    try {
+      final db = await AppDatabase.database;
+      final b = db.batch();
+      isiBatch(b);
+      final hasil = await b.commit(
+        noResult: noResult,
+        continueOnError: continueOnError,
+      );
+      L.i('Batch pada database berhasil dijalankan');
+      return hasil;
+    } on Exception catch (e, s) {
+      L.e('Batch pada database gagal: $e $s');
+      rethrow;
+    }
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/shared/notifikasi/notifikasi_service.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/home.dart';
+import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+/// Layanan notifikasi lokal untuk pengingat harian aplikasi.
+class NotifikasiService {
+  NotifikasiService._();
+
+  static final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
+
+  /// ID notifikasi pengingat harian.
+  static const int _idPengingatHarian = 1001;
+
+  /// ID notifikasi uji coba (terpisah dari pengingat utama).
+  static const int _idUjiCoba = 1002;
+
+  /// GlobalKey navigator untuk navigasi saat notifikasi ditekan.
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
+  /// Inisialisasi plugin notifikasi dan zona waktu.
+  static Future<void> inisialisasi() async {
+    L.i('NotifikasiService inisialisasi');
+    tz.initializeTimeZones();
+    // Deteksi zona waktu perangkat (WIB/WITA/WIT/dll.) agar pengingat
+    // mengikuti waktu lokal pengguna. Package timezone tidak otomatis
+    // mendeteksi zona waktu perangkat, sehingga gunakan flutter_timezone.
+    try {
+      final info = await FlutterTimezone.getLocalTimezone();
+      final identifier = info.identifier;
+      L.i('zonaWaktuPerangkat=$identifier');
+      try {
+        tz.setLocalLocation(tz.getLocation(identifier));
+      } on Exception catch (e, s) {
+        L.w(
+          'Identifier zona waktu tidak ditemukan di database tz, fallback Asia/Jakarta: $e $s',
+        );
+        tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      }
+    } on Exception catch (e, s) {
+      L.w(
+        'Gagal mendeteksi zona waktu perangkat, fallback Asia/Jakarta: $e $s',
+      );
+      try {
+        tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      } on Exception catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
+      }
+    }
+
+    const android = AndroidInitializationSettings('ic_launcher');
+    const darwin = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+    );
+    const settings = InitializationSettings(
+      android: android,
+      iOS: darwin,
+      macOS: darwin,
+    );
+
+    try {
+      await _plugin.initialize(
+        settings: settings,
+        onDidReceiveNotificationResponse: _onTapNotifikasi,
+      );
+      L.s('Plugin notifikasi berhasil diinisialisasi');
+    } on Exception catch (e, s) {
+      L.e('Gagal inisialisasi plugin notifikasi: $e $s');
+      rethrow;
+    }
+  }
+
+  static void _onTapNotifikasi(NotificationResponse response) {
+    L.i('payload=${response.payload}');
+    _navigasiDariPayload(response.payload);
+  }
+
+  /// Navigasi berdasarkan payload notifikasi (foreground/background).
+  static void _navigasiDariPayload(String? payload) {
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      L.w('navigator null saat navigasi notifikasi');
+      return;
+    }
+
+    String? kategori;
+    String? id;
+    if (payload != null) {
+      for (final part in payload.split('&')) {
+        final kv = part.split('=');
+        if (kv.length == 2) {
+          if (kv[0] == 'kategori') kategori = kv[1];
+          if (kv[0] == 'id') id = kv[1];
+        }
+      }
+    }
+    L.i('kategori=$kategori, id=$id');
+
+    final context = navigator.context;
+    if (kategori == 'pengingat_harian') {
+      unawaited(
+        Nav.pushAndRemoveUntil(context, const Home()).catchError((
+          Object e,
+          StackTrace s,
+        ) {
+          L.e('Gagal navigasi dari notifikasi: $e $s');
+          return null;
+        }),
+      );
+    } else {
+      L.w('kategori notifikasi tidak dikenal: $kategori');
+    }
+  }
+
+  /// Menangani kondisi aplikasi diluncurkan dari keadaan terminated
+  /// melalui notifikasi.
+  static void cekNotifikasiSaatBuka() {
+    unawaited(
+      Future(() async {
+        try {
+          final details = await _plugin.getNotificationAppLaunchDetails();
+          if (details?.didNotificationLaunchApp ?? false) {
+            final payload = details?.notificationResponse?.payload;
+            if (payload != null && payload.isNotEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _navigasiDariPayload(payload);
+              });
+            }
+          }
+        } catch (e, s) {
+          L.e('Gagal cek notifikasi saat buka: $e $s');
+        }
+      }).catchError((Object e, StackTrace s) {
+        L.e('Gagal cek notifikasi saat buka: $e $s');
+      }),
+    );
+  }
+
+  /// Meminta izin notifikasi sesuai platform.
+  /// Mengembalikan true jika izin diberikan.
+  static Future<bool> mintaIzin() async {
+    if (kIsWeb) {
+      final granted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            WebFlutterLocalNotificationsPlugin
+          >()
+          ?.requestNotificationsPermission();
+      return granted ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      final granted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.requestNotificationsPermission();
+      return granted ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final granted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      return granted ?? false;
+    }
+    return true;
+  }
+
+  /// Menjadwalkan pengingat harian pada jam dan menit tertentu.
+  static Future<void> jadwalkanPengingatHarian({
+    required int jam,
+    required int menit,
+  }) async {
+    L.i('jam=$jam, menit=$menit');
+    // Platform yang tidak mendukung notifikasi terjadwal.
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      L.w('platform tidak mendukung penjadwalan terjadwal');
+      throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
+    }
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      jam,
+      menit,
+    );
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'pengingat_harian',
+        'Pengingat Harian',
+        channelDescription: 'Pengingat harian berhenti merokok',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+        icon: 'ic_launcher',
+      ),
+      iOS: DarwinNotificationDetails(),
+    );
+
+    try {
+      await _plugin.zonedSchedule(
+        id: _idPengingatHarian,
+        scheduledDate: scheduled,
+        notificationDetails: details,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        title: 'Berhenti Merokok',
+        body: 'Jaga semangat! Cek progres smoke-free Anda hari ini.',
+        payload: 'kategori=pengingat_harian&id=$_idPengingatHarian',
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+      // Periksa izin sebelum menyimpan status aktif.
+      final izinDiberikan = await _periksaIzinSistem();
+      if (!izinDiberikan) {
+        L.w('izin notifikasi tidak diberikan, batalkan penjadwalan');
+        await _plugin.cancel(id: _idPengingatHarian);
+        await setAktif(false);
+        throw Exception('Izin notifikasi tidak diberikan');
+      }
+      await setAktif(true);
+      await setWaktu(jam, menit);
+      L.s('Pengingat harian dijadwalkan jam=$jam:$menit');
+    } on Exception catch (e, s) {
+      L.e('Gagal menjadwalkan pengingat harian: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Membatalkan pengingat harian.
+  static Future<void> batalkanPengingatHarian() async {
+    try {
+      await _plugin.cancel(id: _idPengingatHarian);
+      await setAktif(false);
+      L.s('Pengingat harian dibatalkan');
+    } on Exception catch (e, s) {
+      L.e('Gagal membatalkan pengingat harian: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menampilkan notifikasi langsung (untuk uji coba).
+  static Future<void> tampilkanSekarang() async {
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'pengingat_harian',
+        'Pengingat Harian',
+        channelDescription: 'Pengingat harian berhenti merokok',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+        icon: 'ic_launcher',
+      ),
+      iOS: DarwinNotificationDetails(),
+    );
+    try {
+      await _plugin.show(
+        id: _idUjiCoba,
+        title: 'Berhenti Merokok',
+        body: 'Jaga semangat! Cek progres smoke-free Anda hari ini.',
+        notificationDetails: details,
+        payload: 'kategori=pengingat_harian&id=$_idUjiCoba',
+      );
+      L.s('Notifikasi langsung ditampilkan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menampilkan notifikasi: $e $s');
+      rethrow;
+    }
+  }
+
+  // --- Preferensi SharedPreferences ---
+
+  static Future<bool> aktif() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(SharedKeys.notifikasiHarian) ?? false;
+  }
+
+  static Future<void> setAktif(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(SharedKeys.notifikasiHarian, value);
+  }
+
+  static Future<int> jam() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(SharedKeys.notifikasiJam) ?? 8;
+  }
+
+  static Future<int> menit() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(SharedKeys.notifikasiMenit) ?? 0;
+  }
+
+  static Future<void> setWaktu(int jam, int menit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(SharedKeys.notifikasiJam, jam);
+    await prefs.setInt(SharedKeys.notifikasiMenit, menit);
+  }
+
+  /// Jadwalkan ulang pengingat jika aktif (dipanggil saat app start).
+  static Future<void> jadwalkanUlangJikaAktif() async {
+    try {
+      final isAktif = await aktif();
+      L.i('isAktif=$isAktif');
+      if (!isAktif) return;
+      // Periksa izin sistem; pengguna dapat mencabutnya melalui pengaturan.
+      final izinDiberikan = await _periksaIzinSistem();
+      if (!izinDiberikan) {
+        L.w('izin notifikasi tidak diberikan, nonaktifkan pengingat');
+        await setAktif(false);
+        return;
+      }
+      final j = await jam();
+      final m = await menit();
+      await jadwalkanPengingatHarian(jam: j, menit: m);
+    } on Exception catch (e, s) {
+      L.e('Gagal menjadwalkan ulang pengingat harian: $e $s');
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung penjadwalan ulang: $e $s');
+    }
+  }
+
+  /// Memeriksa status izin notifikasi pada sistem tanpa meminta.
+  static Future<bool> _periksaIzinSistem() async {
+    if (kIsWeb) {
+      // Web tidak mendukung pengecekan izin tanpa prompt; anggap tersedia.
+      return true;
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      final impl = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      final enabled = await impl?.areNotificationsEnabled();
+      return enabled ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final impl = _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      final settings = await impl?.checkPermissions();
+      return settings?.isEnabled ?? false;
+    }
+    return true;
+  }
 }
 ```
 
@@ -166,6 +1105,7264 @@ class SharedKeys {
 
   /// Kunci untuk menyimpan preferensi tema aplikasi.
   static const String tema = 'tema';
+
+  /// Kunci untuk menyimpan status aktif pengingat harian.
+  static const String notifikasiHarian = 'notifikasi_harian';
+
+  /// Kunci untuk menyimpan jam pengingat harian.
+  static const String notifikasiJam = 'notifikasi_jam';
+
+  /// Kunci untuk menyimpan menit pengingat harian.
+  static const String notifikasiMenit = 'notifikasi_menit';
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/shared/konstanta/milestone_kesehatan.dart
+// ============================================================
+```dart
+/// Data satu milestone pemulihan kesehatan berdasarkan durasi smoke-free.
+class MilestoneKesehatan {
+  const MilestoneKesehatan({
+    required this.target,
+    required this.judul,
+    required this.deskripsi,
+  });
+
+  final Duration target;
+  final String judul;
+  final String deskripsi;
+}
+
+/// Daftar milestone pemulihan kesehatan berdasarkan durasi smoke-free.
+const List<MilestoneKesehatan> daftarMilestoneKesehatan = [
+  MilestoneKesehatan(
+    target: Duration(minutes: 20),
+    judul: '20 Menit',
+    deskripsi:
+        'Tekanan darah dan denyut jantung mulai kembali ke tingkat normal.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(hours: 8),
+    judul: '8 Jam',
+    deskripsi:
+        'Kadar karbon monoksida dalam darah turun ke tingkat normal, '
+        'oksigen dalam darah meningkat.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(hours: 24),
+    judul: '24 Jam',
+    deskripsi: 'Risiko serangan jantung mulai menurun.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(hours: 48),
+    judul: '48 Jam',
+    deskripsi:
+        'Ujung saraf mulai tumbuh kembali, indra pengecapan dan '
+        'penciuman membaik.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(hours: 72),
+    judul: '72 Jam',
+    deskripsi:
+        'Bronkus rileks, kapasitas paru meningkat, energi tubuh bertambah.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(days: 14),
+    judul: '2 Minggu',
+    deskripsi:
+        'Sirkulasi darah membaik, fungsi paru meningkat, berjalan kaki '
+        'menjadi lebih mudah.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(days: 90),
+    judul: '3 Bulan',
+    deskripsi: 'Batuk dan sesak napas berkurang, paru-paru mulai pulih.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(days: 270),
+    judul: '9 Bulan',
+    deskripsi:
+        'Paru-paru telah pulih secara signifikan, energi dan stamina '
+        'meningkat.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(days: 365),
+    judul: '1 Tahun',
+    deskripsi:
+        'Risiko penyakit jantung koroner turun setengah dibanding perokok.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(days: 1825),
+    judul: '5 Tahun',
+    deskripsi: 'Risiko stroke setara dengan orang yang tidak merokok.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(days: 3650),
+    judul: '10 Tahun',
+    deskripsi: 'Risiko kanker paru turun setengah dibanding perokok aktif.',
+  ),
+  MilestoneKesehatan(
+    target: Duration(days: 5475),
+    judul: '15 Tahun',
+    deskripsi:
+        'Risiko penyakit jantung koroner setara dengan orang yang tidak '
+        'merokok.',
+  ),
+];
+
+/// Mengembalikan milestone berikutnya yang belum tercapai berdasarkan durasi
+/// smoke-free. Mengembalikan null jika semua milestone sudah tercapai.
+MilestoneKesehatan? milestoneBerikutnya(Duration durasi) {
+  for (final m in daftarMilestoneKesehatan) {
+    if (durasi < m.target) return m;
+  }
+  return null;
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/shared/konstanta/nama_kolom.dart
+// ============================================================
+```dart
+/// Nama-nama kolom database SQLite aplikasi.
+class NamaKolom {
+  NamaKolom._();
+
+  /// Kolom id biodata.
+  static const String id = 'id';
+
+  /// Kolom nama biodata.
+  static const String nama = 'nama';
+
+  /// Kolom tanggal lahir biodata.
+  static const String tanggalLahir = 'tanggal_lahir';
+
+  /// Kolom jumlah rokok per hari biodata.
+  static const String jumlahRokokPerHari = 'jumlah_rokok_per_hari';
+
+  /// Kolom harga rokok per bungkus biodata.
+  static const String hargaRokokPerBungkus = 'harga_rokok_per_bungkus';
+
+  /// Kolom batang rokok per bungkus biodata.
+  static const String batangPerBungkus = 'batang_per_bungkus';
+
+  /// Kolom tanggal mulai merokok biodata.
+  static const String tanggalMulaiMerokok = 'tanggal_mulai_merokok';
+
+  /// Kolom tanggal mulai berhenti merokok biodata.
+  static const String tanggalMulaiBerhentiMerokok =
+      'tanggal_mulai_berhenti_merokok';
+
+  // Kolom tabel impian.
+  /// Kolom target tanggal impian.
+  static const String targetTanggal = 'target_tanggal';
+
+  /// Kolom tanggal dibuat impian.
+  static const String dibuat = 'dibuat';
+
+  /// Kolom jumlah impian.
+  static const String jumlah = 'jumlah';
+
+  // Kolom tabel diary craving.
+  /// Kolom tanggal kejadian craving.
+  static const String tanggal = 'tanggal';
+
+  /// Kolom kategori pemicu craving.
+  static const String pemicu = 'pemicu';
+
+  /// Kolom intensitas craving (1-5).
+  static const String intensitas = 'intensitas';
+
+  /// Kolom catatan craving.
+  static const String catatan = 'catatan';
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/shared/konstanta/nama_tabel.dart
+// ============================================================
+```dart
+/// Nama-nama tabel database SQLite aplikasi.
+class NamaTabel {
+  NamaTabel._();
+
+  /// Tabel biodata.
+  static const String biodata = 'biodata';
+
+  /// Tabel impian.
+  static const String impian = 'impian';
+
+  /// Tabel diary craving (pemicu).
+  static const String diaryCraving = 'diary_craving';
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/model/impian_model.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'impian_model.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$ImpianModel {
+
+ String get id; String get nama; DateTime get targetTanggal; DateTime get dibuat; double get jumlah;
+/// Create a copy of ImpianModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ImpianModelCopyWith<ImpianModel> get copyWith => _$ImpianModelCopyWithImpl<ImpianModel>(this as ImpianModel, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as ImpianModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImpianModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.nama, _this.nama) || other.nama == _this.nama)&&(identical(other.targetTanggal, _this.targetTanggal) || other.targetTanggal == _this.targetTanggal)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat)&&(identical(other.jumlah, _this.jumlah) || other.jumlah == _this.jumlah));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as ImpianModel;
+  return Object.hash(runtimeType,_this.id,_this.nama,_this.targetTanggal,_this.dibuat,_this.jumlah);
+}
+
+@override
+String toString() {
+  final _this = this as ImpianModel;
+  return 'ImpianModel(id: ${_this.id}, nama: ${_this.nama}, targetTanggal: ${_this.targetTanggal}, dibuat: ${_this.dibuat}, jumlah: ${_this.jumlah})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ImpianModelCopyWith<$Res>  {
+  factory $ImpianModelCopyWith(ImpianModel value, $Res Function(ImpianModel) _then) = _$ImpianModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String nama, DateTime targetTanggal, DateTime dibuat, double jumlah
+});
+
+
+
+
+}
+/// @nodoc
+class _$ImpianModelCopyWithImpl<$Res>
+    implements $ImpianModelCopyWith<$Res> {
+  _$ImpianModelCopyWithImpl(this._self, this._then);
+
+  final ImpianModel _self;
+  final $Res Function(ImpianModel) _then;
+
+/// Create a copy of ImpianModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nama = null,Object? targetTanggal = null,Object? dibuat = null,Object? jumlah = null,}) {
+  return _then(ImpianModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
+as String,targetTanggal: null == targetTanggal ? _self.targetTanggal : targetTanggal // ignore: cast_nullable_to_non_nullable
+as DateTime,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as DateTime,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ImpianModel].
+extension ImpianModelPatterns on ImpianModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ImpianModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ImpianModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ImpianModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _ImpianModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ImpianModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ImpianModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime targetTanggal,  DateTime dibuat,  double jumlah)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ImpianModel() when $default != null:
+return $default(_that.id,_that.nama,_that.targetTanggal,_that.dibuat,_that.jumlah);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime targetTanggal,  DateTime dibuat,  double jumlah)  $default,) {final _that = this;
+switch (_that) {
+case _ImpianModel():
+return $default(_that.id,_that.nama,_that.targetTanggal,_that.dibuat,_that.jumlah);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String nama,  DateTime targetTanggal,  DateTime dibuat,  double jumlah)?  $default,) {final _that = this;
+switch (_that) {
+case _ImpianModel() when $default != null:
+return $default(_that.id,_that.nama,_that.targetTanggal,_that.dibuat,_that.jumlah);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _ImpianModel extends ImpianModel {
+  const _ImpianModel({required this.id, required this.nama, required this.targetTanggal, required this.dibuat, required this.jumlah}): super._();
+  
+
+@override final  String id;
+@override final  String nama;
+@override final  DateTime targetTanggal;
+@override final  DateTime dibuat;
+@override final  double jumlah;
+
+/// Create a copy of ImpianModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ImpianModelCopyWith<_ImpianModel> get copyWith => __$ImpianModelCopyWithImpl<_ImpianModel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ImpianModel&&(identical(other.id, id) || other.id == id)&&(identical(other.nama, nama) || other.nama == nama)&&(identical(other.targetTanggal, targetTanggal) || other.targetTanggal == targetTanggal)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat)&&(identical(other.jumlah, jumlah) || other.jumlah == jumlah));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,id,nama,targetTanggal,dibuat,jumlah);
+}
+
+@override
+String toString() {
+    return 'ImpianModel(id: $id, nama: $nama, targetTanggal: $targetTanggal, dibuat: $dibuat, jumlah: $jumlah)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ImpianModelCopyWith<$Res> implements $ImpianModelCopyWith<$Res> {
+  factory _$ImpianModelCopyWith(_ImpianModel value, $Res Function(_ImpianModel) _then) = __$ImpianModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String nama, DateTime targetTanggal, DateTime dibuat, double jumlah
+});
+
+
+
+
+}
+/// @nodoc
+class __$ImpianModelCopyWithImpl<$Res>
+    implements _$ImpianModelCopyWith<$Res> {
+  __$ImpianModelCopyWithImpl(this._self, this._then);
+
+  final _ImpianModel _self;
+  final $Res Function(_ImpianModel) _then;
+
+/// Create a copy of ImpianModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nama = null,Object? targetTanggal = null,Object? dibuat = null,Object? jumlah = null,}) {
+  return _then(_ImpianModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
+as String,targetTanggal: null == targetTanggal ? _self.targetTanggal : targetTanggal // ignore: cast_nullable_to_non_nullable
+as DateTime,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as DateTime,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/model/impian_model.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+part 'impian_model.freezed.dart';
+
+@freezed
+abstract class ImpianModel with _$ImpianModel {
+  const ImpianModel._();
+
+  const factory ImpianModel({
+    required String id,
+    required String nama,
+    required DateTime targetTanggal,
+    required DateTime dibuat,
+    required double jumlah,
+  }) = _ImpianModel;
+
+  /// Membuat [ImpianModel] dari baris database SQLite.
+  factory ImpianModel.fromSqflite(Map<String, Object?> row) {
+    return ImpianModel(
+      id: ParserUtil.parseString(row[NamaKolom.id]),
+      nama: ParserUtil.parseString(row[NamaKolom.nama]),
+      targetTanggal:
+          ParserUtil.parseDateTime(row[NamaKolom.targetTanggal])?.toLocal() ??
+          DateTime.now(),
+      dibuat:
+          ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
+          DateTime.now(),
+      jumlah: ParserUtil.parseDouble(row[NamaKolom.jumlah]),
+    );
+  }
+
+  /// Mengonversi [ImpianModel] menjadi Map untuk disimpan ke SQLite.
+  Map<String, Object?> toSqflite() {
+    return <String, Object?>{
+      NamaKolom.id: id,
+      NamaKolom.nama: nama,
+      NamaKolom.targetTanggal: targetTanggal.toUtc().toIso8601String(),
+      NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
+      NamaKolom.jumlah: jumlah,
+    };
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/screens/impian_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
+import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class ImpianScreen extends ConsumerStatefulWidget {
+  const ImpianScreen({super.key});
+
+  @override
+  ConsumerState<ImpianScreen> createState() => _ImpianScreenState();
+}
+
+class _ImpianScreenState extends ConsumerState<ImpianScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final impianAsync = ref.watch(impianProvider);
+    final biodataAsync = ref.watch(biodataProvider);
+    L.i(
+      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
+    );
+
+    if (impianAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (impianAsync.hasError) {
+      L.w('impianProvider error=${impianAsync.error}');
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Gagal memuat data impian'),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () {
+                  final _ = ref.refresh(impianProvider);
+                },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final impianState = impianAsync.requireValue;
+    final List<ImpianModel> listImpian = impianState.listImpian;
+    L.i(
+      'listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}',
+    );
+
+    // Saldo terkumpul = uang yang dihemat dari tidak merokok (berdasarkan biodata).
+    BiodataModel? biodata;
+    if (biodataAsync.isLoading) {
+      L.w('biodataAsync loading');
+    } else if (biodataAsync.hasError) {
+      L.w('biodataAsync error=${biodataAsync.error}');
+    } else {
+      biodata = biodataAsync.requireValue;
+    }
+    final uangDihemat = biodata?.uangDihemat ?? 0;
+    L.i('uangDihemat=$uangDihemat');
+
+    if (listImpian.isEmpty) {
+      L.w('listImpian kosong');
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Impian'),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          elevation: 0,
+          scrolledUnderElevation: 2,
+          forceMaterialTransparency: false,
+        ),
+        body: const _EmptyImpian(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+          child: const Icon(CupertinoIcons.add),
+        ),
+      );
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Impian'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 2,
+        forceMaterialTransparency: false,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            spacing: 8,
+            children: [
+              _buildSaldoTerkumpul(uangDihemat),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: listImpian.length,
+                  itemBuilder: (context, index) {
+                    final ImpianModel item = listImpian[index];
+                    L.i(
+                      'item.id=${item.id}, item.nama=${item.nama}, item.jumlah=${item.jumlah}',
+                    );
+                    return Card(
+                      key: ValueKey(item.id),
+                      child: ListTile(
+                        onTap: () => unawaited(
+                          Nav.to(context, DetailImpianScreen(id: item.id)),
+                        ),
+                        title: Text(item.nama),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4,
+                          children: [
+                            LinearProgressIndicator(
+                              value: uangDihemat <= 0 || item.jumlah <= 0
+                                  ? 0
+                                  : (uangDihemat / item.jumlah).clamp(0.0, 1.0),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                                ),
+                                Text(FormatUang.formatRupiah(item.jumlah)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(height: 8);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+        child: const Icon(CupertinoIcons.add),
+      ),
+    );
+  }
+
+  Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
+    L.i('saldoTerkumpul=$saldoTerkumpul');
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text('Saldo terkumpul'),
+            Text(
+              '${FormatUang.formatRupiah(saldoTerkumpul)}',
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget untuk state kosong daftar impian.
+class _EmptyImpian extends StatelessWidget {
+  const _EmptyImpian();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.star, size: 48),
+              Text(
+                'Belum ada impian',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Tekan tombol + untuk menambah impian pertama.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/screens/detail_impian_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
+import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class DetailImpianScreen extends ConsumerWidget {
+  final String id;
+  const DetailImpianScreen({super.key, required this.id});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final impianAsync = ref.watch(impianProvider);
+
+    if (impianAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (impianAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail Impian')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Gagal memuat data impian'),
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(impianProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final impianState = impianAsync.requireValue;
+    final ImpianModel? impian = impianState.listImpian.firstWhereOrNull(
+      (item) => item.id == id,
+    );
+
+    if (impian == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail Impian')),
+        body: const SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: Text('Impian tidak ditemukan')),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Detail Impian'),
+        actions: [
+          IconButton(
+            icon: const Icon(CupertinoIcons.pencil),
+            onPressed: () =>
+                unawaited(Nav.to(context, FormImpian(impian: impian))),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                _buildItem(context, 'Nama', impian.nama),
+                _buildItem(
+                  context,
+                  'Jumlah',
+                  FormatUang.formatRupiah(impian.jumlah),
+                ),
+                _buildItem(
+                  context,
+                  'Target tanggal',
+                  FormatTanggal.formatDasar(impian.targetTanggal),
+                ),
+                _buildItem(
+                  context,
+                  'Dibuat',
+                  FormatTanggal.formatDasar(impian.dibuat),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItem(BuildContext context, String label, String nilai) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        Text(nilai, style: Theme.of(context).textTheme.bodyMedium),
+      ],
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/screens/form_impian.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:uuid/uuid.dart';
+
+class FormImpian extends ConsumerStatefulWidget {
+  final ImpianModel? impian;
+  const FormImpian({super.key, this.impian});
+
+  @override
+  ConsumerState<FormImpian> createState() => _FormImpianState();
+}
+
+class _FormImpianState extends ConsumerState<FormImpian> {
+  final _formKey = GlobalKey<FormState>();
+  final _namaController = TextEditingController();
+  final _jumlahController = TextEditingController();
+
+  final _namaFocusNode = FocusNode();
+  final _jumlahFocusNode = FocusNode();
+
+  DateTime? _targetTanggal;
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final impian = widget.impian;
+    L.i('impian=$impian');
+    if (impian != null) {
+      _namaController.text = impian.nama;
+      _jumlahController.text = FormatUang.formatRupiah(impian.jumlah);
+      _targetTanggal = impian.targetTanggal;
+      L.i(
+        '_namaController.text=${_namaController.text}, _jumlahController.text=${_jumlahController.text}, _targetTanggal=$_targetTanggal',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _namaController.dispose();
+    _jumlahController.dispose();
+    _namaFocusNode.dispose();
+    _jumlahFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pilihTargetTanggal() async {
+    final awal = _targetTanggal ?? DateTime.now();
+    L.i('awal=$awal, _targetTanggal=$_targetTanggal');
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+    );
+    L.i('picked=$picked');
+    if (picked != null && mounted) {
+      setState(() => _targetTanggal = picked);
+      L.i('_targetTanggal=$_targetTanggal');
+    }
+  }
+
+  Future<void> _simpan() async {
+    if (_isLoading) {
+      L.w('Form impian masih loading, simpan diabaikan');
+      return;
+    }
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      L.w('validasi form gagal');
+      return;
+    }
+    if (_namaController.text.trim().isEmpty) {
+      L.w('nama impian kosong');
+      if (mounted) {
+        AppToast.gagal(context, 'Nama impian wajib diisi');
+      }
+      return;
+    }
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Simpan Impian',
+      message: 'Apakah Anda yakin ingin menyimpan data impian ini?',
+      okLabel: 'Simpan',
+      cancelLabel: 'Batal',
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      L.w('konfirmasi bukan ok');
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+    L.i('_isLoading=$_isLoading');
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      final jumlah = InputRupiah.parse(_jumlahController.text);
+      L.i('jumlah=$jumlah');
+      if (jumlah <= 0) {
+        L.w('jumlah <= 0');
+        if (mounted) {
+          AppToast.gagal(context, 'Jumlah harus lebih dari 0');
+        }
+        return;
+      }
+      final model = ImpianModel(
+        id: widget.impian?.id ?? const Uuid().v4(),
+        nama: _namaController.text.trim(),
+        targetTanggal: _targetTanggal ?? DateTime.now(),
+        dibuat: widget.impian?.dibuat ?? DateTime.now(),
+        jumlah: jumlah,
+      );
+      L.i('model=$model');
+      if (widget.impian == null) {
+        L.i('widget.impian null, tambah');
+        await ref.read(impianProvider.notifier).tambah(model);
+      } else {
+        L.i('widget.impian tidak null, ubah');
+        await ref.read(impianProvider.notifier).ubah(model);
+      }
+      if (!mounted) return;
+      if (Navigator.of(context).canPop()) {
+        Nav.pop(context);
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan impian: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menyimpan impian');
+      }
+    } finally {
+      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        setState(() => _isLoading = false);
+        L.i('_isLoading=$_isLoading');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.impian == null ? 'Form Impian' : 'Ubah Impian'),
+      ),
+
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                InputTeks(
+                  controller: _namaController,
+                  label: 'Nama Impian',
+                  hintText: 'Masukkan nama impian',
+                  focusNode: _namaFocusNode,
+                  nextFocusNode: _jumlahFocusNode,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama impian wajib diisi';
+                    }
+                    return null;
+                  },
+                ),
+                InputRupiah(
+                  controller: _jumlahController,
+                  label: 'Jumlah',
+                  hintText: 'Masukkan jumlah',
+                  focusNode: _jumlahFocusNode,
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_outlined),
+                  title: const Text('Target tanggal'),
+                  subtitle: Text(
+                    _targetTanggal == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(_targetTanggal!),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTargetTanggal,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/state/impian_state.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'impian_state.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$ImpianState {
+
+ List<ImpianModel> get listImpian; int get jumlahImpian; double get totalJumlah;
+/// Create a copy of ImpianState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ImpianStateCopyWith<ImpianState> get copyWith => _$ImpianStateCopyWithImpl<ImpianState>(this as ImpianState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as ImpianState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImpianState&&const DeepCollectionEquality().equals(other.listImpian, _this.listImpian)&&(identical(other.jumlahImpian, _this.jumlahImpian) || other.jumlahImpian == _this.jumlahImpian)&&(identical(other.totalJumlah, _this.totalJumlah) || other.totalJumlah == _this.totalJumlah));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as ImpianState;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listImpian),_this.jumlahImpian,_this.totalJumlah);
+}
+
+@override
+String toString() {
+  final _this = this as ImpianState;
+  return 'ImpianState(listImpian: ${_this.listImpian}, jumlahImpian: ${_this.jumlahImpian}, totalJumlah: ${_this.totalJumlah})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ImpianStateCopyWith<$Res>  {
+  factory $ImpianStateCopyWith(ImpianState value, $Res Function(ImpianState) _then) = _$ImpianStateCopyWithImpl;
+@useResult
+$Res call({
+ List<ImpianModel> listImpian, int jumlahImpian, double totalJumlah
+});
+
+
+
+
+}
+/// @nodoc
+class _$ImpianStateCopyWithImpl<$Res>
+    implements $ImpianStateCopyWith<$Res> {
+  _$ImpianStateCopyWithImpl(this._self, this._then);
+
+  final ImpianState _self;
+  final $Res Function(ImpianState) _then;
+
+/// Create a copy of ImpianState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? listImpian = null,Object? jumlahImpian = null,Object? totalJumlah = null,}) {
+  return _then(ImpianState(
+listImpian: null == listImpian ? _self.listImpian : listImpian // ignore: cast_nullable_to_non_nullable
+as List<ImpianModel>,jumlahImpian: null == jumlahImpian ? _self.jumlahImpian : jumlahImpian // ignore: cast_nullable_to_non_nullable
+as int,totalJumlah: null == totalJumlah ? _self.totalJumlah : totalJumlah // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ImpianState].
+extension ImpianStatePatterns on ImpianState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ImpianState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ImpianState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ImpianState value)  $default,){
+final _that = this;
+switch (_that) {
+case _ImpianState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ImpianState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ImpianState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ImpianModel> listImpian,  int jumlahImpian,  double totalJumlah)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ImpianState() when $default != null:
+return $default(_that.listImpian,_that.jumlahImpian,_that.totalJumlah);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ImpianModel> listImpian,  int jumlahImpian,  double totalJumlah)  $default,) {final _that = this;
+switch (_that) {
+case _ImpianState():
+return $default(_that.listImpian,_that.jumlahImpian,_that.totalJumlah);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ImpianModel> listImpian,  int jumlahImpian,  double totalJumlah)?  $default,) {final _that = this;
+switch (_that) {
+case _ImpianState() when $default != null:
+return $default(_that.listImpian,_that.jumlahImpian,_that.totalJumlah);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _ImpianState extends ImpianState {
+  const _ImpianState({ List<ImpianModel> listImpian = const [], this.jumlahImpian = 0, this.totalJumlah = 0}): _listImpian = listImpian,super._();
+  
+
+ final  List<ImpianModel> _listImpian;
+@override@JsonKey() List<ImpianModel> get listImpian {
+  if (_listImpian is EqualUnmodifiableListView) return _listImpian;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_listImpian);
+}
+
+@override@JsonKey() final  int jumlahImpian;
+@override@JsonKey() final  double totalJumlah;
+
+/// Create a copy of ImpianState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ImpianStateCopyWith<_ImpianState> get copyWith => __$ImpianStateCopyWithImpl<_ImpianState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ImpianState&&const DeepCollectionEquality().equals(other.listImpian, _listImpian)&&(identical(other.jumlahImpian, jumlahImpian) || other.jumlahImpian == jumlahImpian)&&(identical(other.totalJumlah, totalJumlah) || other.totalJumlah == totalJumlah));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listImpian),jumlahImpian,totalJumlah);
+}
+
+@override
+String toString() {
+    return 'ImpianState(listImpian: $listImpian, jumlahImpian: $jumlahImpian, totalJumlah: $totalJumlah)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ImpianStateCopyWith<$Res> implements $ImpianStateCopyWith<$Res> {
+  factory _$ImpianStateCopyWith(_ImpianState value, $Res Function(_ImpianState) _then) = __$ImpianStateCopyWithImpl;
+@override @useResult
+$Res call({
+ List<ImpianModel> listImpian, int jumlahImpian, double totalJumlah
+});
+
+
+
+
+}
+/// @nodoc
+class __$ImpianStateCopyWithImpl<$Res>
+    implements _$ImpianStateCopyWith<$Res> {
+  __$ImpianStateCopyWithImpl(this._self, this._then);
+
+  final _ImpianState _self;
+  final $Res Function(_ImpianState) _then;
+
+/// Create a copy of ImpianState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? listImpian = null,Object? jumlahImpian = null,Object? totalJumlah = null,}) {
+  return _then(_ImpianState(
+listImpian: null == listImpian ? _self._listImpian : listImpian // ignore: cast_nullable_to_non_nullable
+as List<ImpianModel>,jumlahImpian: null == jumlahImpian ? _self.jumlahImpian : jumlahImpian // ignore: cast_nullable_to_non_nullable
+as int,totalJumlah: null == totalJumlah ? _self.totalJumlah : totalJumlah // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/state/impian_state.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'impian_state.freezed.dart';
+
+@freezed
+abstract class ImpianState with _$ImpianState {
+  const ImpianState._();
+
+  const factory ImpianState({
+    @Default([]) List<ImpianModel> listImpian,
+    @Default(0) int jumlahImpian,
+    @Default(0) double totalJumlah,
+  }) = _ImpianState;
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/notifier/impian_notifier.g.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'impian_notifier.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(ImpianNotifier)
+final impianProvider = ImpianNotifierProvider._();
+
+final class ImpianNotifierProvider
+    extends $AsyncNotifierProvider<ImpianNotifier, ImpianState> {
+  ImpianNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'impianProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$impianNotifierHash();
+
+  @$internal
+  @override
+  ImpianNotifier create() => ImpianNotifier();
+}
+
+String _$impianNotifierHash() => r'cbb9cada1208ef190fab703b5168b7625b00045c';
+
+abstract class _$ImpianNotifier extends $AsyncNotifier<ImpianState> {
+  FutureOr<ImpianState> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<ImpianState>, ImpianState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ImpianState>, ImpianState>,
+              AsyncValue<ImpianState>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/impian/notifier/impian_notifier.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
+import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:collection/collection.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+
+part 'impian_notifier.g.dart';
+
+@Riverpod(keepAlive: true)
+class ImpianNotifier extends _$ImpianNotifier {
+  @override
+  Future<ImpianState> build() async {
+    return await _ambilSemua();
+  }
+
+  Future<ImpianState> _ambilSemua() async {
+    try {
+      final op = const SqfliteOp();
+      final rows = await op.ambilSemua(NamaTabel.impian);
+      final daftar = rows.map(ImpianModel.fromSqflite).toList();
+      final totalJumlah = daftar.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      L.i('daftar.length=${daftar.length}, totalJumlah=$totalJumlah');
+      return ImpianState(
+        listImpian: daftar,
+        jumlahImpian: daftar.length,
+        totalJumlah: totalJumlah,
+      );
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data impian: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> tambah(ImpianModel impian) async {
+    L.i(
+      'impian.id=${impian.id}, impian.nama=${impian.nama}, impian.jumlah=${impian.jumlah}',
+    );
+    try {
+      final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
+      final op = const SqfliteOp();
+      await op.tambah(
+        NamaTabel.impian,
+        impian.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: [...dataLama.listImpian, impian],
+          jumlahImpian: dataLama.jumlahImpian + 1,
+          totalJumlah: dataLama.totalJumlah + impian.jumlah,
+        ),
+      );
+      L.s('Impian berhasil disimpan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan impian: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menambahkan banyak impian sekaligus menggunakan operasi batch.
+  Future<void> tambahBanyak(List<ImpianModel> daftarImpian) async {
+    L.i('daftarImpian.length=${daftarImpian.length}');
+    try {
+      final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
+      final op = const SqfliteOp();
+      await op.batch((batch) {
+        for (final impian in daftarImpian) {
+          batch.insert(
+            NamaTabel.impian,
+            impian.toSqflite(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      });
+      final tambahanJumlah = daftarImpian.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: [...dataLama.listImpian, ...daftarImpian],
+          jumlahImpian: dataLama.jumlahImpian + daftarImpian.length,
+          totalJumlah: dataLama.totalJumlah + tambahanJumlah,
+        ),
+      );
+      L.s('Impian berhasil disimpan (batch)');
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan impian (batch): $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> ubah(ImpianModel impian) async {
+    L.i(
+      'impian.id=${impian.id}, impian.nama=${impian.nama}, impian.jumlah=${impian.jumlah}',
+    );
+    try {
+      final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
+      final op = const SqfliteOp();
+      await op.ubah(
+        NamaTabel.impian,
+        impian.toSqflite(),
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [impian.id],
+      );
+      final baru = dataLama.listImpian
+          .map((e) => e.id == impian.id ? impian : e)
+          .toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
+      );
+      L.s('Impian berhasil diubah');
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah impian: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> hapus(String id) async {
+    L.i('id=$id');
+    try {
+      final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
+      final op = const SqfliteOp();
+      await op.hapus(
+        NamaTabel.impian,
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [id],
+      );
+      final baru = dataLama.listImpian.where((e) => e.id != id).toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
+      );
+      L.s('Impian berhasil dihapus');
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus impian: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menghapus banyak impian sekaligus menggunakan operasi batch.
+  Future<void> hapusBanyak(List<String> daftarId) async {
+    L.i('daftarId.length=${daftarId.length}');
+    try {
+      final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
+      final op = const SqfliteOp();
+      await op.batch((batch) {
+        for (final id in daftarId) {
+          batch.delete(
+            NamaTabel.impian,
+            where: '${NamaKolom.id} = ?',
+            whereArgs: [id],
+          );
+        }
+      });
+      final baru = dataLama.listImpian
+          .where((e) => !daftarId.contains(e.id))
+          .toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
+      );
+      L.s('Impian berhasil dihapus (batch)');
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus impian (batch): $e $s');
+      rethrow;
+    }
+  }
+
+  /// Mengubah banyak impian sekaligus menggunakan operasi batch.
+  Future<void> ubahBanyak(List<ImpianModel> daftarImpian) async {
+    L.i('daftarImpian.length=${daftarImpian.length}');
+    try {
+      final dataLama = await future;
+      L.i(
+        'dataLama.jumlahImpian=${dataLama.jumlahImpian}, dataLama.totalJumlah=${dataLama.totalJumlah}',
+      );
+      final op = const SqfliteOp();
+      await op.batch((batch) {
+        for (final impian in daftarImpian) {
+          batch.update(
+            NamaTabel.impian,
+            impian.toSqflite(),
+            where: '${NamaKolom.id} = ?',
+            whereArgs: [impian.id],
+          );
+        }
+      });
+      final baru = dataLama.listImpian.map((e) {
+        final pengganti = daftarImpian.firstWhereOrNull(
+          (item) => item.id == e.id,
+        );
+        return pengganti ?? e;
+      }).toList();
+      final totalJumlah = baru.fold<double>(
+        0,
+        (previousValue, element) => previousValue + element.jumlah,
+      );
+      state = AsyncValue.data(
+        ImpianState(
+          listImpian: baru,
+          jumlahImpian: baru.length,
+          totalJumlah: totalJumlah,
+        ),
+      );
+      L.s('Impian berhasil diubah (batch)');
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah impian (batch): $e $s');
+      rethrow;
+    }
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dummy/screens/dummy_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/dummy/helper/dummy_helper.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class DummyScreen extends ConsumerStatefulWidget {
+  const DummyScreen({super.key});
+
+  @override
+  ConsumerState<DummyScreen> createState() => _DummyScreenState();
+}
+
+class _DummyScreenState extends ConsumerState<DummyScreen> {
+  bool _sedangMemuat = false;
+
+  Future<void> _masukkanDummy(BuildContext context) async {
+    L.i('_masukkanDummy _sedangMemuat=$_sedangMemuat');
+    if (_sedangMemuat) {
+      L.w('Dummy masih diproses, aksi diabaikan');
+      return;
+    }
+
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Masukkan Dummy',
+      message:
+          'Apakah Anda yakin ingin memasukkan data dummy? '
+          'Biodata yang ada akan diganti dengan data dummy.',
+      okLabel: 'Masukkan',
+      cancelLabel: 'Batal',
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!context.mounted) return;
+
+    setState(() => _sedangMemuat = true);
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      await DummyHelper.insert();
+      await _refreshProvider();
+      if (context.mounted) {
+        AppToast.sukses(context, 'Dummy berhasil dimasukkan');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal memasukkan dummy: $e $s');
+      if (context.mounted) {
+        AppToast.gagal(context, 'Gagal memasukkan dummy');
+      }
+    } finally {
+      if (mounted) {
+        unawaited(EasyLoading.dismiss());
+        setState(() => _sedangMemuat = false);
+      }
+    }
+  }
+
+  Future<void> _hapusDummy(BuildContext context) async {
+    L.i('_hapusDummy _sedangMemuat=$_sedangMemuat');
+    if (_sedangMemuat) {
+      L.w('Dummy masih diproses, aksi diabaikan');
+      return;
+    }
+
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Hapus Dummy',
+      message: 'Apakah Anda yakin ingin menghapus data dummy?',
+      okLabel: 'Hapus',
+      cancelLabel: 'Batal',
+      isDestructiveAction: true,
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!context.mounted) return;
+
+    setState(() => _sedangMemuat = true);
+    unawaited(
+      EasyLoading.show(
+        status: 'Menghapus...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      await DummyHelper.delete();
+      await _refreshProvider();
+      if (context.mounted) {
+        AppToast.sukses(context, 'Dummy berhasil dihapus');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus dummy: $e $s');
+      if (context.mounted) {
+        AppToast.gagal(context, 'Gagal menghapus dummy');
+      }
+    } finally {
+      if (mounted) {
+        unawaited(EasyLoading.dismiss());
+        setState(() => _sedangMemuat = false);
+      }
+    }
+  }
+
+  Future<void> _reset(BuildContext context) async {
+    L.i('_reset _sedangMemuat=$_sedangMemuat');
+    if (_sedangMemuat) {
+      L.w('Dummy masih diproses, aksi diabaikan');
+      return;
+    }
+
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Reset Dummy',
+      message: 'Apakah Anda yakin ingin mereset data dummy? Data dummy akan dihapus lalu dimasukkan ulang.',
+      okLabel: 'Reset',
+      cancelLabel: 'Batal',
+      isDestructiveAction: true,
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!context.mounted) return;
+
+    setState(() => _sedangMemuat = true);
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      await DummyHelper.delete();
+      await DummyHelper.insert();
+      await _refreshProvider();
+      if (context.mounted) {
+        AppToast.sukses(context, 'Dummy berhasil direset');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal mereset dummy: $e $s');
+      if (context.mounted) {
+        AppToast.gagal(context, 'Gagal mereset dummy');
+      }
+    } finally {
+      if (mounted) {
+        unawaited(EasyLoading.dismiss());
+        setState(() => _sedangMemuat = false);
+      }
+    }
+  }
+
+  Future<void> _refreshProvider() async {
+    // Perbarui state agar UI memuat data dummy terbaru.
+    L.i('_refreshProvider');
+    final _ = ref.refresh(impianProvider);
+    final _ = ref.refresh(biodataProvider);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Dummy')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 16,
+          children: [
+            _buildTombolCustom(
+              () => unawaited(_masukkanDummy(context)),
+              'insert',
+              Colors.green,
+            ),
+            _buildTombolCustom(
+              () => unawaited(_hapusDummy(context)),
+              'hapus',
+              Colors.red,
+            ),
+            _buildTombolCustom(
+              () => unawaited(_reset(context)),
+              'reset',
+              Colors.orange,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTombolCustom(
+    void Function() onPressed,
+    String value,
+    Color backgroundColor,
+  ) {
+    L.i('value=$value, backgroundColor=$backgroundColor');
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: Colors.white,
+        ),
+        onPressed: onPressed,
+        child: Text(value),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dummy/helper/dummy_helper.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/dummy/dummy_data/dummy_biodata.dart';
+import 'package:berhenti_merokok/fitur/dummy/dummy_data/dummy_impian.dart';
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+
+/// Helper untuk mengelola data dummy aplikasi.
+class DummyHelper {
+  /// Memasukkan seluruh data dummy ke database SQLite.
+  static Future<void> insert() async {
+    L.i('tes');
+    L.i(
+      'dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}',
+    );
+    try {
+      final op = const SqfliteOp();
+      await op.transaksi((txn) async {
+        for (final impian in dummyImpian) {
+          await txn.insert(
+            NamaTabel.impian,
+            impian.toSqflite(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+        // Hapus biodata yang ada agar data dummy menjadi satu-satunya biodata
+        // yang terbaca aplikasi (ambilSatu mengembalikan baris pertama).
+        await txn.delete(NamaTabel.biodata);
+        for (final biodata in dummyBiodata) {
+          await txn.insert(
+            NamaTabel.biodata,
+            biodata.toSqflite(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      });
+      L.i('insert selesai');
+    } on Exception catch (e, s) {
+      L.e('Gagal memasukkan data dummy: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menghapus seluruh data dummy dari database SQLite.
+  static Future<void> delete() async {
+    L.i(
+      'dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}',
+    );
+    try {
+      final op = const SqfliteOp();
+      await op.transaksi((txn) async {
+        for (final impian in dummyImpian) {
+          await txn.delete(
+            NamaTabel.impian,
+            where: 'id = ?',
+            whereArgs: [impian.id],
+          );
+        }
+        for (final biodata in dummyBiodata) {
+          await txn.delete(
+            NamaTabel.biodata,
+            where: 'id = ?',
+            whereArgs: [biodata.id],
+          );
+        }
+      });
+      L.i('delete selesai');
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus data dummy: $e $s');
+      rethrow;
+    }
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dummy/dummy_data/dummy_impian.dart
+// ============================================================
+```dart
+// lib/fitur/dummy/dummy_data/dummy_impian.dart
+
+import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
+
+/// ID dummy untuk data impian.
+class ImpianIdDummy {
+  /// ID dummy item 1.
+  static const String item1 = '00000000-0000-0000-0006-000000000001';
+
+  /// ID dummy item 2.
+  static const String item2 = '00000000-0000-0000-0006-000000000002';
+
+  /// ID dummy item 3.
+  static const String item3 = '00000000-0000-0000-0006-000000000003';
+
+  /// ID dummy item 4.
+  static const String item4 = '00000000-0000-0000-0006-000000000004';
+
+  /// ID dummy item 5.
+  static const String item5 = '00000000-0000-0000-0006-000000000005';
+
+  /// ID dummy item 6.
+  static const String item6 = '00000000-0000-0000-0006-000000000006';
+}
+
+/// Daftar data dummy impian.
+final List<ImpianModel> dummyImpian = [
+  ImpianModel(
+    id: ImpianIdDummy.item1,
+    nama: 'Beli ban baru',
+    targetTanggal: DateTime.now().add(const Duration(days: 10)),
+    dibuat: DateTime.now().subtract(const Duration(days: 5)),
+    jumlah: 2000000.0,
+  ),
+  ImpianModel(
+    id: ImpianIdDummy.item2,
+    nama: 'Service AC mobil',
+    targetTanggal: DateTime.now().add(const Duration(days: 15)),
+    dibuat: DateTime.now().subtract(const Duration(days: 8)),
+    jumlah: 1500000.0,
+  ),
+  ImpianModel(
+    id: ImpianIdDummy.item3,
+    nama: 'Ganti knalpot racing',
+    targetTanggal: DateTime.now().add(const Duration(days: 20)),
+    dibuat: DateTime.now().subtract(const Duration(days: 3)),
+    jumlah: 1000000.0,
+  ),
+  ImpianModel(
+    id: ImpianIdDummy.item4,
+    nama: 'Beli helm baru',
+    targetTanggal: DateTime.now().add(const Duration(days: 5)),
+    dibuat: DateTime.now().subtract(const Duration(days: 6)),
+    jumlah: 500000.0,
+  ),
+  ImpianModel(
+    id: ImpianIdDummy.item5,
+    nama: 'Ganti oli gardan',
+    targetTanggal: DateTime.now().add(const Duration(days: 12)),
+    dibuat: DateTime.now().subtract(const Duration(days: 2)),
+    jumlah: 800000.0,
+  ),
+  ImpianModel(
+    id: ImpianIdDummy.item6,
+    nama: 'Pasang roof rack',
+    targetTanggal: DateTime.now().add(const Duration(days: 25)),
+    dibuat: DateTime.now().subtract(const Duration(days: 4)),
+    jumlah: 3000000.0,
+  ),
+];
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dummy/dummy_data/dummy_biodata.dart
+// ============================================================
+```dart
+// lib/fitur/dummy/dummy_data/dummy_biodata.dart
+
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+
+/// ID dummy untuk data biodata.
+class BiodataIdDummy {
+  /// ID dummy item 1.
+  static const String item1 = '00000000-0000-0000-0001-000000000001';
+}
+
+/// Daftar data dummy biodata.
+final List<BiodataModel> dummyBiodata = [
+  BiodataModel(
+    id: BiodataIdDummy.item1,
+    nama: 'Budi Santoso',
+    tanggalLahir: DateTime.now().subtract(const Duration(days: 365 * 36)),
+    jumlahRokokPerHari: 12,
+    hargaRokokPerBungkus: 35000.0,
+    batangPerBungkus: 20.0,
+    tanggalMulaiMerokok: DateTime.now().subtract(
+      const Duration(days: 365 * 16),
+    ),
+    tanggalMulaiBerhentiMerokok: DateTime.now().subtract(
+      const Duration(days: 30, hours: 7, minutes: 30),
+    ),
+  ),
+];
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/model/diary_craving_model.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'diary_craving_model.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$DiaryCravingModel {
+
+ String get id; DateTime get tanggal; PemicuEnum get pemicu; int get intensitas; String? get catatan; DateTime get dibuat;
+/// Create a copy of DiaryCravingModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DiaryCravingModelCopyWith<DiaryCravingModel> get copyWith => _$DiaryCravingModelCopyWithImpl<DiaryCravingModel>(this as DiaryCravingModel, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as DiaryCravingModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DiaryCravingModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.pemicu, _this.pemicu) || other.pemicu == _this.pemicu)&&(identical(other.intensitas, _this.intensitas) || other.intensitas == _this.intensitas)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as DiaryCravingModel;
+  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.pemicu,_this.intensitas,_this.catatan,_this.dibuat);
+}
+
+@override
+String toString() {
+  final _this = this as DiaryCravingModel;
+  return 'DiaryCravingModel(id: ${_this.id}, tanggal: ${_this.tanggal}, pemicu: ${_this.pemicu}, intensitas: ${_this.intensitas}, catatan: ${_this.catatan}, dibuat: ${_this.dibuat})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DiaryCravingModelCopyWith<$Res>  {
+  factory $DiaryCravingModelCopyWith(DiaryCravingModel value, $Res Function(DiaryCravingModel) _then) = _$DiaryCravingModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, DateTime dibuat
+});
+
+
+
+
+}
+/// @nodoc
+class _$DiaryCravingModelCopyWithImpl<$Res>
+    implements $DiaryCravingModelCopyWith<$Res> {
+  _$DiaryCravingModelCopyWithImpl(this._self, this._then);
+
+  final DiaryCravingModel _self;
+  final $Res Function(DiaryCravingModel) _then;
+
+/// Create a copy of DiaryCravingModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? dibuat = null,}) {
+  return _then(DiaryCravingModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
+as DateTime,pemicu: null == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
+as PemicuEnum,intensitas: null == intensitas ? _self.intensitas : intensitas // ignore: cast_nullable_to_non_nullable
+as int,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
+as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DiaryCravingModel].
+extension DiaryCravingModelPatterns on DiaryCravingModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DiaryCravingModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DiaryCravingModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DiaryCravingModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _DiaryCravingModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DiaryCravingModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DiaryCravingModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DiaryCravingModel() when $default != null:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)  $default,) {final _that = this;
+switch (_that) {
+case _DiaryCravingModel():
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)?  $default,) {final _that = this;
+switch (_that) {
+case _DiaryCravingModel() when $default != null:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _DiaryCravingModel extends DiaryCravingModel {
+  const _DiaryCravingModel({required this.id, required this.tanggal, required this.pemicu, this.intensitas = 3, this.catatan, required this.dibuat}): super._();
+  
+
+@override final  String id;
+@override final  DateTime tanggal;
+@override final  PemicuEnum pemicu;
+@override@JsonKey() final  int intensitas;
+@override final  String? catatan;
+@override final  DateTime dibuat;
+
+/// Create a copy of DiaryCravingModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DiaryCravingModelCopyWith<_DiaryCravingModel> get copyWith => __$DiaryCravingModelCopyWithImpl<_DiaryCravingModel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DiaryCravingModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.pemicu, pemicu) || other.pemicu == pemicu)&&(identical(other.intensitas, intensitas) || other.intensitas == intensitas)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,id,tanggal,pemicu,intensitas,catatan,dibuat);
+}
+
+@override
+String toString() {
+    return 'DiaryCravingModel(id: $id, tanggal: $tanggal, pemicu: $pemicu, intensitas: $intensitas, catatan: $catatan, dibuat: $dibuat)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DiaryCravingModelCopyWith<$Res> implements $DiaryCravingModelCopyWith<$Res> {
+  factory _$DiaryCravingModelCopyWith(_DiaryCravingModel value, $Res Function(_DiaryCravingModel) _then) = __$DiaryCravingModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, DateTime dibuat
+});
+
+
+
+
+}
+/// @nodoc
+class __$DiaryCravingModelCopyWithImpl<$Res>
+    implements _$DiaryCravingModelCopyWith<$Res> {
+  __$DiaryCravingModelCopyWithImpl(this._self, this._then);
+
+  final _DiaryCravingModel _self;
+  final $Res Function(_DiaryCravingModel) _then;
+
+/// Create a copy of DiaryCravingModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? dibuat = null,}) {
+  return _then(_DiaryCravingModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
+as DateTime,pemicu: null == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
+as PemicuEnum,intensitas: null == intensitas ? _self.intensitas : intensitas // ignore: cast_nullable_to_non_nullable
+as int,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
+as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/model/diary_craving_model.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+part 'diary_craving_model.freezed.dart';
+
+@freezed
+abstract class DiaryCravingModel with _$DiaryCravingModel {
+  const DiaryCravingModel._();
+
+  const factory DiaryCravingModel({
+    required String id,
+    required DateTime tanggal,
+    required PemicuEnum pemicu,
+    @Default(3) int intensitas,
+    String? catatan,
+    required DateTime dibuat,
+  }) = _DiaryCravingModel;
+
+  /// Membuat [DiaryCravingModel] dari baris database SQLite.
+  factory DiaryCravingModel.fromSqflite(Map<String, Object?> row) {
+    return DiaryCravingModel(
+      id: ParserUtil.parseString(row[NamaKolom.id]),
+      tanggal:
+          ParserUtil.parseDateTime(row[NamaKolom.tanggal])?.toLocal() ??
+          DateTime.now(),
+      pemicu:
+          ParserUtil.safeParseEnum(
+            PemicuEnum.values,
+            ParserUtil.parseStringOrNull(row[NamaKolom.pemicu]),
+          ) ??
+          PemicuEnum.lainnya,
+      intensitas: ParserUtil.parseInt(
+        row[NamaKolom.intensitas],
+        defaultValue: 3,
+      ),
+      catatan: ParserUtil.parseStringOrNull(row[NamaKolom.catatan]),
+      dibuat:
+          ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
+          DateTime.now(),
+    );
+  }
+
+  /// Mengonversi [DiaryCravingModel] menjadi Map untuk disimpan ke SQLite.
+  Map<String, Object?> toSqflite() {
+    return <String, Object?>{
+      NamaKolom.id: id,
+      NamaKolom.tanggal: tanggal.toUtc().toIso8601String(),
+      NamaKolom.pemicu: pemicu.name,
+      NamaKolom.intensitas: intensitas,
+      NamaKolom.catatan: catatan,
+      NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
+    };
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/enum/pemicu_enum.dart
+// ============================================================
+```dart
+import 'package:flutter/material.dart';
+
+/// Kategori pemicu craving.
+enum PemicuEnum {
+  stres,
+  kopi,
+  alkohol,
+  sosial,
+  bauRokok,
+  emosi,
+  lapar,
+  lelah,
+  lainnya,
+}
+
+/// Extension yang menyediakan label dan ikon untuk [PemicuEnum].
+extension PemicuEnumExtension on PemicuEnum {
+  String get label {
+    switch (this) {
+      case PemicuEnum.stres:
+        return 'Stres';
+      case PemicuEnum.kopi:
+        return 'Kopi';
+      case PemicuEnum.alkohol:
+        return 'Alkohol';
+      case PemicuEnum.sosial:
+        return 'Sosial';
+      case PemicuEnum.bauRokok:
+        return 'Bau rokok';
+      case PemicuEnum.emosi:
+        return 'Emosi';
+      case PemicuEnum.lapar:
+        return 'Lapar';
+      case PemicuEnum.lelah:
+        return 'Lelah';
+      case PemicuEnum.lainnya:
+        return 'Lainnya';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case PemicuEnum.stres:
+        return Icons.psychology_alt_outlined;
+      case PemicuEnum.kopi:
+        return Icons.coffee_outlined;
+      case PemicuEnum.alkohol:
+        return Icons.local_bar_outlined;
+      case PemicuEnum.sosial:
+        return Icons.people_outline;
+      case PemicuEnum.bauRokok:
+        return Icons.smoking_rooms_outlined;
+      case PemicuEnum.emosi:
+        return Icons.mood_outlined;
+      case PemicuEnum.lapar:
+        return Icons.restaurant_outlined;
+      case PemicuEnum.lelah:
+        return Icons.bedtime_outlined;
+      case PemicuEnum.lainnya:
+        return Icons.more_horiz;
+    }
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/screens/diary_craving_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/screens/form_diary_craving.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class DiaryCravingScreen extends ConsumerStatefulWidget {
+  const DiaryCravingScreen({super.key});
+
+  @override
+  ConsumerState<DiaryCravingScreen> createState() => _DiaryCravingScreenState();
+}
+
+class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('DiaryCravingScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('DiaryCravingScreen dispose');
+    super.dispose();
+  }
+
+  Future<void> _hapus(DiaryCravingModel item) async {
+    L.i('item.id=${item.id}');
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Hapus Catatan',
+      message:
+          'Apakah Anda yakin ingin menghapus catatan craving ini '
+          '(${item.pemicu.label})?',
+      okLabel: 'Hapus',
+      cancelLabel: 'Batal',
+      isDestructiveAction: true,
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!mounted) return;
+    try {
+      await ref.read(diaryCravingProvider.notifier).hapus(item.id);
+      if (mounted) {
+        AppToast.sukses(context, 'Catatan craving berhasil dihapus');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus diary craving: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menghapus catatan craving');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cravingAsync = ref.watch(diaryCravingProvider);
+    L.i(
+      'cravingAsync.isLoading=${cravingAsync.isLoading}, hasError=${cravingAsync.hasError}',
+    );
+
+    if (cravingAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (cravingAsync.hasError) {
+      L.w('diaryCravingProvider error=${cravingAsync.error}');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Diary Craving')),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              const Text('Gagal memuat data diary craving'),
+              OutlinedButton(
+                onPressed: () {
+                  final _ = ref.refresh(diaryCravingProvider);
+                },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final state = cravingAsync.requireValue;
+    final list = state.listCraving;
+    L.i('list.length=${list.length}');
+
+    if (list.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Diary Craving')),
+        body: const _EmptyDiaryCraving(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => unawaited(Nav.to(context, const FormDiaryCraving())),
+          child: const Icon(CupertinoIcons.add),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Diary Craving')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView.separated(
+            itemCount: list.length,
+            itemBuilder: (context, index) {
+              final item = list[index];
+              L.i(
+                'item.id=${item.id}, item.pemicu=${item.pemicu}, item.intensitas=${item.intensitas}',
+              );
+              return Card(
+                key: ValueKey(item.id),
+                child: ListTile(
+                  leading: Icon(item.pemicu.icon),
+                  title: Text(item.pemicu.label),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        'Intensitas: ${item.intensitas}/5  •  ${FormatWaktuLengkap.formatSingkat(item.tanggal)}',
+                      ),
+                      if (item.catatan != null && item.catatan!.isNotEmpty)
+                        Text(item.catatan!),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Hapus',
+                    onPressed: () => unawaited(_hapus(item)),
+                  ),
+                  onTap: () => unawaited(
+                    Nav.to(context, FormDiaryCraving(craving: item)),
+                  ),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => unawaited(Nav.to(context, const FormDiaryCraving())),
+        child: const Icon(CupertinoIcons.add),
+      ),
+    );
+  }
+}
+
+class _EmptyDiaryCraving extends StatelessWidget {
+  const _EmptyDiaryCraving();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.book, size: 48),
+              Text(
+                'Belum ada catatan craving',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Tekan tombol + untuk mencatat craving pertama.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/screens/form_diary_craving.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:uuid/uuid.dart';
+
+class FormDiaryCraving extends ConsumerStatefulWidget {
+  final DiaryCravingModel? craving;
+  const FormDiaryCraving({super.key, this.craving});
+
+  @override
+  ConsumerState<FormDiaryCraving> createState() => _FormDiaryCravingState();
+}
+
+class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
+  final _formKey = GlobalKey<FormState>();
+  final _catatanController = TextEditingController();
+  final _catatanFocusNode = FocusNode();
+
+  PemicuEnum _pemicu = PemicuEnum.stres;
+  int _intensitas = 3;
+  DateTime _tanggal = DateTime.now();
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final craving = widget.craving;
+    L.i('craving=$craving');
+    if (craving != null) {
+      _pemicu = craving.pemicu;
+      _intensitas = craving.intensitas;
+      _tanggal = craving.tanggal;
+      _catatanController.text = craving.catatan ?? '';
+      L.i(
+        '_pemicu=$_pemicu, _intensitas=$_intensitas, _tanggal=$_tanggal, _catatanController.text=${_catatanController.text}',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _catatanController.dispose();
+    _catatanFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pilihTanggal() async {
+    final awal = _tanggal;
+    L.i('awal=$awal, _tanggal=$_tanggal');
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    L.i('picked=$picked');
+    if (picked != null && mounted) {
+      // Gabungkan tanggal yang dipilih dengan waktu saat ini.
+      final now = DateTime.now();
+      setState(() {
+        _tanggal = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          now.hour,
+          now.minute,
+        );
+      });
+      L.i('_tanggal=$_tanggal');
+    }
+  }
+
+  Future<void> _pilihWaktu() async {
+    final awal = TimeOfDay.fromDateTime(_tanggal);
+    L.i('awal=$awal');
+    final picked = await showTimePicker(context: context, initialTime: awal);
+    L.i('picked=$picked');
+    if (picked != null && mounted) {
+      setState(() {
+        _tanggal = DateTime(
+          _tanggal.year,
+          _tanggal.month,
+          _tanggal.day,
+          picked.hour,
+          picked.minute,
+        );
+      });
+      L.i('_tanggal=$_tanggal');
+    }
+  }
+
+  Future<void> _simpan() async {
+    if (_isLoading) {
+      L.w('Form diary craving masih loading, simpan diabaikan');
+      return;
+    }
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      L.w('validasi form gagal');
+      return;
+    }
+
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Simpan Craving',
+      message: 'Apakah Anda yakin ingin menyimpan catatan craving ini?',
+      okLabel: 'Simpan',
+      cancelLabel: 'Batal',
+    );
+    L.i('konfirmasi=$konfirmasi');
+    if (konfirmasi != OkCancelResult.ok) {
+      L.w('konfirmasi bukan ok');
+      return;
+    }
+    if (!mounted) return;
+
+    setState(() => _isLoading = true);
+    L.i('_isLoading=$_isLoading');
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      final model = DiaryCravingModel(
+        id: widget.craving?.id ?? const Uuid().v4(),
+        tanggal: _tanggal,
+        pemicu: _pemicu,
+        intensitas: _intensitas,
+        catatan: _catatanController.text.trim().isEmpty
+            ? null
+            : _catatanController.text.trim(),
+        dibuat: widget.craving?.dibuat ?? DateTime.now(),
+      );
+      L.i('model=$model');
+      if (widget.craving == null) {
+        L.i('widget.craving null, tambah');
+        await ref.read(diaryCravingProvider.notifier).tambah(model);
+      } else {
+        L.i('widget.craving tidak null, ubah');
+        await ref.read(diaryCravingProvider.notifier).ubah(model);
+      }
+      if (!mounted) return;
+      if (Navigator.of(context).canPop()) {
+        Nav.pop(context);
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan diary craving: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menyimpan catatan craving');
+      }
+    } finally {
+      unawaited(EasyLoading.dismiss());
+      if (mounted) {
+        setState(() => _isLoading = false);
+        L.i('_isLoading=$_isLoading');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          widget.craving == null ? 'Catat Craving' : 'Ubah Catatan Craving',
+        ),
+      ),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                InputDropdown<PemicuEnum>(
+                  value: _pemicu,
+                  label: 'Pemicu',
+                  items: PemicuEnum.values,
+                  displayString: (item) => item.label,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _pemicu = value);
+                      L.i('_pemicu=$_pemicu');
+                    }
+                  },
+                ),
+                InputDropdown<int>(
+                  value: _intensitas,
+                  label: 'Intensitas (1-5)',
+                  items: const [1, 2, 3, 4, 5],
+                  displayString: (item) => '$item',
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _intensitas = value);
+                      L.i('_intensitas=$_intensitas');
+                    }
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_outlined),
+                  title: const Text('Tanggal'),
+                  subtitle: Text(FormatWaktuLengkap.formatSingkat(_tanggal)),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggal,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.access_time_outlined),
+                  title: const Text('Waktu'),
+                  subtitle: Text(FormatJam.formatJamMenit(_tanggal)),
+                  trailing: TextButton(
+                    onPressed: _pilihWaktu,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+                InputTeks(
+                  controller: _catatanController,
+                  label: 'Catatan',
+                  hintText: 'Catatan tambahan (opsional)',
+                  focusNode: _catatanFocusNode,
+                  wajib: false,
+                  minLines: 2,
+                  maxLines: 4,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/state/diary_craving_state.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'diary_craving_state.freezed.dart';
+
+@freezed
+abstract class DiaryCravingState with _$DiaryCravingState {
+  const DiaryCravingState._();
+
+  const factory DiaryCravingState({
+    @Default([]) List<DiaryCravingModel> listCraving,
+    @Default(0) int jumlahCraving,
+  }) = _DiaryCravingState;
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/state/diary_craving_state.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'diary_craving_state.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$DiaryCravingState {
+
+ List<DiaryCravingModel> get listCraving; int get jumlahCraving;
+/// Create a copy of DiaryCravingState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DiaryCravingStateCopyWith<DiaryCravingState> get copyWith => _$DiaryCravingStateCopyWithImpl<DiaryCravingState>(this as DiaryCravingState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as DiaryCravingState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DiaryCravingState&&const DeepCollectionEquality().equals(other.listCraving, _this.listCraving)&&(identical(other.jumlahCraving, _this.jumlahCraving) || other.jumlahCraving == _this.jumlahCraving));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as DiaryCravingState;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listCraving),_this.jumlahCraving);
+}
+
+@override
+String toString() {
+  final _this = this as DiaryCravingState;
+  return 'DiaryCravingState(listCraving: ${_this.listCraving}, jumlahCraving: ${_this.jumlahCraving})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DiaryCravingStateCopyWith<$Res>  {
+  factory $DiaryCravingStateCopyWith(DiaryCravingState value, $Res Function(DiaryCravingState) _then) = _$DiaryCravingStateCopyWithImpl;
+@useResult
+$Res call({
+ List<DiaryCravingModel> listCraving, int jumlahCraving
+});
+
+
+
+
+}
+/// @nodoc
+class _$DiaryCravingStateCopyWithImpl<$Res>
+    implements $DiaryCravingStateCopyWith<$Res> {
+  _$DiaryCravingStateCopyWithImpl(this._self, this._then);
+
+  final DiaryCravingState _self;
+  final $Res Function(DiaryCravingState) _then;
+
+/// Create a copy of DiaryCravingState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? listCraving = null,Object? jumlahCraving = null,}) {
+  return _then(DiaryCravingState(
+listCraving: null == listCraving ? _self.listCraving : listCraving // ignore: cast_nullable_to_non_nullable
+as List<DiaryCravingModel>,jumlahCraving: null == jumlahCraving ? _self.jumlahCraving : jumlahCraving // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DiaryCravingState].
+extension DiaryCravingStatePatterns on DiaryCravingState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DiaryCravingState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DiaryCravingState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DiaryCravingState value)  $default,){
+final _that = this;
+switch (_that) {
+case _DiaryCravingState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DiaryCravingState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DiaryCravingState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<DiaryCravingModel> listCraving,  int jumlahCraving)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DiaryCravingState() when $default != null:
+return $default(_that.listCraving,_that.jumlahCraving);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<DiaryCravingModel> listCraving,  int jumlahCraving)  $default,) {final _that = this;
+switch (_that) {
+case _DiaryCravingState():
+return $default(_that.listCraving,_that.jumlahCraving);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<DiaryCravingModel> listCraving,  int jumlahCraving)?  $default,) {final _that = this;
+switch (_that) {
+case _DiaryCravingState() when $default != null:
+return $default(_that.listCraving,_that.jumlahCraving);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _DiaryCravingState extends DiaryCravingState {
+  const _DiaryCravingState({ List<DiaryCravingModel> listCraving = const [], this.jumlahCraving = 0}): _listCraving = listCraving,super._();
+  
+
+ final  List<DiaryCravingModel> _listCraving;
+@override@JsonKey() List<DiaryCravingModel> get listCraving {
+  if (_listCraving is EqualUnmodifiableListView) return _listCraving;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_listCraving);
+}
+
+@override@JsonKey() final  int jumlahCraving;
+
+/// Create a copy of DiaryCravingState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DiaryCravingStateCopyWith<_DiaryCravingState> get copyWith => __$DiaryCravingStateCopyWithImpl<_DiaryCravingState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DiaryCravingState&&const DeepCollectionEquality().equals(other.listCraving, _listCraving)&&(identical(other.jumlahCraving, jumlahCraving) || other.jumlahCraving == jumlahCraving));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listCraving),jumlahCraving);
+}
+
+@override
+String toString() {
+    return 'DiaryCravingState(listCraving: $listCraving, jumlahCraving: $jumlahCraving)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DiaryCravingStateCopyWith<$Res> implements $DiaryCravingStateCopyWith<$Res> {
+  factory _$DiaryCravingStateCopyWith(_DiaryCravingState value, $Res Function(_DiaryCravingState) _then) = __$DiaryCravingStateCopyWithImpl;
+@override @useResult
+$Res call({
+ List<DiaryCravingModel> listCraving, int jumlahCraving
+});
+
+
+
+
+}
+/// @nodoc
+class __$DiaryCravingStateCopyWithImpl<$Res>
+    implements _$DiaryCravingStateCopyWith<$Res> {
+  __$DiaryCravingStateCopyWithImpl(this._self, this._then);
+
+  final _DiaryCravingState _self;
+  final $Res Function(_DiaryCravingState) _then;
+
+/// Create a copy of DiaryCravingState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? listCraving = null,Object? jumlahCraving = null,}) {
+  return _then(_DiaryCravingState(
+listCraving: null == listCraving ? _self._listCraving : listCraving // ignore: cast_nullable_to_non_nullable
+as List<DiaryCravingModel>,jumlahCraving: null == jumlahCraving ? _self.jumlahCraving : jumlahCraving // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/notifier/diary_craving_notifier.g.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'diary_craving_notifier.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(DiaryCravingNotifier)
+final diaryCravingProvider = DiaryCravingNotifierProvider._();
+
+final class DiaryCravingNotifierProvider
+    extends $AsyncNotifierProvider<DiaryCravingNotifier, DiaryCravingState> {
+  DiaryCravingNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'diaryCravingProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$diaryCravingNotifierHash();
+
+  @$internal
+  @override
+  DiaryCravingNotifier create() => DiaryCravingNotifier();
+}
+
+String _$diaryCravingNotifierHash() =>
+    r'948055ed735be99f190c74dbc018877a80a57340';
+
+abstract class _$DiaryCravingNotifier
+    extends $AsyncNotifier<DiaryCravingState> {
+  FutureOr<DiaryCravingState> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<DiaryCravingState>, DiaryCravingState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<DiaryCravingState>, DiaryCravingState>,
+              AsyncValue<DiaryCravingState>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/diary_craving/notifier/diary_craving_notifier.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/state/diary_craving_state.dart';
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+
+part 'diary_craving_notifier.g.dart';
+
+@Riverpod(keepAlive: true)
+class DiaryCravingNotifier extends _$DiaryCravingNotifier {
+  @override
+  Future<DiaryCravingState> build() async {
+    return await _ambilSemua();
+  }
+
+  Future<DiaryCravingState> _ambilSemua() async {
+    try {
+      final op = const SqfliteOp();
+      final rows = await op.ambilSemua(
+        NamaTabel.diaryCraving,
+        orderBy: '${NamaKolom.tanggal} DESC',
+      );
+      final daftar = rows.map(DiaryCravingModel.fromSqflite).toList();
+      L.i('daftar.length=${daftar.length}');
+      return DiaryCravingState(
+        listCraving: daftar,
+        jumlahCraving: daftar.length,
+      );
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data diary craving: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> tambah(DiaryCravingModel craving) async {
+    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    try {
+      final dataLama = await future;
+      final op = const SqfliteOp();
+      await op.tambah(
+        NamaTabel.diaryCraving,
+        craving.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      state = AsyncValue.data(
+        DiaryCravingState(
+          listCraving: [craving, ...dataLama.listCraving],
+          jumlahCraving: dataLama.jumlahCraving + 1,
+        ),
+      );
+      L.s('Diary craving berhasil disimpan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan diary craving: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> ubah(DiaryCravingModel craving) async {
+    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    try {
+      final dataLama = await future;
+      final op = const SqfliteOp();
+      await op.ubah(
+        NamaTabel.diaryCraving,
+        craving.toSqflite(),
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [craving.id],
+      );
+      final baru = dataLama.listCraving
+          .map((e) => e.id == craving.id ? craving : e)
+          .toList();
+      state = AsyncValue.data(
+        DiaryCravingState(listCraving: baru, jumlahCraving: baru.length),
+      );
+      L.s('Diary craving berhasil diubah');
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah diary craving: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> hapus(String id) async {
+    L.i('id=$id');
+    try {
+      final dataLama = await future;
+      final op = const SqfliteOp();
+      await op.hapus(
+        NamaTabel.diaryCraving,
+        where: '${NamaKolom.id} = ?',
+        whereArgs: [id],
+      );
+      final baru = dataLama.listCraving.where((e) => e.id != id).toList();
+      state = AsyncValue.data(
+        DiaryCravingState(listCraving: baru, jumlahCraving: baru.length),
+      );
+      L.s('Diary craving berhasil dihapus');
+    } on Exception catch (e, s) {
+      L.e('Gagal menghapus diary craving: $e $s');
+      rethrow;
+    }
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+/// Halaman kalender smoke-free.
+///
+/// Menampilkan kalender bulanan yang menandai hari-hari smoke-free sejak
+/// tanggal mulai berhenti merokok, beserta ringkasan progres.
+class KalenderSmokeFreeScreen extends ConsumerStatefulWidget {
+  const KalenderSmokeFreeScreen({super.key});
+
+  @override
+  ConsumerState<KalenderSmokeFreeScreen> createState() =>
+      _KalenderSmokeFreeScreenState();
+}
+
+class _KalenderSmokeFreeScreenState
+    extends ConsumerState<KalenderSmokeFreeScreen> {
+  DateTime _bulanDitampilkan = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+  );
+
+  static const List<String> _namaHari = [
+    'Sen',
+    'Sel',
+    'Rab',
+    'Kam',
+    'Jum',
+    'Sab',
+    'Min',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    L.i('KalenderSmokeFreeScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('KalenderSmokeFreeScreen dispose');
+    super.dispose();
+  }
+
+  void _bulanSebelumnya() {
+    setState(() {
+      _bulanDitampilkan = DateTime(
+        _bulanDitampilkan.year,
+        _bulanDitampilkan.month - 1,
+      );
+    });
+  }
+
+  void _bulanBerikutnya() {
+    setState(() {
+      _bulanDitampilkan = DateTime(
+        _bulanDitampilkan.year,
+        _bulanDitampilkan.month + 1,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+
+    if (biodataAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
+      return Scaffold(
+        appBar: AppBar(title: const Text('Kalender Smoke-Free')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(biodataProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final biodata = biodataAsync.requireValue;
+    if (biodata == null) {
+      return _buildBiodataNull();
+    }
+
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) {
+      return _buildBelumBerhenti();
+    }
+
+    final hariIni = DateTime.now();
+    final hariIniDate = DateTime(hariIni.year, hariIni.month, hariIni.day);
+    final tanggalBerhentiDate = DateTime(
+      tanggalBerhenti.year,
+      tanggalBerhenti.month,
+      tanggalBerhenti.day,
+    );
+
+    final totalSmokeFree =
+        hariIniDate.difference(tanggalBerhentiDate).inDays + 1;
+    final totalSmokeFreeAman = totalSmokeFree < 0 ? 0 : totalSmokeFree;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Kalender Smoke-Free')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _RingkasanSmokeFree(
+                tanggalBerhenti: tanggalBerhentiDate,
+                totalSmokeFree: totalSmokeFreeAman,
+              ),
+              _NavigasiBulan(
+                bulan: _bulanDitampilkan,
+                onSebelumnya: _bulanSebelumnya,
+                onBerikutnya: _bulanBerikutnya,
+              ),
+              _HeaderHari(namaHari: _namaHari),
+              Expanded(
+                child: _GridKalender(
+                  bulan: _bulanDitampilkan,
+                  tanggalBerhenti: tanggalBerhentiDate,
+                  hariIni: hariIniDate,
+                ),
+              ),
+              const _Legenda(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBiodataNull() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Kalender Smoke-Free')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Text('Belum ada data biodata'),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBelumBerhenti() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Kalender Smoke-Free')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Icon(CupertinoIcons.calendar, size: 48),
+                const Text(
+                  'Belum ada tanggal mulai berhenti merokok.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  'Isi tanggal mulai berhenti pada biodata untuk melihat '
+                  'kalender smoke-free.',
+                  textAlign: TextAlign.center,
+                ),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RingkasanSmokeFree extends StatelessWidget {
+  const _RingkasanSmokeFree({
+    required this.tanggalBerhenti,
+    required this.totalSmokeFree,
+  });
+
+  final DateTime tanggalBerhenti;
+  final int totalSmokeFree;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 4,
+          children: [
+            Text(
+              'Total hari smoke-free',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              '$totalSmokeFree hari',
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            Text(
+              'Sejak ${FormatTanggal.formatDasar(tanggalBerhenti)}',
+              style: textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NavigasiBulan extends StatelessWidget {
+  const _NavigasiBulan({
+    required this.bulan,
+    required this.onSebelumnya,
+    required this.onBerikutnya,
+  });
+
+  final DateTime bulan;
+  final VoidCallback onSebelumnya;
+  final VoidCallback onBerikutnya;
+
+  static const List<String> _namaBulan = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: onSebelumnya,
+          icon: const Icon(CupertinoIcons.chevron_left),
+          tooltip: 'Bulan sebelumnya',
+        ),
+        Text(
+          '${_namaBulan[bulan.month - 1]} ${bulan.year}',
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        IconButton(
+          onPressed: onBerikutnya,
+          icon: const Icon(CupertinoIcons.chevron_right),
+          tooltip: 'Bulan berikutnya',
+        ),
+      ],
+    );
+  }
+}
+
+class _HeaderHari extends StatelessWidget {
+  const _HeaderHari({required this.namaHari});
+
+  final List<String> namaHari;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (final h in namaHari)
+          Expanded(
+            child: Center(
+              child: Text(
+                h,
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _GridKalender extends StatelessWidget {
+  const _GridKalender({
+    required this.bulan,
+    required this.tanggalBerhenti,
+    required this.hariIni,
+  });
+
+  final DateTime bulan;
+  final DateTime tanggalBerhenti;
+  final DateTime hariIni;
+
+  @override
+  Widget build(BuildContext context) {
+    final tahun = bulan.year;
+    final bulanIndex = bulan.month;
+    final hariPertama = DateTime(tahun, bulanIndex, 1);
+    // Monday=1..Sunday=7. Grid Monday-first.
+    final offset = (hariPertama.weekday - 1) % 7;
+    final jumlahHari = DateTime(tahun, bulanIndex + 1, 0).day;
+
+    final cells = <Widget>[];
+    for (int i = 0; i < offset; i++) {
+      cells.add(const SizedBox.shrink());
+    }
+    for (int hari = 1; hari <= jumlahHari; hari++) {
+      final tanggal = DateTime(tahun, bulanIndex, hari);
+      cells.add(
+        _SelHari(
+          tanggal: tanggal,
+          tanggalBerhenti: tanggalBerhenti,
+          hariIni: hariIni,
+        ),
+      );
+    }
+    // Pad to multiple of 7.
+    while (cells.length % 7 != 0) {
+      cells.add(const SizedBox.shrink());
+    }
+
+    return GridView.count(
+      crossAxisCount: 7,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      physics: const NeverScrollableScrollPhysics(),
+      children: cells,
+    );
+  }
+}
+
+class _SelHari extends StatelessWidget {
+  const _SelHari({
+    required this.tanggal,
+    required this.tanggalBerhenti,
+    required this.hariIni,
+  });
+
+  final DateTime tanggal;
+  final DateTime tanggalBerhenti;
+  final DateTime hariIni;
+
+  @override
+  Widget build(BuildContext context) {
+    final sebelumBerhenti = tanggal.isBefore(tanggalBerhenti);
+    final setelahHariIni = tanggal.isAfter(hariIni);
+    final hariIniFlag = tanggal == hariIni;
+
+    Color? warnaLatar;
+    if (sebelumBerhenti) {
+      warnaLatar = null;
+    } else if (setelahHariIni) {
+      warnaLatar = null;
+    } else {
+      warnaLatar = Colors.green.withValues(alpha: 0.25);
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: warnaLatar,
+        borderRadius: BorderRadius.circular(8),
+        border: hariIniFlag
+            ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        '${tanggal.day}',
+        style: TextStyle(
+          fontWeight: hariIniFlag ? FontWeight.bold : FontWeight.normal,
+          color: sebelumBerhenti
+              ? Theme.of(context).disabledColor
+              : (setelahHariIni
+                    ? Theme.of(context).disabledColor
+                    : Colors.green.shade800),
+        ),
+      ),
+    );
+  }
+}
+
+class _Legenda extends StatelessWidget {
+  const _Legenda();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      spacing: 16,
+      children: [
+        _ItemLegenda(
+          warna: Colors.green.withValues(alpha: 0.25),
+          label: 'Smoke-free',
+          textTheme: textTheme,
+        ),
+        _ItemLegenda(
+          warna: null,
+          label: 'Belum/Lainnya',
+          textTheme: textTheme,
+          border: true,
+        ),
+      ],
+    );
+  }
+}
+
+class _ItemLegenda extends StatelessWidget {
+  const _ItemLegenda({
+    required this.warna,
+    required this.label,
+    required this.textTheme,
+    this.border = false,
+  });
+
+  final Color? warna;
+  final String label;
+  final TextTheme textTheme;
+  final bool border;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 6,
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: warna,
+            borderRadius: BorderRadius.circular(4),
+            border: border
+                ? Border.all(color: Theme.of(context).disabledColor)
+                : null,
+          ),
+        ),
+        Text(label, style: textTheme.bodySmall),
+      ],
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/sos_craving/screens/sos_craving_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+/// Halaman bantuan cepat saat craving (SOS Craving).
+///
+/// Menyediakan latihan napas 4-7-8, timer craving 3 menit, dan daftar
+/// distraksi untuk membantu pengguna melewati dorongan merokok.
+class SosCravingScreen extends ConsumerStatefulWidget {
+  const SosCravingScreen({super.key});
+
+  @override
+  ConsumerState<SosCravingScreen> createState() => _SosCravingScreenState();
+}
+
+class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
+    with SingleTickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    L.i('SosCravingScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('SosCravingScreen dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('SOS Craving'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Napas 4-7-8'),
+              Tab(text: 'Timer 3 Menit'),
+              Tab(text: 'Distraksi'),
+            ],
+          ),
+        ),
+        body: SafeArea(
+          child: TabBarView(
+            children: [
+              _Napas478View(textTheme: textTheme),
+              const _TimerCravingView(),
+              const _DistraksiView(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Latihan napas 4-7-8: tarik 4 detik, tahan 7 detik, hembuskan 8 detik.
+class _Napas478View extends StatefulWidget {
+  const _Napas478View({required this.textTheme});
+
+  final TextTheme textTheme;
+
+  @override
+  State<_Napas478View> createState() => _Napas478ViewState();
+}
+
+class _Napas478ViewState extends State<_Napas478View> {
+  Timer? _timer;
+  bool _berjalan = false;
+  int _faseIndex = 0; // 0 tarik, 1 tahan, 2 hembus
+  int _sisaFase = 4;
+  int _siklus = 0;
+
+  static const List<({String label, int durasi})> _fase = [
+    (label: 'Tarik napas', durasi: 4),
+    (label: 'Tahan', durasi: 7),
+    (label: 'Hembuskan', durasi: 8),
+  ];
+
+  static const int _targetSiklus = 4;
+
+  @override
+  void initState() {
+    super.initState();
+    L.i('Napas478View initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('Napas478View dispose');
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _mulai() {
+    if (_berjalan) return;
+    L.i('mulai napas 4-7-8');
+    setState(() {
+      _berjalan = true;
+      _faseIndex = 0;
+      _sisaFase = _fase[0].durasi;
+      _siklus = 0;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
+  }
+
+  void _tick(Timer _) {
+    if (!mounted) return;
+    setState(() {
+      _sisaFase--;
+      if (_sisaFase <= 0) {
+        _faseIndex++;
+        if (_faseIndex >= _fase.length) {
+          _faseIndex = 0;
+          _siklus++;
+          if (_siklus >= _targetSiklus) {
+            _selesai();
+            return;
+          }
+        }
+        _sisaFase = _fase[_faseIndex].durasi;
+      }
+    });
+  }
+
+  void _selesai() {
+    _timer?.cancel();
+    _timer = null;
+    setState(() {
+      _berjalan = false;
+    });
+    L.i('napas 4-7-8 selesai, siklus=$_siklus');
+    AppToast.sukses(context, 'Latihan napas selesai. Anda hebat!');
+  }
+
+  void _henti() {
+    _timer?.cancel();
+    _timer = null;
+    setState(() {
+      _berjalan = false;
+    });
+    L.i('napas 4-7-8 dihentikan');
+  }
+
+  void _reset() {
+    _timer?.cancel();
+    _timer = null;
+    setState(() {
+      _berjalan = false;
+      _faseIndex = 0;
+      _sisaFase = _fase[0].durasi;
+      _siklus = 0;
+    });
+    L.i('napas 4-7-8 reset');
+  }
+
+  double get _skalaLingkaran {
+    if (!_berjalan) return 0.6;
+    switch (_faseIndex) {
+      case 0: // tarik: membesar
+        final durasi = _fase[0].durasi;
+        final progres = 1 - (_sisaFase / durasi);
+        return 0.6 + (0.4 * progres);
+      case 1: // tahan
+        return 1.0;
+      case 2: // hembus: mengecil
+        final durasi = _fase[2].durasi;
+        final progres = 1 - (_sisaFase / durasi);
+        return 1.0 - (0.4 * progres);
+      default:
+        return 0.6;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fase = _fase[_faseIndex];
+    final warna = Theme.of(context).colorScheme.primary;
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        spacing: 16,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Latihan Napas 4-7-8',
+            style: widget.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            'Tarik napas 4 detik, tahan 7 detik, hembuskan 8 detik. '
+            'Ulangi $_targetSiklus kali.',
+            textAlign: TextAlign.center,
+            style: widget.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 8),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeInOut,
+            width: 200 * _skalaLingkaran,
+            height: 200 * _skalaLingkaran,
+            decoration: BoxDecoration(
+              color: warna.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+              border: Border.all(color: warna, width: 3),
+            ),
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _berjalan ? fase.label : 'Siap',
+                  style: widget.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _berjalan ? '$_sisaFase' : '$_targetSiklus siklus',
+                  style: widget.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_berjalan)
+            Text(
+              'Siklus ${_siklus + 1} dari $_targetSiklus',
+              style: widget.textTheme.bodyMedium,
+            ),
+          const SizedBox(height: 8),
+          Row(
+            spacing: 12,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!_berjalan)
+                FilledButton.icon(
+                  onPressed: _mulai,
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Mulai'),
+                )
+              else
+                FilledButton.icon(
+                  onPressed: _henti,
+                  icon: const Icon(Icons.pause),
+                  label: const Text('Jeda'),
+                ),
+              OutlinedButton.icon(
+                onPressed: _reset,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Reset'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Timer craving 3 menit.
+class _TimerCravingView extends StatefulWidget {
+  const _TimerCravingView();
+
+  @override
+  State<_TimerCravingView> createState() => _TimerCravingViewState();
+}
+
+class _TimerCravingViewState extends State<_TimerCravingView> {
+  static const int _durasiAwal = 3 * 60;
+  Timer? _timer;
+  bool _berjalan = false;
+  int _sisa = _durasiAwal;
+
+  @override
+  void initState() {
+    super.initState();
+    L.i('TimerCravingView initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('TimerCravingView dispose');
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _mulai() {
+    if (_berjalan) return;
+    if (_sisa <= 0) {
+      _sisa = _durasiAwal;
+    }
+    L.i('timer craving mulai, sisa=$_sisa');
+    setState(() {
+      _berjalan = true;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
+  }
+
+  void _tick(Timer _) {
+    if (!mounted) return;
+    setState(() {
+      _sisa--;
+      if (_sisa <= 0) {
+        _selesai();
+      }
+    });
+  }
+
+  void _selesai() {
+    _timer?.cancel();
+    _timer = null;
+    setState(() {
+      _berjalan = false;
+      _sisa = 0;
+    });
+    L.i('timer craving selesai');
+    AppToast.sukses(
+      context,
+      '3 menit berlalu. Craving biasanya singkat. Anda berhasil!',
+    );
+  }
+
+  void _jeda() {
+    _timer?.cancel();
+    _timer = null;
+    setState(() {
+      _berjalan = false;
+    });
+    L.i('timer craving dijeda');
+  }
+
+  void _reset() {
+    _timer?.cancel();
+    _timer = null;
+    setState(() {
+      _berjalan = false;
+      _sisa = _durasiAwal;
+    });
+    L.i('timer craving reset');
+  }
+
+  String get _teksWaktu {
+    final menit = (_sisa ~/ 60).toString().padLeft(2, '0');
+    final detik = (_sisa % 60).toString().padLeft(2, '0');
+    return '$menit:$detik';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final progres = 1 - (_sisa / _durasiAwal);
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        spacing: 16,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Timer Craving',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Craving biasanya berlangsung sekitar 3 menit. '
+            'Tahan dorongan hingga waktu habis.',
+            textAlign: TextAlign.center,
+            style: textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: 200,
+            height: 200,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CircularProgressIndicator(
+                  value: progres.clamp(0.0, 1.0),
+                  strokeWidth: 12,
+                ),
+                Center(
+                  child: Text(
+                    _teksWaktu,
+                    style: textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            spacing: 12,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!_berjalan)
+                FilledButton.icon(
+                  onPressed: _mulai,
+                  icon: const Icon(Icons.play_arrow),
+                  label: Text(_sisa == 0 ? 'Ulangi' : 'Mulai'),
+                )
+              else
+                FilledButton.icon(
+                  onPressed: _jeda,
+                  icon: const Icon(Icons.pause),
+                  label: const Text('Jeda'),
+                ),
+              OutlinedButton.icon(
+                onPressed: _reset,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Reset'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Daftar distraksi sederhana.
+class _DistraksiView extends StatefulWidget {
+  const _DistraksiView();
+
+  @override
+  State<_DistraksiView> createState() => _DistraksiViewState();
+}
+
+class _DistraksiViewState extends State<_DistraksiView> {
+  int _berhasil = 0;
+
+  static const List<String> _aktivitas = [
+    'Minum segelas air putih',
+    'Jalan kaki 5 menit',
+    'Makan permen atau buah',
+    'Cuci muka dengan air dingin',
+    'Telepon teman atau keluarga',
+    'Dengarkan musik favorit',
+    'Lakukan 10 kali push-up ringan',
+    'Baca 1 halaman buku',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    L.i('DistraksiView initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('DistraksiView dispose, berhasil=$_berhasil');
+    super.dispose();
+  }
+
+  void _tandaiBerhasil() {
+    setState(() {
+      _berhasil++;
+    });
+    L.i('distraksi berhasil, total=$_berhasil');
+    AppToast.sukses(context, 'Craving berhasil dilewati!');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        spacing: 12,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Distraksi',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Pilih aktivitas untuk mengalihkan perhatian dari craving.',
+            style: textTheme.bodyMedium,
+          ),
+          if (_berhasil > 0)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  'Craving dilewati: $_berhasil kali',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          Expanded(
+            child: ListView.separated(
+              itemCount: _aktivitas.length,
+              itemBuilder: (context, index) {
+                final aktivitas = _aktivitas[index];
+                return ListTile(
+                  leading: const Icon(Icons.check_circle_outline),
+                  title: Text(aktivitas),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    L.i('distraksi dipilih: $aktivitas');
+                    AppToast.info(context, aktivitas);
+                  },
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 4),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _tandaiBerhasil,
+              icon: const Icon(Icons.verified),
+              label: const Text('Saya berhasil melewati craving'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dashboard/screens/dashboard_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/fitur/badge/screens/badge_screen.dart';
+
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
+import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class DashboardScreen extends ConsumerStatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('DashboardScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('DashboardScreen dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+    L.i('biodataAsync=$biodataAsync');
+
+    if (biodataAsync.isLoading) {
+      L.w('biodataAsync loading');
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
+      return Scaffold(
+        appBar: AppBar(title: const Text('Dashboard')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(biodataProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final biodata = biodataAsync.requireValue;
+    L.i('biodata=$biodata');
+    if (biodata == null) {
+      return _buildBiodataNull();
+    }
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    final nama = biodata.nama;
+    L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 2,
+        forceMaterialTransparency: false,
+        actions: [
+          IconButton(
+            tooltip: 'SOS Craving',
+            icon: const Icon(Icons.sos),
+            onPressed: () =>
+                unawaited(Nav.to(context, const SosCravingScreen())),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView(
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      Text(
+                        'Lama berhenti merokok',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      _DurasiBerhenti(tanggalBerhenti: tanggalBerhenti),
+                      if (tanggalBerhenti != null)
+                        Text(
+                          'Sejak ${FormatTanggal.formatDasar(tanggalBerhenti)}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      if (nama.isNotEmpty)
+                        Text(
+                          'Halo, $nama',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              _buildCardProgres(biodata),
+              _buildCardMilestone(biodata),
+              _buildCardBadge(),
+              _buildInfoKerugian(biodata),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardProgres(BiodataModel biodata) {
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    final jumlahRokokPerHari = biodata.jumlahRokokPerHari;
+    final hargaPerBungkus = biodata.hargaRokokPerBungkus;
+
+    final hariBerhenti = biodata.hariBerhenti;
+    final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
+    final uangDihemat = biodata.uangDihemat;
+    L.i(
+      'tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat',
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              'Uang dihemat',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              FormatUang.formatRupiah(uangDihemat),
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Rokok tidak dihisap',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '$rokokTidakDiHisap batang',
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardMilestone(BiodataModel biodata) {
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return const SizedBox.shrink();
+
+    final durasi = DateTime.now().difference(tanggalBerhenti);
+    final aman = durasi.isNegative ? Duration.zero : durasi;
+    final berikutnya = milestoneBerikutnya(aman);
+    L.i('milestoneBerikutnya=${berikutnya?.judul}');
+
+    return Card(
+      child: InkWell(
+        onTap: () =>
+            unawaited(Nav.to(context, const PemulihanKesehatanScreen())),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            spacing: 12,
+            children: [
+              const Icon(CupertinoIcons.heart, size: 32, color: Colors.green),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      'Pemulihan Kesehatan',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      berikutnya == null
+                          ? 'Semua milestone tercapai'
+                          : 'Berikutnya: ${berikutnya.judul}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    if (berikutnya != null)
+                      Text(
+                        'Tersisa ${_formatDurasiSingkat(berikutnya.target - aman)}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                  ],
+                ),
+              ),
+              const Icon(CupertinoIcons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatDurasiSingkat(Duration d) {
+    if (d.inDays > 0) {
+      final hari = d.inDays;
+      final jam = d.inHours % 24;
+      if (jam > 0) return '$hari hari $jam jam';
+      return '$hari hari';
+    }
+    if (d.inHours > 0) {
+      final jam = d.inHours;
+      final menit = d.inMinutes % 60;
+      if (menit > 0) return '$jam jam $menit menit';
+      return '$jam jam';
+    }
+    final menit = d.inMinutes;
+    final detik = d.inSeconds % 60;
+    if (menit > 0) return '$menit menit $detik detik';
+    return '$detik detik';
+  }
+
+  Widget _buildCardBadge() {
+    return Card(
+      child: InkWell(
+        onTap: () => unawaited(Nav.to(context, const BadgeScreen())),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            spacing: 12,
+            children: [
+              const Icon(CupertinoIcons.rosette, size: 32, color: Colors.amber),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      'Pencapaian',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Lihat badge yang telah tercapai',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(CupertinoIcons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoKerugian(BiodataModel biodata) {
+    final jumlahRokokPerHari = biodata.jumlahRokokPerHari;
+    final hargaPerBungkus = biodata.hargaRokokPerBungkus;
+    final tanggalMulaiMerokok = biodata.tanggalMulaiMerokok;
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+
+    int totalHariMerokok = 0;
+    if (tanggalMulaiMerokok != null && tanggalBerhenti != null) {
+      totalHariMerokok = tanggalBerhenti.difference(tanggalMulaiMerokok).inDays;
+      if (totalHariMerokok < 0) {
+        totalHariMerokok = 0;
+      }
+    }
+
+    final rokokDihisap = jumlahRokokPerHari * totalHariMerokok;
+    final uangTerbuang =
+        (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
+    final menitHilang = (rokokDihisap * 11).round();
+    final hariHilang = menitHilang / (24 * 60);
+    L.i(
+      'totalHariMerokok=$totalHariMerokok, rokokDihisap=$rokokDihisap, uangTerbuang=$uangTerbuang, menitHilang=$menitHilang, hariHilang=$hariHilang',
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              'Kerugian saat merokok',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            _buildInfoKerugianKustom(
+              CupertinoIcons.smoke,
+              '$rokokDihisap batang',
+              'Total rokok yang dihisap',
+            ),
+            _buildInfoKerugianKustom(
+              CupertinoIcons.money_dollar,
+              FormatUang.formatRupiah(uangTerbuang),
+              'uang yang terbuang',
+            ),
+            _buildInfoKerugianKustom(
+              CupertinoIcons.heart,
+              '${hariHilang.toStringAsFixed(1)} hari',
+              'hidup yang hilang',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoKerugianKustom(
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
+    L.i('icon=$icon, title=$title, subtitle=$subtitle');
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(subtitle),
+    );
+  }
+
+  Widget _buildBiodataNull() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Dashboard')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Text('Belum ada data biodata'),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget kecil yang menampilkan durasi berhenti merokok dan memperbarui tampilannya setiap detik tanpa memicu rebuild seluruh halaman.
+class _DurasiBerhenti extends StatefulWidget {
+  const _DurasiBerhenti({required this.tanggalBerhenti});
+
+  final DateTime? tanggalBerhenti;
+
+  @override
+  State<_DurasiBerhenti> createState() => _DurasiBerhentiState();
+}
+
+class _DurasiBerhentiState extends State<_DurasiBerhenti> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _formatLamaBerhenti(widget.tanggalBerhenti),
+      style: Theme.of(context).textTheme.headlineMedium
+          ?.copyWith(fontWeight: FontWeight.bold),
+    );
+  }
+}
+
+/// Menghitung lama waktu (hari, jam, menit, detik) sejak [tanggalBerhenti] hingga saat ini.
+String _formatLamaBerhenti(DateTime? tanggalBerhenti) {
+  if (tanggalBerhenti == null) {
+    return 'Belum ditentukan';
+  }
+  final selisih = DateTime.now().difference(tanggalBerhenti);
+  L.i('tanggalBerhenti=$tanggalBerhenti, selisih=$selisih');
+  if (selisih.isNegative) {
+    return '0 detik';
+  }
+
+  final hari = selisih.inDays;
+  final jam = selisih.inHours % 24;
+  final menit = selisih.inMinutes % 60;
+  final detik = selisih.inSeconds % 60;
+
+  final bagian = <String>[];
+  if (hari > 0) {
+    bagian.add('$hari hari');
+  }
+  if (jam > 0) {
+    bagian.add('$jam jam');
+  }
+  if (menit > 0) {
+    bagian.add('$menit menit');
+  }
+  bagian.add('$detik detik');
+  return bagian.join(' ');
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dashboard/state/dashboard_state.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'dashboard_state.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$DashboardState {
+
+ double get totalDiHemat; double get totalBatangDiAbaikan;
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DashboardStateCopyWith<DashboardState> get copyWith => _$DashboardStateCopyWithImpl<DashboardState>(this as DashboardState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as DashboardState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardState&&(identical(other.totalDiHemat, _this.totalDiHemat) || other.totalDiHemat == _this.totalDiHemat)&&(identical(other.totalBatangDiAbaikan, _this.totalBatangDiAbaikan) || other.totalBatangDiAbaikan == _this.totalBatangDiAbaikan));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as DashboardState;
+  return Object.hash(runtimeType,_this.totalDiHemat,_this.totalBatangDiAbaikan);
+}
+
+@override
+String toString() {
+  final _this = this as DashboardState;
+  return 'DashboardState(totalDiHemat: ${_this.totalDiHemat}, totalBatangDiAbaikan: ${_this.totalBatangDiAbaikan})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DashboardStateCopyWith<$Res>  {
+  factory $DashboardStateCopyWith(DashboardState value, $Res Function(DashboardState) _then) = _$DashboardStateCopyWithImpl;
+@useResult
+$Res call({
+ double totalDiHemat, double totalBatangDiAbaikan
+});
+
+
+
+
+}
+/// @nodoc
+class _$DashboardStateCopyWithImpl<$Res>
+    implements $DashboardStateCopyWith<$Res> {
+  _$DashboardStateCopyWithImpl(this._self, this._then);
+
+  final DashboardState _self;
+  final $Res Function(DashboardState) _then;
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? totalDiHemat = null,Object? totalBatangDiAbaikan = null,}) {
+  return _then(DashboardState(
+totalDiHemat: null == totalDiHemat ? _self.totalDiHemat : totalDiHemat // ignore: cast_nullable_to_non_nullable
+as double,totalBatangDiAbaikan: null == totalBatangDiAbaikan ? _self.totalBatangDiAbaikan : totalBatangDiAbaikan // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DashboardState].
+extension DashboardStatePatterns on DashboardState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DashboardState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DashboardState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DashboardState value)  $default,){
+final _that = this;
+switch (_that) {
+case _DashboardState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DashboardState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DashboardState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double totalDiHemat,  double totalBatangDiAbaikan)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DashboardState() when $default != null:
+return $default(_that.totalDiHemat,_that.totalBatangDiAbaikan);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double totalDiHemat,  double totalBatangDiAbaikan)  $default,) {final _that = this;
+switch (_that) {
+case _DashboardState():
+return $default(_that.totalDiHemat,_that.totalBatangDiAbaikan);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double totalDiHemat,  double totalBatangDiAbaikan)?  $default,) {final _that = this;
+switch (_that) {
+case _DashboardState() when $default != null:
+return $default(_that.totalDiHemat,_that.totalBatangDiAbaikan);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _DashboardState extends DashboardState {
+  const _DashboardState({this.totalDiHemat = 0, this.totalBatangDiAbaikan = 0}): super._();
+  
+
+@override@JsonKey() final  double totalDiHemat;
+@override@JsonKey() final  double totalBatangDiAbaikan;
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DashboardStateCopyWith<_DashboardState> get copyWith => __$DashboardStateCopyWithImpl<_DashboardState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DashboardState&&(identical(other.totalDiHemat, totalDiHemat) || other.totalDiHemat == totalDiHemat)&&(identical(other.totalBatangDiAbaikan, totalBatangDiAbaikan) || other.totalBatangDiAbaikan == totalBatangDiAbaikan));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,totalDiHemat,totalBatangDiAbaikan);
+}
+
+@override
+String toString() {
+    return 'DashboardState(totalDiHemat: $totalDiHemat, totalBatangDiAbaikan: $totalBatangDiAbaikan)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DashboardStateCopyWith<$Res> implements $DashboardStateCopyWith<$Res> {
+  factory _$DashboardStateCopyWith(_DashboardState value, $Res Function(_DashboardState) _then) = __$DashboardStateCopyWithImpl;
+@override @useResult
+$Res call({
+ double totalDiHemat, double totalBatangDiAbaikan
+});
+
+
+
+
+}
+/// @nodoc
+class __$DashboardStateCopyWithImpl<$Res>
+    implements _$DashboardStateCopyWith<$Res> {
+  __$DashboardStateCopyWithImpl(this._self, this._then);
+
+  final _DashboardState _self;
+  final $Res Function(_DashboardState) _then;
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? totalDiHemat = null,Object? totalBatangDiAbaikan = null,}) {
+  return _then(_DashboardState(
+totalDiHemat: null == totalDiHemat ? _self.totalDiHemat : totalDiHemat // ignore: cast_nullable_to_non_nullable
+as double,totalBatangDiAbaikan: null == totalBatangDiAbaikan ? _self.totalBatangDiAbaikan : totalBatangDiAbaikan // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dashboard/state/dashboard_state.dart
+// ============================================================
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'dashboard_state.freezed.dart';
+
+@freezed
+abstract class DashboardState with _$DashboardState {
+  const DashboardState._();
+
+  const factory DashboardState({
+    @Default(0) double totalDiHemat,
+    @Default(0) double totalBatangDiAbaikan,
+  }) = _DashboardState;
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dashboard/notifier/dashboard_notifier.g.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'dashboard_notifier.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(DashboardNotifier)
+final dashboardProvider = DashboardNotifierProvider._();
+
+final class DashboardNotifierProvider
+    extends $AsyncNotifierProvider<DashboardNotifier, DashboardState> {
+  DashboardNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'dashboardProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$dashboardNotifierHash();
+
+  @$internal
+  @override
+  DashboardNotifier create() => DashboardNotifier();
+}
+
+String _$dashboardNotifierHash() => r'd50d58ae5d49dc0a38b7a062c0a92146e1e3ecaa';
+
+abstract class _$DashboardNotifier extends $AsyncNotifier<DashboardState> {
+  FutureOr<DashboardState> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<DashboardState>, DashboardState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<DashboardState>, DashboardState>,
+              AsyncValue<DashboardState>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/dashboard/notifier/dashboard_notifier.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/dashboard/state/dashboard_state.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'dashboard_notifier.g.dart';
+
+@riverpod
+class DashboardNotifier extends _$DashboardNotifier {
+  @override
+  Future<DashboardState> build() async {
+    return await _muatData();
+  }
+
+  Future<DashboardState> _muatData() async {
+    await ref.watch(biodataProvider.future);
+    await ref.watch(impianProvider.future);
+    return DashboardState();
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+/// Halaman pemulihan kesehatan (milestone) berdasarkan durasi smoke-free.
+///
+/// Menampilkan daftar milestone kesehatan yang dicapai seiring waktu tanpa
+/// rokok, beserta status tercapai/belum.
+class PemulihanKesehatanScreen extends ConsumerStatefulWidget {
+  const PemulihanKesehatanScreen({super.key});
+
+  @override
+  ConsumerState<PemulihanKesehatanScreen> createState() =>
+      _PemulihanKesehatanScreenState();
+}
+
+class _PemulihanKesehatanScreenState
+    extends ConsumerState<PemulihanKesehatanScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('PemulihanKesehatanScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('PemulihanKesehatanScreen dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+
+    if (biodataAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(biodataProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final biodata = biodataAsync.requireValue;
+    if (biodata == null) {
+      return _buildBiodataNull();
+    }
+
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) {
+      return _buildBelumBerhenti();
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _HeaderPemulihan(tanggalBerhenti: tanggalBerhenti),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: daftarMilestoneKesehatan.length,
+                  itemBuilder: (context, index) {
+                    final m = daftarMilestoneKesehatan[index];
+                    final durasi = DateTime.now().difference(tanggalBerhenti);
+                    final aman = durasi.isNegative ? Duration.zero : durasi;
+                    final tercapai = aman >= m.target;
+                    return Card(
+                      key: ValueKey(m.judul),
+                      child: ListTile(
+                        leading: Icon(
+                          tercapai
+                              ? CupertinoIcons.check_mark_circled_solid
+                              : CupertinoIcons.clock,
+                          color: tercapai ? Colors.green : null,
+                        ),
+                        title: Text(
+                          m.judul,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: tercapai ? Colors.green : null,
+                              ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4,
+                          children: [
+                            Text(m.deskripsi),
+                            Text(
+                              'Target: ${_formatTarget(m.target)}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBiodataNull() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Text('Belum ada data biodata'),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBelumBerhenti() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Icon(CupertinoIcons.heart, size: 48),
+                const Text(
+                  'Belum ada tanggal mulai berhenti merokok.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  'Isi tanggal mulai berhenti pada biodata untuk melihat '
+                  'pemulihan kesehatan.',
+                  textAlign: TextAlign.center,
+                ),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static String _formatTarget(Duration d) {
+    if (d.inDays >= 365) {
+      final tahun = (d.inDays / 365).round();
+      if (tahun == 1) return '1 tahun';
+      return '$tahun tahun';
+    }
+    if (d.inDays >= 30) {
+      final bulan = (d.inDays / 30).round();
+      if (bulan == 1) return '1 bulan';
+      return '$bulan bulan';
+    }
+    if (d.inDays >= 7) {
+      final minggu = (d.inDays / 7).round();
+      if (minggu == 1) return '1 minggu';
+      return '$minggu minggu';
+    }
+    if (d.inDays >= 1) {
+      if (d.inDays == 1) return '1 hari';
+      return '${d.inDays} hari';
+    }
+    if (d.inHours >= 1) {
+      if (d.inHours == 1) return '1 jam';
+      return '${d.inHours} jam';
+    }
+    return '${d.inMinutes} menit';
+  }
+}
+
+/// Widget header yang menampilkan durasi smoke-free dan milestone berikutnya.
+///
+/// Menggunakan [Timer] sendiri agar hanya widget ini yang rebuild setiap detik,
+/// bukan seluruh halaman.
+class _HeaderPemulihan extends StatefulWidget {
+  const _HeaderPemulihan({required this.tanggalBerhenti});
+
+  final DateTime tanggalBerhenti;
+
+  @override
+  State<_HeaderPemulihan> createState() => _HeaderPemulihanState();
+}
+
+class _HeaderPemulihanState extends State<_HeaderPemulihan> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    L.i('HeaderPemulihan initState');
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    L.i('HeaderPemulihan dispose');
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final durasiSmokeFree = DateTime.now().difference(widget.tanggalBerhenti);
+    final durasi = durasiSmokeFree.isNegative ? Duration.zero : durasiSmokeFree;
+    final berikutnya = milestoneBerikutnya(durasi);
+    final textTheme = Theme.of(context).textTheme;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              'Lama smoke-free',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              _formatDurasi(durasi),
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Sejak ${FormatTanggal.formatDasar(widget.tanggalBerhenti)}',
+              style: textTheme.bodySmall,
+            ),
+            if (berikutnya != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Milestone berikutnya: ${berikutnya.judul}',
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Tersisa ${_formatDurasi(berikutnya.target - durasi)}',
+                style: textTheme.bodySmall,
+              ),
+            ] else
+              Text(
+                'Semua milestone tercapai. Selamat!',
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDurasi(Duration d) {
+    if (d.inDays > 0) {
+      final hari = d.inDays;
+      final jam = d.inHours % 24;
+      final menit = d.inMinutes % 60;
+      final bagian = <String>['$hari hari'];
+      if (jam > 0) bagian.add('$jam jam');
+      if (menit > 0) bagian.add('$menit menit');
+      return bagian.join(' ');
+    }
+    if (d.inHours > 0) {
+      final jam = d.inHours;
+      final menit = d.inMinutes % 60;
+      final detik = d.inSeconds % 60;
+      final bagian = <String>['$jam jam'];
+      if (menit > 0) bagian.add('$menit menit');
+      bagian.add('$detik detik');
+      return bagian.join(' ');
+    }
+    final menit = d.inMinutes;
+    final detik = d.inSeconds % 60;
+    if (menit > 0) return '$menit menit $detik detik';
+    return '$detik detik';
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/pengaturan/screens/pengaturan_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
+import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
+import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+/// Halaman pengaturan aplikasi, termasuk pilihan tema dan notifikasi.
+class PengaturanScreen extends ConsumerStatefulWidget {
+  const PengaturanScreen({super.key});
+
+  @override
+  ConsumerState<PengaturanScreen> createState() => _PengaturanScreenState();
+}
+
+class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
+  bool _notifikasiAktif = false;
+  int _jam = 8;
+  int _menit = 0;
+  bool _memuatNotifikasi = true;
+  bool _sedangMemproses = false;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      Future.microtask(_muatPreferensiNotifikasi)
+          .catchError((Object e, StackTrace s) {
+            L.e('Gagal memuat preferensi notifikasi: $e $s');
+          }),
+    );
+  }
+
+  Future<void> _muatPreferensiNotifikasi() async {
+    L.i('PengaturanScreen initState notifikasi');
+    try {
+      final aktif = await NotifikasiService.aktif();
+      final jam = await NotifikasiService.jam();
+      final menit = await NotifikasiService.menit();
+      if (!mounted) return;
+      setState(() {
+        _notifikasiAktif = aktif;
+        _jam = jam;
+        _menit = menit;
+        _memuatNotifikasi = false;
+      });
+      L.i('aktif=$aktif, jam=$jam, menit=$menit');
+    } on Exception catch (e, s) {
+      L.e('Gagal memuat preferensi notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _memuatNotifikasi = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> _ubahTema(TemaEnum tema) async {
+    L.i('tema=$tema');
+    try {
+      await ref.read(temaProvider.notifier).set(tema);
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah tema: $e $s');
+    }
+  }
+
+  Future<void> _ubahNotifikasi(bool value) async {
+    if (_sedangMemproses) return;
+    L.i('value=$value');
+    setState(() {
+      _sedangMemproses = true;
+      _notifikasiAktif = value;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
+    );
+    try {
+      if (value) {
+        final izin = await NotifikasiService.mintaIzin();
+        if (!mounted) return;
+        if (!izin) {
+          setState(() {
+            _notifikasiAktif = false;
+          });
+          AppToast.gagal(context, 'Izin notifikasi tidak diberikan');
+          return;
+        }
+        await NotifikasiService.jadwalkanPengingatHarian(
+          jam: _jam,
+          menit: _menit,
+        );
+        if (!mounted) return;
+        AppToast.sukses(context, 'Pengingat harian diaktifkan');
+      } else {
+        await NotifikasiService.batalkanPengingatHarian();
+        if (!mounted) return;
+        AppToast.info(context, 'Pengingat harian dinonaktifkan');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah notifikasi: $e $s');
+      if (mounted) {
+        final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
+        final aktifSekarang = await NotifikasiService.aktif();
+        if (!mounted) return;
+        setState(() {
+          _notifikasiAktif = aktifSekarang;
+        });
+        if (isIzin) {
+          AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
+          await _muatPreferensiNotifikasi();
+          if (!mounted) return;
+        } else {
+          AppToast.gagal(context, 'Gagal mengubah pengingat harian');
+        }
+      }
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _notifikasiAktif = false;
+        });
+        AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
+      }
+    } finally {
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _pilihWaktu() async {
+    if (_sedangMemproses) return;
+    L.i('jam=$_jam, menit=$_menit');
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: _jam, minute: _menit),
+    );
+    if (!mounted) return;
+    if (picked == null) return;
+    L.i('picked=${picked.hour}:${picked.minute}');
+    final jamLama = _jam;
+    final menitLama = _menit;
+    final jamBaru = picked.hour;
+    final menitBaru = picked.minute;
+    setState(() {
+      _sedangMemproses = true;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
+    );
+    try {
+      if (_notifikasiAktif) {
+        await NotifikasiService.jadwalkanPengingatHarian(
+          jam: jamBaru,
+          menit: menitBaru,
+        );
+        if (!mounted) return;
+        setState(() {
+          _jam = jamBaru;
+          _menit = menitBaru;
+        });
+        AppToast.sukses(context, 'Waktu pengingat diperbarui');
+      } else {
+        await NotifikasiService.setWaktu(jamBaru, menitBaru);
+        if (!mounted) return;
+        setState(() {
+          _jam = jamBaru;
+          _menit = menitBaru;
+        });
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal memperbarui waktu pengingat: $e $s');
+      if (mounted) {
+        setState(() {
+          _jam = jamLama;
+          _menit = menitLama;
+        });
+        AppToast.gagal(context, 'Gagal memperbarui waktu pengingat');
+      }
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _jam = jamLama;
+          _menit = menitLama;
+        });
+        AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
+      }
+    } finally {
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _ujiNotifikasi() async {
+    if (_sedangMemproses) return;
+    L.i('uji notifikasi');
+    setState(() {
+      _sedangMemproses = true;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
+    );
+    try {
+      await NotifikasiService.tampilkanSekarang();
+      if (!mounted) return;
+      AppToast.info(context, 'Notifikasi uji coba ditampilkan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menampilkan notifikasi uji coba: $e $s');
+      if (!mounted) return;
+      AppToast.gagal(context, 'Gagal menampilkan notifikasi');
+    } finally {
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pengaturan')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
+          children: [_buildTema(), _buildNotifikasi()],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTema() {
+    final temaAsync = ref.watch(temaProvider);
+    L.i('temaAsync=$temaAsync');
+    if (temaAsync.isLoading) {
+      L.w('tema loading');
+      return const SizedBox.shrink();
+    }
+    if (temaAsync.hasError) {
+      L.w('tema error');
+      return const SizedBox.shrink();
+    }
+    final temaSaatIni = temaAsync.requireValue;
+    L.i('temaSaatIni=$temaSaatIni');
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Tema', style: Theme.of(context).textTheme.bodyMedium),
+        PopupMenuButton<TemaEnum>(
+          initialValue: temaSaatIni,
+          onSelected: (tema) {
+            unawaited(_ubahTema(tema));
+          },
+          itemBuilder: (context) => TemaEnum.values
+              .map(
+                (tema) => PopupMenuItem<TemaEnum>(
+                  value: tema,
+                  child: Row(
+                    spacing: 8,
+                    children: [Icon(tema.icon), Text(tema.label)],
+                  ),
+                ),
+              )
+              .toList(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(temaSaatIni.icon),
+              Text(temaSaatIni.label),
+              const Icon(Icons.arrow_drop_down),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNotifikasi() {
+    if (_memuatNotifikasi) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    // Platform yang tidak mendukung notifikasi terjadwal.
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      return const SizedBox.shrink();
+    }
+    final waktu =
+        '${_jam.toString().padLeft(2, '0')}:${_menit.toString().padLeft(2, '0')}';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Pengingat harian',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Switch(
+              value: _notifikasiAktif,
+              onChanged: _sedangMemproses
+                  ? null
+                  : (value) {
+                      unawaited(_ubahNotifikasi(value));
+                    },
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Waktu: $waktu', style: Theme.of(context).textTheme.bodySmall),
+            OutlinedButton(
+              onPressed: _sedangMemproses
+                  ? null
+                  : () {
+                      unawaited(_pilihWaktu());
+                    },
+              child: const Text('Ubah waktu'),
+            ),
+          ],
+        ),
+        OutlinedButton(
+          onPressed: _sedangMemproses
+              ? null
+              : () {
+                  unawaited(_ujiNotifikasi());
+                },
+          child: const Text('Uji coba notifikasi'),
+        ),
+      ],
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/biodata/model/biodata_model.freezed.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'biodata_model.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$BiodataModel {
+
+ String get id; String get nama; DateTime? get tanggalLahir; int get jumlahRokokPerHari; double get hargaRokokPerBungkus; double get batangPerBungkus; DateTime? get tanggalMulaiMerokok; DateTime? get tanggalMulaiBerhentiMerokok;
+/// Create a copy of BiodataModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BiodataModelCopyWith<BiodataModel> get copyWith => _$BiodataModelCopyWithImpl<BiodataModel>(this as BiodataModel, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as BiodataModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BiodataModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.nama, _this.nama) || other.nama == _this.nama)&&(identical(other.tanggalLahir, _this.tanggalLahir) || other.tanggalLahir == _this.tanggalLahir)&&(identical(other.jumlahRokokPerHari, _this.jumlahRokokPerHari) || other.jumlahRokokPerHari == _this.jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, _this.hargaRokokPerBungkus) || other.hargaRokokPerBungkus == _this.hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, _this.batangPerBungkus) || other.batangPerBungkus == _this.batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, _this.tanggalMulaiMerokok) || other.tanggalMulaiMerokok == _this.tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, _this.tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == _this.tanggalMulaiBerhentiMerokok));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as BiodataModel;
+  return Object.hash(runtimeType,_this.id,_this.nama,_this.tanggalLahir,_this.jumlahRokokPerHari,_this.hargaRokokPerBungkus,_this.batangPerBungkus,_this.tanggalMulaiMerokok,_this.tanggalMulaiBerhentiMerokok);
+}
+
+@override
+String toString() {
+  final _this = this as BiodataModel;
+  return 'BiodataModel(id: ${_this.id}, nama: ${_this.nama}, tanggalLahir: ${_this.tanggalLahir}, jumlahRokokPerHari: ${_this.jumlahRokokPerHari}, hargaRokokPerBungkus: ${_this.hargaRokokPerBungkus}, batangPerBungkus: ${_this.batangPerBungkus}, tanggalMulaiMerokok: ${_this.tanggalMulaiMerokok}, tanggalMulaiBerhentiMerokok: ${_this.tanggalMulaiBerhentiMerokok})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BiodataModelCopyWith<$Res>  {
+  factory $BiodataModelCopyWith(BiodataModel value, $Res Function(BiodataModel) _then) = _$BiodataModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok
+});
+
+
+
+
+}
+/// @nodoc
+class _$BiodataModelCopyWithImpl<$Res>
+    implements $BiodataModelCopyWith<$Res> {
+  _$BiodataModelCopyWithImpl(this._self, this._then);
+
+  final BiodataModel _self;
+  final $Res Function(BiodataModel) _then;
+
+/// Create a copy of BiodataModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,}) {
+  return _then(BiodataModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
+as String,tanggalLahir: freezed == tanggalLahir ? _self.tanggalLahir : tanggalLahir // ignore: cast_nullable_to_non_nullable
+as DateTime?,jumlahRokokPerHari: null == jumlahRokokPerHari ? _self.jumlahRokokPerHari : jumlahRokokPerHari // ignore: cast_nullable_to_non_nullable
+as int,hargaRokokPerBungkus: null == hargaRokokPerBungkus ? _self.hargaRokokPerBungkus : hargaRokokPerBungkus // ignore: cast_nullable_to_non_nullable
+as double,batangPerBungkus: null == batangPerBungkus ? _self.batangPerBungkus : batangPerBungkus // ignore: cast_nullable_to_non_nullable
+as double,tanggalMulaiMerokok: freezed == tanggalMulaiMerokok ? _self.tanggalMulaiMerokok : tanggalMulaiMerokok // ignore: cast_nullable_to_non_nullable
+as DateTime?,tanggalMulaiBerhentiMerokok: freezed == tanggalMulaiBerhentiMerokok ? _self.tanggalMulaiBerhentiMerokok : tanggalMulaiBerhentiMerokok // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [BiodataModel].
+extension BiodataModelPatterns on BiodataModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BiodataModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _BiodataModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BiodataModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _BiodataModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BiodataModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _BiodataModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _BiodataModel() when $default != null:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok)  $default,) {final _that = this;
+switch (_that) {
+case _BiodataModel():
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok)?  $default,) {final _that = this;
+switch (_that) {
+case _BiodataModel() when $default != null:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _BiodataModel extends BiodataModel {
+  const _BiodataModel({required this.id, required this.nama, this.tanggalLahir, this.jumlahRokokPerHari = 10, this.hargaRokokPerBungkus = 0.0, this.batangPerBungkus = 20.0, this.tanggalMulaiMerokok, this.tanggalMulaiBerhentiMerokok}): super._();
+  
+
+@override final  String id;
+@override final  String nama;
+@override final  DateTime? tanggalLahir;
+@override@JsonKey() final  int jumlahRokokPerHari;
+@override@JsonKey() final  double hargaRokokPerBungkus;
+@override@JsonKey() final  double batangPerBungkus;
+@override final  DateTime? tanggalMulaiMerokok;
+@override final  DateTime? tanggalMulaiBerhentiMerokok;
+
+/// Create a copy of BiodataModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BiodataModelCopyWith<_BiodataModel> get copyWith => __$BiodataModelCopyWithImpl<_BiodataModel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BiodataModel&&(identical(other.id, id) || other.id == id)&&(identical(other.nama, nama) || other.nama == nama)&&(identical(other.tanggalLahir, tanggalLahir) || other.tanggalLahir == tanggalLahir)&&(identical(other.jumlahRokokPerHari, jumlahRokokPerHari) || other.jumlahRokokPerHari == jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, hargaRokokPerBungkus) || other.hargaRokokPerBungkus == hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, batangPerBungkus) || other.batangPerBungkus == batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, tanggalMulaiMerokok) || other.tanggalMulaiMerokok == tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == tanggalMulaiBerhentiMerokok));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,id,nama,tanggalLahir,jumlahRokokPerHari,hargaRokokPerBungkus,batangPerBungkus,tanggalMulaiMerokok,tanggalMulaiBerhentiMerokok);
+}
+
+@override
+String toString() {
+    return 'BiodataModel(id: $id, nama: $nama, tanggalLahir: $tanggalLahir, jumlahRokokPerHari: $jumlahRokokPerHari, hargaRokokPerBungkus: $hargaRokokPerBungkus, batangPerBungkus: $batangPerBungkus, tanggalMulaiMerokok: $tanggalMulaiMerokok, tanggalMulaiBerhentiMerokok: $tanggalMulaiBerhentiMerokok)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BiodataModelCopyWith<$Res> implements $BiodataModelCopyWith<$Res> {
+  factory _$BiodataModelCopyWith(_BiodataModel value, $Res Function(_BiodataModel) _then) = __$BiodataModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok
+});
+
+
+
+
+}
+/// @nodoc
+class __$BiodataModelCopyWithImpl<$Res>
+    implements _$BiodataModelCopyWith<$Res> {
+  __$BiodataModelCopyWithImpl(this._self, this._then);
+
+  final _BiodataModel _self;
+  final $Res Function(_BiodataModel) _then;
+
+/// Create a copy of BiodataModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,}) {
+  return _then(_BiodataModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
+as String,tanggalLahir: freezed == tanggalLahir ? _self.tanggalLahir : tanggalLahir // ignore: cast_nullable_to_non_nullable
+as DateTime?,jumlahRokokPerHari: null == jumlahRokokPerHari ? _self.jumlahRokokPerHari : jumlahRokokPerHari // ignore: cast_nullable_to_non_nullable
+as int,hargaRokokPerBungkus: null == hargaRokokPerBungkus ? _self.hargaRokokPerBungkus : hargaRokokPerBungkus // ignore: cast_nullable_to_non_nullable
+as double,batangPerBungkus: null == batangPerBungkus ? _self.batangPerBungkus : batangPerBungkus // ignore: cast_nullable_to_non_nullable
+as double,tanggalMulaiMerokok: freezed == tanggalMulaiMerokok ? _self.tanggalMulaiMerokok : tanggalMulaiMerokok // ignore: cast_nullable_to_non_nullable
+as DateTime?,tanggalMulaiBerhentiMerokok: freezed == tanggalMulaiBerhentiMerokok ? _self.tanggalMulaiBerhentiMerokok : tanggalMulaiBerhentiMerokok // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+
+}
+
+// dart format on
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/biodata/model/biodata_model.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+part 'biodata_model.freezed.dart';
+
+@freezed
+abstract class BiodataModel with _$BiodataModel {
+  const BiodataModel._();
+
+  const factory BiodataModel({
+    required String id,
+    required String nama,
+    DateTime? tanggalLahir,
+    @Default(10) int jumlahRokokPerHari,
+    @Default(0.0) double hargaRokokPerBungkus,
+    @Default(20.0) double batangPerBungkus,
+    DateTime? tanggalMulaiMerokok,
+    DateTime? tanggalMulaiBerhentiMerokok,
+  }) = _BiodataModel;
+
+  /// Membuat [BiodataModel] dari baris database SQLite.
+  factory BiodataModel.fromSqflite(Map<String, Object?> row) {
+    return BiodataModel(
+      id: ParserUtil.parseString(row[NamaKolom.id]),
+      nama: ParserUtil.parseString(row[NamaKolom.nama]),
+      tanggalLahir: ParserUtil.parseDateTime(row[NamaKolom.tanggalLahir])
+          ?.toLocal(),
+      jumlahRokokPerHari: ParserUtil.parseInt(
+        row[NamaKolom.jumlahRokokPerHari],
+        defaultValue: 10,
+      ),
+      hargaRokokPerBungkus: ParserUtil.parseDouble(
+        row[NamaKolom.hargaRokokPerBungkus],
+      ),
+      batangPerBungkus: ParserUtil.parseDouble(
+        row[NamaKolom.batangPerBungkus],
+        defaultValue: 20.0,
+      ),
+      tanggalMulaiMerokok: ParserUtil.parseDateTime(
+        row[NamaKolom.tanggalMulaiMerokok],
+      )?.toLocal(),
+      tanggalMulaiBerhentiMerokok: ParserUtil.parseDateTime(
+        row[NamaKolom.tanggalMulaiBerhentiMerokok],
+      )?.toLocal(),
+    );
+  }
+
+  /// Mengonversi [BiodataModel] menjadi Map untuk disimpan ke SQLite.
+  Map<String, Object?> toSqflite() {
+    return <String, Object?>{
+      NamaKolom.id: id,
+      NamaKolom.nama: nama,
+      NamaKolom.tanggalLahir: tanggalLahir?.toUtc().toIso8601String(),
+      NamaKolom.jumlahRokokPerHari: jumlahRokokPerHari,
+      NamaKolom.hargaRokokPerBungkus: hargaRokokPerBungkus,
+      NamaKolom.batangPerBungkus: batangPerBungkus,
+      NamaKolom.tanggalMulaiMerokok: tanggalMulaiMerokok
+          ?.toUtc()
+          .toIso8601String(),
+      NamaKolom.tanggalMulaiBerhentiMerokok: tanggalMulaiBerhentiMerokok
+          ?.toUtc()
+          .toIso8601String(),
+    };
+  }
+}
+
+/// Ekstensi perhitungan turunan dari [BiodataModel] agar logika `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` hanya ditulis sekali dan konsisten di seluruh halaman (dashboard, impian, badge).
+extension BiodataModelPerhitungan on BiodataModel {
+  /// Hari smoke-free, dinormalisasi agar tidak terpengaruh komponen waktu.
+  int get hariBerhenti {
+    final tanggalBerhenti = tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return 0;
+    final sekarang = DateTime.now();
+    final hariIniDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final tanggalBerhentiDate = DateTime(
+      tanggalBerhenti.year,
+      tanggalBerhenti.month,
+      tanggalBerhenti.day,
+    );
+    final hari = hariIniDate.difference(tanggalBerhentiDate).inDays;
+    return hari < 0 ? 0 : hari;
+  }
+
+  /// Jumlah rokok yang tidak dihisap selama periode smoke-free.
+  int get rokokTidakDiHisap => jumlahRokokPerHari * hariBerhenti;
+
+  /// Uang yang dihemat dari tidak merokok.
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/biodata/screens/biodata_screen.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class BiodataScreen extends ConsumerStatefulWidget {
+  const BiodataScreen({super.key});
+
+  @override
+  ConsumerState<BiodataScreen> createState() => _BiodataScreenState();
+}
+
+class _BiodataScreenState extends ConsumerState<BiodataScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('BiodataScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('BiodataScreen dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+    L.i('biodataAsync=$biodataAsync');
+
+    if (biodataAsync.isLoading) {
+      L.w('biodataAsync loading');
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
+      return Scaffold(
+        appBar: AppBar(title: const Text('Biodata')),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Gagal memuat data'),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () {
+                  final _ = ref.refresh(biodataProvider);
+                },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final biodata = biodataAsync.requireValue;
+    L.i('biodata=$biodata');
+
+    // Salin field nullable ke variabel lokal agar type promotion berlaku
+    // (menghindari penggunaan operator `!`).
+    final tanggalLahir = biodata?.tanggalLahir;
+    final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+    final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Biodata')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: biodata == null
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 12,
+                    children: [
+                      const Text('Belum ada data biodata'),
+                      OutlinedButton(
+                        onPressed: () => unawaited(
+                          Nav.to(
+                            context,
+                            const FormBiodata(buatPertama: false),
+                          ),
+                        ),
+                        child: const Text('Isi Biodata'),
+                      ),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
+                    children: [
+                      _buildItem('Nama', biodata.nama),
+                      _buildItem(
+                        'Tanggal lahir',
+                        tanggalLahir == null
+                            ? 'Belum dipilih'
+                            : FormatTanggal.formatDasar(tanggalLahir),
+                      ),
+                      _buildItem(
+                        'Jumlah rokok per hari',
+                        biodata.jumlahRokokPerHari.toString(),
+                      ),
+                      _buildItem(
+                        'Harga rokok per bungkus',
+                        biodata.hargaRokokPerBungkus.toString(),
+                      ),
+                      _buildItem(
+                        'Batang per bungkus',
+                        biodata.batangPerBungkus.toString(),
+                      ),
+                      _buildItem(
+                        'Tanggal mulai merokok',
+                        tanggalMulaiMerokok == null
+                            ? 'Belum dipilih'
+                            : FormatTanggal.formatDasar(tanggalMulaiMerokok),
+                      ),
+                      _buildItem(
+                        'Tanggal mulai berhenti merokok',
+                        tanggalMulaiBerhentiMerokok == null
+                            ? 'Belum dipilih'
+                            : FormatTanggal.formatDasar(
+                                tanggalMulaiBerhentiMerokok,
+                              ),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: () => unawaited(
+                          Nav.to(
+                            context,
+                            FormBiodata(
+                              buatPertama: false,
+                              biodataModel: biodata,
+                            ),
+                          ),
+                        ),
+                        child: const Text('Ubah Biodata'),
+                      ),
+                    ],
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItem(String label, String nilai) {
+    L.i('label=$label, nilai=$nilai');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        Text(nilai, style: Theme.of(context).textTheme.bodyMedium),
+      ],
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/biodata/screens/form_biodata.dart
+// ============================================================
+```dart
+import 'dart:async';
+
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/home.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class FormBiodata extends ConsumerStatefulWidget {
+  final bool buatPertama;
+  final BiodataModel? biodataModel;
+  const FormBiodata({super.key, required this.buatPertama, this.biodataModel});
+
+  @override
+  ConsumerState<FormBiodata> createState() => _BiodataScreenState();
+}
+
+class _BiodataScreenState extends ConsumerState<FormBiodata> {
+  final _namaController = TextEditingController();
+  final _jumlahRokokController = TextEditingController();
+  final _hargaRokokController = TextEditingController();
+  final _batangPerBungkusController = TextEditingController();
+
+  final _namaFocusNode = FocusNode();
+  final _jumlahRokokFocusNode = FocusNode();
+  final _hargaRokokFocusNode = FocusNode();
+  final _batangPerBungkusFocusNode = FocusNode();
+
+  DateTime? _tanggalLahir;
+  DateTime? _tanggalMulaiMerokok;
+  DateTime? _tanggalMulaiBerhentiMerokok;
+
+  bool _isLoading = false;
+  bool _sudahDiisi = false;
+
+  ProviderSubscription<AsyncValue<BiodataModel?>>? _biodataSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    final modelAwal = widget.biodataModel;
+    if (modelAwal != null) {
+      _isiDariModel(modelAwal);
+    }
+    _biodataSubscription = ref.listenManual(biodataProvider, (previous, next) {
+      next.whenData((biodata) {
+        if (biodata != null && !_sudahDiisi && mounted) {
+          _isiDariModel(biodata);
+        }
+      });
+    });
+  }
+
+  void _isiDariModel(BiodataModel model) {
+    _sudahDiisi = true;
+    _namaController.text = model.nama;
+    _jumlahRokokController.text = model.jumlahRokokPerHari.toString();
+    _hargaRokokController.text = model.hargaRokokPerBungkus.toString();
+    _batangPerBungkusController.text = model.batangPerBungkus.toString();
+    _tanggalLahir = model.tanggalLahir;
+    _tanggalMulaiMerokok = model.tanggalMulaiMerokok;
+    _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
+  }
+
+  @override
+  void dispose() {
+    _biodataSubscription?.close();
+    _namaController.dispose();
+    _jumlahRokokController.dispose();
+    _hargaRokokController.dispose();
+    _batangPerBungkusController.dispose();
+    _namaFocusNode.dispose();
+    _jumlahRokokFocusNode.dispose();
+    _hargaRokokFocusNode.dispose();
+    _batangPerBungkusFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pilihTanggalLahir() async {
+    final awal = _tanggalLahir ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && mounted) {
+      setState(() => _tanggalLahir = picked);
+    }
+  }
+
+  Future<void> _pilihTanggalMulaiMerokok() async {
+    final awal = _tanggalMulaiMerokok ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && mounted) {
+      setState(() => _tanggalMulaiMerokok = picked);
+    }
+  }
+
+  Future<void> _pilihTanggalMulaiBerhentiMerokok() async {
+    final awal = _tanggalMulaiBerhentiMerokok ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && mounted) {
+      setState(() => _tanggalMulaiBerhentiMerokok = picked);
+    }
+  }
+
+  Future<void> _simpan() async {
+    if (_isLoading) {
+      L.w('Form biodata masih loading, simpan diabaikan');
+      return;
+    }
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Simpan Biodata',
+      message: 'Apakah Anda yakin ingin menyimpan data biodata ini?',
+      okLabel: 'Simpan',
+      cancelLabel: 'Batal',
+    );
+    if (konfirmasi != OkCancelResult.ok) {
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+    unawaited(
+      EasyLoading.show(
+        status: 'Menyimpan...',
+        maskType: EasyLoadingMaskType.black,
+      ),
+    );
+    try {
+      final model = BiodataModel(
+        id: widget.biodataModel?.id ?? '',
+        nama: _namaController.text.trim(),
+        tanggalLahir: _tanggalLahir,
+        jumlahRokokPerHari:
+            int.tryParse(_jumlahRokokController.text.trim()) ?? 0,
+        hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
+            ? 0.0
+            : InputRupiah.parse(_hargaRokokController.text),
+        batangPerBungkus:
+            double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
+        tanggalMulaiMerokok: _tanggalMulaiMerokok,
+        tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
+      );
+      await ref.read(biodataProvider.notifier).simpan(model);
+      if (!mounted) return;
+      if (widget.buatPertama) {
+        unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+      } else if (Navigator.of(context).canPop()) {
+        Nav.pop(context);
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan biodata: $e $s');
+      if (mounted) {
+        AppToast.gagal(context, 'Gagal menyimpan biodata');
+      }
+    } finally {
+      if (mounted) {
+        unawaited(EasyLoading.dismiss());
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+
+    if (biodataAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Biodata')),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Gagal memuat data'),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () {
+                  final _ = ref.refresh(biodataProvider);
+                },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Biodata')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              InputTeks(
+                controller: _namaController,
+                label: 'Nama',
+                hintText: 'Masukkan nama',
+                focusNode: _namaFocusNode,
+                nextFocusNode: _jumlahRokokFocusNode,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Nama wajib diisi';
+                  }
+                  return null;
+                },
+              ),
+              InputAngka(
+                controller: _jumlahRokokController,
+                label: 'Jumlah rokok per hari',
+                hintText: 'Masukkan jumlah rokok per hari',
+                focusNode: _jumlahRokokFocusNode,
+                nextFocusNode: _hargaRokokFocusNode,
+              ),
+              InputRupiah(
+                controller: _hargaRokokController,
+                label: 'Harga rokok per bungkus',
+                hintText: 'Masukkan harga rokok per bungkus',
+                focusNode: _hargaRokokFocusNode,
+              ),
+              InputAngka(
+                controller: _batangPerBungkusController,
+                label: 'Batang per bungkus',
+                hintText: 'Masukkan jumlah batang per bungkus',
+                focusNode: _batangPerBungkusFocusNode,
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.cake_outlined),
+                title: const Text('Tanggal lahir'),
+                subtitle: Text(
+                  _tanggalLahir == null
+                      ? 'Belum dipilih'
+                      : FormatTanggal.formatDasar(_tanggalLahir!),
+                ),
+                trailing: TextButton(
+                  onPressed: _pilihTanggalLahir,
+                  child: const Text('Pilih'),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.smoking_rooms_outlined),
+                title: const Text('Tanggal mulai merokok'),
+                subtitle: Text(
+                  _tanggalMulaiMerokok == null
+                      ? 'Belum dipilih'
+                      : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
+                ),
+                trailing: TextButton(
+                  onPressed: _pilihTanggalMulaiMerokok,
+                  child: const Text('Pilih'),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.event_available_outlined),
+                title: const Text('Tanggal mulai berhenti merokok'),
+                subtitle: Text(
+                  _tanggalMulaiBerhentiMerokok == null
+                      ? 'Belum dipilih'
+                      : FormatTanggal.formatDasar(
+                          _tanggalMulaiBerhentiMerokok!,
+                        ),
+                ),
+                trailing: TextButton(
+                  onPressed: _pilihTanggalMulaiBerhentiMerokok,
+                  child: const Text('Pilih'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/biodata/notifier/biodata_notifier.g.dart
+// ============================================================
+```dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'biodata_notifier.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(BiodataNotifier)
+final biodataProvider = BiodataNotifierProvider._();
+
+final class BiodataNotifierProvider
+    extends $AsyncNotifierProvider<BiodataNotifier, BiodataModel?> {
+  BiodataNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'biodataProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$biodataNotifierHash();
+
+  @$internal
+  @override
+  BiodataNotifier create() => BiodataNotifier();
+}
+
+String _$biodataNotifierHash() => r'0c65d0ffc5c031ac2b64c5d50fc938f5dc17ed0f';
+
+abstract class _$BiodataNotifier extends $AsyncNotifier<BiodataModel?> {
+  FutureOr<BiodataModel?> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<BiodataModel?>, BiodataModel?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<BiodataModel?>, BiodataModel?>,
+              AsyncValue<BiodataModel?>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/biodata/notifier/biodata_notifier.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
+import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:share_global_saya/core_shared.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
+
+part 'biodata_notifier.g.dart';
+
+@riverpod
+class BiodataNotifier extends _$BiodataNotifier {
+  @override
+  Future<BiodataModel?> build() async {
+    return await _ambilData();
+  }
+
+  Future<BiodataModel?> _ambilData() async {
+    try {
+      final op = const SqfliteOp();
+      final row = await op.ambilSatu(NamaTabel.biodata);
+      L.i('row=$row');
+      if (row == null) {
+        return null;
+      }
+      return BiodataModel.fromSqflite(row);
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil data biodata: $e $s');
+      rethrow;
+    }
+  }
+
+  Future<void> simpan(BiodataModel biodata) async {
+    L.i('biodata.id=${biodata.id}, biodata.nama=${biodata.nama}');
+    try {
+      final existing = await future;
+      L.i('existing=${existing?.id}');
+      final model = biodata.id.isEmpty
+          ? biodata.copyWith(id: existing?.id ?? const Uuid().v4())
+          : biodata;
+      L.i('model.id=${model.id}');
+      final op = const SqfliteOp();
+      await op.tambah(
+        NamaTabel.biodata,
+        model.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      state = AsyncValue.data(model);
+      L.s('Biodata berhasil disimpan');
+    } on Exception catch (e, s) {
+      L.e('Gagal menyimpan biodata: $e $s');
+      rethrow;
+    }
+  }
 }
 ```
 
@@ -175,8 +8372,12 @@ class SharedKeys {
 // FILE: lib/fitur/tema/enum/tema_enum.dart
 // ============================================================
 ```dart
+import 'package:flutter/material.dart';
+
+/// Enum mode tema aplikasi.
 enum TemaEnum { sistem, terang, gelap }
 
+/// Extension yang menyediakan label dan ikon untuk [TemaEnum].
 extension TemaEnumExtension on TemaEnum {
   String get label {
     switch (this) {
@@ -186,6 +8387,17 @@ extension TemaEnumExtension on TemaEnum {
         return 'Terang';
       case TemaEnum.gelap:
         return 'Gelap';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case TemaEnum.sistem:
+        return Icons.brightness_auto;
+      case TemaEnum.terang:
+        return Icons.light_mode;
+      case TemaEnum.gelap:
+        return Icons.dark_mode;
     }
   }
 }
@@ -212,7 +8424,7 @@ part of 'tema_notifier.dart';
 final temaProvider = TemaNotifierProvider._();
 
 final class TemaNotifierProvider
-    extends $NotifierProvider<TemaNotifier, String> {
+    extends $AsyncNotifierProvider<TemaNotifier, TemaEnum> {
   TemaNotifierProvider._()
     : super(
         from: null,
@@ -230,29 +8442,21 @@ final class TemaNotifierProvider
   @$internal
   @override
   TemaNotifier create() => TemaNotifier();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
-    );
-  }
 }
 
-String _$temaNotifierHash() => r'23304f72993749e4e65ba22e9be587904cd0a52f';
+String _$temaNotifierHash() => r'e05c628d4d70bb2606bc65ce498dd860cacbd3bf';
 
-abstract class _$TemaNotifier extends $Notifier<String> {
-  String build();
+abstract class _$TemaNotifier extends $AsyncNotifier<TemaEnum> {
+  FutureOr<TemaEnum> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<String, String>;
+    final ref = this.ref as $Ref<AsyncValue<TemaEnum>, TemaEnum>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<String, String>,
-              String,
+              AnyNotifier<AsyncValue<TemaEnum>, TemaEnum>,
+              AsyncValue<TemaEnum>,
               Object?,
               Object?
             >;
@@ -268,15 +8472,426 @@ abstract class _$TemaNotifier extends $Notifier<String> {
 // ============================================================
 ```dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
+import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
 
 part 'tema_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class TemaNotifier extends _$TemaNotifier {
   @override
-  String build() {
-    return "";
+  Future<TemaEnum> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(SharedKeys.tema);
+    return TemaEnum.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => TemaEnum.sistem,
+    );
   }
+
+  Future<void> set([TemaEnum? tema]) async {
+    final nilai = tema ?? state.asData?.value ?? TemaEnum.sistem;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(SharedKeys.tema, nilai.name);
+    state = AsyncValue.data(nilai);
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/badge/screens/badge_screen.dart
+// ============================================================
+```dart
+import 'package:berhenti_merokok/fitur/badge/helper/badge_helper.dart';
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class BadgeScreen extends ConsumerStatefulWidget {
+  const BadgeScreen({super.key});
+
+  @override
+  ConsumerState<BadgeScreen> createState() => _BadgeScreenState();
+}
+
+class _BadgeScreenState extends ConsumerState<BadgeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('BadgeScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('BadgeScreen dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+    final impianAsync = ref.watch(impianProvider);
+    L.i('biodataAsync=$biodataAsync, impianAsync=$impianAsync');
+
+    if (biodataAsync.isLoading || impianAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pencapaian')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(biodataProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (impianAsync.hasError) {
+      L.e('impianAsync error: ${impianAsync.error} ${impianAsync.stackTrace}');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pencapaian')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data impian'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(impianProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final biodata = biodataAsync.requireValue;
+    final impianState = impianAsync.requireValue;
+    L.i('biodata=$biodata');
+
+    if (biodata == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pencapaian')),
+        body: const SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(
+              child: Text(
+                'Lengkapi biodata terlebih dahulu untuk melihat pencapaian.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Hitung progres smoke-free.
+    final hariSmokeFree = biodata.hariBerhenti;
+    final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
+    final uangDihemat = biodata.uangDihemat;
+
+    // Hitung impian tercapai.
+    int impianTercapai = 0;
+    for (final impian in impianState.listImpian) {
+      if (uangDihemat >= impian.jumlah) {
+        impianTercapai++;
+      }
+    }
+    L.i(
+      'hariSmokeFree=$hariSmokeFree, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat, impianTercapai=$impianTercapai',
+    );
+
+    final daftarBadge = hitungBadge(
+      hariSmokeFree: hariSmokeFree,
+      rokokTidakDiHisap: rokokTidakDiHisap,
+      uangDihemat: uangDihemat,
+      impianTercapai: impianTercapai,
+    );
+    final jumlahTercapai = daftarBadge.where((b) => b.tercapai).length;
+    L.i('jumlahTercapai=$jumlahTercapai/${daftarBadge.length}');
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pencapaian')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 8,
+            children: [
+              Text(
+                '$jumlahTercapai dari ${daftarBadge.length} badge tercapai',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 1.1,
+                  ),
+                  itemCount: daftarBadge.length,
+                  itemBuilder: (context, index) {
+                    final badge = daftarBadge[index];
+                    return _BadgeCard(key: ValueKey(badge.id), badge: badge);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BadgeCard extends StatelessWidget {
+  const _BadgeCard({super.key, required this.badge});
+
+  final BadgePencapaian badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final tercapai = badge.tercapai;
+    return Card(
+      color: tercapai
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 8,
+          children: [
+            Icon(
+              badge.icon,
+              size: 32,
+              color: tercapai
+                  ? colorScheme.onPrimaryContainer
+                  : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
+            Text(
+              badge.nama,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: tercapai
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Text(
+              badge.deskripsi,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: tercapai
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/badge/helper/badge_helper.dart
+// ============================================================
+```dart
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+/// Representasi satu badge/pencapaian pengguna.
+class BadgePencapaian {
+  const BadgePencapaian({
+    required this.id,
+    required this.nama,
+    required this.deskripsi,
+    required this.icon,
+    required this.tercapai,
+  });
+
+  final String id;
+  final String nama;
+  final String deskripsi;
+  final IconData icon;
+  final bool tercapai;
+}
+
+/// Menghitung daftar badge berdasarkan progres smoke-free pengguna.
+List<BadgePencapaian> hitungBadge({
+  required int hariSmokeFree,
+  required int rokokTidakDiHisap,
+  required double uangDihemat,
+  required int impianTercapai,
+}) {
+  L.i(
+    'hariSmokeFree=$hariSmokeFree, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat, impianTercapai=$impianTercapai',
+  );
+  final List<BadgePencapaian> daftar = <BadgePencapaian>[
+    // Badge berbasis durasi smoke-free.
+    BadgePencapaian(
+      id: 'smoke_1',
+      nama: 'Langkah Pertama',
+      deskripsi: 'Berhasil berhenti merokok selama 1 hari.',
+      icon: CupertinoIcons.flame,
+      tercapai: hariSmokeFree >= 1,
+    ),
+    BadgePencapaian(
+      id: 'smoke_3',
+      nama: '3 Hari Kuat',
+      deskripsi: 'Berhasil berhenti merokok selama 3 hari.',
+      icon: CupertinoIcons.flame_fill,
+      tercapai: hariSmokeFree >= 3,
+    ),
+    BadgePencapaian(
+      id: 'smoke_7',
+      nama: 'Satu Minggu',
+      deskripsi: 'Berhasil berhenti merokok selama 7 hari.',
+      icon: CupertinoIcons.star,
+      tercapai: hariSmokeFree >= 7,
+    ),
+    BadgePencapaian(
+      id: 'smoke_14',
+      nama: 'Dua Minggu',
+      deskripsi: 'Berhasil berhenti merokok selama 14 hari.',
+      icon: CupertinoIcons.star_fill,
+      tercapai: hariSmokeFree >= 14,
+    ),
+    BadgePencapaian(
+      id: 'smoke_30',
+      nama: 'Satu Bulan',
+      deskripsi: 'Berhasil berhenti merokok selama 30 hari.',
+      icon: Icons.workspace_premium,
+      tercapai: hariSmokeFree >= 30,
+    ),
+    BadgePencapaian(
+      id: 'smoke_90',
+      nama: 'Tiga Bulan',
+      deskripsi: 'Berhasil berhenti merokok selama 90 hari.',
+      icon: CupertinoIcons.rosette,
+      tercapai: hariSmokeFree >= 90,
+    ),
+    BadgePencapaian(
+      id: 'smoke_180',
+      nama: 'Enam Bulan',
+      deskripsi: 'Berhasil berhenti merokok selama 180 hari.',
+      icon: CupertinoIcons.rosette,
+      tercapai: hariSmokeFree >= 180,
+    ),
+    BadgePencapaian(
+      id: 'smoke_365',
+      nama: 'Satu Tahun',
+      deskripsi: 'Berhasil berhenti merokok selama 1 tahun.',
+      icon: Icons.emoji_events,
+      tercapai: hariSmokeFree >= 365,
+    ),
+    // Badge berbasis rokok tidak dihisap.
+    BadgePencapaian(
+      id: 'rokok_100',
+      nama: '100 Batang Terhindar',
+      deskripsi: 'Berhasil menghindari 100 batang rokok.',
+      icon: CupertinoIcons.nosign,
+      tercapai: rokokTidakDiHisap >= 100,
+    ),
+    BadgePencapaian(
+      id: 'rokok_500',
+      nama: '500 Batang Terhindar',
+      deskripsi: 'Berhasil menghindari 500 batang rokok.',
+      icon: CupertinoIcons.nosign,
+      tercapai: rokokTidakDiHisap >= 500,
+    ),
+    BadgePencapaian(
+      id: 'rokok_1000',
+      nama: '1000 Batang Terhindar',
+      deskripsi: 'Berhasil menghindari 1000 batang rokok.',
+      icon: CupertinoIcons.shield,
+      tercapai: rokokTidakDiHisap >= 1000,
+    ),
+    // Badge berbasis uang dihemat.
+    BadgePencapaian(
+      id: 'uang_100k',
+      nama: 'Tabungan 100 Ribu',
+      deskripsi: 'Berhasil menghemat Rp100.000 dari tidak merokok.',
+      icon: CupertinoIcons.money_dollar,
+      tercapai: uangDihemat >= 100000,
+    ),
+    BadgePencapaian(
+      id: 'uang_500k',
+      nama: 'Tabungan 500 Ribu',
+      deskripsi: 'Berhasil menghemat Rp500.000 dari tidak merokok.',
+      icon: CupertinoIcons.money_dollar,
+      tercapai: uangDihemat >= 500000,
+    ),
+    BadgePencapaian(
+      id: 'uang_1jt',
+      nama: 'Tabungan 1 Juta',
+      deskripsi: 'Berhasil menghemat Rp1.000.000 dari tidak merokok.',
+      icon: CupertinoIcons.money_dollar_circle,
+      tercapai: uangDihemat >= 1000000,
+    ),
+    // Badge berbasis impian tercapai.
+    BadgePencapaian(
+      id: 'impian_1',
+      nama: 'Impian Pertama Tercapai',
+      deskripsi: 'Berhasil mencapai 1 impian.',
+      icon: CupertinoIcons.heart,
+      tercapai: impianTercapai >= 1,
+    ),
+    BadgePencapaian(
+      id: 'impian_3',
+      nama: '3 Impian Tercapai',
+      deskripsi: 'Berhasil mencapai 3 impian.',
+      icon: CupertinoIcons.heart_fill,
+      tercapai: impianTercapai >= 3,
+    ),
+  ];
+  L.i('daftar.length=${daftar.length}');
+  return daftar;
 }
 ```
 
@@ -286,30 +8901,156 @@ class TemaNotifier extends _$TemaNotifier {
 // FILE: lib/app.dart
 // ============================================================
 ```dart
-import 'package:berhenti_merokok/home.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 
-class MyApp extends ConsumerStatefulWidget {
-  const MyApp({super.key});
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
+import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
+import 'package:berhenti_merokok/home.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart' as mui;
+import 'package:share_global_saya/core_shared.dart';
+
+class App extends ConsumerStatefulWidget {
+  const App({super.key});
 
   @override
-  ConsumerState<MyApp> createState() => _MyAppState();
+  ConsumerState<App> createState() => _MyAppState();
 }
 
-class _MyAppState extends ConsumerState<MyApp> {
+class _MyAppState extends ConsumerState<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    L.init(ref.container);
+    unawaited(
+      NotifikasiService.jadwalkanUlangJikaAktif().catchError((
+        Object error,
+        StackTrace stackTrace,
+      ) {
+        L.e('Gagal menjadwalkan ulang notifikasi: $error $stackTrace');
+      }),
+    );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    setState(() {});
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+    final temaAsync = ref.watch(temaProvider);
+    final tema = temaAsync.asData?.value ?? TemaEnum.sistem;
+
+    final themeMode = switch (tema) {
+      TemaEnum.terang => ThemeMode.light,
+      TemaEnum.gelap => ThemeMode.dark,
+      TemaEnum.sistem => ThemeMode.system,
+    };
+
+    final biodataAsync = ref.watch(biodataProvider);
+
+    Widget home;
+    if (biodataAsync.isLoading) {
+      home = const Scaffold(body: Center(child: CircularProgressIndicator()));
+    } else if (biodataAsync.hasError) {
+      home = Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Gagal memuat data'),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () {
+                  final _ = ref.refresh(biodataProvider);
+                },
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      final biodata = biodataAsync.asData?.value;
+      home = biodata == null
+          ? const FormBiodata(buatPertama: true)
+          : const Home();
+    }
+
+    final brightness = switch (themeMode) {
+      ThemeMode.light => Brightness.light,
+      ThemeMode.dark => Brightness.dark,
+      ThemeMode.system =>
+        WidgetsBinding.instance.platformDispatcher.platformBrightness,
+    };
+    final materialUiTheme = mui.ThemeData.from(
+      colorScheme: mui.ColorScheme.fromSeed(
+        seedColor: Colors.deepPurple,
+        brightness: brightness,
       ),
-      home: const Home(),
+    );
+
+    return mui.Theme(
+      data: materialUiTheme,
+      child: MaterialApp(
+        navigatorKey: NotifikasiService.navigatorKey,
+        title: 'Berhenti Merokok',
+        debugShowCheckedModeBanner: false,
+        builder: EasyLoading.init(),
+        themeMode: themeMode,
+        supportedLocales: const [Locale('id', 'ID')],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          _MaterialUiLocalizationsDelegate(),
+        ],
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+        darkTheme: ThemeData(
+          colorScheme: .fromSeed(
+            seedColor: Colors.deepPurple,
+            brightness: Brightness.dark,
+          ),
+        ),
+        home: PengelolaOverlayLogDebug(child: home),
+      ),
     );
   }
+}
+
+// Delegate khusus untuk material_ui.MaterialLocalizations agar adaptive_dialog
+// dapat memperoleh instance non-null pada locale 'id' (delegate bawaan
+// material_ui hanya mendukung locale 'en').
+class _MaterialUiLocalizationsDelegate
+    extends LocalizationsDelegate<mui.MaterialLocalizations> {
+  const _MaterialUiLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) => true;
+
+  @override
+  Future<mui.MaterialLocalizations> load(Locale locale) =>
+      mui.DefaultMaterialLocalizations.load(locale);
+
+  @override
+  bool shouldReload(
+    covariant LocalizationsDelegate<mui.MaterialLocalizations> old,
+  ) => false;
 }
 ```
 
@@ -321,97 +9062,42 @@ class _MyAppState extends ConsumerState<MyApp> {
 ```yaml
 name: berhenti_merokok
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none"
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
 environment:
   sdk: ^3.13.7
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
 dependencies:
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  adaptive_dialog: ^3.0.1
   cupertino_icons: ^2.0.0
-
   flutter:
     sdk: flutter
+  flutter_easyloading: ^4.0.2
+  flutter_local_notifications: ^22.3.3
   flutter_riverpod: ^3.5.0
+  flutter_timezone: ^5.1.1
+  freezed_annotation: ^3.1.0
   riverpod_annotation: ^4.0.8
+  share_global_saya:
+    path: ../share_global_saya
+  shared_preferences: ^2.5.6
+  sqflite: ^2.4.5
+  sqflite_common_ffi_web: ^1.2.0
+  timezone: ^0.11.2
 
 dev_dependencies:
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   build_runner: ^2.17.1
   flutter_lints: ^6.0.0
 
   flutter_test:
     sdk: flutter
+  freezed: ^4.0.3
   riverpod_generator: ^4.0.10
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
 ```
 
 
@@ -423,375 +9109,431 @@ flutter:
 // FILE: .agents/rules/global/aturan_bersama.md
 // ============================================================
 
-# Aturan Bersama Seluruh Proyek Flutter
-File ini menyimpan standar implementasi yang berlaku lintas proyek Flutter pengguna. Aturan di sini tidak bergantung pada kebutuhan bisnis satu proyek dan dapat digunakan kembali pada berbagai proyek.
-## Penanganan AsyncValue (Riverpod) untuk ID Terpilih
-Ketentuan berikut wajib diterapkan agar kesalahan runtime terkait `selectedId`/ID terpilih tidak terulang:
-1. **Jangan gunakan `.value` atau `.valueOrNull` pada `AsyncValue` hasil `ref.watch(...)` di dalam `build` maupun di dalam builder widget (mis. `itemBuilder` `ListView.builder`).**
-   - Gunakan `.asData?.value` atau `.maybeWhen(data: (id) => id, orElse: () => null)` untuk membaca nilai dengan aman terhadap status loading/error.
-   - Contoh benar: `ref.watch(selectedKendaraanIdProvider).asData?.value`
-   - Contoh salah: `ref.watch(selectedKendaraanIdProvider).value`
-2. **Setiap `AsyncValue` yang di-`watch` wajib diperiksa statusnya dengan urutan: `.isLoading` terlebih dahulu, lalu `.hasError`, baru `.requireValue`.**
-   - Gabungkan pemeriksaan loading/error untuk semua provider yang digunakan di `build`.
-3. **Jangan memanggil `ref.watch(...)` di dalam `itemBuilder`, `builder`, atau callback widget.**
-   - Baca `AsyncValue` sekali di awal `build`, lalu teruskan nilainya melalui parameter ke widget/fungsi builder.
-4. **Gunakan `ref.read(...)` (bukan `ref.watch`) di dalam callback aksi (mis. `onTap`) ketika hanya membutuhkan nilai sekali.**
-5. **Pastikan `flutter analyze` bersih sebelum menyatakan perubahan selesai.**
-## Registrasi Delegate Lokalisasi `material_ui` untuk `adaptive_dialog`
-Proyek yang menggunakan paket `adaptive_dialog` (yang secara internal bergantung pada paket `material_ui`) wajib mendaftarkan delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations` selain tiga delegate global Flutter.
-**Aturan wajib:**
-1. `MaterialApp` wajib mendaftarkan delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations`.
-2. Delegate khusus tersebut wajib memiliki `isSupported` yang mengembalikan `true` untuk locale yang didukung aplikasi, karena delegate bawaan `material_ui` (`DefaultMaterialLocalizations.delegate`) hanya mendukung `locale.languageCode == 'en'`.
-3. Metode `load` delegate khusus wajib memanggil `material_ui.DefaultMaterialLocalizations.load(locale)`.
-4. Jangan menghapus delegate khusus ini meskipun tidak ada error analyzer, karena error hanya muncul pada runtime saat dialog ditampilkan.
-**Larangan:**
-- Jangan mengandalkan `material_ui.DefaultMaterialLocalizations.delegate` langsung pada `MaterialApp.localizationsDelegates`.
-- Jangan mengganti delegate khusus dengan delegate Flutter bawaan.
-## Padding Tepi Layar
-Seluruh konten utama halaman wajib memiliki jarak yang sesuai dari tepi layar. Padding tepi layar merupakan tanggung jawab container pada tingkat halaman atau parent yang menyusun konten halaman.
-**Aturan wajib:**
-1. Terapkan padding pada container yang menjadi batas utama konten halaman.
-2. Widget reusable/shared tidak boleh memasukkan padding tepi layar ke dalam dirinya sendiri.
-3. Widget reusable tetap boleh mempunyai padding internal untuk kebutuhan desain komponennya sendiri.
-4. Apabila parent sudah memberikan padding tepi layar, jangan menambahkan padding tepi layar yang sama lagi pada setiap anak.
-5. Nilai padding wajib mengikuti referensi desain. Dilarang menentukan nilai sendiri tanpa dasar referensi desain.
-**Larangan:**
-- Jangan menempatkan widget reusable langsung di dalam `Column`/`Row` halaman tanpa pembungkus `Padding` (jika widget tidak menyertakan padding tepi layar).
-- Jangan memodifikasi widget reusable untuk menambahkan padding tepi layar, karena akan menyebabkan padding ganda.
-## Navigasi Tab Utama — Inisialisasi Lazy dan Retensi State
-Gunakan `IndexedStack` dengan daftar yang dibangun secara lazy: tab hanya dibuat saat pertama kali dipilih, lalu tetap dipertahankan (state tidak dibuang).
-**Aturan wajib:**
-1. Simpan tab yang sudah pernah dibuka dalam `Set<int> _tabTerbuka` (awalnya `{0}`).
-2. Setiap tab yang belum pernah dibuka direpresentasikan sebagai `SizedBox.shrink()` pada slot IndexedStack-nya.
-3. Pertahankan `GlobalKey<State<...>>` per tab agar `currentState` tetap dapat diakses untuk fitur scroll-to-top.
-4. Deteksi double-tap pada tab yang sedang aktif dengan jendela waktu `<= 500ms`, lalu panggil scroll-to-top dan reset waktu tap.
-5. Pada scroll-to-top, periksa `state == null` terlebih dahulu (tab belum dibuka) dan log + return (jangan crash).
-6. Hanya panggil `scrollToTop()` apabila state mengimplementasikan `ScrollKeAtas`.
-**Larangan:**
-- Jangan membangun semua tab sekaligus sejak awal.
-- Jangan menghapus `_tabTerbuka` / lazy loading.
-- Jangan menghapus `GlobalKey` per tab.
-- Jangan memanggil `scrollToTop()` tanpa memeriksa `state == null` dan tipe `ScrollKeAtas`.
-## Kelengkapan Refresh pada `_buildError` (Halaman Multi-Provider)
-Setiap provider yang di-`watch` di `build` (dan diperiksa loading/error-nya) wajib ikut di-`refresh` pada handler retry di `_buildError`.
-**Aturan wajib:**
-1. Refresh seluruh provider yang di-`watch`, termasuk provider sekunder.
-2. Jangan melewatkan provider hanya karena tidak menjadi fokus utama halaman.
-3. Urutan pemeriksaan `AsyncValue` tetap loading → error → data.
-**Larangan:**
-- Jangan refresh sebagian provider saja di `_buildError`.
-- Jangan menambah provider baru ke `build` tanpa menambahkan refresh-nya di `_buildError`.
-## Penempatan Metode `_buildLoading` dan `_buildError` di Bagian Bawah Kelas State
-Tempatkan metode `_buildLoading()` dan `_buildError()` di bagian paling bawah kelas State, setelah metode-metode lain.
-**Aturan wajib:**
-1. Urutan internal: `_buildLoading()` terlebih dahulu, kemudian `_buildError()`, sebelum penutup kelas `}`.
-2. Pastikan metode tetap berada pada level anggota kelas (bukan metode lokal/nested).
-3. Setelah memindahkan metode, jalankan `dart format` dan `flutter analyze`.
-**Larangan:**
-- Jangan menempatkan `_buildLoading()`/`_buildError()` tepat setelah `build()` atau di tengah metode lain.
-- Jangan memindahkan metode tanpa memeriksa penutupan kurung kurawal (`}`).
-## Penempatan Metode `scrollToTop` pada Kelas State
-Tempatkan metode `scrollToTop()` (implementasi interface `ScrollKeAtas`) di bagian atas kelas State, sebelum metode `build()`.
-**Aturan wajib:**
-1. Metode interface dipanggil dari luar (via `GlobalKey.currentState`), bukan dari dalam `build()`.
-2. Berbeda dari `_buildLoading`/`_buildError` yang ditempatkan di bawah.
-**Larangan:**
-- Jangan menempatkan `scrollToTop()` di bagian bawah kelas State.
-## Family Provider (Riverpod)
-Gunakan family provider (`@Riverpod` dengan parameter pada `build`) ketika provider bergantung pada parameter eksternal.
-**Aturan wajib:**
-1. Pastikan file `.g.dart` dihasilkan ulang setelah menambah/mengubah parameter `build`.
-2. Berikan nama kelas Notifier yang konsisten (mis. `DashboardNotifier`, bukan `Dashboard`).
-3. Gunakan `keepAlive: true` jika state perlu dipertahankan.
-4. Gunakan `@Riverpod()` (auto-dispose) jika state tidak perlu dipertahankan.
-5. Jangan menggunakan functional provider jika state perlu dimutasi melalui metode.
-## Penggunaan EasyLoading Overlay pada Aksi Simpan
-Gunakan `flutter_easyloading` untuk loading overlay pada aksi simpan sesuai pola implementasi proyek.
-**Aturan wajib:**
-1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...'))` segera setelah flag `_isLoading` diaktifkan.
-2. Sembunyikan overlay melalui `unawaited(EasyLoading.dismiss())` di dalam blok `finally`.
-3. Pertahankan guard double-submit di awal metode: `if (_isLoading) { L.w(...); return; }`.
-4. Tombol simpan tidak perlu menampilkan spinner sendiri maupun dinonaktifkan; cukup panggil `_simpanForm` langsung.
-5. Pastikan `_isLoading` dikembalikan ke `false` pada semua jalur, dengan pemeriksaan `mounted` sebelum `setState`.
-**Larangan:**
-- Jangan menampilkan spinner di dalam tombol sekaligus overlay EasyLoading untuk aksi yang sama.
-- Jangan menghilangkan guard `_isLoading` di awal metode.
-- Jangan memanggil `EasyLoading.dismiss()` tanpa `unawaited` atau di luar `finally`.
-## Preferensi State Lokal daripada Re-watch Provider pada Halaman
-Jika nilai yang dibutuhkan sudah tersedia dalam state lokal widget, gunakan nilai tersebut langsung sebagai argumen provider, tanpa me-`watch` provider async yang menyediakan nilai yang sama.
-**Aturan wajib:**
-1. Jangan menambahkan pemeriksaan `isLoading`/`hasError`/`requireValue` untuk provider yang tidak lagi di-`watch`.
-2. Jika sebuah provider dihapus dari `build`, pastikan juga dihapus dari daftar refresh pada `_buildError`.
-**Larangan:**
-- Jangan me-`watch` provider async yang nilainya sudah tersedia di state lokal.
-## Pengurutan Koleksi dengan `sorted`
-Gunakan `list.sorted(...)` langsung dari `package:collection`, karena `sorted` sudah mengembalikan list baru tanpa memutasi list asli.
-**Larangan:**
-- Jangan menulis `[...list].sorted(...)`.
-## Penggunaan `maxBy` untuk Nilai Maksimum
-Gunakan `maxBy` dari `package:collection` untuk mengambil item dengan nilai maksimum berdasarkan kriteria.
-**Larangan:**
-- Jangan menggunakan `firstWhereOrNull` atau loop manual untuk kebutuhan ini.
-## Ekstraksi Fungsi ke Helper untuk Menghilangkan Duplikasi
-Pindahkan fungsi/logika yang digunakan di banyak tempat ke file helper khusus. Gunakan fungsi helper tersebut di semua tempat yang membutuhkan.
-**Larangan:**
-- Jangan menyalin logika yang sama ke beberapa file.
-- Jangan membuat fungsi duplikat dengan nama berbeda.
-## Anotasi Tipe Eksplisit pada Variabel State dan List
-Gunakan anotasi tipe eksplisit pada variabel yang menyimpan state atau list. Ini meningkatkan type safety dan keterbacaan kode.
-**Larangan:**
-- Jangan menggunakan `var` atau `final` tanpa anotasi tipe untuk variabel state/list jika tipe dapat ditentukan secara jelas.
-## Penanganan Async di Luar Build (Riverpod)
-Untuk mengambil hasil provider asynchronous di luar `build`, gunakan `.future` dan `await`. Jangan menangani status `.isLoading` dan `.hasError` secara manual.
-**Aturan wajib:**
-1. Gunakan `await ref.read(provider.future)` untuk mengambil nilai.
-2. Tangani error dengan try/catch.
-3. Pastikan flag loading direset di blok `finally`.
-**Larangan:**
-- Jangan menggunakan `ref.read(provider)` tanpa `.future` untuk provider asynchronous.
-## Filter Data Berdasarkan Rentang Tanggal
-Gunakan fungsi filter yang konsisten untuk memfilter data berdasarkan rentang tanggal. Ekstrak logika filter ke helper jika digunakan di banyak tempat.
-**Aturan wajib:**
-1. Gunakan `maxBy` dari `package:collection` untuk menentukan item dengan nilai maksimum dalam rentang.
-2. Gunakan `fold` untuk agregasi data.
-3. Gunakan `sorted` dari `package:collection` untuk pengurutan sebelum perhitungan.
-## Hierarki Tipografi pada Tabel
-Pada tabel yang menyajikan informasi berjenjang, gunakan hierarki tipografi yang jelas:
-1. Header kolom menggunakan `Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)`.
-2. Label baris menggunakan `Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)`.
-3. Nilai data cell menggunakan `Theme.of(context).textTheme.bodySmall`.
-**Larangan:**
-- Jangan menggunakan ukuran yang sama untuk header, label, dan nilai.
-- Jangan menggunakan `const TextStyle(fontWeight: FontWeight.bold)` tanpa acuan tema.
-## Penyusunan Dependensi pada `pubspec.yaml`
-Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` agar perubahan lebih mudah ditinjau.
+## Penambahan Log Debug pada Variabel dan Parameter
+Gunakan sistem logging yang sudah tersedia di proyek (mis. `L.i()`, `L.w()`, `L.e()`) untuk mencatat nilai variabel dan parameter, alih-alih membuat sistem logging baru.
 **Aturan:**
-1. Susun nama paket pada kelompok `dependencies` secara konsisten (misalnya alfabetis A–Z).
-2. Susun nama paket pada kelompok `dev_dependencies` secara konsisten (misalnya alfabetis A–Z), terpisah dari `dependencies`.
-3. Pertahankan kelompok dependensi asal setiap paket; jangan memindahkan paket antar kelompok.
-4. Pertahankan sumber dan versi dependensi yang sudah ditetapkan; penyusunan ulang urutan tidak boleh mengubah konfigurasi dependensi.
-**Contoh benar:**
-```yaml
-dependencies:
-  cupertino_icons: ^2.0.0
-  flutter:
-    sdk: flutter
-dev_dependencies:
-  flutter_lints: ^6.0.0
-  flutter_test:
-    sdk: flutter
-```
-**Contoh salah:**
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^2.0.0
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^6.0.0
-```
+1. Tambahkan log pada setiap variabel dan parameter yang relevan, setelah variabel mendapatkan nilainya.
+2. Format log wajib singkat: nama variabel dan nilainya menggunakan interpolasi, mis. `logger.i('kopi=$kopi, susu=$susu')`.
+3. Untuk objek model (Freezed, API, database, repository), cukup tampilkan objek langsung: `logger.i('model=$model')`; jangan uraikan properti satu per satu.
+4. Gabungkan variabel yang berkaitan dalam satu pemanggilan log apabila berada pada titik eksekusi yang sama.
+5. Jangan mencatat variabel sensitif (password, token, OTP, secret key, kredensial).
+6. Jangan mengubah logika bisnis, nilai variabel, tipe data, kondisi percabangan, atau menambah fitur saat menambahkan log.
+7. Jangan menambahkan log sebelum variabel mendapatkan nilai.
+8. Jangan menambahkan log yang tidak memberikan informasi nilai aktual.
+9. Jangan menggunakan `print()` sebagai pengganti logger yang tersedia.
+10. Pada `catch`, catat error dengan konteks proses yang gagal dan sertakan stack trace apabila tersedia.
+11. Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali. Log pada `build()` dihindari apabila memungkinkan karena `build()` dapat dipanggil berulang dan menambah noise; prioritaskan log pada titik yang tidak berfrekuensi tinggi (initState, dispose, method helper, perhitungan).
+**Larangan:**
+- Jangan membuat sistem logging baru.
+- Jangan mencetak properti model satu per satu (gunakan `$model`).
+- Jangan mencetak data sensitif.
+- Jangan mengubah logika program saat menambahkan log.
 **Alasan:**
-Urutan yang konsisten memudahkan peninjauan diff pada `pubspec.yaml` dan mencegah perubahan urutan yang tidak perlu saat instalasi ulang paket.
-## Pemisahan Titik Masuk dan Widget Aplikasi
-Jaga agar entry point aplikasi (`main()`) tetap minimal dan pisahkan definisi widget root (`MyApp`) ke file tersendiri.
-**Aturan:**
-1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export file yang memuat `MyApp`.
-2. Definisi kelas `MyApp` dan logika widget root ditempatkan di file terpisah (mis. `app.dart`).
-3. Jangan menempatkan logika UI, state, atau konfigurasi yang kompleks di dalam `main()`.
+Format log yang singkat dan konsisten (nama variabel + nilai) memudahkan pelacakan alur eksekusi tanpa menambah noise. Menampilkan objek model langsung menghindari log yang terlalu panjang dan tetap informatif. Larangan mencetak data sensitif menjaga keamanan. Prinsip ini dapat diterapkan pada seluruh proyek Flutter yang memiliki sistem logging. Enam commit terakhir (`f2859a0`, `6bae210`, `f55410a`, `c05f446`, `7b9e8d0`, `be04199`) memperkuat pola ini secara konsisten, termasuk penggabungan variabel terkait dalam satu log (commit `7b9e8d0` memperluas log form impian dengan menggabungkan `_namaController.text`, `_jumlahController.text`, dan `_targetTanggal`; commit `be04199` menggabungkan seluruh variabel perhitungan pada dashboard), penggunaan `L.w` untuk kondisi peringatan (`konfirmasi bukan ok`, `jumlah <= 0`, `biodataAsync loading`), penggunaan `L.e` pada blok catch/error dengan stack trace (termasuk `${biodataAsync.error} ${biodataAsync.stackTrace}`), pola logging siklus hidup widget (`L.i('DashboardScreen initState')`, `L.i('DashboardScreen dispose')`), dan logging pada method helper yang menerima parameter (`L.i('icon=$icon, title=$title, subtitle=$subtitle')`). Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali; log pada `build()` dihindari apabila memungkinkan karena dapat dipanggil berulang dan menambah noise. Commit `c05f446` juga merangkum ulang aturan proyek dan global agar tetap fokus dan tidak verbose.
+**Sumber evaluasi:**
+- Commit: `f2859a0f7b8f6ebeb0befefffa8047a9c3173c04`, `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`, `c05f4460a316c3bf33aaad30fc1d8a32f66b9c5b`, `7b9e8d054624b8941c1f44b11551fe9ea57a54a1`, `be04199e5b44537ee1052a3815f5af8518308148`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `.kilo/commands/tambah_log.md`
 **Contoh benar:**
 ```dart
-// main.dart
-import 'package:aplikasi/app.dart';
+logger.i('dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}');
+logger.i('row=$row');
+logger.i('biodata=$biodata');
+logger.i('impian=$impian');
+logger.i('konfirmasi=$konfirmasi');
+logger.i('_namaController.text=${_namaController.text}, _jumlahController.text=${_jumlahController.text}, _targetTanggal=$_targetTanggal');
+logger.i('listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}');
+logger.i('DashboardScreen initState');
+logger.i('DashboardScreen dispose');
+logger.i('biodataAsync=$biodataAsync');
+logger.w('konfirmasi bukan ok');
+logger.w('jumlah <= 0');
+logger.w('biodataAsync loading');
+logger.e('Gagal memasukkan data dummy: $e $s');
+logger.e('biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}');
+logger.i('tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat');
+logger.i('icon=$icon, title=$title, subtitle=$subtitle');
+```
+**Contoh salah:**
+```dart
+logger.i('tes'); // tidak memberikan informasi nilai variabel
+logger.i('nama=${model.nama}, umur=${model.umur}'); // menguraikan properti model
+print('data=$data'); // menggunakan print() alih-alih logger
+```
+## Type Promotion untuk Null Safety (Field Objek)
+**Aturan:**
+1. Field nullable dari objek model wajib disalin terlebih dahulu ke variabel lokal sebelum digunakan dalam kondisi null-check, agar type promotion berlaku.
+2. Setelah penyalinan, gunakan variabel lokal tersebut dalam percabangan `== null` dan pemanggilan fungsi, bukan akses properti objek dengan operator `!`.
+3. Jangan menggunakan operator `!` untuk memaksakan nilai nullable menjadi non-null apabila nilai tersebut dapat dipromosikan melalui variabel lokal.
+4. Prinsip ini melengkapi aturan penanganan null yang sudah ada, dengan fokus pada field objek (bukan hanya parameter constructor atau variabel privat).
+**Alasan:**
+Type promotion memungkinkan compiler Dart mempromosikan tipe nullable ke non-nullable setelah pemeriksaan null, sehingga operator `!` tidak diperlukan. Penggunaan operator `!` berisiko menimbulkan runtime error jika nilai ternyata null. Commit `1e7b71e` menunjukkan refactoring pada `biodata_screen.dart` untuk menghindari operator `!` dengan menyalin field nullable ke variabel lokal.
+**Contoh benar:**
+```dart
+final tanggalLahir = biodata?.tanggalLahir;
+final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+_buildItem(
+  'Tanggal lahir',
+  tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(tanggalLahir),
+);
+```
+**Contoh salah:**
+```dart
+_buildItem(
+  'Tanggal lahir',
+  biodata.tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(biodata.tanggalLahir!),
+);
+```
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+## Import Ordering (Urutan Import)
+**Aturan:**
+1. Import wajib diurutkan secara alfabetis berdasarkan path package.
+2. Import dari package proyek (`package:berhenti_merokok/...`) wajib diurutkan berdasarkan path lengkap.
+3. Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
+4. Prinsip ini berlaku untuk seluruh file Dart dalam proyek.
+**Alasan:**
+Urutan import yang konsisten memudahkan pembacaan kode dan pengelolaan dependensi. Commit `1e7b71e` menunjukkan perubahan urutan import pada `biodata_screen.dart` agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+**Contoh benar:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:flutter/material.dart';
-export 'package:aplikasi/app.dart';
-void main() {
-  runApp(const MyApp());
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+```
+**Contoh salah:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+```
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+## Migrasi Skema Database SQLite
+**Aturan:**
+1. Setiap perubahan skema wajib menaikkan versi database (increment satu per migrasi).
+2. Metode `onCreate` wajib membuat seluruh tabel yang dibutuhkan aplikasi, termasuk tabel baru.
+3. Metode `onUpgrade` wajib menangani setiap versi lama secara kondisional (`if (oldVersion < N)`).
+4. Tabel baru pada versi tertentu wajib dibuat baik di `onCreate` maupun di `onUpgrade`.
+5. Nama tabel dan kolom wajib didefinisikan sebagai konstanta terpusat, bukan string literal.
+6. Perubahan kolom pada tabel lama wajib menggunakan `ALTER TABLE ... ADD COLUMN` di `onUpgrade` dengan kondisi versi yang sesuai.
+**Alasan:**
+Migrasi skema yang konsisten memastikan pengguna baru maupun lama memiliki skema database yang sama tanpa kehilangan data. Commit `3b67d309` menunjukkan pola migrasi v4 ke v5 yang membuat tabel baru di `onCreate` dan `onUpgrade`.
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 5;
+// onCreate: buat semua tabel.
+// onUpgrade:
+if (oldVersion < 5) {
+  await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.baru}(...)');
 }
 ```
 **Contoh salah:**
 ```dart
-// main.dart berisi seluruh definisi MyApp dan logika UI.
-class MyApp extends StatelessWidget { ... }
-void main() => runApp(const MyApp());
+// Hanya membuat tabel di onCreate, lupa onUpgrade.
 ```
-**Alasan:**
-Pemisahan ini menjaga entry point tetap minimal dan memudahkan pengujian serta pemeliharaan.
-## Root Widget sebagai ConsumerStatefulWidget ketika Membutuhkan Provider
-Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema atau locale).
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/shared/db/sqflite/sqflite.dart`
+## Pola Notifier CRUD pada Database
 **Aturan:**
-1. Jika `MyApp` perlu mengamati provider, gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
-2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
-3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
+1. Notifier database wajib menggunakan `@Riverpod(keepAlive: true)`.
+2. Method `build()` wajib memanggil `_ambilSemua()` yang mengambil seluruh data dan memetakan ke model.
+3. Setiap method CRUD (`tambah`, `ubah`, `hapus`) wajib:
+   a. Mengambil state lama melalui `await future`.
+   b. Menjalankan operasi database terlebih dahulu.
+   c. Memperbarui `state` dengan `AsyncValue.data(...)` setelah operasi database berhasil.
+   d. Menangkap `Exception`, mencatat dengan logger, lalu `rethrow`.
+4. Gunakan lapisan akses database (`SqfliteOp` atau setara); jangan memanggil `openDatabase` langsung di notifier.
+5. Operasi batch (banyak data) wajib menggunakan `batch(...)` agar atomik dan efisien.
+**Alasan:**
+State hanya diperbarui setelah operasi database berhasil, mencegah UI tidak sinkron dengan database ketika operasi gagal. Pola ini konsisten pada `ImpianNotifier` dan `DiaryCravingNotifier`.
 **Contoh benar:**
 ```dart
-class MyApp extends ConsumerStatefulWidget {
-  const MyApp({super.key});
-  @override
-  ConsumerState<MyApp> createState() => _MyAppState();
-}
-class _MyAppState extends ConsumerState<MyApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Aplikasi',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const Home(),
-    );
+Future<void> tambah(Model model) async {
+  try {
+    final dataLama = await future;
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.tabel, model.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    state = AsyncValue.data(StateBaru(list: [model, ...dataLama.list]));
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan: $e $s');
+    rethrow;
   }
 }
 ```
 **Contoh salah:**
 ```dart
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      home: const Home(),
-    );
-  }
-}
+// Memperbarui state sebelum operasi database selesai.
+state = AsyncValue.data(StateBaru(list: [model, ...list]));
+await op.tambah(NamaTabel.tabel, model.toMap());
 ```
-**Alasan:**
-Menggunakan `ConsumerStatefulWidget` pada root hanya saat dibutuhkan menjaga widget tetap sederhana, sementara `debugShowCheckedModeBanner: false` menjaga tampilan pengembangan tetap bersih.
-## Layar dengan Siklus Hidup Menggunakan ConsumerStatefulWidget
-Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan akses provider dan pengelolaan siklus hidup (`initState`/`dispose`).
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+## Penggunaan `withValues` untuk Opacity Warna
 **Aturan:**
-1. Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan `ref` dan pengelolaan siklus hidup widget.
-2. Implementasikan `initState` dan `dispose` sesuai kebutuhan, dengan pemanggilan `super` yang benar.
-3. Hindari meninggalkan `TODO` pada `initState`/`dispose` setelah implementasi selesai.
+1. Gunakan `withValues(alpha: ...)` alih-alih `withOpacity(...)` untuk mengatur opacity warna, sesuai API Flutter terpasang.
+2. Pertahankan konsistensi penggunaan pada seluruh widget.
+**Alasan:**
+Flutter versi terpasang (3.47+) menyediakan `withValues` sebagai pengganti `withOpacity` yang deprecated. Commit `3b67d309` menggunakan `warna.withValues(alpha: 0.2)`.
 **Contoh benar:**
 ```dart
-class Home extends ConsumerStatefulWidget {
-  const Home({super.key});
+warna.withValues(alpha: 0.2)
+```
+**Contoh salah:**
+```dart
+warna.withOpacity(0.2)
+```
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`
+## Isolasi Widget yang Diperbarui Berkala (Timer/Animasi)
+**Aturan:**
+1. Widget yang diperbarui secara berkala (mis. `Timer.periodic` per detik) wajib diisolasi ke widget terpisah (`StatefulWidget`) agar hanya widget tersebut yang melakukan rebuild, bukan seluruh halaman.
+2. Timer wajib dibatalkan (`cancel()`) di `dispose()` widget yang memilikinya.
+3. Di dalam callback timer, periksa `mounted` sebelum memanggil `setState`.
+4. Jangan menjalankan `Timer.periodic` pada widget yang mencakup seluruh halaman apabila hanya sebagian tampilan yang perlu diperbarui.
+5. Jangan membiarkan timer tetap aktif setelah widget tidak lagi terpasang.
+**Alasan:**
+Timer yang diletakkan pada widget tingkat halaman menyebabkan seluruh halaman rebuild setiap detik, yang tidak efisien dan dapat mengganggu interaksi pengguna. Isolasi ke widget kecil (mis. `_HeaderPemulihan`, `_TimerCravingView`) membatasi rebuild hanya pada bagian yang membutuhkan pembaruan berkala. Pemeriksaan `mounted` mencegah pembaruan state pada widget yang sudah tidak terpasang. Pola ini terlihat konsisten pada `SosCravingScreen` (`_TimerCravingView`) dan `PemulihanKesehatanScreen` (`_HeaderPemulihan`), yang masing-masing menjalankan `Timer.periodic` sendiri dan membatalkannya di `dispose()`.
+**Contoh benar:**
+```dart
+class _HeaderPemulihan extends StatefulWidget {
+  const _HeaderPemulihan({required this.tanggalBerhenti});
+  final DateTime tanggalBerhenti;
   @override
-  ConsumerState<Home> createState() => _HomeState();
+  State<_HeaderPemulihan> createState() => _HeaderPemulihanState();
 }
-class _HomeState extends ConsumerState<Home> {
+class _HeaderPemulihanState extends State<_HeaderPemulihan> {
+  Timer? _timer;
   @override
   void initState() {
     super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
   }
   @override
   void dispose() {
+    _timer?.cancel();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Home')));
+    // hanya widget ini yang rebuild tiap detik
+    return ...;
   }
 }
 ```
 **Contoh salah:**
 ```dart
-class Home extends StatelessWidget {
+// Timer.periodic dijalankan di widget tingkat halaman, menyebabkan
+// seluruh halaman rebuild setiap detik.
+class _HalamanState extends State<Halaman> {
+  Timer? _timer;
   @override
-  Widget build(BuildContext context) {
-    // Tidak dapat mengakses ref atau lifecycle.
-    return const Scaffold(body: Center(child: Text('Home')));
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {}); // rebuild seluruh halaman
+    });
   }
 }
 ```
-**Alasan:**
-Pola ini mempersiapkan layar untuk integrasi provider dan pengelolaan resource dengan lifecycle yang benar.
-## Pengelolaan Tema melalui Notifier (Riverpod)
-Kelola state tema aplikasi melalui Notifier yang dibuat dengan `riverpod_generator`, bukan nilai hardcode di widget.
+**Sumber evaluasi:**
+- Commit: `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`, `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`
+## Normalisasi Tanggal untuk Perbandingan dan Perhitungan Berbasis Hari
 **Aturan:**
-1. Buat Notifier tema sebagai kelas dengan anotasi `@riverpod`.
-2. Gunakan `build()` untuk mengembalikan nilai tema awal.
-3. Jangan meng-hardcode tema final di widget; biarkan Notifier menjadi sumber kebenaran.
+1. Sebelum membandingkan atau menghitung selisih hari antara dua tanggal, normalisasi nilai `DateTime` ke komponen tanggal saja (tahun, bulan, hari) dengan membuang komponen waktu.
+2. Gunakan `DateTime(tanggal.year, tanggal.month, tanggal.day)` untuk memperoleh representasi tanggal tanpa waktu.
+3. Saat menghitung selisih hari dengan `difference(...).inDays`, pastikan kedua operand sudah dinormalisasi agar hasil tidak terpengaruh oleh jam/menit/detik.
+4. Hasil perhitungan durasi atau jumlah hari yang dapat bernilai negatif wajib diklem (clamp) ke nol apabila nilai negatif tidak bermakna dalam konteks (mis. "hari smoke-free" tidak boleh negatif).
+5. Gunakan `isBefore`/`isAfter` pada nilai yang sudah dinormalisasi untuk menentukan rentang tanggal, agar batas hari konsisten.
+**Alasan:**
+`DateTime.now()` menyertakan komponen waktu (jam, menit, detik). Jika dibandingkan langsung dengan tanggal yang dinormalisasi (mis. tengah malam), hasil perhitungan hari dapat salah satu hari. Normalisasi memastikan perbandingan dan perhitungan berbasis hari akurat. Pengklaman nilai negatif ke nol mencegah tampilan atau logika yang tidak bermakna (mis. jumlah hari smoke-free negatif sebelum tanggal berhenti). Pola ini terlihat pada `KalenderSmokeFreeScreen` (`_SelHari`, `_GridKalender`) dan dashboard (`_buildCardMilestone`).
 **Contoh benar:**
 ```dart
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-part 'tema_notifier.g.dart';
-@riverpod
-class TemaNotifier extends _$TemaNotifier {
-  @override
-  String build() {
-    return '';
-  }
-}
+final hariIniDate = DateTime(hariIni.year, hariIni.month, hariIni.day);
+final tanggalBerhentiDate = DateTime(
+  tanggalBerhenti.year,
+  tanggalBerhenti.month,
+  tanggalBerhenti.day,
+);
+final totalHari = hariIniDate.difference(tanggalBerhentiDate).inDays + 1;
+final totalAman = totalHari < 0 ? 0 : totalHari;
+// Klamping durasi negatif ke nol.
+final durasi = DateTime.now().difference(tanggalBerhenti);
+final aman = durasi.isNegative ? Duration.zero : durasi;
 ```
 **Contoh salah:**
 ```dart
-// Tema ditentukan langsung di widget tanpa Notifier.
-MaterialApp(theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)));
+// Membandingkan DateTime.now() (dengan waktu) langsung dengan tanggal berhenti.
+final totalHari = DateTime.now().difference(tanggalBerhenti).inDays + 1;
+// Bisa salah satu hari karena komponen waktu.
 ```
-**Alasan:**
-Memisahkan pengelolaan tema dari widget presentasi memungkinkan tema diubah dan diamati secara terpusat.
-## Penyediaan ProviderScope pada Titik Masuk
-Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.
+**Sumber evaluasi:**
+- Commit: `6fd979fd9e8296bc7d9c40e9037870faef9c846a`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- File: `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+## Ekstraksi Logika Perhitungan Turunan yang Diduplikasi
 **Aturan:**
-1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
-2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
-3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
+1. Apabila perhitungan turunan yang sama digunakan di lebih dari satu layar, ekstrak ke satu lokasi bersama (ekstensi pada model, helper murni, atau utilitas) agar logika hanya ditulis sekali.
+2. Konsumen (layar/widget) wajib menggunakan hasil dari lokasi bersama, bukan menghitung ulang secara inline.
+3. Helper murni wajib menerima parameter primitif dan tidak bergantung pada `BuildContext` atau provider.
+4. Guard pembagian dengan nol wajib diterapkan pada perhitungan yang melakukan pembagian.
+**Alasan:**
+Duplikasi perhitungan turunan (mis. `hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) di beberapa layar berisiko tidak konsisten jika salah satu diubah. Commit `19f43e5` mengekstrak perhitungan ke ekstensi `BiodataModelPerhitungan` dan helper `hitungBadge`, sehingga logika hanya ditulis sekali dan konsisten di dashboard, impian, dan badge. Prinsip ini berlaku pada seluruh proyek Flutter yang memiliki perhitungan turunan yang digunakan bersama.
 **Contoh benar:**
 ```dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
-}
-```
-**Contoh salah:**
-```dart
-void main() {
-  runApp(const MyApp()); // Tidak ada ProviderScope
-}
-```
-**Alasan:**
-Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
-## Sentralisasi Kunci Penyimpanan
-Sentralisasikan kunci penyimpanan lokal dalam satu kelas dengan konstruktor privat dan konstanta `static const`, hindari string literal yang tersebar.
-**Aturan:**
-1. Definisikan seluruh kunci penyimpanan (mis. `SharedPreferences`) dalam kelas khusus dengan konstruktor privat.
-2. Gunakan konstanta `static const String` untuk setiap kunci.
-3. Jangan menulis string kunci langsung di berbagai tempat.
-**Contoh benar:**
-```dart
-class SharedKeys {
-  SharedKeys._();
-  static const String tema = 'tema';
-}
-```
-**Contoh salah:**
-```dart
-await prefs.setString('tema', value); // string literal tersebar
-```
-**Alasan:**
-Sentralisasi menjaga konsistensi dan memudahkan pemeliharaan.
-## Pertahankan State Persisten dengan `keepAlive`
-Gunakan `keepAlive: true` pada provider yang state-nya harus persisten sepanjang siklus hidup aplikasi, dan auto-dispose untuk state sementara.
-**Aturan:**
-1. Gunakan `@Riverpod(keepAlive: true)` untuk state yang harus tetap hidup (misalnya tema).
-2. Gunakan `@riverpod` (auto-dispose) untuk state sementara.
-3. Jangan menggunakan auto-dispose untuk state yang harus persisten.
-**Contoh benar:**
-```dart
-@Riverpod(keepAlive: true)
-class TemaNotifier extends _$TemaNotifier {
-  @override
-  String build() {
-    return '';
+extension BiodataModelPerhitungan on BiodataModel {
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
   }
 }
+// Konsumsi di layar.
+final uangDihemat = biodata?.uangDihemat ?? 0;
 ```
 **Contoh salah:**
 ```dart
-@riverpod
-class TemaNotifier extends _$TemaNotifier {
-  @override
-  String build() {
-    return '';
-  }
+// Duplikasi perhitungan inline di layar.
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
+  ...
 }
 ```
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
+## Validasi Dukungan Platform dan Izin Runtime
+**Aturan:**
+1. Sebelum menggunakan API package, periksa dukungan platform berdasarkan versi package yang terpasang. Jangan mengasumsikan API yang sama tersedia di semua platform.
+2. Jangan menampilkan kontrol fitur yang tidak didukung platform (misalnya pengingat terjadwal pada Web/Linux).
+3. Permintaan izin harus mengikuti kebijakan sistem operasi dan dilakukan pada konteks yang tepat (setelah interaksi pengguna, bukan saat aplikasi pertama dibuka).
+4. Periksa hasil izin sebelum menyatakan fitur berhasil diaktifkan. Jangan menyimpan status aktif jika izin sistem belum tersedia.
+5. Pisahkan inisialisasi layanan dari permintaan izin pengguna. Inisialisasi boleh dilakukan saat startup, tetapi izin diminta sesuai kebutuhan fitur.
+6. Tangani error platform yang tidak didukung (mis. `UnsupportedError`) secara eksplisit, bukan hanya `Exception`.
 **Alasan:**
-Auto-dispose akan menghapus state ketika tidak ada listener, yang tidak diinginkan untuk state persisten seperti tema.
+Commit notifikasi (`774431d`) dan saran (`0cb0e52`) menunjukkan kebutuhan membedakan kemampuan berdasarkan platform, meminta izin sesuai kebijakan OS, dan memeriksa hasil izin sebelum mengaktifkan fitur. Permintaan izin otomatis saat startup (termasuk iOS Darwin default) dapat ditolak atau diblokir.
+**Contoh benar:**
+```dart
+if (kIsWeb) {
+  // jangan tampilkan pengingat terjadwal
+} else if (defaultTargetPlatform == TargetPlatform.android) {
+  final izin = await mintaIzinAndroid();
+  if (!izin) return;
+}
+```
+**Contoh salah:**
+```dart
+// Meminta izin saat aplikasi pertama dibuka tanpa konteks fitur.
+await plugin.requestNotificationsPermission();
+// Menyimpan status aktif tanpa memeriksa hasil izin.
+await setAktif(true);
+```
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `saran.md`
+## Prinsip Umum Penanganan Beberapa `AsyncValue` pada Satu Layar
+**Aturan:**
+1. Ketika satu layar menggunakan beberapa provider asynchronous, tangani status loading secara gabungan apabila salah satu data yang dibutuhkan masih loading.
+2. Tangani status error untuk setiap provider secara terpisah, dengan pesan error dan tombol retry yang memanggil `ref.refresh(provider)` yang sesuai.
+3. Panggil `requireValue` pada masing-masing provider hanya setelah status loading dan error-nya ditangani.
+4. Kondisi data tidak lengkap tetap ditangani sebagai tampilan tersendiri dengan informasi dan call-to-action.
+**Alasan:**
+Aturan khusus sudah mencakup penerapan konkret pada `BadgeScreen` (memuat `biodataProvider` dan `impianProvider`). Prinsip ini dapat diterapkan pada proyek Flutter lain yang menggunakan Riverpod dengan beberapa provider asynchronous pada satu layar, agar loading dan error tetap jelas serta `requireValue` tidak dipanggil pada data yang belum tersedia.
+**Contoh benar:**
+```dart
+final aAsync = ref.watch(providerA);
+final bAsync = ref.watch(providerB);
+if (aAsync.isLoading || bAsync.isLoading) {
+  return const Center(child: CircularProgressIndicator());
+}
+if (aAsync.hasError) {
+  return _ErrorRetry(onRetry: () => ref.refresh(providerA));
+}
+if (bAsync.hasError) {
+  return _ErrorRetry(onRetry: () => ref.refresh(providerB));
+}
+final a = aAsync.requireValue;
+final b = bAsync.requireValue;
+```
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final a = aAsync.requireValue;
+final b = bAsync.requireValue;
+```
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/badge/screens/badge_screen.dart`
+
+
+// ============================================================
+// FILE: .agents/rules/global/aturan_build.md
+// ============================================================
+
+# Aturan Build dan Pengelolaan APK
+**Path file:** `.agents/rules/global/aturan_build.md`
+## 1. Larangan Menjalankan Build
+AI DILARANG menjalankan proses build dalam bentuk apa pun dan untuk platform apa pun.
+Larangan ini berlaku untuk seluruh target platform, termasuk tetapi tidak terbatas pada:
+- Android.
+- iOS.
+- Web.
+- Linux.
+- Windows.
+- macOS.
+- Platform lainnya.
+Ketentuan pelaksanaan:
+1. Jangan menjalankan perintah build melalui terminal, Cloud Shell, IDE, task runner, maupun alat lainnya.
+2. Jangan menjalankan script atau perintah yang secara langsung maupun tidak langsung memicu proses build.
+3. Jangan menjalankan build dengan alasan pengujian, validasi, debugging, pemeriksaan hasil perubahan, atau keperluan lainnya.
+4. Jangan mencoba mencari cara alternatif untuk menjalankan build ketika proses build dilarang.
+5. Larangan ini berlaku meskipun proses build diperlukan untuk memeriksa apakah perubahan kode berhasil dikompilasi.
+## 2. Larangan Mengubah File Workflow Build APK
+File berikut merupakan file yang dilindungi dan tidak boleh diubah oleh AI dalam kondisi apa pun:
+`.github/workflows/build-apk.yml`
+Ketentuan:
+1. Jangan mengubah isi file tersebut.
+2. Jangan menambahkan, menghapus, atau mengubah baris kode maupun konfigurasi di dalamnya.
+3. Jangan melakukan pemformatan ulang atau perubahan otomatis terhadap file tersebut.
+4. Jangan menulis ulang seluruh atau sebagian isi file tersebut.
+5. Jangan mengubah file tersebut melalui script, perintah terminal, maupun alat pengeditan lainnya.
+6. Jika suatu pekerjaan membutuhkan perubahan pada konfigurasi workflow tersebut, jangan melakukan perubahan. Sampaikan kepada pengguna bahwa perubahan memerlukan tindakan langsung dari pengguna.
+AI diperbolehkan membaca file tersebut apabila diperlukan untuk memahami konfigurasi workflow, tetapi tidak boleh mengubah isinya.
+## 3. Ketentuan Khusus Build APK
+Build APK hanya dilakukan oleh pengguna melalui **GitHub Actions**.
+Ketentuan:
+1. Jangan menjalankan build APK secara lokal.
+2. Jangan menjalankan perintah `flutter build apk` maupun perintah lain yang menghasilkan APK melalui lingkungan lokal.
+3. Jangan menggunakan Gradle, script, atau metode lain untuk menghasilkan APK secara lokal.
+4. Jangan memicu workflow GitHub Actions untuk menjalankan build tanpa instruksi langsung dari pengguna.
+5. Jangan membuat mekanisme build alternatif di luar GitHub Actions.
+6. File `.github/workflows/build-apk.yml` tetap harus dipertahankan tanpa perubahan.
+Dengan demikian, alur build APK yang berlaku adalah:
+**Pengguna → GitHub Actions → Proses Build APK → Hasil APK**
+AI hanya bertugas membantu pekerjaan pengembangan kode dan memberikan informasi mengenai hasil pemeriksaan yang tidak memerlukan proses build.
+## 4. Penanganan Tugas yang Bertentangan dengan Aturan
+Apabila pengguna memberikan tugas yang mengharuskan AI menjalankan build atau mengubah file `.github/workflows/build-apk.yml`:
+1. Jangan menjalankan tindakan yang melanggar aturan tersebut.
+2. Jelaskan secara spesifik bagian tugas yang bertentangan dengan aturan.
+3. Tetap kerjakan bagian tugas lain yang tidak melanggar aturan.
+4. Apabila diperlukan proses build untuk memverifikasi hasil pekerjaan, sampaikan bahwa proses tersebut harus dilakukan pengguna melalui GitHub Actions.
+## 5. Prinsip Utama
+- AI bertugas membantu pengembangan dan pemeriksaan kode, bukan menjalankan build.
+- AI tidak boleh menjalankan build untuk platform apa pun.
+- Build APK hanya dilakukan pengguna melalui GitHub Actions.
+- File `.github/workflows/build-apk.yml` merupakan file yang dilindungi dan tidak boleh diubah oleh AI.
+- Jangan mengabaikan aturan ini meskipun ada instruksi lain yang bertentangan dengannya.
 
 
 // ============================================================
@@ -2943,1060 +11685,723 @@ Setelah menjalankan Prettier:
 // FILE: .agents/rules/proyek/aturan_khusus.md
 // ============================================================
 
-# Aturan Khusus Proyek
-## Penanganan AsyncValue (Riverpod) untuk ID Terpilih
-Ketentuan berikut wajib diterapkan agar kesalahan runtime terkait `selectedId`/ID terpilih tidak terulang:
-1. **Jangan gunakan `.value` atau `.valueOrNull` pada `AsyncValue` hasil `ref.watch(...)` di dalam `build` maupun di dalam builder widget (mis. `itemBuilder` `ListView.builder`).**
-   - Gunakan `.asData?.value` atau `.maybeWhen(data: (id) => id, orElse: () => null)` untuk membaca nilai dengan aman terhadap status loading/error.
-   - Contoh benar: `ref.watch(selectedKendaraanIdProvider).asData?.value`
-   - Contoh salah: `ref.watch(selectedKendaraanIdProvider).value`
-2. **Setiap `AsyncValue` yang di-`watch` wajib diperiksa statusnya dengan urutan: `.isLoading` terlebih dahulu, lalu `.hasError`, baru `.requireValue`.**
-   - Gabungkan pemeriksaan loading/error untuk semua provider yang digunakan di `build`.
-   - Contoh:
-     ```dart
-     if (kmAsync.isLoading || kendaraanAsync.isLoading || selectedKendaraanIdAsync.isLoading) {
-       return const _LoadingView();
-     }
-     if (kmAsync.hasError || kendaraanAsync.hasError || selectedKendaraanIdAsync.hasError) {
-       return _buildError();
-     }
-     kmAsync.requireValue;
-     kendaraanAsync.requireValue;
-     selectedKendaraanIdAsync.requireValue;
-     ```
-3. **Jangan memanggil `ref.watch(...)` di dalam `itemBuilder`, `builder`, atau callback widget.**
-   - Baca `AsyncValue` sekali di awal `build`, lalu teruskan nilainya melalui parameter ke widget/fungsi builder.
-   - Contoh: `_buildDrawer(kendaraanState, selectedKendaraanIdAsync.asData?.value)` dan gunakan parameter di dalam `itemBuilder`.
-4. **Gunakan `ref.read(...)` (bukan `ref.watch`) di dalam callback aksi (mis. `onTap`) ketika hanya membutuhkan nilai sekali.**
-5. **Pastikan `flutter analyze` bersih sebelum menyatakan perubahan selesai.**
-## Registrasi Delegate Lokalisasi `material_ui` untuk `adaptive_dialog`
-Proyek menggunakan paket `adaptive_dialog` (mandat Aturan 4.5 `aturan_pemanfaatan_sdk_dan_paket.md`) yang secara internal bergantung pada paket `material_ui`. Paket `material_ui` mendefinisikan kelas `MaterialLocalizations` miliknya sendiri (berbeda dari `MaterialLocalizations` milik Flutter SDK). Komponen `adaptive_dialog` mencari `MaterialLocalizations` dari `material_ui` melalui `Localizations.of<material_ui.MaterialLocalizations>(context)`. Jika delegate untuk tipe tersebut tidak terdaftar di `MaterialApp.localizationsDelegates`, nilai yang dikembalikan adalah `null`, dan pemanggilan berikutnya menggunakan null-check operator (`!`) sehingga aplikasi melempar `Null check operator used on a null value` saat dialog ditampilkan.
+## Penambahan Log Debug pada Variabel dan Parameter
 **Cakupan:**
-- `lib/app.dart` — `App.build`, khususnya `MaterialApp.localizationsDelegates` dan `supportedLocales`.
-- Kelas `_MaterialUiLocalizationsDelegate` di `lib/app.dart`.
-- Setiap penggunaan `adaptive_dialog` (`showOkCancelAlertDialog`, `showModalActionSheet`, dan sejenisnya) di seluruh fitur.
+- Seluruh file Dart yang ditentukan pengguna untuk diberi log debug.
+- `lib/shared/utils/l.dart` — referensi implementasi `L` (jangan diubah).
+- `lib/app.dart` — lokasi `L.init(ref.container)` (menentukan apakah `L.*` atau `debugPrint()` yang digunakan).
 **Aturan wajib:**
-1. `MaterialApp` wajib mendaftarkan delegate lokalisasi khusus untuk `material_ui.MaterialLocalizations` selain tiga delegate global Flutter (`GlobalMaterialLocalizations`, `GlobalWidgetsLocalizations`, `GlobalCupertinoLocalizations`).
-2. Delegate khusus tersebut wajib memiliki `isSupported` yang mengembalikan `true` untuk locale yang didukung aplikasi (proyek ini menggunakan `Locale('id', 'ID')`), karena delegate bawaan `material_ui` (`DefaultMaterialLocalizations.delegate`) hanya mendukung `locale.languageCode == 'en'`.
-3. Metode `load` delegate khusus wajib memanggil `material_ui.DefaultMaterialLocalizations.load(locale)`.
-4. `supportedLocales` wajib tetap memuat `Locale('id', 'ID')` agar delegate global Flutter dan delegate `material_ui` selaras.
-5. Jangan menghapus delegate khusus ini meskipun tidak ada error analyzer, karena error hanya muncul pada runtime saat dialog ditampilkan.
+1. Gunakan sistem logging yang sudah tersedia (`L.i()`, `L.w()`, `L.e()` dari `lib/shared/utils/l.dart`); jangan membuat sistem logging baru.
+2. Tambahkan log pada setiap variabel dan parameter yang relevan, setelah variabel mendapatkan nilainya.
+3. Format log wajib singkat: nama variabel dan nilainya menggunakan interpolasi Dart, mis. `L.i('kopi=$kopi, susu=$susu')`.
+4. Untuk objek model (Freezed, API, database, repository), cukup tampilkan objek langsung: `L.i('model=$model')`; jangan uraikan properti satu per satu.
+5. Gabungkan variabel yang berkaitan dalam satu pemanggilan log apabila berada pada titik eksekusi yang sama.
+6. Jangan mencatat variabel sensitif (password, token, OTP, secret key, kredensial); laporkan variabel yang dikecualikan.
+7. Pilih `L.*` atau `debugPrint()` berdasarkan urutan inisialisasi `L.init()`: jika jalur eksekusi sudah melewati `L.init()`, gunakan `L.*`; jika belum, gunakan `debugPrint()` dengan pengecekan `kDebugMode`.
+8. Jangan mengubah logika bisnis, nilai variabel, tipe data, kondisi percabangan, atau menambah fitur saat menambahkan log.
+9. Jangan menambahkan log sebelum variabel mendapatkan nilai.
+10. Jangan menambahkan log yang tidak memberikan informasi nilai aktual.
+11. Jangan mengubah file di luar daftar target; jangan mengubah file generated (`.g.dart`, `.freezed.dart`).
+12. Jangan menambahkan `try-catch` baru hanya demi menambahkan log; pertahankan mekanisme penanganan error yang sudah ada. Pada `catch`, gunakan `L.e('gagal ...: $e $s')` dan sertakan stack trace apabila tersedia.
+13. Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali. Log pada `build()` dihindari apabila memungkinkan karena `build()` dapat dipanggil berulang dan menambah noise; prioritaskan log pada titik yang tidak berfrekuensi tinggi (initState, dispose, method helper, perhitungan).
 **Larangan:**
-- Jangan mengandalkan `material_ui.DefaultMaterialLocalizations.delegate` langsung pada `MaterialApp.localizationsDelegates`, karena `isSupported`-nya hanya `true` untuk locale `en`, sehingga pada locale `id` delegate tidak dimuat dan `Localizations.of` mengembalikan `null`.
-- Jangan menghapus `_MaterialUiLocalizationsDelegate` dari `localizationsDelegates` untuk "merapikan" kode, meskipun analyzer tidak melaporkan masalah.
-- Jangan mengganti delegate khusus dengan delegate Flutter bawaan (`GlobalMaterialLocalizations.delegate`) karena tipe `MaterialLocalizations` yang dicari `adaptive_dialog`/`material_ui` berbeda dari tipe Flutter.
+- Jangan menggunakan `print()` sebagai pengganti `L.*`/`debugPrint()`.
+- Jangan membuat fungsi logging tambahan.
+- Jangan menambahkan package baru.
+- Jangan mencetak properti model satu per satu (gunakan `$model`).
+- Jangan mencetak data sensitif.
+- Jangan menambahkan log berulang tanpa perubahan nilai.
+- Jangan mengubah lokasi/mekanisme `L.init()`.
 **Alasan:**
-Paket `material_ui` (versi terpasang `^1.10.0`) mendefinisikan kelas `MaterialLocalizations` tersendiri yang tidak identik dengan `MaterialLocalizations` milik Flutter SDK. Delegate bawaan paket tersebut (`_MaterialLocalizationsDelegate`) hanya mengembalikan `true` pada `isSupported` untuk `locale.languageCode == 'en'`. Aplikasi ini mendukung `Locale('id', 'ID')`, sehingga pada runtime delegate bawaan tidak dimuat, `Localizations.of<material_ui.MaterialLocalizations>(context)` mengembalikan `null`, dan `adaptive_dialog` memanggil null-check operator pada nilai tersebut → `Null check operator used on a null value`. Delegate khusus dengan `isSupported => true` memastikan `DefaultMaterialLocalizations` selalu dimuat untuk locale apa pun yang didukung aplikasi.
-**Dampak apabila dilanggar:**
-- `adaptive_dialog` melempar `Null check operator used on a null value` saat `showOkCancelAlertDialog`/`showModalActionSheet` dipanggil.
-- Dialog konfirmasi (termasuk konfirmasi penghapusan data yang diwajibkan oleh Aturan UX 1) gagal ditampilkan, sehingga pengguna tidak dapat memberikan konfirmasi sebelum operasi destruktif.
-- Error bersifat runtime dan tidak terdeteksi oleh `flutter analyze`, sehingga berpotensi lolos ke APK.
-**Rujukan implementasi:**
-- `lib/app.dart` — kelas `_MaterialUiLocalizationsDelegate` dan pendaftarannya pada `MaterialApp.localizationsDelegates`.
-- `pubspec.yaml` — `adaptive_dialog: ^3.0.1`, `material_ui: ^1.10.0`, `flutter_localizations` (SDK).
-- Source paket: `~/.pub-cache/hosted/pub.dev/material_ui-1.10.0/lib/src/material_localizations.dart` — kelas `MaterialLocalizations`, `DefaultMaterialLocalizations`, dan `_MaterialLocalizationsDelegate.isSupported` (`locale.languageCode == 'en'`).
-- Aturan global: `aturan_lainnya.md` poin 33 (Lokalisasi Aplikasi), `aturan_pemanfaatan_sdk_dan_paket.md` bagian 4.5 (adaptive_dialog).
+Enam commit terakhir (`f2859a0`, `6bae210`, `f55410a`, `c05f446`, `7b9e8d0`, `be04199`) menambahkan log debug secara bertahap pada `DummyHelper`, `DummyScreen`, `ImpianScreen`, `BiodataNotifier`, `ImpianNotifier`, `BiodataScreen`, `FormImpian`, `PengaturanScreen`, dan `DashboardScreen`. Pola yang diterapkan konsisten: format singkat `namaVar=nilai`, tampilan model langsung (`row=$row`, `biodata=$biodata`, `impian=$impian`, `biodataAsync=$biodataAsync`), gabungan variabel terkait dalam satu log (commit `7b9e8d0` memperluas log form impian dengan menggabungkan `_namaController.text`, `_jumlahController.text`, dan `_targetTanggal`; commit `be04199` menggabungkan seluruh variabel perhitungan pada dashboard), penggunaan `L.w` untuk kondisi peringatan (`konfirmasi bukan ok`, `jumlah <= 0`, `biodataAsync loading`), dan penggunaan `L.e` pada blok catch/error dengan stack trace (termasuk `${biodataAsync.error} ${biodataAsync.stackTrace}`). Commit `be04199` juga menunjukkan pola logging siklus hidup widget (`L.i('DashboardScreen initState')`, `L.i('DashboardScreen dispose')`) dan logging pada method helper yang menerima parameter (`L.i('icon=$icon, title=$title, subtitle=$subtitle')`). Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali; log pada `build()` dihindari apabila memungkinkan karena dapat dipanggil berulang dan menambah noise (sesuai saran pada `saran.md` dan aturan runtime). Command `.kilo/commands/tambah_log.md` (commit `f2859a0`) mendokumentasikan standar ini untuk penggunaan berulang. Commit `c05f446` juga merangkum ulang aturan proyek dan global agar lebih ringkas, menunjukkan preferensi aturan yang fokus dan tidak verbose.
+**Sumber evaluasi:**
+- Commit: `f2859a0f7b8f6ebeb0befefffa8047a9c3173c04`, `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`, `c05f4460a316c3bf33aaad30fc1d8a32f66b9c5b`, `7b9e8d054624b8941c1f44b11551fe9ea57a54a1`, `be04199e5b44537ee1052a3815f5af8518308148`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `.kilo/commands/tambah_log.md`
 **Contoh benar:**
 ```dart
-import 'package:material_ui/material_ui.dart' as mui;
-class _MaterialUiLocalizationsDelegate
-    extends LocalizationsDelegate<mui.MaterialLocalizations> {
-  const _MaterialUiLocalizationsDelegate();
-  @override
-  bool isSupported(Locale locale) => true;
-  @override
-  Future<mui.MaterialLocalizations> load(Locale locale) =>
-      mui.DefaultMaterialLocalizations.load(locale);
-  @override
-  bool shouldReload(
-    covariant LocalizationsDelegate<mui.MaterialLocalizations> old,
-  ) =>
-      false;
+L.i('dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}');
+L.i('row=$row');
+L.i('biodata=$biodata');
+L.i('impian=$impian');
+L.i('konfirmasi=$konfirmasi');
+L.i('_namaController.text=${_namaController.text}, _jumlahController.text=${_jumlahController.text}, _targetTanggal=$_targetTanggal');
+L.i('listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}');
+L.i('DashboardScreen initState');
+L.i('DashboardScreen dispose');
+L.i('biodataAsync=$biodataAsync');
+L.w('konfirmasi bukan ok');
+L.w('jumlah <= 0');
+L.w('biodataAsync loading');
+L.e('Gagal memasukkan data dummy: $e $s');
+L.e('biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}');
+L.i('tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat');
+L.i('icon=$icon, title=$title, subtitle=$subtitle');
+```
+**Contoh salah:**
+```dart
+L.i('tes'); // tidak memberikan informasi nilai variabel
+L.i('nama=${model.nama}, umur=${model.umur}'); // menguraikan properti model
+print('data=$data'); // menggunakan print() alih-alih L.*
+```
+## Penggunaan Biodata untuk Menghitung Saldo Terkumpul pada Impian
+**Cakupan:**
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`, `_buildSaldoTerkumpul`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan`.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardProgres`.
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState`.
+**Aturan wajib:**
+1. Impian screen wajib melakukan `ref.watch(biodataProvider)` untuk memperoleh data biodata yang digunakan menghitung saldo terkumpul.
+2. Saldo terkumpul merupakan uang yang dihemat dari tidak merokok, dihitung dari biodata: hari berhenti (dinormalisasi ke komponen tanggal, minimum 0), rokok tidak dihisap (`jumlahRokokPerHari * hariBerhenti`), dan uang dihemat (`(rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus`).
+3. Selama `biodataAsync` masih loading atau error, saldo terkumpul dianggap 0; jangan memanggil `requireValue` sebelum memastikan data tersedia.
+4. Perhitungan turunan (`hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) wajib didefinisikan sekali pada ekstensi `BiodataModelPerhitungan` di `lib/fitur/biodata/model/biodata_model.dart`, bukan diduplikasi inline di setiap layar. Setiap layar (dashboard, impian, badge) wajib menggunakan getter dari ekstensi (`biodata.hariBerhenti`, `biodata.rokokTidakDiHisap`, `biodata.uangDihemat`).
+5. Progress bar dan teks "Sisa" pada setiap item impian wajib berbasis saldo terkumpul (uang yang dihemat), bukan `totalJumlah` dari `ImpianState`.
+6. Perhitungan turunan wajib konsisten di seluruh layar; jangan menduplikasi formula dengan versi yang berbeda antara dashboard, impian, dan badge.
+7. Guard pembagian dengan nol wajib diterapkan pada getter `uangDihemat` (mis. `if (batangPerBungkus == 0) return 0;`).
+**Larangan:**
+- Jangan menggunakan `totalJumlah` dari `ImpianState` sebagai saldo terkumpul (saldo berasal dari biodata, bukan dari jumlah impian).
+- Jangan memanggil `biodataAsync.requireValue` tanpa memeriksa loading/error terlebih dahulu.
+- Jangan menghitung saldo terkumpul di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di ekstensi model).
+- Jangan menduplikasi formula perhitungan uang yang dihemat dengan versi yang berbeda antara dashboard, impian, dan badge.
+- Jangan membuat method `_hitungUangDihemat` (atau sejenis) inline di layar; gunakan getter dari ekstensi.
+**Alasan:**
+Commit `336a72f` mengubah impian screen agar menggunakan biodata sebagai sumber saldo terkumpul (uang yang dihemat dari tidak merokok), menggantikan `totalJumlah` dari `ImpianState`. Perubahan ini menyelaraskan impian dengan dashboard yang sudah menggunakan perhitungan yang sama. Penanganan loading/error biodata dengan nilai default 0 mencegah crash dan tampilan kosong sementara. Commit `19f43e5` mengekstrak perhitungan turunan ke ekstensi `BiodataModelPerhitungan` agar logika `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` hanya ditulis sekali dan konsisten di dashboard, impian, dan badge (menghapus duplikasi `_hitungUangDihemat`). Perhitungan yang bergantung pada waktu saat ini tetap berada di getter ekstensi (memanggil `DateTime.now()`), bukan di provider, sesuai prinsip bahwa perhitungan sederhana yang bergantung pada waktu saat ini dapat dilakukan di lapisan model.
+**Sumber evaluasi:**
+- Commit: `336a72f3b67ea7361aea95ac36ae90d08b1e2c6c`, `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
+**Contoh benar:**
+```dart
+// Ekstensi pada model (didefinisikan sekali).
+extension BiodataModelPerhitungan on BiodataModel {
+  int get hariBerhenti {
+    final tanggalBerhenti = tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return 0;
+    final sekarang = DateTime.now();
+    final hariIniDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final tanggalBerhentiDate = DateTime(
+      tanggalBerhenti.year,
+      tanggalBerhenti.month,
+      tanggalBerhenti.day,
+    );
+    final hari = hariIniDate.difference(tanggalBerhentiDate).inDays;
+    return hari < 0 ? 0 : hari;
+  }
+  int get rokokTidakDiHisap => jumlahRokokPerHari * hariBerhenti;
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
 }
-MaterialApp(
-  supportedLocales: const [Locale('id', 'ID')],
-  localizationsDelegates: const [
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    _MaterialUiLocalizationsDelegate(),
-  ],
+// Penggunaan di layar.
+final biodataAsync = ref.watch(biodataProvider);
+BiodataModel? biodata;
+if (biodataAsync.isLoading) {
+  // saldo tetap 0 sementara
+} else if (biodataAsync.hasError) {
+  // saldo tetap 0 sementara
+} else {
+  biodata = biodataAsync.requireValue;
+}
+final uangDihemat = biodata?.uangDihemat ?? 0;
+```
+**Contoh salah:**
+```dart
+// Menggunakan totalJumlah sebagai saldo terkumpul (salah).
+_buildSaldoTerkumpul(impianState.totalJumlah);
+// Memanggil requireValue tanpa memeriksa loading/error (berisiko crash).
+final biodata = biodataAsync.requireValue;
+final uangDihemat = _hitungUangDihemat(biodata);
+// Duplikasi method inline di layar (salah, gunakan getter ekstensi).
+double _hitungUangDihemat(BiodataModel? biodata) { ... }
+// Formula berbeda antar layar (tidak konsisten).
+final uangDihemat = rokokTidakDiHisap * biodata.hargaRokokPerBungkus; // salah
+```
+## Type Promotion untuk Null Safety pada Biodata Screen
+**Cakupan:**
+- `lib/fitur/biodata/screens/biodata_screen.dart` — `_BiodataScreenState.build`, `_buildItem`.
+**Aturan wajib:**
+1. Field nullable dari objek model (misalnya `BiodataModel`) wajib disalin terlebih dahulu ke variabel lokal sebelum digunakan dalam kondisi null-check, agar type promotion berlaku.
+2. Setelah penyalinan, gunakan variabel lokal tersebut dalam percabangan `== null` dan pemanggilan fungsi, bukan akses properti objek dengan operator `!`.
+3. Jangan menggunakan operator `!` untuk memaksakan nilai nullable menjadi non-null apabila nilai tersebut dapat dipromosikan melalui variabel lokal.
+4. Urutan import wajib mengikuti urutan alfabetis berdasarkan path package.
+**Larangan:**
+- Jangan menggunakan `biodata.tanggalLahir!` atau `biodata.tanggalMulaiMerokok!` ketika nilai tersebut dapat disalin ke variabel lokal.
+- Jangan mengakses properti nullable secara langsung dengan operator `!` apabila type promotion dapat digunakan.
+- Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
+**Alasan:**
+Commit `1e7b71e` melakukan refactoring pada `biodata_screen.dart` untuk menghindari operator `!` dengan menyalin field nullable (`tanggalLahir`, `tanggalMulaiMerokok`, `tanggalMulaiBerhentiMerokok`) ke variabel lokal, sehingga type promotion berlaku dan operator `!` tidak diperlukan. Perubahan ini juga mengubah urutan import agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+**Contoh benar:**
+```dart
+final tanggalLahir = biodata?.tanggalLahir;
+final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+_buildItem(
+  'Tanggal lahir',
+  tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(tanggalLahir),
 );
 ```
 **Contoh salah:**
 ```dart
-MaterialApp(
-  supportedLocales: const [Locale('id', 'ID')],
-  localizationsDelegates: const [
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    // material_ui.DefaultMaterialLocalizations.delegate tidak didaftarkan.
-    // Delegate bawaan material_ui hanya isSupported untuk locale 'en'.
-  ],
+_buildItem(
+  'Tanggal lahir',
+  biodata.tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(biodata.tanggalLahir!),
 );
 ```
-**Penjelasan perbedaan:**
-Contoh benar mendaftarkan delegate khusus dengan `isSupported => true` sehingga `material_ui.DefaultMaterialLocalizations` selalu dimuat untuk locale `id`, dan `adaptive_dialog` memperoleh instance `MaterialLocalizations` yang tidak `null`. Contoh salah mengandalkan delegate global Flutter atau delegate bawaan `material_ui`; pada locale `id` delegate bawaan `material_ui` tidak dimuat, `Localizations.of<material_ui.MaterialLocalizations>(context)` mengembalikan `null`, dan `adaptive_dialog` melempar `Null check operator used on a null value` saat dialog ditampilkan.
-## Padding Tepi Layar pada `KendaraanTerpilihList`
-`KendaraanTerpilihList` (`lib/shared/widget/kendaraan_terpilih_list.dart`) merupakan widget reusable yang menampilkan daftar chip kendaraan secara horizontal. Widget ini **tidak** menyertakan padding tepi layar di dalam dirinya sendiri (sesuai `optimasi_ux.md` §10 — padding tepi layar merupakan tanggung jawab container halaman). Jika halaman tidak membungkus widget ini dengan `Padding`, chip paling kiri/kanan akan menempel pada batas layar.
+## Penghapusan Biodata Lama pada Dummy Helper
 **Cakupan:**
-- `lib/shared/widget/kendaraan_terpilih_list.dart` — widget reusable.
-- Seluruh halaman yang menggunakan widget ini: `bahan_bakar_page.dart`, `km_page.dart`, `impian_page.dart`, `transaksi_page.dart`, `dashboard_page.dart`, `pengingat_page.dart`, `jadwal_service_page.dart`, `komponen_page.dart`, `statistik_bahan_bakar.dart`.
+- `lib/fitur/dummy/helper/dummy_helper.dart` — method yang memasukkan data dummy biodata.
 **Aturan wajib:**
-1. Setiap halaman yang menggunakan `KendaraanTerpilihList` wajib membungkusnya dengan `Padding` (screen-edge padding) pada lapisan halaman.
-2. Nilai padding mengikuti standar horizontal yang sudah digunakan halaman tersebut (mis. `EdgeInsets.all(12)` pada `bahan_bakar_page.dart`, `EdgeInsets.all(16)` pada `km_page.dart`). Jangan memaksakan satu nilai universal yang bertentangan dengan standar halaman.
-3. Jangan menambahkan padding tepi layar di dalam widget `KendaraanTerpilihList` itu sendiri.
+1. Sebelum memasukkan data dummy biodata, hapus seluruh baris biodata yang sudah ada dalam database.
+2. Penghapusan dilakukan di dalam transaksi yang sama dengan proses insert data dummy, agar data dummy menjadi satu-satunya biodata yang terbaca aplikasi.
+3. Tambahkan komentar penjelasan pada kode yang melakukan penghapusan, agar alasan penghapusan (karena `ambilSatu` mengembalikan baris pertama) dapat dipahami.
 **Larangan:**
-- Jangan menempatkan `KendaraanTerpilihList` langsung di dalam `Column`/`Row` halaman tanpa pembungkus `Padding`, karena chip akan menempel pada tepi layar.
-- Jangan memodifikasi `KendaraanTerpilihList` untuk menambahkan padding tepi layar, karena akan menyebabkan padding ganda pada halaman yang sudah membungkusnya.
+- Jangan memasukkan data dummy biodata tanpa terlebih dahulu menghapus biodata yang ada, karena `ambilSatu` mengembalikan baris pertama dan data dummy mungkin tidak terbaca.
+- Jangan melakukan penghapusan di luar transaksi yang sama dengan proses insert.
 **Alasan:**
-Widget ini reusable dan dipakai di banyak halaman dengan konteks padding yang berbeda. Tanggung jawab screen-edge padding berada pada container halaman (per `optimasi_ux.md` §10). Sebelumnya `bahan_bakar_page.dart` menempatkan widget ini langsung di `Column` tanpa `Padding`, sehingga chip menempel pada tepi layar.
-**Dampak apabila dilanggar:**
-- Chip kendaraan menempel pada batas kiri/kanan layar, melanggar aturan padding tepi layar (`optimasi_ux.md` §10).
-- Inconsistent dengan halaman lain (`km_page.dart`) yang sudah membungkus widget ini dengan `Padding`.
-**Rujukan implementasi:**
-- `lib/fitur/bahan_bakar/page/bahan_bakar_page.dart` — `Padding(padding: const EdgeInsets.all(12), child: KendaraanTerpilihList(...))`.
-- `lib/fitur/km/page/km_page.dart` — pola yang sama (`Padding` + `KendaraanTerpilihList`).
-- `lib/shared/widget/kendaraan_terpilih_list.dart` — widget reusable tanpa screen-edge padding.
-- `.agents/rules/global/optimasi_ux.md` §10 — aturan padding tepi layar.
+Commit `1e7b71e` menambahkan `await txn.delete(NamaTabel.biodata)` pada `dummy_helper.dart` agar data dummy menjadi satu-satunya biodata yang terbaca aplikasi, karena `ambilSatu` mengembalikan baris pertama. Commit ini juga menambahkan komentar penjelasan pada kode penghapusan.
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`
 **Contoh benar:**
 ```dart
-body: Column(
-  children: [
-    Padding(
-      padding: const EdgeInsets.all(12),
-      child: KendaraanTerpilihList(
-        listKendaraan: kendaraanState.listKendaraan,
-        selectedId: selectedId,
-        onSelected: (kendaraan) {
-          setState(() => _kendaraanTerpilih = kendaraan);
-        },
-        onReload: _reloadKendaraanTerpilih,
-      ),
-    ),
-    Expanded(child: _buildListBbm(context, bahanBakarState, kendaraanState)),
-  ],
-),
-```
-**Contoh salah:**
-```dart
-body: Column(
-  children: [
-    KendaraanTerpilihList(
-      listKendaraan: kendaraanState.listKendaraan,
-      selectedId: selectedId,
-      onSelected: (kendaraan) {
-        setState(() => _kendaraanTerpilih = kendaraan);
-      },
-      onReload: _reloadKendaraanTerpilih,
-    ),
-    Expanded(child: _buildListBbm(context, bahanBakarState, kendaraanState)),
-  ],
-),
-```
-## Navigasi Tab Utama (Home) — Inisialisasi Lazy dan Retensi State
-**Cakupan:**
-- `lib/home.dart` — kelas `Home` / `_HomeState`, khususnya `build` (IndexedStack), `_saatPilihTab`, dan `_scrollKeAtas`.
-- Kelima tab: Dashboard, KM, Jadwal Service, Transaksi, Lainnya, beserta `GlobalKey` masing-masing (`_kunciDashboard`, `_kunciKm`, `_kunciJadwal`, `_kunciTransaksi`, `_kunciLainnya`).
-**Aturan wajib:**
-1. Gunakan `IndexedStack` dengan daftar yang dibangun secara **lazy**: tab hanya dibuat saat pertama kali dipilih, lalu tetap dipertahankan (state tidak dibuang).
-2. Simpan tab yang sudah pernah dibuka dalam `Set<int> _tabTerbuka` (awalnya `{0}`). Tambahkan indeks ke set ini sebelum mengubah `_selectedIndex` ke tab baru.
-3. Setiap tab yang belum pernah dibuka direpresentasikan sebagai `SizedBox.shrink()` pada slot IndexedStack-nya, sehingga tidak membangun widget/provider tab tersebut.
-4. Pertahankan `GlobalKey<State<...>>` per tab agar `currentState` tetap dapat diakses untuk fitur scroll-to-top setelah tab dibuka.
-5. Deteksi double-tap pada tab yang sedang aktif dengan jendela waktu `<= 500ms` (`_durasiDoubleTap`), lalu panggil `_scrollKeAtas(i)` dan reset `_lastTapTime = null`.
-6. Pada `_scrollKeAtas`, periksa `state == null` terlebih dahulu (tab belum dibuka) dan log `L.w` + `return` (jangan crash/cast).
-7. Hanya panggil `scrollToTop()` dan log sukses apabila state mengimplementasikan `ScrollKeAtas`; log `L.w` jika tidak.
-**Larangan:**
-- Jangan kembali ke pola `IndexedStack` dengan kelima halaman selalu dibangun sekaligus (menyebabkan lag saat pindah tab dan beban awal tinggi).
-- Jangan menghapus `_tabTerbuka` / lazy loading dengan alasan "merapikan", karena itu akan memicu rebuild/provider tab yang belum dikunjungi.
-- Jangan menghapus `GlobalKey` per tab, karena fitur double-tap scroll-to-top bergantung pada `currentState`.
-- Jangan memanggil `scrollToTop()` tanpa memeriksa `state == null` dan tipe `ScrollKeAtas`.
-- Jangan log "scroll berhasil" tanpa benar-benar memanggil `scrollToTop()`.
-**Alasan:**
-Sebelumnya semua tab dibangun dan tetap hidup sejak awal, sehingga perubahan data/provider di tab lain dapat memicu rebuild dan beban memori tinggi, menyebabkan pindah tab terasa berat. Lazy loading mengurangi beban awal dan beban tab yang belum dikunjungi, sambil tetap mempertahankan state tab yang sudah dibuka. Double-tap scroll-to-top bergantung pada `GlobalKey.currentState`; tab yang belum dibuka memiliki state `null` dan harus ditangani agar tidak crash.
-**Dampak apabila dilanggar:**
-- Lag saat pindah tab dan saat pertama membuka aplikasi.
-- State tab (scroll position, filter, input) hilang atau dibangun ulang.
-- Crash null saat double-tap pada tab yang belum pernah dibuka.
-- Log menyesatkan yang menyatakan scroll berhasil padahal tidak dieksekusi.
-**Rujukan implementasi:**
-- `lib/home.dart` — `_tabTerbuka`, `IndexedStack` + `List.generate`, `_saatPilihTab`, `_scrollKeAtas`.
-- `lib/shared/widget/scroll_ke_atas.dart` — interface `ScrollKeAtas`.
-- Halaman tab yang mengimplementasikan `ScrollKeAtas`: `dashboard_page.dart`, `km_page.dart`, `jadwal_service_page.dart`, `transaksi_page.dart`, `lainnya_page.dart`.
-**Contoh benar:**
-```dart
-final Set<int> _tabTerbuka = {0};
-IndexedStack(
-  index: _selectedIndex,
-  children: List<Widget>.generate(5, (i) {
-    if (!_tabTerbuka.contains(i)) {
-      return const SizedBox.shrink();
-    }
-    return switch (i) {
-      0 => DashboardPage(key: _kunciDashboard),
-      1 => KmPage(key: _kunciKm),
-      _ => LainnyaPage(key: _kunciLainnya),
-    };
-  }),
-)
-void _saatPilihTab(int i) {
-  final sekarang = DateTime.now();
-  final lastTap = _lastTapTime;
-  final tabSama = i == _selectedIndex;
-  final doubleTap =
-      tabSama && lastTap != null && sekarang.difference(lastTap) <= _durasiDoubleTap;
-  if (doubleTap) {
-    _scrollKeAtas(i);
-    _lastTapTime = null;
-    return;
-  }
-  if (!tabSama) {
-    setState(() {
-      _tabTerbuka.add(i);
-      _selectedIndex = i;
-    });
-  }
-  _lastTapTime = sekarang;
-}
-void _scrollKeAtas(int i) {
-  final state = switch (i) {
-    0 => _kunciDashboard.currentState,
-    _ => _kunciLainnya.currentState,
-  };
-  if (state == null) {
-    L.w('Scroll ke atas diabaikan: state tab ke-$i belum tersedia');
-    return;
-  }
-  if (state case final ScrollKeAtas scrollable) {
-    try {
-      scrollable.scrollToTop();
-      L.i('Scroll ke atas pada tab ke-$i');
-    } catch (e, s) {
-      L.e('Gagal scroll ke atas pada tab ke-$i: $e $s');
-    }
-  } else {
-    L.w('Scroll ke atas diabaikan: tab ke-$i tidak mengimplementasikan ScrollKeAtas');
-  }
+// Hapus biodata yang ada agar data dummy menjadi satu-satunya biodata
+// yang terbaca aplikasi (ambilSatu mengembalikan baris pertama).
+await txn.delete(NamaTabel.biodata);
+for (final biodata in dummyBiodata) {
+  await txn.insert(
+    NamaTabel.biodata,
+    biodata.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
 }
 ```
 **Contoh salah:**
 ```dart
-// Semua tab selalu dibangun sejak awal.
-IndexedStack(
-  index: _selectedIndex,
-  children: const [
-    DashboardPage(key: _kunciDashboard),
-    KmPage(key: _kunciKm),
-    JadwalServicePage(key: _kunciJadwal),
-    TransaksiPage(key: _kunciTransaksi),
-    LainnyaPage(key: _kunciLainnya),
-  ],
-)
-// Deteksi double-tap tidak reset dan log sukses tanpa memanggil scroll.
-void _saatPilihTab(int i) {
-  final sekarang = DateTime.now();
-  final lastTap = _lastTapTime;
-  final doubleTap =
-      i == _selectedIndex && lastTap != null && sekarang.difference(lastTap) < _durasiDoubleTap;
-  if (doubleTap) {
-    _scrollKeAtas(i);
-  } else {
-    setState(() => _selectedIndex = i);
-  }
-  _lastTapTime = sekarang;
-}
-void _scrollKeAtas(int i) {
-  final state = ...;
-  if (state case final ScrollKeAtas scrollable) {
-    try {
-      scrollable.scrollToTop();
-    } catch (e, s) {
-      L.e('Gagal scroll ke atas pada tab ke-$i: $e $s');
-    }
-  }
-  L.i('Scroll ke atas pada tab ke-$i'); // log menyesatkan
+// Memasukkan data dummy tanpa menghapus biodata yang ada.
+// ambilSatu mungkin mengembalikan biodata lama, bukan data dummy.
+for (final biodata in dummyBiodata) {
+  await txn.insert(
+    NamaTabel.biodata,
+    biodata.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
 }
 ```
-**Penjelasan perbedaan:**
-Contoh benar membangun tab secara lazy (hanya saat pertama dipilih) dan tetap mempertahankan state, mendeteksi double-tap dengan reset waktu, serta hanya log sukses setelah `scrollToTop()` benar-benar dipanggil. Contoh salah membangun semua tab sejak awal (menyebabkan lag), tidak reset waktu setelah double-tap, dan log sukses meski scroll tidak dieksekusi (menyesatkan debugging).
-## Kelengkapan Refresh pada `_buildError` (Halaman Multi-Provider)
+## Pesan Konfirmasi yang Menjelaskan Konsekuensi pada Dummy Screen
 **Cakupan:**
-- Halaman yang me-`watch` lebih dari satu provider dan memiliki tombol "Coba lagi" / refresh, khususnya `DashboardPage` (`lib/fitur/dashboard/page/dashboard_page.dart`), `JadwalServicePage` (`lib/fitur/jadwal_service/page/jadwal_service_page.dart`), `KmPage`, dan `TransaksiPage`.
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_DummyScreenState` (dialog konfirmasi).
 **Aturan wajib:**
-1. Setiap provider yang di-`watch` di `build` (dan diperiksa loading/error-nya) wajib ikut di-`refresh` pada handler retry di `_buildError`.
-2. Jangan melewatkan provider yang "sekunder" (mis. `mataUangProvider`, `kmProvider`) hanya karena tidak menjadi fokus utama halaman.
-3. Urutan pemeriksaan `AsyncValue` tetap loading → error → data untuk semua provider terkait.
+1. Pesan konfirmasi pada dialog "Masukkan Dummy" wajib menjelaskan konsekuensi bahwa biodata yang ada akan diganti dengan data dummy.
+2. Pesan harus menggunakan bahasa formal dan baku, serta jelas menyebutkan data yang akan terpengaruh.
 **Larangan:**
-- Jangan refresh sebagian provider saja di `_buildError` (mis. refresh `kendaraanProvider`, `kmProvider`, `jadwalServiceProvider`, `transaksiProvider`, `impianProvider` tetapi lupa `mataUangProvider`).
-- Jangan menambah provider baru ke `build` tanpa menambahkan refresh-nya di `_buildError`.
+- Jangan menggunakan pesan konfirmasi generik ("Apakah Anda yakin ingin memasukkan data dummy?") tanpa menjelaskan konsekuensi penggantian biodata.
+- Jangan membiarkan pengguna tidak mengetahui bahwa biodata lama akan diganti.
 **Alasan:**
-`DashboardPage` sebelumnya me-`watch` `mataUangProvider` dan menanganinya di loading/error, tetapi handler retry tidak me-refresh-nya. Akibatnya saat retry, data mata uang lama/stale tetap dipakai dan tampilan saldo bisa tidak konsisten. Hal serupa berlaku untuk `JadwalServicePage` yang me-`watch` `kmProvider` (dipakai untuk skor urgensi) tetapi tidak me-refresh-nya saat retry.
-**Dampak apabila dilanggar:**
-- Data stale setelah retry (mis. saldo/mata uang atau skor urgensi jadwal tidak terbarui).
-- Inconsistent state antara provider yang direfresh dan yang tidak.
-**Rujukan implementasi:**
-- `lib/fitur/dashboard/page/dashboard_page.dart` — `_buildError` (refresh `kendaraanProvider`, `kmProvider`, `jadwalServiceProvider`, `transaksiProvider`, `impianProvider`, `mataUangProvider`).
-- `lib/fitur/jadwal_service/page/jadwal_service_page.dart` — `_buildError` (refresh `jadwalServiceProvider`, `riwayatJadwalServiceProvider`, `kendaraanProvider`, `kmProvider`).
+Commit `1e7b71e` mengubah pesan konfirmasi pada `dummy_screen.dart` dari "Apakah Anda yakin ingin memasukkan data dummy?" menjadi pesan yang menjelaskan bahwa "Biodata yang ada akan diganti dengan data dummy." Perubahan ini meningkatkan kejelasan UX agar pengguna mengetahui konsekuensi tindakan.
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/dummy/screens/dummy_screen.dart`
 **Contoh benar:**
 ```dart
-onPressed: () {
-  final _ = ref.refresh(kendaraanProvider);
-  final _ = ref.refresh(kmProvider);
-  final _ = ref.refresh(jadwalServiceProvider);
-  final _ = ref.refresh(transaksiProvider);
-  final _ = ref.refresh(impianProvider);
-  final _ = ref.refresh(mataUangProvider); // jangan lupa provider sekunder
-},
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Masukkan Dummy',
+  message:
+      'Apakah Anda yakin ingin memasukkan data dummy? '
+      'Biodata yang ada akan diganti dengan data dummy.',
+  okLabel: 'Masukkan',
+  cancelLabel: 'Batal',
+);
 ```
 **Contoh salah:**
 ```dart
-onPressed: () {
-  final _ = ref.refresh(kendaraanProvider);
-  final _ = ref.refresh(kmProvider);
-  final _ = ref.refresh(jadwalServiceProvider);
-  final _ = ref.refresh(transaksiProvider);
-  final _ = ref.refresh(impianProvider);
-   // mataUangProvider tidak direfresh -> data mata uang stale
- },
- ```
-**Penjelasan perbedaan:**
-Contoh benar me-refresh seluruh provider yang di-`watch` (termasuk `mataUangProvider`), sehingga retry menghasilkan state konsisten. Contoh salah melewatkan provider sekunder, menyebabkan data stale setelah retry.
-## Penempatan Metode `_buildLoading` dan `_buildError` di Bagian Bawah Kelas State
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Masukkan Dummy',
+  message: 'Apakah Anda yakin ingin memasukkan data dummy?',
+  okLabel: 'Masukkan',
+  cancelLabel: 'Batal',
+);
+```
+## Migrasi Skema Database SQLite
 **Cakupan:**
-- Seluruh halaman yang menggunakan `ConsumerState`/`State` dengan metode `_buildLoading()` dan/atau `_buildError()` (mis. `dashboard_page.dart`, `km_page.dart`, dan halaman serupa).
+- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase`, `_versiDatabase`, `onCreate`, `onUpgrade`.
+- `lib/shared/konstanta/nama_tabel.dart` — `NamaTabel`.
+- `lib/shared/konstanta/nama_kolom.dart` — `NamaKolom`.
 **Aturan wajib:**
-1. Tempatkan metode `_buildLoading()` dan `_buildError()` di **bagian paling bawah** kelas State, setelah metode-metode lain (mis. `_buildForm`, `_buildList`, helper).
-2. Pertahankan urutan internal yang konsisten: `_buildLoading()` terlebih dahulu, kemudian `_buildError()`, sebelum penutup kelas `}`.
-3. Pastikan metode tetap berada pada level anggota kelas (bukan metode lokal/nested di dalam metode lain).
-4. Setelah memindahkan metode, jalankan `dart format` dan `flutter analyze` untuk memastikan tidak ada kesalahan kompilasi (mis. `undefined_method` akibat nesting).
+1. Setiap perubahan skema wajib menaikkan konstanta `_versiDatabase` (increment satu per migrasi).
+2. Metode `onCreate` wajib membuat seluruh tabel yang dibutuhkan aplikasi, termasuk tabel baru, agar instalasi baru memiliki skema lengkap.
+3. Metode `onUpgrade` wajib menangani setiap versi lama secara kondisional menggunakan `if (oldVersion < N)` untuk setiap versi yang ditambahkan.
+4. Tabel baru pada versi tertentu wajib dibuat baik di `onCreate` maupun di `onUpgrade` (agar pengguna lama mendapatkan tabel baru).
+5. Nama tabel dan kolom baru wajib didefinisikan di `NamaTabel` dan `NamaKolom`, bukan string literal di kode database.
+6. Perubahan kolom pada tabel lama wajib menggunakan `ALTER TABLE ... ADD COLUMN` di `onUpgrade` dengan kondisi versi yang sesuai.
 **Larangan:**
-- Jangan menempatkan `_buildLoading()`/`_buildError()` tepat setelah `build()` atau di tengah metode lain sehingga batas blok menjadi ambigu.
-- Jangan memindahkan metode dengan memotong/memindahkan blok tanpa memeriksa penutupan kurung kurawal (`}`), karena metode dapat tidak sengaja tersarang di dalam metode lain.
+- Jangan menaikkan versi database tanpa memperbarui `onCreate` dan `onUpgrade`.
+- Jangan membuat tabel baru hanya di `onCreate` tanpa menangani `onUpgrade` (pengguna lama tidak akan mendapatkan tabel).
+- Jangan menggunakan string literal untuk nama tabel/kolom baru.
+- Jangan menghapus data pengguna saat migrasi kecuali memang diperlukan dan terdokumentasi.
 **Alasan:**
-Penempatan di bawah kelas memudahkan navigasi (UI utama di atas, fallback UI di bawah) dan mengikuti konvensi yang telah diterapkan pada halaman seperti `DashboardPage` dan `KmPage`. Pemindahan manual dengan edit tool berisiko merusak batas blok jika kurung kurawal tidak diperiksa.
-**Dampak apabila dilanggar:**
-- Struktur kelas tidak konsisten antar halaman.
-- Risiko metode menjadi lokal/nested, menyebabkan `undefined_method` saat dipanggil dari `build()`.
-**Rujukan implementasi:**
-- `lib/fitur/dashboard/page/dashboard_page.dart` — `_buildLoading()` dan `_buildError()` di bagian bawah `_DashboardPageState`.
-- `lib/fitur/km/page/km_page.dart` — `_buildError()` di bagian bawah `_KmPageState`.
+Commit `3b67d309` menaikkan skema dari v4 ke v5 untuk menambah tabel `diary_craving`. Tabel baru dibuat di `onCreate` (instalasi baru) dan di `onUpgrade` dengan kondisi `oldVersion < 5` (pengguna lama). Pola ini memastikan seluruh pengguna, baru maupun lama, memiliki skema yang konsisten tanpa kehilangan data.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_tabel.dart`, `lib/shared/konstanta/nama_kolom.dart`
 **Contoh benar:**
 ```dart
-class _DashboardPageState extends ConsumerState<DashboardPage> {
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) return _buildLoading();
-    if (hasError) return _buildError();
-    return Scaffold(/* ... */);
-  }
-  Widget _buildCardKm(KmModel? kmTerbaru) { /* ... */ }
-  Widget _buildLoading() {
-    return Scaffold(/* ... */);
-  }
-  Widget _buildError() {
-    return Scaffold(/* ... */);
-  }
+static const int _versiDatabase = 5;
+// onCreate: buat semua tabel.
+await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(...)');
+// onUpgrade:
+if (oldVersion < 5) {
+  await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(...)');
 }
 ```
 **Contoh salah:**
 ```dart
-class _DashboardPageState extends ConsumerState<DashboardPage> {
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) return _buildLoading();
-    if (hasError) return _buildError();
-    return Scaffold(/* ... */);
-  }
-  Widget _buildLoading() { /* ... */ } // terlalu atas
-  Widget _buildError() { /* ... */ }
-  Future<void> _simpan() async {
-    Widget _buildError() { // tersarang (metode lokal) — SALAH
-      return Scaffold(/* ... */);
-    }
-  }
-}
+// Hanya membuat tabel di onCreate, lupa onUpgrade: pengguna lama tidak mendapatkan tabel.
+static const int _versiDatabase = 5;
+// onCreate: create table diary_craving
+// onUpgrade: (kosong / tidak menangani v5)
 ```
-**Penjelasan perbedaan:**
-Contoh benar menempatkan `_buildLoading()` dan `_buildError()` di bawah kelas sebagai metode anggota (dapat dipanggil dari `build`). Contoh salah menempatkannya terlalu atas dan, pada kasus kedua, secara tidak sengaja menjadikannya metode lokal di dalam `_simpan()` sehingga tidak dapat dipanggil dari `build()` (`undefined_method`).
-## Konsolidasi Pemuatan Data Dashboard ke Provider Async
+## Pola Notifier CRUD pada Database
 **Cakupan:**
-- `lib/fitur/dashboard/provider/dashboard_provider.dart` — `DashboardNotifier` (kelas Notifier).
-- `lib/fitur/dashboard/page/dashboard_page.dart` — `_DashboardPageState.build`.
-- Provider yang dikonsolidasi: `impianProvider`, `kmProvider`, `transaksiProvider`, `jadwalServiceProvider`.
+- `lib/fitur/impian/notifier/impian_notifier.dart` — `ImpianNotifier`.
+- `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart` — `DiaryCravingNotifier`.
 **Aturan wajib:**
-1. Gunakan satu provider async (`dashboardProvider`) sebagai sumber data tunggal untuk halaman dashboard, bukan me-`watch` banyak provider secara terpisah di `build`.
-2. Pindahkan logika perhitungan (sorting, scoring, pemilihan item terdekat) dari page ke provider/notifier. Page hanya mengonsumsi state yang sudah diproses.
-3. Di dalam notifier, gunakan `ref.watch(provider.future)` (bukan `ref.watch(provider)`) untuk sumber data asynchronous, sesuai aturan Riverpod.
-4. Pastikan provider yang dikonsolidasi tetap memeriksa loading/error semua sumber data di dalam `_muatData`, dan page menangani loading/error dari `dashboardProvider` saja.
-5. Jangan duplikasi logika perhitungan antara page dan provider.
+1. Notifier database wajib menggunakan `@Riverpod(keepAlive: true)` agar state tidak hilang saat tidak ada listener.
+2. Method `build()` wajib memanggil `_ambilSemua()` yang mengambil seluruh data dari database dan memetakan ke model.
+3. Setiap method CRUD (`tambah`, `ubah`, `hapus`) wajib:
+   a. Mencatat parameter/log awal dengan `L.i`.
+   b. Mengambil state lama melalui `await future`.
+   c. Menjalankan operasi database terlebih dahulu.
+   d. Memperbarui `state` dengan `AsyncValue.data(...)` setelah operasi database berhasil.
+   e. Mencatat keberhasilan dengan `L.s`.
+   f. Menangkap `Exception` dengan `on Exception catch (e, s)`, mencatat dengan `L.e`, lalu `rethrow`.
+4. Gunakan `SqfliteOp` sebagai lapisan akses database; jangan memanggil `openDatabase` langsung di notifier.
+5. Operasi batch (banyak data) wajib menggunakan `op.batch(...)` agar atomik dan efisien.
 **Larangan:**
-- Jangan me-`watch` `kmProvider`, `jadwalServiceProvider`, `transaksiProvider`, `impianProvider` secara terpisah di `build` halaman dashboard setelah konsolidasi.
-- Jangan menyimpan logika sorting/scoring di page setelah dipindahkan ke provider.
-- Jangan menggunakan `ref.watch(provider)` (tanpa `.future`) di dalam notifier untuk sumber data async.
+- Jangan memperbarui `state` sebelum operasi database selesai (kecuali mengikuti pola optimistic update pada aturan Riverpod #9).
+- Jangan menelan exception; wajib `rethrow` agar UI dapat menangani.
+- Jangan membuat instance database baru di notifier.
 **Alasan:**
-Sebelum konsolidasi, `DashboardPage` me-`watch` 5 provider secara terpisah dan melakukan perhitungan `_jadwalTerdekat`, `_skorUrgensi`, `_rasioKm`, `_rasioHari` di page. Hal ini menyebabkan page menjadi berat dan logika bisnis bercampur dengan UI. Setelah konsolidasi, page hanya me-`watch` `dashboardProvider(selectedKendaraanIdState)` dan provider menangani seluruh pemuatan dan perhitungan.
-**Dampak apabila dilanggar:**
-- Page menjadi berat dan sulit dipelihara.
-- Duplikasi logika antara page dan provider.
-- Risiko state tidak konsisten karena perhitungan di dua tempat.
-- Rebuild yang tidak perlu karena page bergantung pada banyak provider.
-**Rujukan implementasi:**
-- `lib/fitur/dashboard/provider/dashboard_provider.dart` — `_muatData`, `_jadwalTerdekat`, `_skorUrgensi`, `_rasioKm`, `_rasioHari`.
-- `lib/fitur/dashboard/page/dashboard_page.dart` — `build` yang hanya me-`watch` `dashboardProvider`.
+Pola ini konsisten antara `ImpianNotifier` dan `DiaryCravingNotifier`: state hanya diperbarui setelah operasi database berhasil, dengan penanganan error yang terstruktur. Hal ini mencegah state UI tidak sinkron dengan database ketika operasi gagal.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
 **Contoh benar:**
 ```dart
-// Provider: konsolidasi semua data dan perhitungan.
-@Riverpod(keepAlive: true)
-class DashboardNotifier extends _$DashboardNotifier {
-  @override
-  Future<DashboardState> build(String? idKendaraan) async =>
-      await _muatData(idKendaraan);
-  Future<DashboardState> _muatData(String? idKendaraan) async {
-    final impianState = await ref.watch(impianProvider.future);
-    final kmState = await ref.watch(kmProvider.future);
-    final transaksiState = await ref.watch(transaksiProvider.future);
-    final jadwalState = await ref.watch(jadwalServiceProvider.future);
-    // ... perhitungan di sini ...
-    return DashboardState(/* ... */);
-  }
-}
-// Page: hanya konsumsi provider tunggal.
-final dashboardAsync = ref.watch(dashboardProvider(selectedKendaraanIdState));
-if (dashboardAsync.isLoading) return _buildLoading();
-if (dashboardAsync.hasError) return _buildError();
-final dashboardState = dashboardAsync.requireValue;
-```
-**Contoh salah:**
-```dart
-// Page: me-watch banyak provider dan hitung di page (sebelum konsolidasi).
-final kmAsync = ref.watch(kmProvider);
-final jadwalAsync = ref.watch(jadwalServiceProvider);
-final transaksiAsync = ref.watch(transaksiProvider);
-final impianAsync = ref.watch(impianProvider);
-// ... perhitungan _jadwalTerdekat, _skorUrgensi di page ...
-```
-**Penjelasan perbedaan:**
-Contoh benar mengonsolidasi pemuatan dan perhitungan ke provider, sehingga page hanya mengonsumsi state yang sudah diproses. Contoh salah menyebarkan pemuatan dan perhitungan di page, menyebabkan page berat dan logika bercampur dengan UI.
-## Migrasi State Dashboard dari List ke Field Scalar (Freezed)
-**Cakupan:**
-- `lib/fitur/dashboard/state/dashboard_state.dart` — `DashboardState`.
-- `lib/fitur/dashboard/provider/dashboard_provider.dart` — `DashboardNotifier`.
-**Aturan wajib:**
-1. Gunakan field scalar yang spesifik (`kmTerbaru`, `saldo`, `jadwalServiceTerdekat`, `jumlahImpian`, `impianTercapai`) alih-alih `List<DashboardModel>` pada state dashboard.
-2. Gunakan tipe model nullable (`KmModel?`, `JadwalServiceModel?`) untuk field yang mungkin tidak tersedia, bukan `double` dengan default 0.
-3. Gunakan `@Default(0)` untuk field numerik yang selalu ada.
-4. Perbarui file `.freezed.dart` melalui generator setelah mengubah state (jangan edit manual).
-**Larangan:**
-- Jangan menggunakan `List<DashboardModel>` untuk state dashboard jika data yang dibutuhkan hanya ringkasan (km terbaru, saldo, jadwal terdekat, jumlah impian).
-- Jangan menggunakan `double` dengan default 0 untuk field yang seharusnya model (mis. `kmTerbaru` sebagai `double`).
-- Jangan mengedit file `.freezed.dart` secara manual.
-**Alasan:**
-State dashboard awalnya menggunakan `List<DashboardModel> listDashboard`, kemudian dimigrasikan ke field scalar yang lebih spesifik. `kmTerbaru` awalnya `double` (nilai km saja), kemudian diubah ke `KmModel?` agar menyimpan model lengkap. Ini lebih type-safe dan menyederhanakan akses data di UI.
-**Dampak apabila dilanggar:**
-- State menjadi tidak type-safe (mis. `kmTerbaru` sebagai `double` kehilangan informasi model).
-- UI harus melakukan pencarian/filter pada list untuk mendapatkan data yang dibutuhkan.
-- Risiko error runtime karena data tidak sesuai tipe.
-**Rujukan implementasi:**
-- `lib/fitur/dashboard/state/dashboard_state.dart` — definisi Freezed.
-- `lib/fitur/dashboard/state/dashboard_state.freezed.dart` — file generated.
-**Contoh benar:**
-```dart
-@freezed
-abstract class DashboardState with _$DashboardState {
-  const DashboardState._();
-  const factory DashboardState({
-    KmModel? kmTerbaru,
-    @Default(0) double saldo,
-    JadwalServiceModel? jadwalServiceTerdekat,
-    @Default(0) double jumlahImpian,
-    @Default(0) double impianTercapai,
-  }) = _DashboardState;
-}
-```
-**Contoh salah:**
-```dart
-@freezed
-abstract class DashboardState with _$DashboardState {
-  const DashboardState._();
-  const factory DashboardState({
-    @Default([]) List<DashboardModel> listDashboard,
-    @Default(0) double kmTerbaru, // seharusnya KmModel?
-  }) = _DashboardState;
-}
-```
-**Penjelasan perbedaan:**
-Contoh benar menggunakan field scalar yang type-safe (`KmModel?`, `JadwalServiceModel?`) dan default value yang sesuai. Contoh salah menggunakan list yang memerlukan filter tambahan dan tipe `double` untuk km yang kehilangan informasi model.
-## Family Provider untuk Parameter idKendaraan
-**Cakupan:**
-- `lib/fitur/dashboard/provider/dashboard_provider.dart` — `DashboardNotifier` dengan parameter `idKendaraan`.
-- `lib/shared/provider/pemilih_kendaraan_provider.dart` — `pemilihKendaraan` dengan parameter `page` dan `value`.
-**Aturan wajib:**
-1. Gunakan family provider (`@Riverpod` dengan parameter pada `build`) ketika provider bergantung pada parameter eksternal (mis. `idKendaraan`).
-2. Pastikan file `.g.dart` dihasilkan ulang setelah menambah/mengubah parameter `build`.
-3. Berikan nama kelas Notifier yang konsisten (mis. `DashboardNotifier`, bukan `Dashboard`).
-4. Gunakan `keepAlive: true` jika state perlu dipertahankan (mis. dashboard).
-5. Gunakan `@Riverpod()` (auto-dispose) jika state tidak perlu dipertahankan (mis. pemilih kendaraan).
-**Larangan:**
-- Jangan menggunakan functional provider (`int dashboard(Ref ref)`) jika state perlu dimutasi melalui metode (gunakan Notifier kelas).
-- Jangan menambah parameter pada `build` tanpa meregenerasi file `.g.dart`.
-- Jangan menggunakan nama kelas Notifier yang tidak konsisten.
-**Alasan:**
-Dashboard provider awalnya adalah functional provider sederhana (`int dashboard(Ref ref) => 0`), kemudian dimigrasikan ke Notifier kelas, dan akhirnya menjadi family provider dengan parameter `idKendaraan`. Ini menunjukkan evolusi dari provider sederhana ke provider yang lebih kompleks dan reusable.
-**Dampak apabila dilanggar:**
-- Provider tidak dapat menerima parameter, sehingga tidak reusable untuk kendaraan berbeda.
-- File `.g.dart` tidak sinkron dengan sumber, menyebabkan error kompilasi.
-- Inconsistent naming menyebabkan kebingungan.
-**Rujukan implementasi:**
-- `lib/fitur/dashboard/provider/dashboard_provider.dart` — `DashboardNotifier` dengan `build(String? idKendaraan)`.
-- `lib/fitur/dashboard/provider/dashboard_provider.g.dart` — file generated.
-**Contoh benar:**
-```dart
-@Riverpod(keepAlive: true)
-class DashboardNotifier extends _$DashboardNotifier {
-  @override
-  Future<DashboardState> build(String? idKendaraan) async =>
-      await _muatData(idKendaraan);
-}
-```
-**Contoh salah:**
-```dart
-// Functional provider tanpa parameter (tidak bisa menerima idKendaraan).
-@Riverpod(keepAlive: true)
-int dashboard(Ref ref) {
-  return 0;
-}
-```
-**Penjelasan perbedaan:**
-Contoh benar menggunakan Notifier kelas dengan parameter, sehingga provider dapat menerima `idKendaraan` dan menghasilkan state yang berbeda per kendaraan. Contoh salah menggunakan functional provider tanpa parameter, sehingga tidak dapat menerima input dan tidak dapat dimutasi.
-## Penempatan Metode scrollToTop pada Kelas State
-**Cakupan:**
-- Halaman yang mengimplementasikan interface `ScrollKeAtas` (mis. `dashboard_page.dart`, `km_page.dart`).
-- Metode `scrollToTop()`.
-**Aturan wajib:**
-1. Tempatkan metode `scrollToTop()` (implementasi interface `ScrollKeAtas`) di bagian **atas** kelas State, sebelum metode `build()`.
-2. Pastikan metode tetap berada pada level anggota kelas.
-3. Jangan menempatkan `scrollToTop()` di bagian bawah kelas (berbeda dari `_buildLoading`/`_buildError` yang ditempatkan di bawah).
-**Larangan:**
-- Jangan menempatkan `scrollToTop()` di bagian bawah kelas State (setelah `build()` dan helper lain).
-- Jangan memindahkan metode tanpa memeriksa batas blok kurung kurawal.
-**Alasan:**
-Metode `scrollToTop()` adalah implementasi interface yang dipanggil dari luar (via `GlobalKey.currentState`), bukan dari dalam `build()`. Penempatannya di atas kelas (sebelum `build()`) memudahkan navigasi dan konsisten dengan pola yang diterapkan pada `DashboardPage`. Berbeda dari `_buildLoading`/`_buildError` yang ditempatkan di bawah karena merupakan fallback UI yang jarang dirujuk.
-**Dampak apabila dilanggar:**
-- Struktur kelas tidak konsisten antar halaman.
-- Metode interface sulit ditemukan karena tercampur dengan helper internal.
-**Rujukan implementasi:**
-- `lib/fitur/dashboard/page/dashboard_page.dart` — `scrollToTop()` di atas `build()`.
-**Contoh benar:**
-```dart
-class _DashboardPageState extends ConsumerState<DashboardPage>
-    implements ScrollKeAtas {
-  @override
-  void scrollToTop() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-  @override
-  Widget build(BuildContext context) {
-    // ...
-  }
-}
-```
-**Contoh salah:**
-```dart
-class _DashboardPageState extends ConsumerState<DashboardPage>
-    implements ScrollKeAtas {
-  @override
-  Widget build(BuildContext context) {
-    // ...
-  }
-  // scrollToTop di bawah — tidak konsisten.
-  @override
-  void scrollToTop() {
-    // ...
-  }
-}
-```
-**Penjelasan perbedaan:**
-Contoh benar menempatkan `scrollToTop()` di atas `build()` sehingga metode interface mudah ditemukan. Contoh salah menempatkannya di bawah, tidak konsisten dengan pola yang diterapkan pada halaman lain.
-## Nonaktifkan Konfigurasi Linter pada analysis_options.yaml
-**Cakupan:**
-- `analysis_options.yaml` — seluruh konfigurasi linter dan analyzer.
-**Status:** Keputusan pengguna (sementara), bukan aturan wajib.
-**Temuan:**
-Pada commit `4cfa0c83`, seluruh konfigurasi linter dan analyzer pada `analysis_options.yaml` di-comment out (termasuk `include: package:flutter_lints/flutter.yaml`, rules linter, plugins riverpod_lint, dan analyzer exclude/language).
-**Alasan pengguna:**
-Linter dinonaktifkan untuk sementara karena berat ke device. Ini adalah keputusan pengguna yang perlu dihormati selama pengembangan.
-**Dampak:**
-- Analyzer tidak lagi melaporkan error/warning/info pada kode.
-- Temuan potensial bug (null safety, unawaited futures, dll.) tidak terdeteksi.
-- Kode dapat memiliki masalah yang tidak terdeteksi.
-**Rekomendasi (ketika linter diaktifkan kembali):**
-- Aktifkan kembali konfigurasi linter dan analyzer.
-- Jika terdapat konflik dengan kode yang ada, perbaiki kode agar sesuai dengan rules, bukan menonaktifkan rules.
-- Jika rules tertentu memang tidak sesuai, nonaktifkan secara selektif dengan alasan yang jelas, bukan seluruhnya.
-**Catatan:**
-Keputusan ini bersifat sementara. Ketika device sudah mampu menangani analyzer, linter sebaiknya diaktifkan kembali untuk mendeteksi potensi bug. AI tidak boleh mengubah `analysis_options.yaml` melalui command ini tanpa persetujuan pengguna.
-## Penggunaan EasyLoading Overlay pada Aksi Simpan (Form Jadwal Service)
-**Cakupan:**
-- `lib/fitur/jadwal_service/page/form_jadwal_service.dart` — `_FormJadwalServiceState._simpanForm` dan `_buildTombolSimpan`.
-- Aksi simpan lain yang menggunakan `flutter_easyloading` sebagai overlay loading (sesuai `optimasi_ux.md` §12).
-**Aturan wajib:**
-1. Tampilkan overlay loading melalui `unawaited(EasyLoading.show(status: 'Menyimpan...'))` segera setelah flag `_isLoading` diaktifkan.
-2. Sembunyikan overlay melalui `unawaited(EasyLoading.dismiss())` di dalam blok `finally`, sebelum mengembalikan `_isLoading` ke `false`.
-3. Pertahankan guard double-submit di awal metode: `if (_isLoading) { L.w(...); return; }`.
-4. Karena loading ditangani oleh overlay, tombol simpan tidak perlu menampilkan spinner sendiri maupun dinonaktifkan melalui `onPressed: _isLoading ? null : _simpanForm`; cukup panggil `_simpanForm` langsung.
-5. Pastikan `_isLoading` dikembalikan ke `false` pada semua jalur (sukses, error, dan finally), dengan pemeriksaan `mounted` sebelum `setState`.
-**Larangan:**
-- Jangan menampilkan spinner di dalam tombol sekaligus overlay EasyLoading untuk aksi yang sama (redundan).
-- Jangan menghilangkan guard `_isLoading` di awal metode ketika overlay digunakan, karena tombol tetap dapat ditekan berulang.
-- Jangan memanggil `EasyLoading.dismiss()` tanpa `unawaited` atau di luar `finally`, karena overlay dapat tertinggal saat terjadi exception.
-**Alasan:**
-Pada form jadwal service, loading awalnya ditampilkan di dalam tombol (`CircularProgressIndicator` + `onPressed: _isLoading ? null : _simpanForm`). Setelah ditambahkan overlay EasyLoading, spinner di tombol menjadi redundan dan tombol dinonaktifkan secara manual tidak lagi diperlukan, karena guard `_isLoading` di awal `_simpanForm` sudah mencegah double-submit, sementara overlay memberikan feedback visual kepada pengguna.
-**Dampak apabila dilanggar:**
-- Overlay loading tertinggal (tidak hilang) ketika terjadi exception, sehingga UI terkunci.
-- Double-submit dapat terjadi jika guard `_isLoading` dihilangkan.
-- Tampilan loading ganda (spinner di tombol + overlay) yang tidak konsisten.
-**Rujukan implementasi:**
-- `lib/fitur/jadwal_service/page/form_jadwal_service.dart` — `_simpanForm` (guard, `EasyLoading.show`, `EasyLoading.dismiss` di `finally`).
-- `.agents/rules/global/optimasi_ux.md` §12 — loading dan penguncian aksi.
-**Contoh benar:**
-```dart
-Future<void> _simpanForm() async {
-  if (_isLoading) {
-    L.w('Form masih loading, simpan diabaikan');
-    return;
-  }
-  // ... validasi ...
-  setState(() => _isLoading = true);
-  unawaited(EasyLoading.show(status: 'Menyimpan...'));
+Future<void> tambah(DiaryCravingModel craving) async {
+  L.i('craving.id=${craving.id}');
   try {
-    // ... operasi simpan ...
+    final dataLama = await future;
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.diaryCraving, craving.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    state = AsyncValue.data(
+      DiaryCravingState(
+        listCraving: [craving, ...dataLama.listCraving],
+        jumlahCraving: dataLama.jumlahCraving + 1,
+      ),
+    );
+    L.s('Diary craving berhasil disimpan');
   } on Exception catch (e, s) {
-    L.e('Gagal menyimpan: $e $s');
-    if (mounted) AppToast.gagal(context, 'Gagal menyimpan');
-  } finally {
-    if (mounted) {
-      unawaited(EasyLoading.dismiss());
-      setState(() => _isLoading = false);
-    }
+    L.e('Gagal menyimpan diary craving: $e $s');
+    rethrow;
   }
-}
-Widget _buildTombolSimpan() {
-  return OutlinedButton(
-    onPressed: _simpanForm,
-    child: const Text('Simpan'),
-  );
 }
 ```
 **Contoh salah:**
 ```dart
-Widget _buildTombolSimpan() {
-  // Loading ganda: spinner di tombol + overlay EasyLoading.
-  return OutlinedButton(
-    onPressed: _isLoading ? null : _simpanForm,
-    child: _isLoading
-        ? const CircularProgressIndicator(strokeWidth: 2)
-        : const Text('Simpan'),
-  );
-}
-Future<void> _simpanForm() async {
-  // Guard dihilangkan -> double-submit.
-  setState(() => _isLoading = true);
-  EasyLoading.show(status: 'Menyimpan...'); // tanpa unawaited
-  try {
-    // ...
-  } finally {
-    setState(() => _isLoading = false); // dismiss tidak dipanggil -> overlay tertinggal
-  }
-}
+// Memperbarui state sebelum operasi database selesai.
+state = AsyncValue.data(DiaryCravingState(listCraving: [craving, ...list]));
+await op.tambah(NamaTabel.diaryCraving, craving.toSqflite()); // jika gagal, state sudah berubah
 ```
-**Penjelasan perbedaan:**
-Contoh benar menggunakan guard `_isLoading` di awal metode, overlay EasyLoading dengan `unawaited`, dan `EasyLoading.dismiss()` di `finally`, sehingga loading selalu dihentikan meskipun terjadi exception. Contoh salah menampilkan loading ganda, menghilangkan guard, dan tidak menjamin dismiss overlay.
-## Hierarki Tipografi pada Tabel Perbandingan Kendaraan
+## Model dan State Freezed menggunakan `abstract class`
 **Cakupan:**
-- `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` — DataTable dengan header kolom, label baris, dan nilai data.
+- `lib/fitur/diary_craving/model/diary_craving_model.dart` — `DiaryCravingModel`.
+- `lib/fitur/diary_craving/state/diary_craving_state.dart` — `DiaryCravingState`.
 **Aturan wajib:**
-1. Header kolom (nama kendaraan dan 'Metrik') menggunakan `Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)`.
-2. Label baris menggunakan `Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)`.
-3. Nilai data cell menggunakan `Theme.of(context).textTheme.bodySmall`.
-4. Hierarki ukuran: header (bodyLarge) > label (bodyMedium) > nilai (bodySmall).
+1. Model dan state yang dibuat dengan Freezed pada proyek ini wajib menggunakan `abstract class`, bukan `class` biasa.
+2. Model database wajib menyediakan factory `fromSqflite(Map<String, Object?> row)` dan method `toSqflite()` untuk konversi ke/dari SQLite.
+3. Parsing nilai dari database wajib menggunakan `ParserUtil`.
+4. Konversi tanggal ke UTC wajib dilakukan di `toSqflite()` (`toUtc().toIso8601String()`), dan konversi ke lokal wajib dilakukan di `fromSqflite()` (`parseDateTime(...)?.toLocal()`).
 **Larangan:**
-- Jangan menggunakan ukuran yang sama untuk header, label, dan nilai, karena hierarki visual tidak terlihat.
-- Jangan menggunakan `const TextStyle(fontWeight: FontWeight.bold)` tanpa acuan tema untuk warna dan ukuran.
+- Jangan membuat model/state Freezed dengan `class` biasa.
+- Jangan melakukan parsing `dynamic` dari database secara langsung tanpa `ParserUtil`.
+- Jangan menyimpan waktu lokal seolah-olah UTC.
 **Alasan:**
-Pada tabel perbandingan kendaraan, header kolom paling besar (bodyLarge bold), label baris sedang (bodyMedium bold), nilai data terkecil (bodySmall). Ini memberikan hierarki visual yang jelas sesuai aturan tipografi (hierarki visual label, sub-label, dan nilai).
-**Dampak apabila dilanggar:**
-- Hierarki visual tidak terlihat, pengguna sulit membedakan header, label, dan nilai.
-- Tidak konsisten dengan standar tipografi proyek.
-**Rujukan implementasi:**
-- `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` — DataTable dengan tipografi hierarkis.
+Commit `3b67d309` membuat `DiaryCravingModel` dan `DiaryCravingState` dengan `abstract class` Freezed. Model menyediakan `fromSqflite`/`toSqflite` yang menggunakan `ParserUtil` dan konversi UTC, konsisten dengan aturan penyimpanan tanggal.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/model/diary_craving_model.dart`, `lib/fitur/diary_craving/state/diary_craving_state.dart`
 **Contoh benar:**
 ```dart
-DataTable(
-  columns: [
-    DataColumn(
-      label: Text(
-        'Metrik',
-        style: Theme.of(context).textTheme.bodyLarge
-            ?.copyWith(fontWeight: FontWeight.bold),
-      ),
-    ),
-    ...data.map(
-      (d) => DataColumn(
-        label: Text(
-          d.kendaraan.nama,
-          style: Theme.of(context).textTheme.bodyLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    ),
-  ],
-  rows: rows.map((r) {
-    return DataRow(
-      cells: [
-        DataCell(
-          Text(
-            r.label,
-            style: Theme.of(context).textTheme.bodyMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
+@freezed
+abstract class DiaryCravingModel with _$DiaryCravingModel {
+  const DiaryCravingModel._();
+  const factory DiaryCravingModel({...}) = _DiaryCravingModel;
+  factory DiaryCravingModel.fromSqflite(Map<String, Object?> row) {...}
+  Map<String, Object?> toSqflite() {...}
+}
+```
+**Contoh salah:**
+```dart
+@freezed
+class DiaryCravingModel with _$DiaryCravingModel { ... } // class biasa, bukan abstract
+```
+## Konfirmasi sebelum Menyimpan pada Form
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/form_diary_craving.dart` — `_FormDiaryCravingState._simpan`.
+**Aturan wajib:**
+1. Sebelum menyimpan data, tampilkan dialog konfirmasi (`showOkCancelAlertDialog`) yang menjelaskan tindakan yang akan dilakukan.
+2. Hanya jalankan penyimpanan jika pengguna menekan OK.
+3. Selama proses penyimpanan, aktifkan flag `_isLoading` dan tampilkan loading overlay (`EasyLoading`).
+4. Setelah selesai (berhasil/gagal), hentikan loading dan kembalikan flag.
+**Larangan:**
+- Jangan menyimpan data tanpa konfirmasi pengguna.
+- Jangan membiarkan proses penyimpanan berjalan tanpa indikator loading.
+**Alasan:**
+Commit `3b67d309` menambahkan dialog konfirmasi "Apakah Anda yakin ingin menyimpan catatan craving ini?" sebelum menyimpan, serta flag `_isLoading` dan `EasyLoading` selama proses. Pola ini konsisten dengan UX yang jelas.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/screens/form_diary_craving.dart`
+**Contoh benar:**
+```dart
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Simpan Craving',
+  message: 'Apakah Anda yakin ingin menyimpan catatan craving ini?',
+  okLabel: 'Simpan',
+  cancelLabel: 'Batal',
+);
+if (konfirmasi != OkCancelResult.ok) return;
+```
+**Contoh salah:**
+```dart
+// Menyimpan langsung tanpa konfirmasi.
+await ref.read(diaryCravingProvider.notifier).tambah(model);
+```
+## Empty State pada Daftar
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/diary_craving_screen.dart` — `_EmptyDiaryCraving`.
+**Aturan wajib:**
+1. Ketika daftar data kosong, tampilkan widget empty state yang informatif (ikon, judul, deskripsi singkat).
+2. Sertakan call-to-action (mis. tombol FAB) agar pengguna dapat menambah data.
+3. Empty state wajib dibungkus `SafeArea` dan memiliki padding tepi layar.
+**Larangan:**
+- Jangan menampilkan layar kosong tanpa informasi atau CTA.
+**Alasan:**
+Commit `3b67d309` menambahkan `_EmptyDiaryCraving` dengan ikon, judul "Belum ada catatan craving", deskripsi, dan FAB untuk menambah data. Pola ini meningkatkan UX.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`
+**Contoh benar:**
+```dart
+class _EmptyDiaryCraving extends StatelessWidget {
+  const _EmptyDiaryCraving();
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.book, size: 48),
+              Text('Belum ada catatan craving',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Tekan tombol + untuk mencatat craving pertama.',
+                  textAlign: TextAlign.center),
+            ],
           ),
         ),
-        ...data.map(
-          (d) => DataCell(
-            Text(
-              r.nilai(d),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
-  }).toList(),
-);
+  }
+}
 ```
 **Contoh salah:**
 ```dart
-DataTable(
-  columns: [
-    const DataColumn(label: Text('Metrik')),
-    ...data.map(
-      (d) => DataColumn(
-        label: Text(d.kendaraan.nama, overflow: TextOverflow.ellipsis),
+// Menampilkan layar kosong tanpa informasi.
+if (list.isEmpty) return const Scaffold(body: SizedBox.shrink());
+## Penanganan State Asynchronous dan Data Kosong pada Layar
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/diary_craving_screen.dart` — `_DiaryCravingScreenState.build`.
+- `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart` — `_PemulihanKesehatanScreenState.build`.
+**Aturan wajib:**
+1. Layar yang memuat data asynchronous wajib menangani status `isLoading` terlebih dahulu (tampilkan indikator loading).
+2. Setelah itu, tangani status `hasError` (tampilkan pesan error dan tombol retry yang memanggil `ref.refresh(provider)`).
+3. Setelah data tersedia (`requireValue`), tangani kondisi data kosong (empty state) dan kondisi data tidak lengkap (mis. biodata null, tanggal berhenti null) sebagai tampilan tersendiri dengan informasi dan call-to-action.
+4. Gunakan early return (guard clause) untuk setiap kondisi tersebut agar alur build tetap linear dan mudah dibaca.
+5. Gunakan `const SizedBox.shrink()` untuk widget kondisional yang disembunyikan (mis. kartu milestone ketika belum ada tanggal berhenti).
+6. Setelah `await`/operasi asynchronous, periksa `mounted` sebelum mengakses `context` atau memanggil `setState`.
+**Larangan:**
+- Jangan memanggil `requireValue` sebelum memastikan `isLoading` dan `hasError` sudah ditangani.
+- Jangan menampilkan layar kosong tanpa informasi atau CTA ketika data kosong.
+- Jangan menggabungkan penanganan loading, error, dan data kosong dalam satu blok yang sulit dibaca.
+**Alasan:**
+Pola ini konsisten pada `DiaryCravingScreen` (loading → error dengan retry → empty state dengan FAB) dan `PemulihanKesehatanScreen` (loading → error dengan retry → biodata null → belum berhenti → daftar milestone). Penanganan setiap status sebagai tampilan tersendiri memberikan kepastian kepada pengguna (UX) dan mencegah crash akibat `requireValue` pada data yang belum tersedia. Early return menjaga keterbacaan build method.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- File: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+**Contoh benar:**
+```dart
+final dataAsync = ref.watch(provider);
+if (dataAsync.isLoading) {
+  return const Scaffold(body: Center(child: CircularProgressIndicator()));
+}
+if (dataAsync.hasError) {
+  return Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Gagal memuat data'),
+          OutlinedButton(
+            onPressed: () => ref.refresh(provider),
+            child: const Text('Coba lagi'),
+          ),
+        ],
       ),
     ),
-  ],
-  rows: rows.map((r) {
-    return DataRow(
-      cells: [
-        DataCell(Text(r.label)),
-        ...data.map((d) => DataCell(Text(r.nilai(d)))),
-      ],
-    );
-  }).toList(),
+  );
+}
+final state = dataAsync.requireValue;
+if (state.list.isEmpty) {
+  return const Scaffold(body: _EmptyState());
+}
+return Scaffold(body: _Daftar(state.list));
+```
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final state = dataAsync.requireValue;
+return Scaffold(body: ListView(...));
+```
+## Normalisasi Tanggal untuk Perbandingan dan Perhitungan Berbasis Hari
+**Cakupan:**
+- `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart` — `_KalenderSmokeFreeScreenState.build`, `_GridKalender`, `_SelHari`.
+- `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart` — `_PemulihanKesehatanScreenState.build`, `_HeaderPemulihan`.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_DashboardScreenState._buildCardMilestone`.
+**Aturan wajib:**
+1. Sebelum membandingkan atau menghitung selisih hari antara dua tanggal, normalisasi nilai `DateTime` ke komponen tanggal saja (tahun, bulan, hari) dengan membuang komponen waktu.
+2. Gunakan `DateTime(tanggal.year, tanggal.month, tanggal.day)` untuk memperoleh representasi tanggal tanpa waktu.
+3. Saat menghitung selisih hari dengan `difference(...).inDays`, pastikan kedua operand sudah dinormalisasi agar hasil tidak terpengaruh oleh jam/menit/detik.
+4. Hasil perhitungan durasi atau jumlah hari yang dapat bernilai negatif wajib diklem (clamp) ke nol apabila nilai negatif tidak bermakna dalam konteks (mis. "hari smoke-free" tidak boleh negatif).
+5. Gunakan `isBefore`/`isAfter` pada nilai yang sudah dinormalisasi untuk menentukan rentang tanggal, agar batas hari konsisten.
+**Larangan:**
+- Jangan membandingkan `DateTime.now()` (yang menyertakan waktu) langsung dengan tanggal yang dinormalisasi tanpa penyesuaian.
+- Jangan membiarkan hasil perhitungan hari bernilai negatif pada konteks yang mensyaratkan nilai non-negatif.
+- Jangan menggunakan komponen waktu dalam penentuan status hari (smoke-free / belum) pada kalender.
+**Alasan:**
+`DateTime.now()` menyertakan komponen waktu (jam, menit, detik). Jika dibandingkan langsung dengan tanggal yang dinormalisasi (mis. tengah malam), hasil perhitungan hari dapat salah satu hari. Normalisasi memastikan perbandingan dan perhitungan berbasis hari akurat. Pengklaman nilai negatif ke nol mencegah tampilan atau logika yang tidak bermakna. Pola ini konsisten pada `KalenderSmokeFreeScreen` (normalisasi `hariIni` dan `tanggalBerhenti` sebelum menghitung total hari smoke-free dan menentukan status sel kalender), `PemulihanKesehatanScreen`/dashboard (klamping durasi negatif ke `Duration.zero`).
+**Sumber evaluasi:**
+- Commit: `6fd979fd9e8296bc7d9c40e9037870faef9c846a`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- File: `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+**Contoh benar:**
+```dart
+final hariIniDate = DateTime(hariIni.year, hariIni.month, hariIni.day);
+final tanggalBerhentiDate = DateTime(
+  tanggalBerhenti.year,
+  tanggalBerhenti.month,
+  tanggalBerhenti.day,
 );
-```
-**Penjelasan perbedaan:**
-Contoh benar menggunakan hierarki tipografi yang jelas: header (bodyLarge bold), label (bodyMedium bold), nilai (bodySmall). Contoh salah menggunakan ukuran default yang sama untuk semua, sehingga hierarki visual tidak terlihat.
-## Rujukan Implementasi Khusus Proyek
-Aturan berikut merupakan penerapan dari aturan bersama (`aturan_bersama.md`) pada proyek ini. Prinsip umum tersimpan di aturan bersama; detail implementasi dan rujukan file tersimpan di sini.
-- **Pengurutan Koleksi dengan `sorted`** — Rujukan: `lib/fitur/dashboard/provider/dashboard_provider.dart` (`_jadwalTerdekat`).
-- **Penggunaan `maxBy`** — Rujukan: `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` (`maxBy(kmList, (km) => km.tanggal)`).
-- **Ekstraksi Fungsi ke Helper** — Rujukan: `lib/fitur/bahan_bakar/helper/filter_bahan_bakar.dart` (`hitungJarakTempuh`), `lib/fitur/bahan_bakar/state/bahan_bakar_state.dart` (`_hitungSelisihKm`), `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart`.
-- **Anotasi Tipe Eksplisit** — Rujukan: `lib/fitur/kendaraan/page/perbandingan_kendaraan_page.dart` (`final BahanBakarState bahanBakarState = ...`, `final List<BahanBakarModel> bahanBakarList = ...`).
-## Penyusunan Abjad Dependensi pada `pubspec.yaml`
-**Tujuan:**
-Menjaga konsistensi urutan dependensi agar perubahan pada `pubspec.yaml` mudah ditinjau dan dibandingkan.
-**Aturan:**
-1. Susun nama paket pada kelompok `dependencies` secara alfabetis (A–Z).
-2. Susun nama paket pada kelompok `dev_dependencies` secara alfabetis (A–Z), terpisah dari `dependencies`.
-3. Pertahankan kelompok dependensi asal setiap paket; jangan memindahkan paket dari `dependencies` ke `dev_dependencies` atau sebaliknya.
-4. Penyusunan alfabetis hanya dilakukan setelah seluruh proses instalasi paket selesai.
-**Contoh benar:**
-```yaml
-dependencies:
-  cupertino_icons: ^2.0.0
-  flutter:
-    sdk: flutter
-dev_dependencies:
-  flutter_lints: ^6.0.0
-  flutter_test:
-    sdk: flutter
-```
-**Contoh salah:**
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.8
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^6.0.0
-```
-**Alasan:**
-Commit `e8b8ace` menyusun ulang dependensi `pubspec.yaml` secara alfabetis, dan perintah `install_ulang_paket.md` mewajibkan penyusunan alfabetis setelah instalasi. Pengurutan yang konsisten memudahkan peninjauan diff dan mencegah perubahan urutan yang tidak perlu.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Jaga konsistensi urutan entri dependensi pada `pubspec.yaml` (misalnya alfabetis) agar perubahan lebih mudah ditinjau, tanpa mengubah kelompok atau sumber dependensi yang sudah ditetapkan.
-## Pemisahan Titik Masuk (main.dart) dan Widget Aplikasi (app.dart)
-**Tujuan:**
-Menjaga entry point aplikasi tetap minimal dan memisahkan tanggung jawab antara peluncuran aplikasi (`main()`) dan definisi widget root (`MyApp`).
-**Aturan:**
-1. `main.dart` hanya memuat `main()` yang memanggil `runApp(const MyApp())`, serta re-export `app.dart` agar `MyApp` tetap dapat diimpor dari entry point.
-2. Definisi kelas `MyApp` dan logika widget root ditempatkan di `app.dart`.
-3. Jangan menempatkan logika UI, state, atau konfigurasi tema yang kompleks di dalam `main()`.
-**Contoh benar:**
-```dart
-// main.dart
-import 'package:berhenti_merokok/app.dart';
-import 'package:flutter/material.dart';
-export 'package:berhenti_merokok/app.dart';
-void main() {
-  runApp(const MyApp());
-}
+final totalHari = hariIniDate.difference(tanggalBerhentiDate).inDays + 1;
+final totalAman = totalHari < 0 ? 0 : totalHari;
+// Klamping durasi negatif ke nol.
+final durasi = DateTime.now().difference(tanggalBerhenti);
+final aman = durasi.isNegative ? Duration.zero : durasi;
 ```
 **Contoh salah:**
 ```dart
-// main.dart berisi seluruh definisi MyApp dan logika UI.
-class MyApp extends StatelessWidget { ... }
-void main() => runApp(const MyApp());
+// Membandingkan DateTime.now() (dengan waktu) langsung dengan tanggal berhenti.
+final totalHari = DateTime.now().difference(tanggalBerhenti).inDays + 1;
+// Bisa salah satu hari karena komponen waktu.
 ```
+## Penanganan Beberapa Provider Asynchronous pada Satu Layar
+**Cakupan:**
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState.build`.
+**Aturan wajib:**
+1. Ketika layar memuat lebih dari satu provider asynchronous, tangani status `isLoading` gabungan (tampilkan indikator loading jika salah satu masih loading).
+2. Tangani status `hasError` untuk setiap provider secara terpisah, dengan pesan error dan tombol retry yang memanggil `ref.refresh(provider)` yang sesuai.
+3. Panggil `requireValue` pada masing-masing provider hanya setelah status loading dan error-nya ditangani.
+4. Kondisi data tidak lengkap (mis. biodata null) tetap ditangani sebagai tampilan tersendiri dengan informasi dan call-to-action.
+**Larangan:**
+- Jangan memanggil `requireValue` pada provider yang masih loading atau error.
+- Jangan menggabungkan penanganan error beberapa provider menjadi satu blok yang tidak jelas provider mana yang gagal.
 **Alasan:**
-Commit `32967bb` memindahkan definisi `MyApp` dari `main.dart` ke `app.dart` dan menyisakan `main()` di `main.dart` dengan re-export. Pemisahan ini memudahkan pengujian dan pemeliharaan entry point.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Pisahkan titik masuk aplikasi (`main()`) yang hanya menjalankan `runApp` dari definisi widget root (`MyApp`) agar tanggung jawab setiap file jelas dan entry point tetap minimal.
-## Root App Widget sebagai ConsumerStatefulWidget
-**Tujuan:**
-Memungkinkan widget root mengakses dan mengamati provider (misalnya tema) melalui Riverpod, serta menyembunyikan banner debug pada build non-debug.
-**Aturan:**
-1. Jika `MyApp` perlu mengamati provider (misalnya `TemaNotifier`), gunakan `ConsumerStatefulWidget` alih-alih `StatelessWidget`.
-2. Sertakan `debugShowCheckedModeBanner: false` pada `MaterialApp` untuk build pengembangan yang lebih bersih.
-3. Jangan mengubah root widget menjadi `ConsumerStatefulWidget` jika tidak membutuhkan akses provider.
+Commit `19f43e5` menambahkan `BadgeScreen` yang memuat `biodataProvider` dan `impianProvider` sekaligus. Loading ditangani secara gabungan (`biodataAsync.isLoading || impianAsync.isLoading`), sedangkan error ditangani terpisah dengan retry yang sesuai provider. Pola ini menjaga kejelasan sumber kegagalan dan mencegah crash akibat `requireValue` pada data yang belum tersedia.
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/badge/screens/badge_screen.dart`
 **Contoh benar:**
 ```dart
-class MyApp extends ConsumerStatefulWidget {
-  const MyApp({super.key});
-  @override
-  ConsumerState<MyApp> createState() => _MyAppState();
+final biodataAsync = ref.watch(biodataProvider);
+final impianAsync = ref.watch(impianProvider);
+if (biodataAsync.isLoading || impianAsync.isLoading) {
+  return const Scaffold(body: Center(child: CircularProgressIndicator()));
 }
-class _MyAppState extends ConsumerState<MyApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const Home(),
-    );
-  }
+if (biodataAsync.hasError) {
+  // retry biodataProvider
 }
+if (impianAsync.hasError) {
+  // retry impianProvider
+}
+final biodata = biodataAsync.requireValue;
+final impianState = impianAsync.requireValue;
 ```
 **Contoh salah:**
 ```dart
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      home: const Home(),
-    );
-  }
-}
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final biodata = biodataAsync.requireValue;
+final impianState = impianAsync.requireValue;
 ```
+## Ekstraksi Perhitungan Turunan ke Ekstensi Model
+**Cakupan:**
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — form input yang menyimpan field sumber perhitungan.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardProgres`.
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`.
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState`.
+- `lib/fitur/badge/helper/badge_helper.dart` — `hitungBadge`.
+**Aturan wajib:**
+1. Perhitungan turunan yang digunakan lebih dari satu layar (mis. `hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) wajib didefinisikan sekali pada ekstensi di atas model sumber (`BiodataModelPerhitungan`), bukan diduplikasi inline di setiap layar.
+2. Ekstensi wajib ditempatkan pada file model yang sama (`lib/fitur/biodata/model/biodata_model.dart`), setelah definisi class Freezed.
+3. Guard pembagian dengan nol wajib diterapkan pada getter yang melakukan pembagian (mis. `if (batangPerBungkus == 0) return 0;`).
+4. Perhitungan yang bergantung pada waktu saat ini (`DateTime.now()`) boleh dilakukan di getter ekstensi, dengan normalisasi tanggal sesuai aturan normalisasi tanggal.
+5. Helper fungsi murni yang menerima parameter primitif (mis. `hitungBadge`) wajib ditempatkan pada folder `helper/` fitur terkait dan tidak bergantung pada `BuildContext` atau provider.
+6. Layar wajib mengonsumsi getter/helper tersebut, bukan menghitung ulang secara inline.
+**Larangan:**
+- Jangan membuat method perhitungan inline (mis. `_hitungUangDihemat`) di layar yang menggandakan logika yang sudah ada di ekstensi/helper.
+- Jangan meletakkan perhitungan turunan di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di lapisan model).
+- Jangan membiarkan formula berbeda antar layar untuk besaran yang sama.
 **Alasan:**
-Commit `38219ec` mengonversi `MyApp` menjadi `ConsumerStatefulWidget` dan menambahkan `debugShowCheckedModeBanner: false`. Pola ini memungkinkan tema dan konfigurasi aplikasi dikendalikan oleh provider di root.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Gunakan `ConsumerStatefulWidget` pada widget root hanya ketika root perlu mengamati provider (misalnya tema/locale); pertahankan `debugShowCheckedModeBanner: false` pada build pengembangan.
-## Layar Home sebagai ConsumerStatefulWidget dengan Siklus Hidup
-**Tujuan:**
-Memastikan layar utama yang membutuhkan akses provider dan pengelolaan siklus hidup (`initState`/`dispose`) menggunakan `ConsumerStatefulWidget`.
-**Aturan:**
-1. Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan `ref` dan pengelolaan siklus hidup widget.
-2. Implementasikan `initState` dan `dispose` sesuai kebutuhan, dengan pemanggilan `super` yang benar.
-3. Hindari meninggalkan `TODO` pada `initState`/`dispose` setelah implementasi selesai.
+Commit `19f43e5` mengekstrak perhitungan turunan ke ekstensi `BiodataModelPerhitungan` dan helper `hitungBadge` agar logika hanya ditulis sekali dan konsisten di dashboard, impian, dan badge. Perubahan ini juga menghapus saran sebelumnya tentang duplikasi `_hitungUangDihemat`. Ekstensi pada model menjaga konsistensi dan memudahkan pengujian; helper murni di folder `helper/` menjaga pemisahan tanggung jawab. Guard pembagian dengan nol mencegah crash ketika `batangPerBungkus` bernilai 0.
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
 **Contoh benar:**
 ```dart
-class Home extends ConsumerStatefulWidget {
-  const Home({super.key});
-  @override
-  ConsumerState<Home> createState() => _HomeState();
-}
-class _HomeState extends ConsumerState<Home> {
-  @override
-  void initState() {
-    super.initState();
-  }
-  @override
-  void dispose() {
-    super.dispose();
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('data')),
-      body: const Center(child: Text('Home')),
-    );
+extension BiodataModelPerhitungan on BiodataModel {
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
   }
 }
+// Konsumsi di layar.
+final uangDihemat = biodata?.uangDihemat ?? 0;
 ```
 **Contoh salah:**
 ```dart
-class Home extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // Tidak dapat mengakses ref atau lifecycle.
-    return const Scaffold(body: Center(child: Text('Home')));
-  }
+// Duplikasi perhitungan inline di layar.
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
+  ...
 }
 ```
+## Standar Penggunaan `flutter_local_notifications` versi 22.3.3 pada Notifikasi Harian
+**Cakupan:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `NotifikasiService`.
+- `lib/main.dart` — inisialisasi plugin sebelum `runApp`.
+- `lib/app.dart` — penjadwalan ulang saat aplikasi dibuka.
+- `lib/fitur/pengaturan/screens/pengaturan_screen.dart` — toggle, pemilih waktu, uji coba.
+- `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` — konfigurasi Android.
+**Catatan versi:** Aturan ini ditulis untuk `flutter_local_notifications` versi `22.3.3`. Jika versi package berubah, AI wajib memeriksa dokumentasi versi baru sebelum menerapkan konfigurasi lama.
+**Aturan wajib:**
+1. Periksa dukungan fitur berdasarkan platform dan versi plugin sebelum menggunakan API penjadwalan. Jangan mengasumsikan API yang sama tersedia di semua platform.
+2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web atau Linux dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini.
+3. Lengkapi receiver dan izin Android untuk penjadwalan serta pemulihan setelah restart: tambahkan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver` sesuai dokumentasi plugin. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
+4. Aktifkan core library desugaring sesuai persyaratan plugin bila diperlukan: `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. AGP minimal 8.11.1.
+5. Jangan meminta izin notifikasi secara otomatis saat aplikasi baru dibuka (termasuk iOS `DarwinInitializationSettings` dengan `requestAlertPermission`/`requestSoundPermission`/`requestBadgePermission` default `true`). Minta izin ketika pengguna secara sadar mengaktifkan pengingat.
+6. Periksa hasil izin sebelum menyimpan status pengingat aktif. Jangan menyimpan status aktif jika izin sistem belum tersedia. Periksa kembali izin ketika aplikasi dibuka karena pengguna dapat mengubahnya melalui pengaturan sistem.
+7. Pastikan jadwal, `SharedPreferences`, dan tampilan tetap konsisten ketika operasi gagal: rollback state, tampilkan feedback kegagalan, dan jangan simpan status aktif jika penjadwalan gagal.
+8. Tangani kegagalan penjadwalan ulang ketika aplikasi dibuka: catat error melalui logger, jangan biarkan Future menjadi unhandled, dan pastikan kegagalan fitur notifikasi tidak mengganggu fitur utama aplikasi.
+9. Pisahkan ID notifikasi uji coba dari ID pengingat utama agar notifikasi uji coba tidak memperbarui atau menggantikan jadwal utama.
+10. Penanganan tap notifikasi wajib membedakan tiga kondisi lifecycle aplikasi: foreground (aplikasi aktif), background, dan terminated. Pada kondisi terminated, gunakan `getNotificationAppLaunchDetails()` untuk memperoleh notifikasi yang meluncurkan aplikasi dan lakukan navigasi setelah navigator siap. Jangan mengandalkan callback `onDidReceiveNotificationResponse` saja untuk kondisi terminated.
+11. Validasi payload notifikasi: parse `kategori` dan `id`; hanya proses kategori yang dikenal; jika payload null, tidak valid, atau kategori tidak dikenal, catat peringatan dan jangan lakukan navigasi yang tidak sesuai. ID yang tidak ditemukan atau tidak diperlukan oleh tujuan navigasi tidak boleh menyebabkan crash.
+12. Ketika izin sistem dicabut, batalkan jadwal yang tersimpan di sistem operasi (`_plugin.cancel`), perbarui preferensi (`setAktif(false)`), dan pastikan tidak ada jadwal lama tertinggal. Saat pengguna mengaktifkan kembali, minta izin terlebih dahulu dan buat jadwal baru. Jangan hanya mengubah SharedPreferences tanpa memeriksa kondisi jadwal pada sistem operasi.
+13. Konsistensi perubahan waktu pengingat: simpan nilai waktu lama sebelum perubahan; terapkan nilai baru hanya setelah penjadwalan atau penyimpanan berhasil; jika gagal, pulihkan nilai lama dan tampilkan pesan kegagalan; pastikan jadwal sistem operasi, preferensi, dan tampilan tetap konsisten. Jangan membiarkan kegagalan pada salah satu tahap meninggalkan kondisi data yang berbeda.
+14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus `Nav.pushAndRemoveUntil(...)` serta `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan global penanganan error Future yang dilepas.
+**Larangan:**
+- Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
+- Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
+- Jangan gunakan ID yang sama untuk notifikasi uji coba dan pengingat utama.
+- Jangan menyatakan fitur notifikasi aktif tanpa memeriksa izin sistem terlebih dahulu.
+- Jangan mengandalkan callback tap biasa untuk menangani notifikasi yang meluncurkan aplikasi dari kondisi terminated.
+- Jangan memproses kategori notifikasi yang tidak dikenal tanpa pencatatan peringatan.
+- Jangan mengubah preferensi tanpa memastikan jadwal sistem operasi konsisten.
+- Jangan memanggil `EasyLoading.show()` atau `EasyLoading.dismiss()` tanpa `.catchError(...)` ketika dilepas dengan `unawaited()`.
 **Alasan:**
-Commit `0a6e373` menambahkan `Home` sebagai `ConsumerStatefulWidget` dengan `initState` dan `dispose`. Pola ini mempersiapkan layar untuk integrasi provider dan pengelolaan resource.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Gunakan `ConsumerStatefulWidget` untuk layar yang membutuhkan akses provider dan pengelolaan siklus hidup; pastikan `initState`/`dispose` memanggil `super` dengan benar.
-## Pengelolaan Tema melalui TemaNotifier (Riverpod Generator)
-**Tujuan:**
-Mengelola state tema aplikasi melalui Notifier yang dibuat dengan `riverpod_generator`, bukan nilai hardcode di widget.
-**Aturan:**
-1. Buat `TemaNotifier` sebagai kelas `Notifier` dengan anotasi `@riverpod`.
-2. Gunakan `build()` untuk mengembalikan nilai tema awal.
-3. Jangan meng-hardcode tema final di widget; biarkan Notifier menjadi sumber kebenaran.
+Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
 **Contoh benar:**
 ```dart
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-part 'tema_notifier.g.dart';
-@riverpod
-class TemaNotifier extends _$TemaNotifier {
-  @override
-  String build() {
-    return '';
-  }
+// Menangani tap notifikasi pada tiga kondisi lifecycle.
+final launchDetails = await _plugin.getNotificationAppLaunchDetails();
+if (launchDetails?.didNotificationLaunchApp ?? false) {
+  final response = launchDetails!.notificationResponse;
+  _navigasiBerdasarkanPayload(response?.payload);
 }
-```
-**Contoh salah:**
-```dart
-// Tema ditentukan langsung di widget tanpa Notifier.
-MaterialApp(theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)));
-```
-**Alasan:**
-Commit `4498593` menambahkan `TemaNotifier` menggunakan `riverpod_generator`. Pola ini memisahkan pengelolaan tema dari widget presentasi.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Kelola state tema aplikasi melalui Notifier (Riverpod Generator) agar tema dapat diubah dan diamati secara terpusat, bukan di-hardcode di widget.
-## Penyediaan ProviderScope pada `main()`
-**Tujuan:**
-Memastikan root widget memiliki scope Riverpod yang valid sehingga provider dapat diakses dari seluruh aplikasi.
-**Aturan:**
-1. Bungkus `MyApp` dengan `ProviderScope` di dalam `main()`.
-2. Impor `flutter_riverpod` di `main.dart` untuk menggunakan `ProviderScope`.
-3. Jangan memanggil `runApp(const MyApp())` tanpa `ProviderScope` jika aplikasi menggunakan Riverpod.
-**Contoh benar:**
-```dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
-}
-```
-**Contoh salah:**
-```dart
-void main() {
-  runApp(const MyApp()); // Tidak ada ProviderScope
-}
-```
-**Alasan:**
-Commit `38219ec` mengubah `runApp(const MyApp())` menjadi `runApp(const ProviderScope(child: MyApp()))`. Tanpa `ProviderScope`, pemanggilan provider di widget akan gagal saat runtime.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Setiap aplikasi yang menggunakan Riverpod wajib membungkus widget root dengan `ProviderScope` pada titik masuk `main()`.
-## Sentralisasi Kunci Penyimpanan di `SharedKeys`
-**Tujuan:**
-Menghindari penggunaan string literal yang tersebar untuk kunci penyimpanan lokal.
-**Aturan:**
-1. Definisikan seluruh kunci penyimpanan (mis. `SharedPreferences`) dalam kelas `SharedKeys` dengan konstruktor privat.
-2. Gunakan konstanta `static const String` untuk setiap kunci.
-3. Jangan menulis string kunci langsung di berbagai tempat.
-**Contoh benar:**
-```dart
-class SharedKeys {
-  SharedKeys._();
-  static const String tema = 'tema';
-}
-```
-**Contoh salah:**
-```dart
-await prefs.setString('tema', value); // string literal tersebar
-```
-**Alasan:**
-Commit `fd2a129` menambahkan `SharedKeys` dengan kunci `tema`. Sentralisasi ini menjaga konsistensi dan memudahkan pemeliharaan.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Sentralisasikan kunci penyimpanan lokal dalam satu kelas dengan konstruktor privat dan konstanta `static const`, hindari string literal yang tersebar.
-## Pertahankan State Tema dengan `keepAlive`
-**Tujuan:**
-Memastikan state tema tetap hidup selama aplikasi berjalan dan tidak di-dispose otomatis.
-**Aturan:**
-1. Gunakan `@Riverpod(keepAlive: true)` pada `TemaNotifier` agar state tema tidak hilang.
-2. Jangan menggunakan `@riverpod` (auto-dispose) untuk state yang harus persisten sepanjang siklus hidup aplikasi.
-**Contoh benar:**
-```dart
-@Riverpod(keepAlive: true)
-class TemaNotifier extends _$TemaNotifier {
-  @override
-  String build() {
-    return '';
-  }
-}
-```
-**Contoh salah:**
-```dart
-@riverpod
-class TemaNotifier extends _$TemaNotifier {
-  @override
-  String build() {
-    return '';
-  }
-}
-```
-**Alasan:**
-Commit `14ee623` mengubah anotasi menjadi `@Riverpod(keepAlive: true)` agar `TemaNotifier` tetap hidup. Auto-dispose akan menghapus state tema ketika tidak ada listener.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Gunakan `keepAlive: true` pada provider yang state-nya harus persisten sepanjang siklus hidup aplikasi (misalnya tema), dan auto-dispose untuk state sementara.
-## Enum Mode Tema (`TemaEnum`)
-**Tujuan:**
-Mengelola pilihan mode tema aplikasi (sistem, terang, gelap) menggunakan enum yang type-safe, bukan string literal.
-**Aturan:**
-1. Definisikan `TemaEnum` dengan nilai `sistem`, `terang`, dan `gelap`.
-2. Gunakan `TemaEnum` sebagai tipe state `TemaNotifier` (bukan `String`).
-3. Setiap nilai enum yang ditampilkan ke pengguna wajib memiliki getter `label` melalui extension.
-**Contoh benar:**
-```dart
-enum TemaEnum { sistem, terang, gelap }
-extension TemaEnumExtension on TemaEnum {
-  String get label {
-    switch (this) {
-      case TemaEnum.sistem:
-        return 'Sistem';
-      case TemaEnum.terang:
-        return 'Terang';
-      case TemaEnum.gelap:
-        return 'Gelap';
+// Validasi payload dengan kategori yang dikenal.
+String? kategori;
+String? id;
+if (payload != null) {
+  for (final part in payload.split('&')) {
+    final kv = part.split('=');
+    if (kv.length == 2) {
+      if (kv[0] == 'kategori') kategori = kv[1];
+      if (kv[0] == 'id') id = kv[1];
     }
   }
 }
+if (kategori == 'pengingat_harian') {
+  unawaited(Nav.pushAndRemoveUntil(context, const Home())
+      .catchError((Object e, StackTrace s) {
+    L.e('Gagal navigasi dari notifikasi: $e $s');
+  }));
+} else {
+  L.w('kategori notifikasi tidak dikenal: $kategori');
+}
+// Menampilkan loading dengan penanganan error (unawaited).
+unawaited(
+  EasyLoading.show(
+    status: 'Memproses...',
+    maskType: EasyLoadingMaskType.black,
+  ).catchError((Object e, StackTrace s) {
+    L.e('Gagal menampilkan loading: $e $s');
+  }),
+);
+// Menutup loading dengan penanganan error (unawaited).
+unawaited(
+  EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+    L.e('Gagal menutup loading: $e $s');
+  }),
+);
 ```
 **Contoh salah:**
 ```dart
-enum TemaEnum { sistem, terang, gelap } // tanpa extension label
-// atau menggunakan String mentah sebagai state tema
+// Mengandalkan callback tap biasa untuk kondisi terminated.
+static void _onTapNotifikasi(NotificationResponse response) {
+  Nav.pushAndRemoveUntil(context, const Home()); // tanpa penanganan error
+}
+// Memproses kategori tidak dikenal tanpa validasi.
+if (kategori != null) {
+  Nav.pushAndRemoveUntil(context, const HalamanLain()); // kategori tidak divalidasi
+}
+// Melepas EasyLoading tanpa penanganan error.
+unawaited(EasyLoading.show(status: 'Memproses...'));
+unawaited(EasyLoading.dismiss());
 ```
-**Alasan:**
-Commit `206deca` menambahkan `TemaEnum` dan `riverpod_generator`; commit `eb762fe` memformat ulang enum. Enum memberikan type safety dan konsistensi dengan aturan enum yang ditampilkan ke pengguna.
-**Prinsip umum yang dapat dijadikan referensi aturan bersama:**
-Tidak terdapat prinsip umum baru yang layak dijadikan aturan bersama; aturan enum yang ditampilkan ke pengguna sudah tercakup di `optimasi_boilerplate.md`.
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`, `9dff35ade58c73784ce27927efad98b429ee97cb`, `a30b6b6e4377b55eadecb6b83b0e4c05faa985b5`, `2a5a357429d44d7302ce54d46b378fe2ce6a0cb6`, `9f3e88936232b3b837218db3ae22d9d835a1aa99`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/main.dart`, `lib/app.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `android/app/src/main/AndroidManifest.xml`, `saran.md`
 
 
 // ============================================================
@@ -4054,6 +12459,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "111.0.0"
+  adaptive_dialog:
+    dependency: "direct main"
+    description:
+      name: adaptive_dialog
+      sha256: cf9f7abef5727ae1e40d933e6649da419dd1869ea0af1af08fa7fe33daf716ea
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   analyzer:
     dependency: transitive
     description:
@@ -4070,6 +12483,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.4"
+  animations:
+    dependency: transitive
+    description:
+      name: animations
+      sha256: "5ec868ffa78851e6f3f32e9377b780c7ae2087a5523d8b5e6df59bd8287ac5dd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
+  appkit_ui_element_colors:
+    dependency: transitive
+    description:
+      name: appkit_ui_element_colors
+      sha256: b88a7c35d440fa3ac75222d0e2b7e3259200e531e33b5d2468e358119f3481dc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   args:
     dependency: transitive
     description:
@@ -4166,6 +12595,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.3"
+  code_assets:
+    dependency: transitive
+    description:
+      name: code_assets
+      sha256: bf394f466ba9205f1812a0433b392d6af280f155f56651eda7c18cc32ed493b8
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   collection:
     dependency: transitive
     description:
@@ -4214,6 +12651,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.14"
+  dbus:
+    dependency: transitive
+    description:
+      name: dbus
+      sha256: f7db8504e715b835f5ebe5fe74604ccd961d504c73389a5d8e81bafc2e2f3612
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
+  dev_build:
+    dependency: transitive
+    description:
+      name: dev_build
+      sha256: "87fcc538fbaca971c6c4e3254e8bfc264301a4727cb2eaa85d9b56ff30bad7de"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1+1"
+  dynamic_color:
+    dependency: transitive
+    description:
+      name: dynamic_color
+      sha256: "869b3bce0100eb519768ecd71c0111f0b5ea679f5f62e1f59c49d80067e730c5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "3bce007a596ff8b3119c45d68aaef631272537c03d30e5d4534dd24bf4c5eaa2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -4222,6 +12691,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.3"
+  ffi:
+    dependency: transitive
+    description:
+      name: ffi
+      sha256: "6d7fd89431262d8f3125e81b50d3847a091d846eafcd4fdb88dd06f36d705a45"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   file:
     dependency: transitive
     description:
@@ -4243,6 +12720,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_easyloading:
+    dependency: "direct main"
+    description:
+      name: flutter_easyloading
+      sha256: "764e83a3537c8bf00353750ec90cf42967949c47225d222277c218ca5f200ae8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -4251,6 +12736,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.0"
+  flutter_local_notifications:
+    dependency: "direct main"
+    description:
+      name: flutter_local_notifications
+      sha256: fd5fc8966a8b34337ac182dc394f3506139b69d8138d4e9e174a13d6468adcd4
+      url: "https://pub.dev"
+    source: hosted
+    version: "22.3.3"
+  flutter_local_notifications_linux:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_linux
+      sha256: "3b89a4bf095fa5f8a99beeabf982c5bd506c3ad25e7b9e61da945e994dc5b615"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.2"
+  flutter_local_notifications_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_platform_interface
+      sha256: "43c3761d916c9bd3d5c7ebbc44d82f4990329840c0c5d62ad5260cc1b5d399bd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.2.0"
+  flutter_local_notifications_web:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_web
+      sha256: "516afaf97a2d1e67a036c6617321b00d205d72f7a67b6eccf936cd565f985878"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  flutter_local_notifications_windows:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_windows
+      sha256: "6f43bdd03b171b7a90f22647506fea33e2bb12294b7c7c7a3d690e960a382945"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   flutter_localizations:
     dependency: transitive
     description: flutter
@@ -4264,13 +12789,50 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.5.0"
+  flutter_spinkit:
+    dependency: transitive
+    description:
+      name: flutter_spinkit
+      sha256: "77850df57c00dc218bfe96071d576a8babec24cf58b2ed121c83cca4a2fdce7f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
-  freezed_annotation:
+  flutter_timezone:
+    dependency: "direct main"
+    description:
+      name: flutter_timezone
+      sha256: "7830bc64bef0b003468fc1f58fc3f3faf54817f8cd6e68fa818b306560410d68"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.1"
+  flutter_web_plugins:
     dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
+  fluttertoast:
+    dependency: transitive
+    description:
+      name: fluttertoast
+      sha256: a5c39007e19fff5eeb7810d5be651c02bb5a1c06104bdd203b037bbfe49bd827
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.0.2"
+  freezed:
+    dependency: "direct dev"
+    description:
+      name: freezed
+      sha256: cb910646cb09265d49077b63b600ef1f5a718c1d6031836432237ddeabae1b12
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.3"
+  freezed_annotation:
+    dependency: "direct main"
     description:
       name: freezed_annotation
       sha256: "7294967ff0a6d98638e7acb774aac3af2550777accd8149c90af5b014e6d44d8"
@@ -4285,6 +12847,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  gradient_borders:
+    dependency: transitive
+    description:
+      name: gradient_borders
+      sha256: c65c9b2169cb32fa7164625fc438a597409576e4b5bee498655152abea4a93cc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   graphs:
     dependency: transitive
     description:
@@ -4293,6 +12863,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  hooks:
+    dependency: transitive
+    description:
+      name: hooks
+      sha256: "9a62a50b50b769a737bc0a8ff381f333529df3ab746b2f6b02e83760231455ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -4325,6 +12911,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  jni:
+    dependency: transitive
+    description:
+      name: jni
+      sha256: "2e91e6087291affd10b31b6c872f3e3ac7dc5d93b51b5ba485d930c8f08bde6c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
+  jni_util:
+    dependency: transitive
+    description:
+      name: jni_util
+      sha256: "1ba86da04a5f2bf18fde2edb235587e70c5b0fc5bd4ba955f46b00942c3fc35f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   json_annotation:
     dependency: transitive
     description:
@@ -4381,6 +12983,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  macos_ui:
+    dependency: transitive
+    description:
+      name: macos_ui
+      sha256: "09fb51d65b6a2d328ba5aa429ba0f7aabad5bc770193ea6e49da9f29bf95d835"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.2"
+  macos_window_utils:
+    dependency: transitive
+    description:
+      name: macos_window_utils
+      sha256: cb918e1ff0b31fdaa5cd8631eded7c24bd72e1025cf1f95c819e483f0057c652
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.1"
   matcher:
     dependency: transitive
     description:
@@ -4421,6 +13039,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  native_toolchain_c:
+    dependency: transitive
+    description:
+      name: native_toolchain_c
+      sha256: f9c168717100ae6d9fee9ffb0be379bf1f8b26b0f6bcbd4fdddcd931993a6a72
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.19.2"
   package_config:
     dependency: transitive
     description:
@@ -4437,6 +13063,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  path_provider_linux:
+    dependency: transitive
+    description:
+      name: path_provider_linux
+      sha256: "58c2005f147315b11e9b4a7bc889cd5203e250cba8e3f012dae259b4972b5c16"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.2"
+  path_provider_platform_interface:
+    dependency: transitive
+    description:
+      name: path_provider_platform_interface
+      sha256: "484838772624c3a4b94f1e44a3e19897fee738f2d5c4ce448443b0417f7c9dda"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.3"
+  path_provider_windows:
+    dependency: transitive
+    description:
+      name: path_provider_windows
+      sha256: bd6f00dbd873bfb70d0761682da2b3a2c2fccc2b9e84c495821639601d81afe7
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      sha256: "91bd59303e9f769f108f8df05e371341b15d59e995e6806aefab827b58336675"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.2"
+  platform:
+    dependency: transitive
+    description:
+      name: platform
+      sha256: a36d119c13416516a7b5913fbe8af8531e11633d784c550b2125f76c758524ec
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.0"
+  plugin_platform_interface:
+    dependency: transitive
+    description:
+      name: plugin_platform_interface
+      sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.8"
   pool:
     dependency: transitive
     description:
@@ -4445,6 +13119,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.3"
+  process_run:
+    dependency: transitive
+    description:
+      name: process_run
+      sha256: "38569f39f8057275d6832a25f985fbea23d251a905270eacdfc6c86437282224"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.2"
   pub_semver:
     dependency: transitive
     description:
@@ -4461,6 +13143,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.7.0"
+  record_use:
+    dependency: transitive
+    description:
+      name: record_use
+      sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   riverpod:
     dependency: transitive
     description:
@@ -4493,6 +13183,69 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.10"
+  share_global_saya:
+    dependency: "direct main"
+    description:
+      path: "../share_global_saya"
+      relative: true
+    source: path
+    version: "1.0.0"
+  shared_preferences:
+    dependency: "direct main"
+    description:
+      name: shared_preferences
+      sha256: "1e85e0dccf5b4a016077fea7dfbb4a7cb39c759ac1596fcf60c06deadb7da91f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.6"
+  shared_preferences_android:
+    dependency: transitive
+    description:
+      name: shared_preferences_android
+      sha256: "33b38b07d9ac7d16aff0426c61418752fd3e7a8c7dc8be786c875d6ce673b002"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.4"
+  shared_preferences_foundation:
+    dependency: transitive
+    description:
+      name: shared_preferences_foundation
+      sha256: "2ec3934efa51e46117f23031cc141b8fc878e8525b94ec1ea4f7f586cf1b47ea"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.7"
+  shared_preferences_linux:
+    dependency: transitive
+    description:
+      name: shared_preferences_linux
+      sha256: "580abfd40f415611503cae30adf626e6656dfb2f0cee8f465ece7b6defb40f2f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
+  shared_preferences_platform_interface:
+    dependency: transitive
+    description:
+      name: shared_preferences_platform_interface
+      sha256: "649dc798a33931919ea356c4305c2d1f81619ea6e92244070b520187b5140ef9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
+  shared_preferences_web:
+    dependency: transitive
+    description:
+      name: shared_preferences_web
+      sha256: c49bd060261c9a3f0ff445892695d6212ff603ef3115edbb448509d407600019
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.3"
+  shared_preferences_windows:
+    dependency: transitive
+    description:
+      name: shared_preferences_windows
+      sha256: "94ef0f72b2d71bc3e700e025db3710911bd51a71cefb65cc609dd0d9a982e3c1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
   shelf:
     dependency: transitive
     description:
@@ -4530,6 +13283,70 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.2"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      sha256: "21a9750de2deb464946e9f41c7ddf176e25553618afdfc774868cd454990c06a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.5"
+  sqflite_android:
+    dependency: transitive
+    description:
+      name: sqflite_android
+      sha256: "3986f4cbdde19ca538aae877981c5a53400dcc4601499df18e7ed9e848a0bdd4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.5"
+  sqflite_common:
+    dependency: transitive
+    description:
+      name: sqflite_common
+      sha256: cf0cfe7c12786394bc20433ecb6d7ff3cf2c4e458dc075c1e56c8666d6a2deb4
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.15"
+  sqflite_common_ffi:
+    dependency: transitive
+    description:
+      name: sqflite_common_ffi
+      sha256: "119d730460264a1f11f414d9eaa43fb686789357e81ce35f9e8ccb66ddd040e4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.5"
+  sqflite_common_ffi_web:
+    dependency: "direct main"
+    description:
+      name: sqflite_common_ffi_web
+      sha256: "8e9cc4bb519ff421985f719a652930eb6eee77a19a33612f589314984dab9312"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
+  sqflite_darwin:
+    dependency: transitive
+    description:
+      name: sqflite_darwin
+      sha256: "5652e66a7db9996e8604b70b34b5876714b9dd1257f557041f718a153f995d28"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.5"
+  sqflite_platform_interface:
+    dependency: transitive
+    description:
+      name: sqflite_platform_interface
+      sha256: "5b611dbcb9bab33e7073594ecac111bf0a86ffc342652c2081160d7038a45fb6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.3"
+  sqlite3:
+    dependency: transitive
+    description:
+      name: sqlite3
+      sha256: "4c7fe79840389aaeaf05fd093f795b631b5a98e2bd28d54e555c100f4a9c7a1c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.2"
   stack_trace:
     dependency: transitive
     description:
@@ -4570,6 +13387,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: "0ce4712bd3be1fccfab14458059baebb400ba6c6239b65398e3464945fabbae7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.1"
   term_glyph:
     dependency: transitive
     description:
@@ -4586,6 +13411,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.12"
+  timezone:
+    dependency: "direct main"
+    description:
+      name: timezone
+      sha256: "9f4e5a1a0e4fef7dd3424842c0575db01bfb7a11730e8d55753fcd5c5c98767b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.11.2"
   typed_data:
     dependency: transitive
     description:
@@ -4650,6 +13483,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  xdg_directories:
+    dependency: transitive
+    description:
+      name: xdg_directories
+      sha256: "7a3f37b05d989967cdddcbb571f1ea834867ae2faa29725fd085180e0883aa15"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      sha256: "67f0aff7be013d107995e9b75bf4e7f2c3ef2dfdb2c8e68024bba0a7fd5756a4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.1"
   yaml:
     dependency: transitive
     description:
@@ -4667,5 +13516,5 @@ sdks:
 // ============================================================
 // STATISTIK
 // ============================================================
-// Total file yang diproses : 11
-// Total baris kode        : 4582
+// Total file yang diproses : 57
+// Total baris kode        : 13063

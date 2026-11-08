@@ -5,6 +5,7 @@ import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:share_global_saya/core_shared.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -31,10 +32,30 @@ class NotifikasiService {
   static Future<void> inisialisasi() async {
     L.i('NotifikasiService inisialisasi');
     tz.initializeTimeZones();
+    // Deteksi zona waktu perangkat (WIB/WITA/WIT/dll.) agar pengingat
+    // mengikuti waktu lokal pengguna. Package timezone tidak otomatis
+    // mendeteksi zona waktu perangkat, sehingga gunakan flutter_timezone.
     try {
-      tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      final info = await FlutterTimezone.getLocalTimezone();
+      final identifier = info.identifier;
+      L.i('zonaWaktuPerangkat=$identifier');
+      try {
+        tz.setLocalLocation(tz.getLocation(identifier));
+      } on Exception catch (e, s) {
+        L.w(
+          'Identifier zona waktu tidak ditemukan di database tz, fallback Asia/Jakarta: $e $s',
+        );
+        tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      }
     } on Exception catch (e, s) {
-      L.w('Gagal set lokasi zona waktu: $e $s');
+      L.w(
+        'Gagal mendeteksi zona waktu perangkat, fallback Asia/Jakarta: $e $s',
+      );
+      try {
+        tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      } on Exception catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
+      }
     }
 
     const android = AndroidInitializationSettings('ic_launcher');

@@ -667,6 +667,18 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-111.0.0/lib/src/deferred_function_literal_heuristic.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-111.0.0/lib/src/deferred_function_literal_heuristic.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-111.0.0/lib/src/field_promotability.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-111.0.0/lib/src/field_promotability.dart)
 
+### `adaptive_dialog`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/adaptive_dialog.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/adaptive_dialog.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/action_callback.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/action_callback.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/adaptive_dialog.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/adaptive_dialog.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/adaptive_style.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/adaptive_style.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/typedefs.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/adaptive_dialog-3.0.1/lib/src/typedefs.dart)
+
 ### `analyzer`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer-14.7.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer-14.7.0)
@@ -724,6 +736,37 @@
   - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer_buffer-0.3.4/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer_buffer-0.3.4/lib/src/)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer_buffer-0.3.4/lib/src/analyzer_buffer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer_buffer-0.3.4/lib/src/analyzer_buffer.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer_buffer-0.3.4/lib/src/revive.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/analyzer_buffer-0.3.4/lib/src/revive.dart)
+
+### `animations`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/animations.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/animations.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/fade_scale_transition.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/fade_scale_transition.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/fade_through_transition.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/fade_through_transition.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/modal.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/modal.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/open_container.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/open_container.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/page_transition_switcher.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/page_transition_switcher.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/shared_axis_transition.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/animations-3.0.0/lib/src/shared_axis_transition.dart)
+
+### `appkit_ui_element_colors`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/appkit_ui_element_colors.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/appkit_ui_element_colors.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/convenience/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/convenience/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/convenience/ui_element_color_builder.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/convenience/ui_element_color_builder.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/convenience/ui_element_color_container.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/convenience/ui_element_color_container.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ns_appearance_name.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ns_appearance_name.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ns_color_component.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ns_color_component.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ns_color_space.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ns_color_space.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ui_element_color.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/macos/ui_element_color.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/observers/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/observers/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/observers/system_color_observer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/appkit_ui_element_colors-1.0.1/lib/observers/system_color_observer.dart)
 
 ### `args`
 
@@ -965,6 +1008,14 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/clock-1.1.3/lib/src/stopwatch.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/clock-1.1.3/lib/src/stopwatch.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/clock-1.1.3/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/clock-1.1.3/lib/src/utils.dart)
 
+### `code_assets`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/code_assets-1.2.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/code_assets-1.2.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/code_assets-1.2.1/lib/code_assets.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/code_assets-1.2.1/lib/code_assets.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/code_assets-1.2.1/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/code_assets-1.2.1/lib/src/)
+
 ### `collection`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/collection-1.19.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/collection-1.19.1)
@@ -1126,12 +1177,128 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dart_style-3.1.14/lib/src/source_code.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dart_style-3.1.14/lib/src/source_code.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dart_style-3.1.14/lib/src/string_compare.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dart_style-3.1.14/lib/src/string_compare.dart)
 
+### `dbus`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/code_generator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/code_generator.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/dbus.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/dbus.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_address.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_address.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_auth_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_auth_client.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_auth_server.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_auth_server.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_buffer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_buffer.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_bus_name.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_bus_name.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_client.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_code_generator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_code_generator.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_dart_type.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_dart_type.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_error_name.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_error_name.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_interface_name.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_interface_name.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_introspectable.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_introspectable.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_introspect.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_introspect.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_match_rule.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_match_rule.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_member_name.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_member_name.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_message.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_message.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_method_call.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_method_call.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_method_response.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_method_response.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_object.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_object.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_object_manager.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_object_manager.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_object_tree.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_object_tree.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_peer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_peer.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_properties.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_properties.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_read_buffer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_read_buffer.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_remote_object.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_remote_object.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_remote_object_manager.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_remote_object_manager.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_server.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_server.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_signal.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_signal.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_uuid.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_uuid.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_value.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_value.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_write_buffer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/dbus_write_buffer.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getsid.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getsid.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getsid_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getsid_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getsid_windows.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getsid_windows.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getuid.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getuid.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getuid_linux.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getuid_linux.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getuid_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dbus-0.8.0/lib/src/getuid_stub.dart)
+
+### `dev_build`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/build_support.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/build_support.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/package.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/package.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/shell.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/shell.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu_agent.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu_agent.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu_run_ci.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/menu/menu_run_ci.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/build_support_common.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/build_support_common.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/build_support.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/build_support.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dart_install.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dart_install.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dart_installed_cli_package.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dart_installed_cli_package.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dev_build_support.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dev_build_support.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dev_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/dev_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/env_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/env_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/import.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/import.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/list_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/list_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/map_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/map_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/node_support.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/node_support.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/pub_global.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/pub_global.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/pub_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/pub_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/run_ci_config.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/run_ci_config.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/run_ci.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/run_ci.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/run_ci_options.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/run_ci_options.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/version.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/version.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/version_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/version_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/yaml_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/src/yaml_utils.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/utils/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dev_build-1.2.1+1/lib/utils/)
+
+### `dynamic_color`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/dynamic_color.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/dynamic_color.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/corepalette_to_colorscheme.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/corepalette_to_colorscheme.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/dynamic_color_builder.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/dynamic_color_builder.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/dynamic_color_plugin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/dynamic_color_plugin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/harmonization.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/dynamic_color-2.1.0/lib/src/harmonization.dart)
+
+### `equatable`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/equatable.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/equatable.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable_config.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable_config.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable_mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable_mixin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/equatable-2.1.0/lib/src/equatable_utils.dart)
+
 ### `fake_async`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/fake_async-1.3.3](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/fake_async-1.3.3)
 
 **File .dart:**
   - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/fake_async-1.3.3/lib/fake_async.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/fake_async-1.3.3/lib/fake_async.dart)
+
+### `ffi`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/ffi.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/ffi.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/allocation.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/allocation.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/arena.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/arena.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/utf16.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/utf16.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/utf8.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/ffi-2.2.0/lib/src/utf8.dart)
 
 ### `file`
 
@@ -1160,12 +1327,97 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib/src/intx.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib/src/intx.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib/src/utilities.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib/src/utilities.dart)
 
+### `flutter_easyloading`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/flutter_easyloading.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/flutter_easyloading.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/easy_loading.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/easy_loading.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/runtime.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/runtime.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/theme.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/theme.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/types.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/types.dart)
+
 ### `flutter_lints`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_lints-6.0.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_lints-6.0.0)
 
 **File .dart:**
   (tidak ada file .dart di lib/)
+
+### `flutter_local_notifications`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/flutter_local_notifications.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/flutter_local_notifications.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/callback_dispatcher.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/callback_dispatcher.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/flutter_local_notifications_plugin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/flutter_local_notifications_plugin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/helpers.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/helpers.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/initialization_settings.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/initialization_settings.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/notification_details.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/notification_details.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/platform_flutter_local_notifications.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/platform_flutter_local_notifications.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/typedefs.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/typedefs.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/types.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/types.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/tz_datetime_mapper.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.3.3/lib/src/tz_datetime_mapper.dart)
+
+### `flutter_local_notifications_linux`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/flutter_local_notifications_linux.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/flutter_local_notifications_linux.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/dbus_wrapper.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/dbus_wrapper.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/file_system.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/file_system.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/flutter_local_notifications.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/flutter_local_notifications.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/flutter_local_notifications_platform_linux.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/flutter_local_notifications_platform_linux.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/flutter_local_notifications_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/flutter_local_notifications_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/helpers.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/helpers.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/notification_info.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/notification_info.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/notifications_manager.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/notifications_manager.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/platform_info.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/platform_info.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/posix.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/posix.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/storage.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-8.0.2/lib/src/storage.dart)
+
+### `flutter_local_notifications_platform_interface`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/flutter_local_notifications_platform_interface.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/flutter_local_notifications_platform_interface.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/helpers.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/helpers.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/typedefs.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/typedefs.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/types.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_platform_interface-12.2.0/lib/src/types.dart)
+
+### `flutter_local_notifications_web`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/flutter_local_notifications_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/flutter_local_notifications_web.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/action.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/action.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/details.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/details.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/direction.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/direction.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/handler.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/handler.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/permission.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/permission.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/plugin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/plugin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/web_initialization_settings.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_web-1.0.0/lib/src/web_initialization_settings.dart)
+
+### `flutter_local_notifications_windows`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1/lib/flutter_local_notifications_windows.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1/lib/flutter_local_notifications_windows.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1/lib/src/details.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_local_notifications_windows-3.1.1/lib/src/details.dart)
 
 ### `flutter_riverpod`
 
@@ -1182,6 +1434,74 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_riverpod-3.5.0/lib/src/builders.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_riverpod-3.5.0/lib/src/builders.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_riverpod-3.5.0/lib/src/core.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_riverpod-3.5.0/lib/src/core.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_riverpod-3.5.0/lib/src/internals.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_riverpod-3.5.0/lib/src/internals.dart)
+
+### `flutter_spinkit`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/flutter_spinkit.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/flutter_spinkit.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/chasing_dots.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/chasing_dots.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/circle.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/circle.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/cube_grid.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/cube_grid.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/dancing_square.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/dancing_square.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/double_bounce.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/double_bounce.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/dual_ring.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/dual_ring.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_circle.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_circle.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_cube.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_cube.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_four.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_four.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_grid.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/fading_grid.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/folding_cube.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/folding_cube.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/hour_glass.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/hour_glass.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/piano_wave.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/piano_wave.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pouring_hour_glass.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pouring_hour_glass.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pouring_hour_glass_refined.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pouring_hour_glass_refined.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pulse.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pulse.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pulsing_grid.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pulsing_grid.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pumping_heart.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/pumping_heart.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/ring.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/ring.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/ripple.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/ripple.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/rotating_circle.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/rotating_circle.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/rotating_plain.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/rotating_plain.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/spinning_circle.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/spinning_circle.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/spinning_lines.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/spinning_lines.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/square_circle.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/square_circle.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/three_bounce.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/three_bounce.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/three_in_out.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/three_in_out.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/wandering_cubes.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/wandering_cubes.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/wave.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/wave.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/wave_spinner.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_spinkit-5.2.2/lib/src/wave_spinner.dart)
+
+### `flutter_timezone`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1/lib/flutter_timezone.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1/lib/flutter_timezone.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1/lib/flutter_timezone_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1/lib/flutter_timezone_web.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1/lib/timezone_info.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_timezone-5.1.1/lib/timezone_info.dart)
+
+### `fluttertoast`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/fluttertoast-10.0.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/fluttertoast-10.0.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/fluttertoast-10.0.2/lib/fluttertoast.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/fluttertoast-10.0.2/lib/fluttertoast.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/fluttertoast-10.0.2/lib/fluttertoast_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/fluttertoast-10.0.2/lib/fluttertoast_web.dart)
+
+### `freezed`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/builder.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/builder.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/ast.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/ast.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/freezed_generator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/freezed_generator.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/models.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/models.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/parse_generator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/parse_generator.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/string.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/freezed-4.0.3/lib/src/string.dart)
 
 ### `freezed_annotation`
 
@@ -1204,6 +1524,18 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/glob-2.2.0/lib/src/parser.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/glob-2.2.0/lib/src/parser.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/glob-2.2.0/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/glob-2.2.0/lib/src/utils.dart)
 
+### `gradient_borders`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/gradient_borders.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/gradient_borders.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/box_borders/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/box_borders/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/box_borders/gradient_box_border.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/box_borders/gradient_box_border.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/input_borders/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/input_borders/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/input_borders/gradient_outline_input_border.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/input_borders/gradient_outline_input_border.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/input_borders/gradient_underline_input_border.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/gradient_borders-1.0.4/lib/input_borders/gradient_underline_input_border.dart)
+
 ### `graphs`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2)
@@ -1217,6 +1549,57 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib/src/strongly_connected_components.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib/src/strongly_connected_components.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib/src/topological_sort.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib/src/topological_sort.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib/src/transitive_closure.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib/src/transitive_closure.dart)
+
+### `hooks`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/hooks.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/hooks.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/args_parser.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/args_parser.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/avoid_import_outside_src_rule_test.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/avoid_import_outside_src_rule_test.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/config.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/config.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/encoded_asset.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/encoded_asset.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/extension.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/extension.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/metadata.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/metadata.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/test.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/test.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/user_defines.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/user_defines.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/validation.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/hooks-2.0.2/lib/src/validation.dart)
+
+### `http`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/browser_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/browser_client.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/http.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/http.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/io_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/io_client.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/retry.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/retry.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/testing.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/testing.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/abortable.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/abortable.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/base_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/base_client.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/base_request.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/base_request.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/base_response.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/base_response.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/boundary_characters.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/boundary_characters.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/browser_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/browser_client.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/byte_stream.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/byte_stream.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/client.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/client_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/client_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/exception.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/io_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/io_client.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/io_streamed_response.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/io_streamed_response.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/mock_client.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/mock_client.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_file.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_file.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_file_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_file_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_file_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_file_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_request.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/multipart_request.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/request.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/request.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/response.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/response.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/streamed_request.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/streamed_request.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/streamed_response.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/streamed_response.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/http-1.6.0/lib/src/utils.dart)
 
 ### `http_multi_server`
 
@@ -1293,6 +1676,41 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/io-1.1.0/lib/src/shared_stdin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/io-1.1.0/lib/src/shared_stdin.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/io-1.1.0/lib/src/shell_words.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/io-1.1.0/lib/src/shell_words.dart)
 
+### `jni`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/_internal.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/_internal.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/jni.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/jni.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/accessors.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/accessors.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/converter.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/converter.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/core_bindings.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/core_bindings.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/errors.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/errors.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jarray.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jarray.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jclass.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jclass.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jimplementer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jimplementer.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jni.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jni.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jobject.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jobject.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jprimitives.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jprimitives.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jreference.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jreference.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jvalues.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/jvalues.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/kotlin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/kotlin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/method_invocation.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/method_invocation.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/primitive_jarrays.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/primitive_jarrays.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/types.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/types.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/version_check.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni-1.1.2/lib/src/version_check.dart)
+
+### `jni_util`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0/lib/jni_util.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0/lib/jni_util.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0/lib/src/jdk_util.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/jni_util-1.0.0/lib/src/jdk_util.dart)
+
 ### `json_annotation`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/json_annotation-4.12.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/json_annotation-4.12.0)
@@ -1365,6 +1783,46 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/logging-1.3.0/lib/src/level.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/logging-1.3.0/lib/src/level.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/logging-1.3.0/lib/src/logger.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/logging-1.3.0/lib/src/logger.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/logging-1.3.0/lib/src/log_record.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/logging-1.3.0/lib/src/log_record.dart)
+
+### `macos_ui`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/macos_ui.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/macos_ui.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/library.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/library.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/macos_app.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/macos_app.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/macos_window_utils_config.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_ui-2.2.2/lib/src/macos_window_utils_config.dart)
+
+### `macos_window_utils`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos_window_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos_window_utils.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/window_manipulator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/window_manipulator.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_app_presentation_option.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_app_presentation_option.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_app_presentation_options.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_app_presentation_options.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_visual_effect_view_material.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_visual_effect_view_material.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_visual_effect_view_state.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_visual_effect_view_state.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_button_type.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_button_type.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_delegate.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_delegate.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_level.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_level.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_style_mask.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_style_mask.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_toolbar_style.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/ns_window_toolbar_style.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/visual_effect_view_properties.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/macos/visual_effect_view_properties.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/ns_window_delegate_handler/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/ns_window_delegate_handler/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/ns_window_delegate_handler/ns_window_delegate_handle.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/ns_window_delegate_handler/ns_window_delegate_handle.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/ns_window_delegate_handler/ns_window_delegate_handler.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/ns_window_delegate_handler/ns_window_delegate_handler.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/toolbars/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/toolbars/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/toolbars/toolbars.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/toolbars/toolbars.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/macos_toolbar_passthrough.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/macos_toolbar_passthrough.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/titlebar_safe_area.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/titlebar_safe_area.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/transparent_macos_bottom_bar.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/transparent_macos_bottom_bar.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/transparent_macos_sidebar.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/macos_window_utils-1.9.1/lib/widgets/transparent_macos_sidebar.dart)
 
 ### `matcher`
 
@@ -1668,6 +2126,14 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/mime-2.1.0/lib/src/mime_type.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/mime-2.1.0/lib/src/mime_type.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/mime-2.1.0/lib/src/multipart_transformer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/mime-2.1.0/lib/src/multipart_transformer.dart)
 
+### `native_toolchain_c`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/native_toolchain_c-0.19.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/native_toolchain_c-0.19.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/native_toolchain_c-0.19.2/lib/native_toolchain_c.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/native_toolchain_c-0.19.2/lib/native_toolchain_c.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/native_toolchain_c-0.19.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/native_toolchain_c-0.19.2/lib/src/)
+
 ### `package_config`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/package_config-3.0.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/package_config-3.0.0)
@@ -1702,12 +2168,140 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path-1.9.1/lib/src/style.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path-1.9.1/lib/src/style.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path-1.9.1/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path-1.9.1/lib/src/utils.dart)
 
+### `path_provider_linux`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/path_provider_linux.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/path_provider_linux.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/get_application_id.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/get_application_id.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/get_application_id_real.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/get_application_id_real.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/get_application_id_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/get_application_id_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/path_provider_linux.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.2/lib/src/path_provider_linux.dart)
+
+### `path_provider_platform_interface`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/path_provider_platform_interface.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/path_provider_platform_interface.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/src/enums.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/src/enums.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/src/method_channel_path_provider.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.3/lib/src/method_channel_path_provider.dart)
+
+### `path_provider_windows`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/path_provider_windows.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/path_provider_windows.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/folders.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/folders.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/folders_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/folders_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/guid.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/guid.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/path_provider_windows_real.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/path_provider_windows_real.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/path_provider_windows_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/path_provider_windows_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/win32_wrappers.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib/src/win32_wrappers.dart)
+
+### `petitparser`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/core.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/core.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/debug.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/debug.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/definition.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/definition.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/expression.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/expression.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/indent.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/indent.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/matcher.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/matcher.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/parser.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/parser.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/petitparser.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/petitparser.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/reflection.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/reflection.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/petitparser-7.0.2/lib/src/)
+
+### `platform`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/platform.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/platform.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/testing.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/testing.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/src/platform_apis.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/src/platform_apis.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/src/platforms.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/platform-3.2.0/lib/src/platforms.dart)
+
+### `plugin_platform_interface`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib/plugin_platform_interface.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib/plugin_platform_interface.dart)
+
 ### `pool`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/pool-1.5.3](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/pool-1.5.3)
 
 **File .dart:**
   - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/pool-1.5.3/lib/pool.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/pool-1.5.3/lib/pool.dart)
+
+### `process_run`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/cmd_run.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/cmd_run.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/dartbin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/dartbin.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/process_cmd.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/process_cmd.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/process_run.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/process_run.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/shell.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/shell.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/shell_run.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/shell_run.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/stdio.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/stdio.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/which.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/which.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/package/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/package/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/package/package.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/package/package.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/build_runner.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/build_runner.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/characters.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/characters.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/command_line.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/command_line.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dartbin_cmd.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dartbin_cmd.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dartbin_impl.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dartbin_impl.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dart_tool_paths.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dart_tool_paths.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dev_cmd_run.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/dev_cmd_run.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/env_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/env_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/flutterbin_cmd.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/flutterbin_cmd.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/lines_utils_common.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/lines_utils_common.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/process_cmd.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/process_cmd.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/process_run.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/process_run.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/prompt.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/prompt.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/script_filename.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/script_filename.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_alias.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_alias.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_bytes_controller.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_bytes_controller.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_command.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_command.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_command_options.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_command_options.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_common.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_common.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_common_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_common_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_context_common.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_context_common.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_context_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_context_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_context_memory.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_context_memory.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_environment_common.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_environment_common.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_environment.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_environment.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_exception.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_processes.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_processes.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_process_result.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_process_result.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_utils_common.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_utils_common.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_utils_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/shell_utils_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/user_config.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/user_config.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/version.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/version.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/webdev.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/webdev.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/which.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/src/which.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/process_result_extension.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/process_result_extension.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/shell_bin_command.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/shell_bin_command.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/shell_context.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/process_run-1.4.2/lib/utils/shell_context.dart)
 
 ### `pub_semver`
 
@@ -1735,6 +2329,23 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/pubspec_parse-1.7.0/lib/src/pubspec.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/pubspec_parse-1.7.0/lib/src/pubspec.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/pubspec_parse-1.7.0/lib/src/pubspec.g.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/pubspec_parse-1.7.0/lib/src/pubspec.g.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/pubspec_parse-1.7.0/lib/src/screenshot.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/pubspec_parse-1.7.0/lib/src/screenshot.dart)
+
+### `record_use`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/record_use.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/record_use.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/canonicalization_context.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/canonicalization_context.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/constant.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/constant.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/definition.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/definition.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/helper.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/helper.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/loading_unit.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/loading_unit.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/recordings.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/recordings.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/reference.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/reference.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/serialization_context.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/serialization_context.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/syntax.g.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/record_use-0.6.0/lib/src/syntax.g.dart)
 
 ### `riverpod`
 
@@ -1796,6 +2407,86 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/riverpod_generator-4.0.10/lib/src/json_generator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/riverpod_generator-4.0.10/lib/src/json_generator.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/riverpod_generator-4.0.10/lib/src/parse_generator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/riverpod_generator-4.0.10/lib/src/parse_generator.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/riverpod_generator-4.0.10/lib/src/riverpod_generator.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/riverpod_generator-4.0.10/lib/src/riverpod_generator.dart)
+
+### `share_global_saya`
+
+**Path:** ❌ tidak ditemukan
+
+### `shared_preferences`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/shared_preferences.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/shared_preferences.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/shared_preferences_async.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/shared_preferences_async.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/shared_preferences_devtools_extension_data.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/shared_preferences_devtools_extension_data.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/shared_preferences_legacy.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/src/shared_preferences_legacy.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/util/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/util/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/util/legacy_to_async_migration_util.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences-2.5.6/lib/util/legacy_to_async_migration_util.dart)
+
+### `shared_preferences_android`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/shared_preferences_android.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/shared_preferences_android.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages_async.g.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages_async.g.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages_async.g.jni.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages_async.g.jni.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages.g.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages.g.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages.g.jni.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/messages.g.jni.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_android.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_android.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_android_real.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_android_real.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_android_stub.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_android_stub.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_async_android.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_async_android.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_async_android_options.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/shared_preferences_async_android_options.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/strings.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_android-2.5.4/lib/src/strings.dart)
+
+### `shared_preferences_foundation`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/shared_preferences_foundation.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/shared_preferences_foundation.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/messages.g.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/messages.g.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/shared_preferences_async_foundation.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/shared_preferences_async_foundation.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/shared_preferences_foundation.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.7/lib/src/shared_preferences_foundation.dart)
+
+### `shared_preferences_linux`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1/lib/shared_preferences_linux.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1/lib/shared_preferences_linux.dart)
+
+### `shared_preferences_platform_interface`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/in_memory_shared_preferences_async.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/in_memory_shared_preferences_async.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/method_channel_shared_preferences.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/method_channel_shared_preferences.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/shared_preferences_async_platform_interface.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/shared_preferences_async_platform_interface.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/shared_preferences_platform_interface.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/shared_preferences_platform_interface.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/types.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.2/lib/types.dart)
+
+### `shared_preferences_web`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3/lib/shared_preferences_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3/lib/shared_preferences_web.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3/lib/src/keys_extension.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.3/lib/src/keys_extension.dart)
+
+### `shared_preferences_windows`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.4.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.4.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.4.1/lib/shared_preferences_windows.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.4.1/lib/shared_preferences_windows.dart)
 
 ### `shelf`
 
@@ -1867,6 +2558,192 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/source_span-1.10.2/lib/src/span_mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/source_span-1.10.2/lib/src/span_mixin.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/source_span-1.10.2/lib/src/span_with_context.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/source_span-1.10.2/lib/src/span_with_context.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/source_span-1.10.2/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/source_span-1.10.2/lib/src/utils.dart)
+
+### `sqflite`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sqflite.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sqflite.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sqflite_dev.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sqflite_dev.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sql.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sql.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sqlite_api.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/sqlite_api.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/batch.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/batch.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/collection_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/collection_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/compat.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/compat.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/constant.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/constant.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/database.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/database.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/database_mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/database_mixin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/dev_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/dev_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/env_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/env_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/exception.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/exception_impl.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/exception_impl.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/factory.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/factory.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/factory_impl.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/factory_impl.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/factory_mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/factory_mixin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/mixin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/open_options.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/open_options.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/services_impl.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/services_impl.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_android.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_android.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_compat.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_compat.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_darwin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_darwin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_impl.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_impl.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_import.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_import.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_plugin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sqflite_plugin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sql_builder.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/sql_builder.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/transaction.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/transaction.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/value_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/src/value_utils.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/utils/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/utils/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/utils/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite-2.4.5/lib/utils/utils.dart)
+
+### `sqflite_android`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_android-2.4.5](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_android-2.4.5)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_android-2.4.5/lib/sqflite_android.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_android-2.4.5/lib/sqflite_android.dart)
+
+### `sqflite_common`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqflite.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqflite.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqflite_dev.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqflite_dev.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqflite_logger.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqflite_logger.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sql.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sql.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqlite_api.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/sqlite_api.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/arg_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/arg_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/batch.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/batch.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/collection_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/collection_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/compat.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/compat.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/constant.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/constant.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/cursor.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/cursor.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_executor_iterate_ext.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_executor_iterate_ext.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_ext.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_ext.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_factory_sandbox.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_factory_sandbox.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_file_system.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_file_system.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_file_system_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_file_system_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/database_mixin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/dev_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/dev_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/env_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/env_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/exception.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/factory.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/factory.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/factory_mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/factory_mixin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/internals.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/internals.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/log_level.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/log_level.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/method_call.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/method_call.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/mixin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/mixin.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/open_options.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/open_options.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/path_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/path_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sqflite_database_factory.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sqflite_database_factory.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sqflite_debug.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sqflite_debug.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sqflite_import.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sqflite_import.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sql_builder.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sql_builder.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sql_command.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sql_command.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sql_command_executor_ext.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/sql_command_executor_ext.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/transaction.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/transaction.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/value_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/src/value_utils.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/utils/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/utils/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/utils/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common-2.5.15/lib/utils/utils.dart)
+
+### `sqflite_common_ffi`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/sqflite_common_ffi.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/sqflite_common_ffi.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/sqflite_ffi.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/sqflite_ffi.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/constant.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/constant.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/database_factory_ffi.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/database_factory_ffi.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/database_factory_ffi_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/database_factory_ffi_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/database_factory_ffi_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/database_factory_ffi_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/env_utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/env_utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/import.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/import.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/isolate.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/isolate.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/isolate_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/isolate_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/isolate_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/isolate_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/method_call.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/method_call.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_exception.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_handler.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_handler.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_impl.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_impl.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_impl_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_impl_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_impl_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_impl_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_ffi_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_import.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi-2.4.5/lib/src/sqflite_import.dart)
+
+### `sqflite_common_ffi_web`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/setup.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/setup.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/sqflite_ffi_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/sqflite_ffi_web.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/constant.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/constant.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_factory.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_factory.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_factory_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_factory_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_factory_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_factory_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_file_system_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/database_file_system_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/import.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/import.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/open_options_check.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/open_options_check.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi_impl_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi_impl_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/sqflite_ffi_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_common_ffi_web-1.2.0/lib/src/utils.dart)
+
+### `sqflite_darwin`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_darwin-2.4.5](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_darwin-2.4.5)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_darwin-2.4.5/lib/sqflite_darwin.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_darwin-2.4.5/lib/sqflite_darwin.dart)
+
+### `sqflite_platform_interface`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/sqflite_platform_interface.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/sqflite_platform_interface.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/factory_platform.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/factory_platform.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/platform_exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/platform_exception.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/sqflite_import.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/sqflite_import.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/sqflite_method_channel.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqflite_platform_interface-2.4.3/lib/src/sqflite_method_channel.dart)
+
+### `sqlite3`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/common.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/common.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/sqlite3.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/sqlite3.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/wasm.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/wasm.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/compile_options.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/compile_options.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/constants.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/constants.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/database.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/database.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/exception.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/functions.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/functions.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/in_memory_vfs.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/in_memory_vfs.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/jsonb.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/jsonb.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/result_set.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/result_set.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/session.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/session.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/sqlite3.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/sqlite3.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/statement.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/statement.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/utils.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/vfs.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/src/vfs.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/unstable/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/unstable/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/unstable/ffi_bindings.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/sqlite3-3.5.2/lib/unstable/ffi_bindings.dart)
 
 ### `stack_trace`
 
@@ -1949,6 +2826,26 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/string_scanner-1.4.1/lib/src/string_scanner.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/string_scanner-1.4.1/lib/src/string_scanner.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/string_scanner-1.4.1/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/string_scanner-1.4.1/lib/src/utils.dart)
 
+### `synchronized`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/extension.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/extension.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/global_lock.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/global_lock.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/synchronized.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/synchronized.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/basic_lock.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/basic_lock.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/extension_impl.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/extension_impl.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock_io.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock_io.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock_memory.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock_memory.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock_web.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/global_lock_web.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/lock_extension.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/lock_extension.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/multi_lock.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/multi_lock.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/reentrant_lock.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/reentrant_lock.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/synchronized-3.6.1/lib/src/utils.dart)
+
 ### `term_glyph`
 
 **Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/term_glyph-1.2.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/term_glyph-1.2.2)
@@ -1971,6 +2868,29 @@
   - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/test_api-0.7.12/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/test_api-0.7.12/lib/src/)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/test_api-0.7.12/lib/src/remote_listener.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/test_api-0.7.12/lib/src/remote_listener.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/test_api-0.7.12/lib/src/utils.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/test_api-0.7.12/lib/src/utils.dart)
+
+### `timezone`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/browser.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/browser.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/standalone.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/standalone.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/timezone.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/timezone.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/tzdata.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/tzdata.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/latest_10y.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/latest_10y.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/latest_all.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/latest_all.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/latest.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/data/latest.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/common_locations.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/common_locations.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/date_time.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/date_time.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/env.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/env.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/exceptions.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/exceptions.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/location.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/location.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/location_database.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/location_database.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/tools.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/tools.dart)
+    - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/tzdb.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/timezone-0.11.2/lib/src/tzdb.dart)
 
 ### `typed_data`
 
@@ -2092,6 +3012,23 @@
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib/src/channel.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib/src/channel.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib/src/exception.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib/src/exception.dart)
     - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib/src/sink_completer.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib/src/sink_completer.dart)
+
+### `xdg_directories`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0/lib/xdg_directories.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0/lib/xdg_directories.dart)
+
+### `xml`
+
+**Path:** [/home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1)
+
+**File .dart:**
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/xml.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/xml.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/xml_events.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/xml_events.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/xpath.dart](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/xpath.dart)
+  - [/home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/src/](file:///home/mbadrudin170/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/src/)
 
 ### `yaml`
 
