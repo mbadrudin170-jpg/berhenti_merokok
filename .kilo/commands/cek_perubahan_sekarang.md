@@ -1,5 +1,5 @@
 ---
-description: Evaluasi commit terbaru berdasarkan aturan proyek dan source SDK, catat hasil evaluasi, serta susun saran perbaikan tanpa mengubah kode.
+description: Evaluasi commit baru berdasarkan AGENTS.md dan source SDK/paket, lalu perbarui catatan dan saran tanpa mengubah kode.
 agent: code
 ---
 
@@ -62,6 +62,8 @@ Perubahan yang belum di-commit tidak boleh dicampurkan dengan perubahan commit y
 
 Apabila `catatan.md` atau `saran.md` memiliki perubahan lokal yang belum di-commit, pertahankan perubahan tersebut. Jangan menimpa pekerjaan pengguna.
 
+Tetapkan SHA HEAD sebagai target evaluasi dan pastikan HEAD tidak berubah selama proses.
+
 ---
 
 ## 3. Baca Aturan Proyek dan Catatan Evaluasi
@@ -113,14 +115,14 @@ Terdapat dua kondisi.
 
 Apabila `catatan.md` memiliki SHA commit terakhir yang sudah dievaluasi secara lengkap:
 
-1. Ambil SHA tersebut.
-2. Pastikan SHA tersebut merupakan ancestor dari HEAD aktif.
-3. Identifikasi seluruh commit setelah SHA tersebut sampai HEAD.
-4. Evaluasi hanya commit yang belum pernah dievaluasi.
+1. Baca checkpoint milik `.kilo/commands/cek_perubahan_sekarang.md` di `catatan.md`.
+2. Gunakan SHA lengkap.
+3. Pastikan checkpoint merupakan ancestor dari HEAD aktif.
+4. Ambil hanya commit setelah checkpoint sampai HEAD.
+5. Jangan membaca ulang commit yang evaluasinya sudah selesai.
+6. Apabila checkpoint sama dengan HEAD, laporkan tidak ada commit baru.
 
-Gunakan riwayat Git untuk menentukan rentang commit, bukan berdasarkan perkiraan tanggal atau judul commit.
-
-Apabila SHA checkpoint sama dengan HEAD, berarti tidak ada commit baru yang perlu dievaluasi.
+Jangan menggunakan checkpoint milik `.kilo/commands/evaluasi_aturan_khusus.md`.
 
 ### Kondisi B: Belum Pernah Dievaluasi
 
@@ -140,6 +142,8 @@ Lima commit terakhir hanya digunakan sebagai batas awal ketika belum ada riwayat
 4. Jangan melewatkan commit yang belum dievaluasi.
 5. Jika checkpoint tidak lagi merupakan ancestor HEAD, misalnya karena rebase atau force push, jangan menebak rentang evaluasi. Laporkan kondisi tersebut dan jangan mengubah checkpoint.
 6. Jika tidak ada commit baru, hentikan proses evaluasi kode dan laporkan bahwa tidak ditemukan commit baru.
+7. Jika checkpoint tidak ditemukan, kosong, atau tidak valid, gunakan kondisi B.
+8. Apabila checkpoint tidak lagi merupakan ancestor HEAD karena perubahan riwayat Git, laporkan masalah tersebut dan jangan menebak rentang commit.
 
 ---
 
@@ -177,7 +181,21 @@ Jangan mengabaikan perubahan hanya karena file tersebut bukan file Dart.
 
 ## 6. Pemeriksaan Kesesuaian dengan Aturan Proyek
 
-Bandingkan perubahan kode dengan aturan yang sudah dibaca pada tahap sebelumnya.
+Sebelum menganalisis kode, baca `AGENTS.md` dan seluruh aturan tambahan yang berlaku.
+
+Pastikan pemeriksaan mencakup:
+
+- Aturan global.
+- Aturan khusus proyek.
+- Aturan arsitektur.
+- Aturan pemanfaatan SDK dan paket.
+- Aturan runtime dan error handling.
+- Aturan UX/UI.
+- Aturan performa.
+- Aturan testing.
+- Aturan lainnya yang relevan dengan perubahan.
+
+Bandingkan perubahan kode dengan aturan yang sudah dibaca.
 
 Periksa seluruh aturan yang relevan, termasuk:
 
@@ -194,6 +212,8 @@ Periksa seluruh aturan yang relevan, termasuk:
 11. Aturan lainnya yang ditemukan dalam repository.
 
 Jangan menyimpulkan bahwa sebuah kode melanggar aturan tanpa menemukan aturan yang benar-benar mendukung kesimpulan tersebut.
+
+Jika terdapat konflik antaraturan, laporkan kedua sumbernya tanpa menentukan prioritas sendiri apabila prioritasnya belum jelas.
 
 ### Bukti Pelanggaran
 
@@ -289,21 +309,48 @@ Jangan hanya membaca README atau dokumentasi paket.
 
 ### 7.3 Hal yang Wajib Diperiksa
 
-Untuk setiap API yang berkaitan dengan kode berubah, periksa:
+AI tidak boleh hanya mengandalkan:
 
-1. Apakah class atau widget tersebut memang tersedia.
-2. Apakah konstruktor yang digunakan benar-benar tersedia.
-3. Apakah nama parameter sudah sesuai.
-4. Apakah tipe data parameter sudah benar.
-5. Apakah parameter wajib sudah diberikan.
-6. Apakah nilai default sesuai.
-7. Apakah terdapat parameter atau konstruktor baru.
-8. Apakah ada parameter atau konstruktor yang sudah deprecated.
-9. Apakah ada perubahan signature API.
-10. Apakah terdapat ketentuan penggunaan tertentu dalam source.
-11. Apakah implementasi yang digunakan sesuai dengan versi SDK proyek.
+- Pengetahuan model.
+- Pengalaman sebelumnya.
+- Dokumentasi umum.
+- README paket.
+- Hasil `flutter analyze`.
 
-Perhatikan anotasi seperti `@Deprecated`, dokumentasi deklarasi, serta perubahan signature API.
+Pemeriksaan harus dilakukan terhadap versi SDK dan paket yang benar-benar digunakan proyek.
+
+Wajib memeriksa setiap API yang penggunaan atau parameternya berubah dalam commit.
+
+Ketentuan ini juga berlaku untuk widget sederhana seperti:
+
+- Container.
+- SizedBox.
+- Padding.
+- Row.
+- Column.
+- ListView.
+- GridView.
+- Text.
+- Icon.
+- AppBar.
+- Scaffold.
+
+Untuk setiap API yang relevan, baca source aktual dan periksa:
+
+1. Deklarasi class.
+2. Konstruktor.
+3. Parameter.
+4. Tipe data parameter.
+5. Parameter wajib.
+6. Nilai default.
+7. Parameter atau konstruktor baru.
+8. API deprecated.
+9. Perubahan signature.
+10. Ketentuan penggunaan dalam implementasi SDK.
+
+Jangan mengabaikan pemeriksaan hanya karena API tersebut sudah sering digunakan.
+
+Jangan hanya menyatakan kode dapat dikompilasi. AI harus membaca deklarasi dan implementasi source API yang digunakan agar pemeriksaannya juga memberikan pengetahuan teknis tentang SDK.
 
 ### 7.4 Jangan Melewatkan Pemeriksaan Widget Sederhana
 
@@ -334,13 +381,12 @@ Tujuannya bukan sekadar membuktikan bahwa kode dapat dikompilasi, melainkan mema
 
 Setiap pemeriksaan wajib menyertakan:
 
-- API atau widget yang diperiksa.
-- Path file kode yang menggunakan API tersebut.
-- Nomor baris kode.
-- Path source SDK atau paket.
-- Nomor baris deklarasi atau implementasi yang diperiksa.
+- Nama API.
+- Path dan baris kode proyek.
+- Path dan baris source SDK atau paket.
+- Versi SDK atau paket.
 - Hasil pemeriksaan.
-- Penjelasan apabila terdapat ketidaksesuaian.
+- Penjelasan ketidaksesuaian apabila ditemukan.
 
 Contoh:
 
@@ -377,6 +423,10 @@ Apabila source SDK atau paket tidak tersedia:
 
 Jangan mengaku telah membaca source SDK apabila source tersebut tidak benar-benar dibuka.
 
+Jika source tidak berhasil ditemukan atau dibaca, tandai sebagai **Belum Terverifikasi**. Jangan mengklaim pemeriksaan telah dilakukan.
+
+Pemeriksaan SDK yang belum selesai tidak boleh dianggap sebagai evaluasi commit yang selesai sepenuhnya.
+
 ---
 
 ## 8. Susun Hasil Pelanggaran dan Saran Perbaikan
@@ -395,6 +445,10 @@ Setiap temuan wajib memiliki:
 - Penjelasan pelanggaran.
 - Dampak atau risiko.
 
+Hanya berisi kode yang terbukti melanggar aturan proyek.
+
+Cantumkan prioritas, path dan baris kode, path dan baris aturan, penjelasan, serta dampaknya.
+
 ### B. Ketidaksesuaian SDK atau Paket
 
 Masukkan temuan seperti:
@@ -407,6 +461,10 @@ Masukkan temuan seperti:
 - Perbedaan perilaku antara implementasi kode dan source SDK.
 
 Sertakan path dan nomor baris kode serta source SDK.
+
+Berisi masalah konstruktor, parameter, tipe data, penggunaan API, perubahan signature, atau deprecated.
+
+Cantumkan path dan baris kode serta source SDK.
 
 ### C. Rekomendasi Perbaikan
 
@@ -424,6 +482,17 @@ Contohnya:
 Jangan menyamakan rekomendasi dengan pelanggaran.
 
 Apabila suatu kode hanya dapat ditingkatkan tetapi tidak melanggar aturan, masukkan ke rekomendasi, bukan pelanggaran.
+
+Berisi saran peningkatan kualitas kode yang tidak selalu merupakan pelanggaran aturan.
+
+Pisahkan prioritas:
+
+- Kritis.
+- Tinggi.
+- Sedang.
+- Rendah.
+
+Jangan menyamakan rekomendasi dengan pelanggaran.
 
 ---
 
@@ -471,18 +540,37 @@ Format tersebut merupakan format penanda yang harus dipertahankan pada evaluasi 
 
 ### Ketentuan Checkpoint
 
-Checkpoint hanya boleh maju setelah seluruh commit dalam urutan tersebut berhasil dievaluasi.
+Perhatikan bahwa file tersebut memiliki checkpoint terpisah untuk:
 
-Apabila terdapat pemeriksaan SDK yang belum berhasil dilakukan atau terdapat tahapan wajib yang belum selesai:
+- `.kilo/commands/cek_perubahan_sekarang.md`
+- `.kilo/commands/evaluasi_aturan_khusus.md`
 
-- Catat hasil sementara.
-- Tandai pemeriksaan sebagai belum selesai.
-- Jangan memasukkan commit tersebut ke dalam checkpoint evaluasi penuh.
-- Jangan melewati commit yang belum selesai untuk mencatat checkpoint commit berikutnya.
+Setiap command hanya boleh membaca dan memperbarui checkpoint miliknya sendiri.
 
-Dengan demikian, evaluasi berikutnya dapat melanjutkan pekerjaan yang belum selesai tanpa menganggap pemeriksaan yang belum dilakukan sebagai pekerjaan yang sudah selesai.
+Jangan menghapus atau mengubah checkpoint command lainnya.
+
+Checkpoint berarti **commit terakhir yang berhasil dievaluasi sepenuhnya**, bukan sekadar commit terakhir yang pernah dibaca.
+
+Checkpoint hanya boleh maju apabila semua commit sebelumnya dalam rentang evaluasi telah selesai diperiksa, termasuk source SDK dan aturan proyek.
+
+Jika terdapat evaluasi yang belum selesai:
+
+- Catat status sementara.
+- Jangan menandainya sebagai selesai.
+- Jangan melewati commit yang belum selesai.
+- Jangan memajukan checkpoint melewati commit tersebut.
 
 Jangan mengubah `catatan.md` apabila tidak ada commit baru yang perlu dievaluasi.
+
+Setiap riwayat evaluasi harus mencantumkan:
+
+- SHA lengkap.
+- Tanggal commit.
+- Judul commit.
+- Tanggal evaluasi.
+- Status evaluasi.
+- Ringkasan hasil.
+- Temuan yang perlu ditindaklanjuti.
 
 ---
 
@@ -500,6 +588,31 @@ Apabila ditemukan pelanggaran, ketidaksesuaian SDK, atau rekomendasi perbaikan, 
 6. Hindari duplikasi saran untuk masalah yang identik.
 7. Jika saran lama sudah tidak relevan, tandai statusnya berdasarkan hasil evaluasi terbaru. Jangan menghapus riwayat tanpa alasan.
 8. Kelompokkan saran berdasarkan prioritas.
+
+### Ketentuan Tambahan
+
+Pertahankan seluruh saran lama yang masih relevan.
+
+Apabila ditemukan saran baru:
+
+1. Tambahkan di bagian paling atas setelah judul utama.
+2. Perbarui saran lama apabila membahas masalah yang sama.
+3. Hindari duplikasi.
+4. Tandai saran yang sudah diperbaiki berdasarkan bukti commit terbaru.
+5. Pertahankan riwayat saran lama.
+
+Setiap saran wajib memiliki:
+
+- Tanggal dan SHA commit.
+- Prioritas.
+- Path dan nomor baris kode.
+- Path dan nomor baris aturan atau source SDK jika relevan.
+- Masalah.
+- Dampak.
+- Rekomendasi perbaikan.
+- Status.
+
+Jika tidak ada saran baru atau perubahan status saran lama, jangan mengubah `saran.md`.
 
 ### Format Saran
 
@@ -630,7 +743,11 @@ Laporkan apakah:
 - SHA checkpoint berhasil diperbarui.
 - Ada evaluasi yang masih tertunda.
 
-## H. Kesimpulan
+## H. Pemeriksaan yang Belum Selesai
+
+Laporkan pemeriksaan yang belum selesai, jika ada.
+
+## I. Kesimpulan
 
 Sampaikan kondisi perubahan commit secara objektif.
 
@@ -687,3 +804,47 @@ Sebelum menyampaikan laporan, pastikan:
 Apabila ada tahapan yang belum berhasil, laporkan secara transparan. Jangan menganggapnya sudah selesai.
 
 **Penting:** Jangan mengakhiri evaluasi hanya dengan mengatakan kode sudah benar atau tidak ditemukan masalah. Setiap kesimpulan harus didukung oleh pemeriksaan aturan proyek dan source SDK yang benar-benar dibaca.
+
+---
+
+## 14. Pemeriksaan Konsistensi Akhir
+
+Sebelum menyelesaikan revisi command:
+
+- Pastikan seluruh instruksi lama yang masih relevan dipertahankan.
+- Pastikan tidak ada ketentuan yang saling bertentangan.
+- Pastikan checkpoint kedua command terpisah.
+- Pastikan evaluasi pertama menggunakan maksimal lima commit.
+- Pastikan evaluasi berikutnya hanya membaca commit setelah checkpoint.
+- Pastikan source SDK wajib dibaca untuk setiap API yang berubah.
+- Pastikan widget sederhana tidak dikecualikan.
+- Pastikan setiap pelanggaran menunjukkan path dan baris kode serta aturan.
+- Pastikan rekomendasi terpisah dari pelanggaran.
+- Pastikan saran terbaru selalu berada di paling atas.
+- Pastikan command hanya mengubah dokumentasi evaluasi ketika dijalankan.
+- Pastikan laporan akhir memiliki struktur yang konsisten.
+
+---
+
+## 15. Batas Pekerjaan Revisi Ini
+
+Pada pekerjaan revisi command ini:
+
+- Hanya ubah `.kilo/commands/cek_perubahan_sekarang.md`.
+- Jangan menjalankan workflow evaluasi commit.
+- Jangan mengubah `catatan.md`.
+- Jangan mengubah `saran.md`.
+- Jangan mengubah kode Dart maupun file sumber lainnya.
+- Jangan membuat command baru.
+- Jangan mengubah command `evaluasi_aturan_khusus.md`.
+
+Setelah selesai, laporkan:
+
+1. Path file yang diubah.
+2. Bagian yang disempurnakan.
+3. Konflik atau ambiguitas yang ditemukan dan penyelesaiannya.
+4. Konfirmasi bahwa tidak ada kode sumber atau dokumentasi evaluasi yang diubah.
+
+Jangan menyatakan pekerjaan selesai sebelum memeriksa diff dan memastikan hanya file target yang berubah.
+filePath">
+/home/mbadrudin170/berhenti_merokok/.kilo/commands/cek_perubahan_sekarang.md
