@@ -16,7 +16,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 6;
+  static const int _versiDatabase = 7;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -73,6 +73,14 @@ class AppDatabase {
         ${NamaKolom.pemicu} TEXT NOT NULL,
         ${NamaKolom.intensitas} INTEGER,
         ${NamaKolom.catatan} TEXT,
+        ${NamaKolom.dibuat} TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.teks} TEXT NOT NULL,
         ${NamaKolom.dibuat} TEXT
       )
     ''');
@@ -135,6 +143,15 @@ class AppDatabase {
         'ALTER TABLE ${NamaTabel.biodata} '
         'ADD COLUMN ${NamaKolom.tanggalMulaiTapering} TEXT',
       );
+    }
+    if (oldVersion < 7) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.alasanBerhenti}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.teks} TEXT NOT NULL,
+          ${NamaKolom.dibuat} TEXT
+        )
+      ''');
     }
   }
 

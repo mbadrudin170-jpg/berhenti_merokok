@@ -1,3 +1,4 @@
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
 import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
 import 'package:berhenti_merokok/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart';
@@ -35,6 +36,10 @@ class LainnyaScreen extends StatelessWidget {
             _buildTombolCustom(
               () => Nav.to(context, const DiaryCravingScreen()),
               'Diary Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const AlasanBerhentiScreen()),
+              'Alasan Berhenti',
             ),
             _buildTombolCustom(
               () => Nav.to(context, const KalenderSmokeFreeScreen()),

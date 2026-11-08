@@ -10,4 +10,7 @@ class NamaTabel {
 
   /// Tabel diary craving (pemicu).
   static const String diaryCraving = 'diary_craving';
+
+  /// Tabel catatan alasan berhenti (reasons vault).
+  static const String alasanBerhenti = 'alasan_berhenti';
 }

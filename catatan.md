@@ -2,14 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: f478c36cc405e214abdba6accfe89680d1d90ce7
+Commit terakhir dievaluasi penuh: 28faabe017443b1513975374d3ec2a9a4f8b7a49
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 94c4ec9 sampai f478c36cc405e214abdba6accfe89680d1d90ce7
-Jumlah commit yang dievaluasi: 1
+Rentang evaluasi: f478c36cc405e214abdba6accfe89680d1d90ce7 sampai 28faabe017443b1513975374d3ec2a9a4f8b7a49
+Jumlah commit yang dievaluasi: 14
 Status evaluasi: Selesai
-Ringkasan: Audit 1 commit (f478c36): perbaikan type promotion dan penambahan log debug pada fitur tapering (biodata_screen.dart, mode_berhenti.dart, biodata_model.dart, form_biodata.dart, sqflite.dart). Temuan baru: (1) prioritas Sedang — validasi form pada form_biodata.dart (tidak ada Form/validate, penurunanPerMinggu diganti 0, InputAngka tanpa batas >0, tanggal mulai tapering belum dipastikan); (2) prioritas Rendah — log berulang pada getter/build (mode_berhenti, biodata_model, biodata_screen); (3) prioritas Rendah — L.i pada _onUpgrade sebelum L.init; (4) prioritas Rendah — format Dart pada form_biodata.dart baris 80. Source lokal diverifikasi: share_global_saya/lib/src/utils/l.dart (L.i(String)), input_angka.dart (validator bawaan tanpa batas >0). SDK: sqflite migrasi v5->v6, adaptive_dialog, freezed. `flutter analyze` bersih.
-
-<!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
+Ringkasan: Audit 14 commit (a68a3d4..28faabe). Perubahan kode sumber: fd6b45a (dashboard catchError navigasi, guard pembagian nol uangTerbuang, sqflite debugPrint, diary_craving log) dan d80e637 (form biodata Form/validate, penurunan validator, EasyLoading catchError, biodata_screen catchError). Temuan baru: (1) Sedang - validasi form pada form_biodata.dart (int.parse risk, field lain tanpa validator/default senyap); (2) Rendah - urutan import pada sqflite.dart (flutter/foundation sebelum berhenti_merokok). flutter analyze bersih. Commit lainnya dokumentasi/commands/tracker.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 

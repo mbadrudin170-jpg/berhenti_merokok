@@ -63,6 +63,15 @@ Tidak ada temuan.
 
 ## Sedang
 
+#### Task 1
+
+- Status: kerjakan
+- Masalah: Pada `form_biodata.dart`, parsing `penurunanPerMinggu` menggunakan `int.parse(...replaceAll(RegExp(r'[^0-9]'), ''))` yang dapat melempar `FormatException` jika input kosong/tidak valid, dan pembersihan karakter non-digit dapat menyembunyikan input yang tidak valid. Selain itu, field `jumlahRokokPerHari` dan `batangPerBungkus` tidak memiliki validator khusus dan parsingnya menggunakan `tryParse(...) ?? 0`/`?? 20.0`, yang dapat menyembunyikan input tidak valid menjadi nilai default. Hal ini bertentangan dengan aturan validasi form yang mewajibkan validasi aturan bisnis (nilai positif) sebelum penyimpanan dan larangan mengganti input tidak valid dengan nilai default.
+- Solusi: Gunakan `int.tryParse` dengan penanganan null yang eksplisit (tanpa penggantian senyap), tambahkan validator pada field `jumlahRokokPerHari` dan `batangPerBungkus` (mis. nilai > 0), dan pastikan validasi `Form` dijalankan sebelum parsing/penyimpanan. Jika parsing gagal, tampilkan pesan error dan hentikan penyimpanan.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L492); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L937)
+- File bermasalah: [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L199)
+- Prompt:
+
 ## Rendah
 
 #### Task 1
@@ -74,6 +83,15 @@ Tidak ada temuan.
 - File bermasalah: [mode_berhenti.dart](lib/fitur/biodata/enum/mode_berhenti.dart#L9); [biodata_model.dart](lib/fitur/biodata/model/biodata_model.dart#L124); [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L69)
 - Prompt:
 
+
+#### Task 2
+
+- Status: kerjakan
+- Masalah: Pada `sqflite.dart`, import `package:flutter/foundation.dart` ditempatkan sebelum import `package:berhenti_merokok/...`, sehingga urutan import tidak mengikuti urutan alfabetis berdasarkan path package. Aturan proyek mewajibkan import diurutkan secara alfabetis berdasarkan path package lengkap.
+- Solusi: Pindahkan import `package:flutter/foundation.dart` ke posisi yang sesuai secara alfabetis (setelah import `package:berhenti_merokok/...` dan sebelum/sesuai urutan `package:path` dan `package:sqflite`), tanpa mengubah logika.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
+- File bermasalah: [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L1)
+- Prompt:
 
 
 # Kelompok 5

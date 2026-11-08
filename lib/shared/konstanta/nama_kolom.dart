@@ -58,4 +58,7 @@ class NamaKolom {
 
   /// Kolom catatan craving.
   static const String catatan = 'catatan';
+
+  /// Kolom teks alasan berhenti.
+  static const String teks = 'teks';
 }

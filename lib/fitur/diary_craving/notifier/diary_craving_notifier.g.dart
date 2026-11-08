@@ -34,7 +34,7 @@ final class DiaryCravingNotifierProvider
 }
 
 String _$diaryCravingNotifierHash() =>
-    r'948055ed735be99f190c74dbc018877a80a57340';
+    r'629d09bf6bccb40f09d3aea73a98e53158c574c3';
 
 abstract class _$DiaryCravingNotifier
     extends $AsyncNotifier<DiaryCravingState> {
