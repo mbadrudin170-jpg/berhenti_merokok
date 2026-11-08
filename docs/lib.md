@@ -1320,10 +1320,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
         scrolledUnderElevation: 2,
-        forceMaterialTransparency: false,
         actions: [
           IconButton(
             tooltip: 'SOS Craving',
@@ -1474,6 +1471,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
+  String _formatHariHilang(double hariHilang) {
+    if (hariHilang <= 365) {
+      return '${hariHilang.toStringAsFixed(1)} hari';
+    }
+    final totalHari = hariHilang.round();
+    final tahun = totalHari ~/ 365;
+    final sisaTahun = totalHari % 365;
+    final bulan = sisaTahun ~/ 30;
+    final hari = sisaTahun % 30;
+    return '$tahun'
+        'T $bulan'
+        'B $hari'
+        'H';
+  }
+
   String _formatDurasiSingkat(Duration d) {
     if (d.inDays > 0) {
       final hari = d.inDays;
@@ -1576,7 +1588,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
             _buildInfoKerugianKustom(
               CupertinoIcons.heart,
-              '${hariHilang.toStringAsFixed(1)} hari',
+              _formatHariHilang(hariHilang),
               'hidup yang hilang',
             ),
           ],
@@ -2865,6 +2877,62 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
 
 
 // ============================================================
+// FILE: lib/fitur/impian/enum/sort_impian.dart
+// ============================================================
+
+```dart
+import 'package:flutter/material.dart';
+
+/// Opsi pengurutan daftar impian.
+enum SortImpian {
+  namaAz,
+  namaZa,
+  jumlahAz,
+  jumlahZa,
+  mendekatiTerkumpulAz,
+  mendekatiTerkumpulZa,
+}
+
+/// Extension yang menyediakan label dan ikon untuk [SortImpian].
+extension SortImpianExtension on SortImpian {
+  String get label {
+    switch (this) {
+      case SortImpian.namaAz:
+        return 'Nama A-Z';
+      case SortImpian.namaZa:
+        return 'Nama Z-A';
+      case SortImpian.jumlahAz:
+        return 'Jumlah terkecil';
+      case SortImpian.jumlahZa:
+        return 'Jumlah terbesar';
+      case SortImpian.mendekatiTerkumpulAz:
+        return 'Paling mendekati terkumpul (kecil)';
+      case SortImpian.mendekatiTerkumpulZa:
+        return 'Sisa terbesar';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case SortImpian.namaAz:
+        return Icons.arrow_upward;
+      case SortImpian.namaZa:
+        return Icons.arrow_downward;
+      case SortImpian.jumlahAz:
+        return Icons.arrow_upward;
+      case SortImpian.jumlahZa:
+        return Icons.arrow_downward;
+      case SortImpian.mendekatiTerkumpulAz:
+        return Icons.arrow_upward;
+      case SortImpian.mendekatiTerkumpulZa:
+        return Icons.arrow_downward;
+    }
+  }
+}
+```
+
+
+// ============================================================
 // FILE: lib/fitur/impian/model/impian_model.dart
 // ============================================================
 
@@ -3539,10 +3607,12 @@ import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/enum/sort_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -3556,6 +3626,8 @@ class ImpianScreen extends ConsumerStatefulWidget {
 }
 
 class _ImpianScreenState extends ConsumerState<ImpianScreen> {
+  SortImpian _sortImpian = SortImpian.mendekatiTerkumpulAz;
+
   @override
   void initState() {
     super.initState();
@@ -3564,6 +3636,45 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _showModalSort() {
+    L.i('sortImpian=$_sortImpian');
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                Text(
+                  'Urutkan',
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                ...SortImpian.values.map((sort) {
+                  return ListTile(
+                    leading: Icon(sort.icon),
+                    title: Text(sort.label),
+                    trailing: _sortImpian == sort
+                        ? const Icon(Icons.check)
+                        : null,
+                    onTap: () {
+                      setState(() => _sortImpian = sort);
+                      Nav.pop(context);
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -3600,9 +3711,9 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     }
 
     final impianState = impianAsync.requireValue;
-    final List<ImpianModel> listImpian = impianState.listImpian;
+    final List<ImpianModel> listImpianAsli = impianState.listImpian;
     L.i(
-      'listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}',
+      'listImpian.length=${listImpianAsli.length}, totalJumlah=${impianState.totalJumlah}',
     );
 
     // Saldo terkumpul = uang yang dihemat dari tidak merokok (berdasarkan biodata).
@@ -3617,15 +3728,37 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     final uangDihemat = biodata?.uangDihemat ?? 0;
     L.i('uangDihemat=$uangDihemat');
 
+    final List<ImpianModel> listImpian = listImpianAsli.sorted((a, b) {
+      switch (_sortImpian) {
+        case SortImpian.namaAz:
+          return a.nama.compareTo(b.nama);
+        case SortImpian.namaZa:
+          return b.nama.compareTo(a.nama);
+        case SortImpian.jumlahAz:
+          return a.jumlah.compareTo(b.jumlah);
+        case SortImpian.jumlahZa:
+          return b.jumlah.compareTo(a.jumlah);
+        case SortImpian.mendekatiTerkumpulAz:
+          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          return sisaA.compareTo(sisaB);
+        case SortImpian.mendekatiTerkumpulZa:
+          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          return sisaB.compareTo(sisaA);
+      }
+    });
+    final jumlahTercapai = listImpian
+        .where((item) => uangDihemat >= item.jumlah)
+        .length;
+    L.i('jumlahTercapai=$jumlahTercapai/${listImpian.length}');
+
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
       return Scaffold(
         appBar: AppBar(
           title: const Text('Impian'),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 0,
           scrolledUnderElevation: 2,
-          forceMaterialTransparency: false,
         ),
         body: const _EmptyImpian(),
         floatingActionButton: FloatingActionButton(
@@ -3637,10 +3770,14 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Impian'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
         scrolledUnderElevation: 2,
-        forceMaterialTransparency: false,
+        actions: [
+          IconButton(
+            tooltip: 'Urutkan',
+            icon: const Icon(CupertinoIcons.sort_up),
+            onPressed: () => _showModalSort(),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -3649,6 +3786,11 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
             spacing: 8,
             children: [
               _buildSaldoTerkumpul(uangDihemat),
+              Text(
+                '$jumlahTercapai dari ${listImpian.length} impian tercapai',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
               Expanded(
                 child: ListView.separated(
                   itemCount: listImpian.length,
@@ -3673,13 +3815,21 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                                   ? 0
                                   : (uangDihemat / item.jumlah).clamp(0.0, 1.0),
                             ),
+                            // Bungkus Text dengan Flexible agar tidak overflow pada layar sempit.
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                                Flexible(
+                                  child: Text(
+                                    'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
+                                  ),
                                 ),
-                                Text(FormatUang.formatRupiah(item.jumlah)),
+                                Flexible(
+                                  child: Text(
+                                    'Target: ${FormatUang.formatRupiah(item.jumlah)}',
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -4759,17 +4909,27 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     } on Exception catch (e, s) {
       L.e('Gagal mengubah notifikasi: $e $s');
       if (mounted) {
-        final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
-        final aktifSekarang = await NotifikasiService.aktif();
-        if (!mounted) return;
-        setState(() {
-          _notifikasiAktif = aktifSekarang;
-        });
-        if (isIzin) {
-          AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
-          await _muatPreferensiNotifikasi();
+        final isIzin = e is IzinNotifikasiTidakDiberikanException;
+        try {
+          final aktifSekarang = await NotifikasiService.aktif();
           if (!mounted) return;
-        } else {
+          setState(() {
+            _notifikasiAktif = aktifSekarang;
+          });
+        } on Exception catch (e2, s2) {
+          L.e('Gagal membaca status aktif notifikasi: $e2 $s2');
+        }
+        if (isIzin) {
+          if (mounted) {
+            AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
+          }
+          try {
+            await _muatPreferensiNotifikasi();
+          } on Exception catch (e2, s2) {
+            L.e('Gagal memuat preferensi notifikasi: $e2 $s2');
+          }
+          if (!mounted) return;
+        } else if (mounted) {
           AppToast.gagal(context, 'Gagal mengubah pengingat harian');
         }
       }
@@ -4974,11 +5134,10 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     if (_memuatNotifikasi) {
       return const Center(child: CircularProgressIndicator());
     }
-    // Platform yang tidak mendukung notifikasi terjadwal.
+    // Platform yang tidak mendukung notifikasi terjadwal (Web, Linux, Windows).
     if (kIsWeb ||
         defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
+        defaultTargetPlatform == TargetPlatform.windows) {
       return const SizedBox.shrink();
     }
     final waktu =
@@ -5619,6 +5778,10 @@ import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
 
 part 'tema_notifier.g.dart';
 
+// Pengecualian aturan Freezed untuk state sederhana berbasis enum:
+// state tema hanya menyimpan satu nilai TemaEnum, sehingga tidak
+// memerlukan state Freezed tersendiri, konsisten dengan BiodataNotifier
+// yang juga menggunakan model nullable langsung sebagai state.
 @Riverpod(keepAlive: true)
 class TemaNotifier extends _$TemaNotifier {
   @override
@@ -5729,6 +5892,9 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // SafeArea dan Padding tepi layar pada lapisan container halaman
+      // agar konten tidak tertutup notch/status bar/navigation bar
+      // dan tidak menempel pada tepi layar.
       body: IndexedStack(
         index: _selectedIndex,
         children: List<Widget>.generate(4, (i) {
@@ -6503,6 +6669,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+/// Exception khusus ketika izin notifikasi tidak diberikan oleh sistem.
+class IzinNotifikasiTidakDiberikanException implements Exception {
+  const IzinNotifikasiTidakDiberikanException();
+  @override
+  String toString() => 'Izin notifikasi tidak diberikan';
+}
+
 /// Layanan notifikasi lokal untuk pengingat harian aplikasi.
 class NotifikasiService {
   NotifikasiService._();
@@ -6523,7 +6696,16 @@ class NotifikasiService {
   /// Inisialisasi plugin notifikasi dan zona waktu.
   static Future<void> inisialisasi() async {
     L.i('NotifikasiService inisialisasi');
-    tz.initializeTimeZones();
+    // Bungkus inisialisasi database zona waktu dalam try/catch agar
+    // kegagalan (termasuk Error/ArgumentError) tercatat dan tidak
+    // menjadi unhandled error.
+    try {
+      tz.initializeTimeZones();
+    } on Error catch (e, s) {
+      L.e('Gagal inisialisasi zona waktu: $e $s');
+    } on Exception catch (e, s) {
+      L.e('Gagal inisialisasi zona waktu: $e $s');
+    }
     // Deteksi zona waktu perangkat (WIB/WITA/WIT/dll.) agar pengingat
     // mengikuti waktu lokal pengguna. Package timezone tidak otomatis
     // mendeteksi zona waktu perangkat, sehingga gunakan flutter_timezone.
@@ -6531,13 +6713,45 @@ class NotifikasiService {
       final info = await FlutterTimezone.getLocalTimezone();
       final identifier = info.identifier;
       L.i('zonaWaktuPerangkat=$identifier');
+      // Validasi hasil sebelum penggunaan: identifier tidak boleh kosong.
+      if (identifier.isEmpty) {
+        throw ArgumentError('Identifier zona waktu kosong');
+      }
       try {
         tz.setLocalLocation(tz.getLocation(identifier));
+      } on Error catch (e, s) {
+        L.w(
+          'Identifier zona waktu tidak ditemukan di database tz, fallback Asia/Jakarta: $e $s',
+        );
+        try {
+          tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+        } on Error catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        } on Exception catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        }
       } on Exception catch (e, s) {
         L.w(
           'Identifier zona waktu tidak ditemukan di database tz, fallback Asia/Jakarta: $e $s',
         );
+        try {
+          tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+        } on Error catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        } on Exception catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        }
+      }
+    } on Error catch (e, s) {
+      L.w(
+        'Gagal mendeteksi zona waktu perangkat, fallback Asia/Jakarta: $e $s',
+      );
+      try {
         tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      } on Error catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
+      } on Exception catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
       }
     } on Exception catch (e, s) {
       L.w(
@@ -6545,6 +6759,8 @@ class NotifikasiService {
       );
       try {
         tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      } on Error catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
       } on Exception catch (e2, s2) {
         L.w('Gagal set lokasi zona waktu: $e2 $s2');
       }
@@ -6568,6 +6784,8 @@ class NotifikasiService {
         onDidReceiveNotificationResponse: _onTapNotifikasi,
       );
       L.s('Plugin notifikasi berhasil diinisialisasi');
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung inisialisasi notifikasi: $e $s');
     } on Exception catch (e, s) {
       L.e('Gagal inisialisasi plugin notifikasi: $e $s');
       rethrow;
@@ -6580,10 +6798,17 @@ class NotifikasiService {
   }
 
   /// Navigasi berdasarkan payload notifikasi (foreground/background).
-  static void _navigasiDariPayload(String? payload) {
+  static void _navigasiDariPayload(String? payload, {int percobaan = 0}) {
     final navigator = navigatorKey.currentState;
     if (navigator == null) {
-      L.w('navigator null saat navigasi notifikasi');
+      if (percobaan < 3) {
+        L.w('navigator null saat navigasi notifikasi, coba lagi');
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _navigasiDariPayload(payload, percobaan: percobaan + 1);
+        });
+      } else {
+        L.w('navigator null saat navigasi notifikasi, batalkan');
+      }
       return;
     }
 
@@ -6619,6 +6844,13 @@ class NotifikasiService {
   /// Menangani kondisi aplikasi diluncurkan dari keadaan terminated
   /// melalui notifikasi.
   static void cekNotifikasiSaatBuka() {
+    // Platform yang tidak mendukung notifikasi terjadwal/launch details.
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows) {
+      L.w('platform tidak mendukung cek notifikasi saat buka');
+      return;
+    }
     unawaited(
       Future(() async {
         try {
@@ -6631,7 +6863,9 @@ class NotifikasiService {
               });
             }
           }
-        } catch (e, s) {
+        } on UnsupportedError catch (e, s) {
+          L.e('Platform tidak mendukung cek notifikasi saat buka: $e $s');
+        } on Exception catch (e, s) {
           L.e('Gagal cek notifikasi saat buka: $e $s');
         }
       }).catchError((Object e, StackTrace s) {
@@ -6664,6 +6898,13 @@ class NotifikasiService {
           >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
       return granted ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.macOS) {
+      final granted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      return granted ?? false;
     }
     return true;
   }
@@ -6674,11 +6915,11 @@ class NotifikasiService {
     required int menit,
   }) async {
     L.i('jam=$jam, menit=$menit');
-    // Platform yang tidak mendukung notifikasi terjadwal.
+    // Platform yang tidak mendukung notifikasi terjadwal (Web, Linux, Windows).
+    // macOS didukung plugin flutter_local_notifications v22.3.3 via zonedSchedule.
     if (kIsWeb ||
         defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
+        defaultTargetPlatform == TargetPlatform.windows) {
       L.w('platform tidak mendukung penjadwalan terjadwal');
       throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
     }
@@ -6724,10 +6965,34 @@ class NotifikasiService {
         L.w('izin notifikasi tidak diberikan, batalkan penjadwalan');
         await _plugin.cancel(id: _idPengingatHarian);
         await setAktif(false);
-        throw Exception('Izin notifikasi tidak diberikan');
+        throw const IzinNotifikasiTidakDiberikanException();
       }
-      await setAktif(true);
-      await setWaktu(jam, menit);
+      // Simpan nilai lama untuk rollback bila penyimpanan gagal.
+      final aktifLama = await aktif();
+      final jamLama = await NotifikasiService.jam();
+      final menitLama = await NotifikasiService.menit();
+      // Urutan: setWaktu terlebih dahulu, lalu setAktif, agar status
+      // aktif tidak tersimpan tanpa waktu yang sesuai. Bungkus keduanya
+      // dengan rollback saat gagal agar preferensi tetap konsisten.
+      try {
+        await setWaktu(jam, menit);
+        await setAktif(true);
+      } on Exception catch (e, s) {
+        L.e('Gagal menyimpan preferensi pengingat, rollback: $e $s');
+        try {
+          await setWaktu(jamLama, menitLama);
+          await setAktif(aktifLama);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal rollback preferensi pengingat: $e2 $s2');
+        }
+        // Batalkan jadwal sistem agar konsisten dengan preferensi.
+        try {
+          await _plugin.cancel(id: _idPengingatHarian);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal membatalkan jadwal saat rollback: $e2 $s2');
+        }
+        rethrow;
+      }
       L.s('Pengingat harian dijadwalkan jam=$jam:$menit');
     } on Exception catch (e, s) {
       L.e('Gagal menjadwalkan pengingat harian: $e $s');

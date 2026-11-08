@@ -20,6 +20,7 @@
 - `lib/fitur/dummy/dummy_data/dummy_impian.dart`
 - `lib/fitur/dummy/helper/dummy_helper.dart`
 - `lib/fitur/dummy/screens/dummy_screen.dart`
+- `lib/fitur/impian/enum/sort_impian.dart`
 - `lib/fitur/impian/model/impian_model.dart`
 - `lib/fitur/impian/notifier/impian_notifier.dart`
 - `lib/fitur/impian/screens/detail_impian_screen.dart`
