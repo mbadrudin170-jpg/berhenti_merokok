@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
- Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 7a2163b338ae7b037186a3880c4992af4127d282 sampai 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
+Commit terakhir dievaluasi penuh: adc85b57da72eb4c000a29c324db7cdb15d388bc
+Tanggal evaluasi: 2026-11-08
+Rentang evaluasi: 27edc9c30d97c3c58170685c307136e33dadff54 sampai adc85b57da72eb4c000a29c324db7cdb15d388bc
 Jumlah commit yang dievaluasi: 2
- Status evaluasi: Selesai (dengan temuan)
-Ringkasan: 2 commit. 7a2163b = dokumen saja (command kerjakan_prd, PRD analisis pemicu diary craving DRAFT, catatan, task). 0b0b564 = perbaikan UI impian (Row.spacing mengganti SizedBox width:8 di impian_screen.dart; reorder impor detail_impian_screen.dart). Temuan: (1) Row.spacing valid SDK Flutter 3.47.9, tidak deprecated, mengikuti optimasi_ui.md #4 (terselesaikan); (2) impor detail_impian_screen.dart masih tidak sepenuhnya alfabetis: screens/form_impian.dart (baris 7) sebelum notifier/impian_notifier.dart (baris 8), padahal notifier < screens; (3) file .bak dan .backup task/ ter-commit (clutter repo, mirip temuan commit 08746b5). Tidak ada API SDK deprecated.
+Status evaluasi: Selesai (dengan temuan)
+Ringkasan: 2 commit. 27edc9c = dokumen/rules/PRD saja (aturan_khusus.md +aturan cadangan, PRD analisis-pemicu final, PRD pelacakan-toxin draft, hapus PRD akses-cepat-sos, refrensi/catatan/task). adc85b5 = feat(biodata): tambah `targetSmokeFreeHari` (nullable) pada model/fromSqflite/toSqflite, form biodata (validasi opsional >0, simpan), tampilan biodata (progres target), dashboard (kartu target smoke-free), konstanta kolom, migrasi DB v7→v8 (onCreate+onUpgrade ADD COLUMN), update rules/task/catatan/PRD; generated `.freezed.dart` diperbarui. Temuan: (1) **Tinggi** `NamaKolom.tanggalMulaiTapering` diubah ke `'Tanggal_mulai_tapering'` (kapital T, typo) di adc85b5 — inkonsisten dengan snake_case/kolom DB dan berisiko merusak baca/tulis tanggal mulai tapering; (2) **Tinggi** `BiodataModel.fromSqflite` memakai `ParserUtil.parseInt` (default 0) untuk `targetSmokeFreeHari` nullable — nilai null DB menjadi 0 sehingga UI menganggap target terset, seharusnya `ParserUtil.parseIntOrNull`; (3) **Rendah** logging `L.i` di `build()`/helper yang dipanggil dari `build()` pada biodata_screen (`targetSmokeFreeHari=` di build, `_buildItem`) dan dashboard (`_buildCardTargetSmokeFree`) menambah noise (aturan_bersama #11/aturan_khusus logging build). Tidak ada `.bak` ter-commit. SDK (Flutter 3.47.9/Dart 3.13.7): API yang dipakai standar/tidak deprecated (`int.tryParse`, Material widgets, Riverpod watch/refresh, Freezed generated). `ParserUtil.parseIntOrNull` tersedia di share_global_saya.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
@@ -186,8 +186,8 @@ Ringkasan: 2 commit. 7a2163b = dokumen saja (command kerjakan_prd, PRD analisis 
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
 
 - Branch evaluasi: master
-- Commit terakhir yang dievaluasi: 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
-- SHA lengkap: 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
+- Commit terakhir yang dievaluasi: adc85b57da72eb4c000a29c324db7cdb15d388bc
+- SHA lengkap: adc85b57da72eb4c000a29c324db7cdb15d388bc
 - Tanggal evaluasi: 2026-11-08
 - Status: Selesai
 

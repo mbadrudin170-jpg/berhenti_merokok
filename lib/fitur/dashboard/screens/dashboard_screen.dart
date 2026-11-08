@@ -6,6 +6,9 @@ import 'package:berhenti_merokok/fitur/badge/screens/badge_screen.dart';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/screens/impian_screen.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
@@ -77,6 +80,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (biodata == null) {
       return _buildBiodataNull();
     }
+    final impianAsync = ref.watch(impianProvider);
+    L.i(
+      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
+    );
     final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
     final nama = biodata.nama;
     L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
@@ -136,6 +143,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               _buildCardSosCraving(),
               _buildCardProgres(biodata),
               _buildCardTargetSmokeFree(biodata),
+              _buildCardRingkasanImpian(biodata, impianAsync),
               _buildCardAlasanBerhenti(),
               _buildCardMilestone(biodata),
               _buildCardBadge(),
@@ -186,6 +194,87 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Membangun kartu ringkasan impian (jumlah total dan tercapai) untuk dashboard.
+  Widget _buildCardRingkasanImpian(
+    BiodataModel biodata,
+    AsyncValue<dynamic> impianAsync,
+  ) {
+    final uangDihemat = biodata.uangDihemat;
+    String subtitle;
+    if (impianAsync.isLoading) {
+      subtitle = 'Memuat data impian...';
+      L.i('ringkasan impian: loading, uangDihemat=$uangDihemat');
+    } else if (impianAsync.hasError) {
+      subtitle = 'Gagal memuat data impian';
+      L.w(
+        'ringkasan impian error=${impianAsync.error}, uangDihemat=$uangDihemat',
+      );
+    } else {
+      final impianState = impianAsync.requireValue;
+      final listImpian = impianState.listImpian;
+      final total = impianState.jumlahImpian;
+      final tercapai = listImpian
+          .where(
+            (item) => ImpianProgresHelper.tercapai(uangDihemat, item.jumlah),
+          )
+          .length;
+      L.i(
+        'ringkasan impian: total=$total, tercapai=$tercapai, uangDihemat=$uangDihemat',
+      );
+      if (total == 0) {
+        subtitle = 'Belum ada impian';
+      } else {
+        subtitle = '$tercapai dari $total impian tercapai';
+      }
+    }
+
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => unawaited(
+          Nav.to(context, const ImpianScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Impian: $e $s');
+            return null;
+          }),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            spacing: 12,
+            children: [
+              Icon(
+                CupertinoIcons.star_fill,
+                size: 32,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      'Impian',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(CupertinoIcons.chevron_right),
+            ],
+          ),
         ),
       ),
     );

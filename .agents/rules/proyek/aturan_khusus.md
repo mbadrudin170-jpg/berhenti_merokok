@@ -1280,3 +1280,78 @@ git commit -m "task: tandai tugas selesai"
 git add task.md .backup\ task/task.md.bak
 git commit -m "task: tandai tugas selesai"
 ```
+
+
+## Penamaan Konstanta Kolom Database Menggunakan snake_case
+
+**Cakupan:**
+- `lib/shared/konstanta/nama_kolom.dart` — class `NamaKolom`.
+- Semua konstanta nama kolom database yang digunakan dalam skema, migrasi (`onCreate`/`onUpgrade`), dan model (`fromSqflite`/`toSqflite`).
+
+**Aturan wajib:**
+1. Nilai konstanta nama kolom database di `NamaKolom` wajib menggunakan huruf kecil (lowercase) dengan pemisah underscore (snake_case), konsisten dengan nama kolom yang dibuat dalam skema database (`onCreate`) dan migrasi (`onUpgrade`).
+2. Setiap konstanta nama kolom wajib cocok persis (case-sensitive) dengan nama kolom yang tersimpan di database SQLite.
+
+**Larangan:**
+- Jangan menggunakan huruf kapital dalam nilai konstanta nama kolom (mis. `'Tanggal_mulai_tapering'` alih-alih `'tanggal_mulai_tapering'`).
+- Jangan menggunakan nilai konstanta yang berbeda dari nama kolom aktual di skema/migrasi database.
+
+**Pengecualian:**
+- Tidak ada.
+
+**Alasan:**
+Commit `adc85b5` mengubah `NamaKolom.tanggalMulaiTapering` dari `'tanggal_mulai_tapering'` menjadi `'Tanggal_mulai_tapering'` (huruf kapital `T`), yang tidak konsisten dengan konvensi snake_case kolom database lain dan dengan nama kolom di skema/migrasi. Perbedaan kapitalisasi berisiko merusak pemetaan baca/tulis tanggal mulai tapering karena nama kolom SQLite bersifat case-sensitive. Perubahan ini tampak tidak disengaja dan di luar tujuan commit (menambah target smoke-free).
+
+**Contoh benar:**
+```dart
+static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
+static const String targetSmokeFreeHari = 'target_smoke_free_hari';
+```
+
+**Contoh salah:**
+```dart
+static const String tanggalMulaiTapering = 'Tanggal_mulai_tapering'; // huruf kapital T, tidak konsisten dengan snake_case
+```
+
+**Sumber evaluasi:**
+- Commit: `adc85b57da72eb4c000a29c324db7cdb15d388bc`
+- File: `lib/shared/konstanta/nama_kolom.dart` (baris konstanta `tanggalMulaiTapering`)
+
+
+## Parsing Field Nullable Integer dari Database Menggunakan parseIntOrNull
+
+**Cakupan:**
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel.fromSqflite`.
+- Semua model database yang mem-parse field `int?` (nullable integer) dari baris SQLite.
+
+**Aturan wajib:**
+1. Field nullable `int?` dari database wajib di-parse menggunakan `ParserUtil.parseIntOrNull(...)` (atau setara yang mengembalikan `null` untuk nilai `null`), bukan `ParserUtil.parseInt(...)` dengan `defaultValue 0`.
+2. Nilai `null` dari database harus tetap `null` di model, bukan dikonversi menjadi `0`, agar aplikasi dapat membedakan "belum diatur" dari "diatur ke nol".
+
+**Larangan:**
+- Jangan menggunakan `ParserUtil.parseInt(row[kolom])` (default 0) untuk field `int?` yang null memiliki arti "belum diset".
+- Jangan mengganti nilai parsing `null` dengan `0` tanpa validasi bisnis yang memastikan `0` adalah nilai yang sah.
+
+**Pengecualian:**
+- BOLEH menggunakan `ParserUtil.parseInt` dengan default 0 jika field bukan nullable dan `0` adalah nilai default yang valid secara bisnis.
+
+**Alasan:**
+Commit `adc85b5` menambahkan field `targetSmokeFreeHari` (`int?`) yang di-parse dengan `ParserUtil.parseInt(...)` yang mengembalikan `defaultValue 0` saat nilai database `null`. Akibatnya, target yang tidak diset (`null`) dibaca sebagai `0`, sehingga UI menganggap target terset dan menampilkan progres yang tidak sesuai. `ParserUtil.parseIntOrNull` tersedia di `share_global_saya` dan harus digunakan agar `null` tetap terpilah dari `0`.
+
+**Contoh benar:**
+```dart
+targetSmokeFreeHari: ParserUtil.parseIntOrNull(
+  row[NamaKolom.targetSmokeFreeHari],
+),
+```
+
+**Contoh salah:**
+```dart
+targetSmokeFreeHari: ParserUtil.parseInt(
+  row[NamaKolom.targetSmokeFreeHari],
+), // null menjadi 0, tidak dapat dibedakan dari target 0
+```
+
+**Sumber evaluasi:**
+- Commit: `adc85b57da72eb4c000a29c324db7cdb15d388bc`
+- File: `lib/fitur/biodata/model/biodata_model.dart` (baris parsing `targetSmokeFreeHari` di `fromSqflite`)

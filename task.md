@@ -68,11 +68,36 @@ Tidak ada temuan.
 
 ## Tinggi
 
-Tidak ada temuan.
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Commit `adc85b5` mengubah nilai konstanta `NamaKolom.tanggalMulaiTapering` dari `'tanggal_mulai_tapering'` (snake_case) menjadi `'Tanggal_mulai_tapering'` (kapital `T`). Nilai ini tidak konsisten dengan konvensi snake_case kolom lain dan dengan nama kolom yang sudah dibuat di skema/migrasi (`tanggal_mulai_tapering`). Perbedaan kapitalisasi berisiko merusak baca/tulis tanggal mulai tapering (pemetaan ke kolom DB berbeda). Perubahan ini tampak tidak disengaja dan di luar tujuan commit (menambah target smoke-free).
+- Solusi: Kembalikan nilai konstanta menjadi `static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';`. Verifikasi tidak ada referensi lain yang bergantung pada kapitalisasi salah; bila skema/migrasi sudah memakai nilai lama (lowercase), pastikan konsisten.
+- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L95-L100), [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L139-L140), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L310-L311)
+- File bermasalah: [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart#L37)
+- Prompt:
+
+#### Task 2
+
+- Status: Belum dikerjakan
+- Masalah: `BiodataModel.fromSqflite` mem-parsing `targetSmokeFreeHari` (field nullable `int?`) menggunakan `ParserUtil.parseInt(...)` yang mengembalikan `defaultValue 0` ketika nilai DB `null` (terverifikasi: `share_global_saya/lib/src/utils/parser_util.dart` `parseInt` mengembalikan `defaultValue` untuk `null`). Akibatnya target yang tidak diset (`null`) dibaca sebagai `0`, sehingga UI/progres dapat menganggap target terset (bukan `null`) dan menampilkan perilaku yang tidak sesuai (mis. progres/validasi berbasis target).
+- Solusi: Gunakan `ParserUtil.parseIntOrNull(row[NamaKolom.targetSmokeFreeHari])` pada `fromSqflite` agar nilai `null` tetap `null`. Periksa juga apakah nilai `0` dari data lama (jika ada) perlu diperlakukan sebagai tidak diset sesuai kebutuhan bisnis (verifikasi sebelum memutuskan).
+- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L53-L55), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L305-L315), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L419-L420)
+- File bermasalah: [biodata_model.dart](lib/fitur/biodata/model/biodata_model.dart#L64-L66)
+- Prompt:
 
 ## Sedang
 
 ## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Logging `L.i` ditambahkan di jalur yang dipanggil dari `build()` pada biodata: (1) `BiodataScreen.build()` mencatat `targetSmokeFreeHari=$targetSmokeFreeHari` (baris ~75), (2) `_buildItem(...)` dipanggil berulang dari `build()` dan mencatat `label=$label, nilai=$nilai` (baris ~195). Ini berpotensi menambah noise karena `build()`/helper-nya dapat dipanggil berulang.
+- Solusi: Pindahkan/hapus log yang dipicu dari `build()` dan helper per-item; cukup log pada titik tidak berfrekuensi tinggi (initState/dispose/aksi/perhitungan). Jika log tetap diperlukan, batasi pada perubahan nilai yang relevan di luar `build()`.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
+- File bermasalah: [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L75), [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L195)
+- Prompt:
 
 # Kelompok 5
 
@@ -108,6 +133,15 @@ Tidak ada temuan.
 ## Sedang
 
 ## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Logging `L.i` ditambahkan di `_buildCardTargetSmokeFree(...)` (dipanggil dari `build()`) yang mencatat `targetSmokeFreeHari/tanggalBerhenti/hariBerhenti/teksProgres` (baris ~166-168). Log di jalur `build()` dapat terpanggil berulang dan menambah noise.
+- Solusi: Pindahkan/hapus log dari method yang dipanggil `build()`; log pada titik tidak berfrekuensi tinggi bila diperlukan.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L166-L168)
+- Prompt:
 
 # Kelompok 9
 

@@ -166,36 +166,6 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 ### Prioritas Sedang
 
-#### 3. Biodata (Profil Merokok)
-
-- **Status PRD:** PRD Final — `prd/optimasi-biodata-profil-merokok.md`
-- **Kondisi fitur pada proyek:** Biodata mencakup nama, tanggal lahir, jumlah rokok/hari, harga rokok/bungkus, tanggal mulai merokok, tanggal mulai berhenti, mode berhenti (seketika/bertahap), penurunan per minggu, dan tanggal mulai penurunan. Catatan: modul daftar alasan berhenti (`alasan_berhenti`, DB v7) sudah ada terpisah dan dipakai dashboard/SOS; target smoke-free (hari) dan penyajian motivasi di dashboard didokumentasikan di PRD.
-- **Status implementasi:** Sebagian (field dasar dan tapering ada; alasan berhenti dan target smoke-free belum).
-- **Path implementasi proyek:** `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/biodata/model/biodata_model.dart`.
-- **Aplikasi pembanding:** Smoke Free (Portable Pixels); Quit Tracker (despDev); Kick It (UC San Diego).
-- **Implementasi referensi:** Profil merokok dengan input jumlah rokok, harga, trigger; beberapa meminta alasan berhenti dan target.
-- **Peluang optimasi:** Menambahkan field opsional "alasan berhenti" dan "target smoke-free" (hari) pada biodata.
-- **Saran optimasi:** Tambahkan field opsional alasan berhenti dan target smoke-free, tampilkan di dashboard sebagai motivasi.
-- **Tujuan dan manfaat:** Personalisasi pengalaman dan penguatan motivasi.
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.despdev.quitsmoking ; https://play.google.com/store/apps/details?id=com.kickitca
-- **Link bukti:** Deskripsi resmi Google Play Store.
-- **Alasan prioritas:** Relevan, dampak terbatas.
-
-#### 4. Dashboard (Ringkasan Progres)
-
-- **Status PRD:** Sudah dibuat — `prd/optimasi-dashboard-ringkasan-progres.md`
-- **Kondisi fitur pada proyek:** Dashboard menampilkan metrik smoke-free (uang dihemat, rokok tidak dihisap), milestone kesehatan terdekat, dan shortcut pencapaian.
-- **Status implementasi:** Sebagian (metrik dasar dan milestone ada; jumlah impian/impian tercapai dan streak terpanjang belum ditampilkan).
-- **Path implementasi proyek:** `lib/fitur/dashboard/screens/dashboard_screen.dart`.
-- **Aplikasi pembanding:** QuitNow (Fewlaps); Smoke Free (Portable Pixels); Quit Tracker (despDev).
-- **Implementasi referensi:** Dashboard dengan counter smoke-free, uang tersimpan, rokok tidak terhisap, dan milestone tercapai.
-- **Peluang optimasi:** Menambahkan ringkasan jumlah impian dan impian tercapai, serta streak terpanjang.
-- **Saran optimasi:** Tambahkan kartu ringkasan impian dan streak terpanjang pada Dashboard.
-- **Tujuan dan manfaat:** Menyelaraskan dashboard dengan tujuan aplikasi dan memberikan informasi bermakna.
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.despdev.quitsmoking
-- **Link bukti:** Deskripsi resmi Google Play Store.
-- **Alasan prioritas:** Relevan, dampak terbatas.
-
 #### 5. Diary Craving (Catatan Pemicu) ✅ PRD dibuat: prd/analisis-pemicu-diary-craving.md
 
 - **Kondisi fitur pada proyek:** Diary Craving tersedia dengan daftar, form, empty state, dan pemicu enum.
@@ -210,7 +180,7 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 - **Link bukti:** Deskripsi resmi Google Play Store.
 - **Alasan prioritas:** Relevan, dampak terbatas.
 
-#### 6. Notifikasi (Pengingat Harian)
+#### 6. Notifikasi (Pengingat Harian) ✅ PRD dibuat: prd/optimasi-notifikasi-pengingat-harian.md
 
 - **Kondisi fitur pada proyek:** Notifikasi harian terjadwal dengan toggle, pemilih waktu, uji coba, dan penjadwalan ulang saat aplikasi dibuka sudah tersedia.
 - **Status implementasi:** Sebagian (pengingat harian ada; pengingat berbasis pola craving belum).
