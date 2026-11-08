@@ -97,7 +97,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: Selesai
 - Kategori: Bug Runtime
 - Masalah: `NotifikasiService.inisialisasi()` memanggil `mintaIzin()` saat aplikasi dibuka, termasuk pada Web. Dokumentasi plugin menyatakan izin Web harus diminta hanya sebagai respons interaksi pengguna. Selain itu, browser tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini. `mintaIzin()` dan UI pengaturan belum memisahkan kemampuan berdasarkan platform, dan `catch (Exception)` tidak menangkap `UnsupportedError`. Permintaan izin otomatis pada Web dapat ditolak atau diblokir browser, dan fitur terjadwal tidak tersedia pada Web.
 - Solusi: Jangan meminta izin Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Pisahkan kemampuan notifikasi berdasarkan platform dan jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung. Tangani `UnsupportedError` secara eksplisit.
@@ -108,7 +108,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: kerjakan
+- Status: Selesai
 - Kategori: Bug Runtime
 - Masalah: `_ubahNotifikasi()`, `_pilihWaktu()`, dan `_ujiNotifikasi()` menjalankan operasi asynchronous lalu menggunakan `setState()` atau `context`. Pemeriksaan `mounted` belum konsisten setelah setiap `await`.
 - Solusi: Periksa `mounted` setelah setiap operasi asynchronous sebelum menggunakan `setState()` atau `context`.
@@ -128,7 +128,7 @@ Tidak ada temuan.
 
 #### Task 4
 
-- Status: kerjakan
+- Status: Selesai
 - Kategori: Bug Runtime
 - Masalah: Pada `lib/fitur/pengaturan/screens/pengaturan_screen.dart` (baris 116), kegagalan izin dideteksi dengan `e.toString().contains('Izin notifikasi tidak diberikan')`. Pencocokan string bergantung pada teks exception yang sama persis, sehingga rentan jika pesan berubah.
 - Solusi: Gunakan tipe exception khusus atau hasil boolean dari operasi izin, bukan pencocokan string, agar deteksi kegagalan tidak bergantung pada teks.
@@ -146,7 +146,7 @@ Tidak ada temuan.
 
 #### Task 6
 
-- Status: Belum
+- Status: Selesai
 - Kategori: Bug Runtime
 - Masalah: Pada `lib/shared/notifikasi/notifikasi_service.dart`, method `jadwalkanPengingatHarian()` (baris 104-112) melempar `UnsupportedError` pada `TargetPlatform.macOS`, padahal plugin `flutter_local_notifications` v22.3.3 mendukung notifikasi terjadwal pada macOS melalui `zonedSchedule`. Aturan hanya melarang penjadwalan berulang pada Web dan Linux.
 - Solusi: Hapus `TargetPlatform.macOS` dari kondisi yang melempar `UnsupportedError`, atau pisahkan pengecekan berdasarkan kemampuan aktual platform.

@@ -1,628 +1,536 @@
 ---
-description: Evaluasi commit baru terhadap aturan proyek dan source SDK/paket, lalu perbarui checkpoint serta saran tanpa mengubah kode.
+description: Evaluasi seluruh commit yang belum diperiksa berdasarkan aturan proyek dan source SDK, perbarui catatan.md serta task.md tanpa mengubah kode.
 agent: code
 ---
 
-<!-- Lokasi file di repository: .kilo/commands/cek_perubahan_sekarang.md -->
+# Evaluasi Perubahan Commit
 
-# Evaluasi Perubahan Commit Terbaru
+## Tujuan
 
-## 1. Tujuan dan Hasil yang Diharapkan
-
-Evaluasi seluruh commit yang belum pernah diperiksa oleh command ini. Pastikan perubahan yang di-commit sesuai dengan:
+Analisis perubahan kode yang sudah di-commit agar sesuai dengan:
 
 1. `AGENTS.md` dan seluruh aturan proyek yang berlaku.
-2. Source Flutter SDK, Dart SDK, dan source paket pada versi yang benar-benar digunakan proyek.
-3. API, konstruktor, parameter, properti, metode, enum, callback, nilai balik, dan perilaku bawaan yang tersedia pada versi tersebut.
-4. Ketentuan penggunaan API yang tidak deprecated.
-5. Ketentuan runtime, keamanan, performa, data, testing, dan UX/UI yang relevan.
+2. Aturan khusus dalam `.agents/rules/`.
+3. Source SDK Flutter dan Dart yang benar-benar digunakan proyek.
+4. Source package atau dependency yang digunakan oleh kode yang berubah.
 
-Hasil evaluasi harus:
+Tugas ini adalah **AUDIT DAN ANALISIS, BUKAN IMPLEMENTASI**.
 
-- Menjelaskan perubahan yang diperiksa dan commit asalnya.
-- Menyebutkan setiap pelanggaran aturan beserta path dan nomor baris kode serta aturan yang dilanggar.
-- Menyebutkan bukti pemeriksaan source SDK/paket beserta versi dan path sumbernya.
-- Memberikan saran perbaikan apabila ditemukan masalah.
-- Memperbarui `saran.md` apabila ada saran baru atau saran lama yang perlu diperbarui.
-- Memperbarui checkpoint dan ringkasan terakhir di `catatan.md` agar commit yang sama tidak perlu dievaluasi ulang.
-- Menyajikan laporan akhir dengan format yang mudah dibaca.
+AI hanya boleh:
 
-Command ini adalah **audit dan dokumentasi**, bukan command implementasi.
+- Membaca commit dan perubahan kode.
+- Membaca aturan proyek.
+- Membaca source SDK dan source package.
+- Menganalisis kesesuaian implementasi.
+- Memperbarui `catatan.md` di root.
+- Menambah atau memperbarui temuan di `task.md` root sesuai `.agents/rules/global/format_task.md`.
+- Memberikan laporan dan saran perbaikan.
 
-## 2. Batasan Mutlak
+**LARANGAN MUTLAK: JANGAN MENGUBAH, MEMFORMAT ULANG, MEMPERBAIKI, ATAU MENGIMPLEMENTASIKAN KODE DART.**
 
-Selama command dijalankan, patuhi ketentuan berikut:
+---
 
-1. Jangan mengubah kode Dart.
-2. Jangan mengubah kode sumber bahasa pemrograman apa pun.
-3. Jangan memperbaiki bug, melakukan refactoring, menambah fitur, atau mengubah perilaku aplikasi.
-4. Jangan mengubah `pubspec.yaml`, `pubspec.lock`, konfigurasi, migrasi database, file test, file aturan, atau file command.
-5. Jangan menjalankan formatter atau generator yang mengubah file.
-6. Jangan menjalankan operasi Git yang mengubah repository atau riwayat, termasuk `commit`, `push`, `reset`, `rebase`, `checkout`, `switch`, `merge`, `cherry-pick`, `stash`, dan operasi sejenis.
-7. Jangan memasukkan perubahan working tree yang belum di-commit ke dalam hasil evaluasi commit.
-8. Jangan menghapus atau menimpa perubahan lokal pengguna.
-9. Jangan mengarang aturan, hasil pemeriksaan source, nomor baris, versi paket, atau kesimpulan.
-10. Jangan menyatakan pemeriksaan SDK selesai apabila source yang relevan belum dibaca.
-11. Jangan memajukan checkpoint apabila masih ada commit atau pemeriksaan wajib yang belum selesai.
-12. Jangan menyertakan tautan/link dalam laporan atau entri `saran.md`. Gunakan path file biasa beserta nomor baris.
+# 1. Persiapan dan pembacaan aturan
 
-**File repository yang boleh diperbarui oleh command ini hanya:**
+Sebelum menganalisis commit:
 
-- `catatan.md` di root repository.
-- `saran.md` di root repository.
+1. Baca `AGENTS.md` yang berlaku untuk proyek, termasuk aturan dari direktori induk jika ada.
+2. Baca `.agents/rules/AGENTS.md` jika tersedia dan berlaku.
+3. Baca seluruh aturan relevan di `.agents/rules/`.
+4. Baca `.agents/rules/global/format_task.md`.
+5. Baca `pubspec.yaml` untuk mengetahui dependency dan versi SDK yang digunakan.
+6. Baca `pubspec.lock` untuk mengetahui versi dependency yang benar-benar terkunci.
+7. Baca `catatan.md` di root jika file tersebut tersedia.
+8. Baca `task.md` di root jika file tersebut tersedia.
 
-File lain hanya boleh dibaca. Apabila salah satu dari dua file tersebut memiliki perubahan lokal yang belum di-commit, jangan menimpa perubahan pengguna. Lakukan pembaruan hanya jika dapat mempertahankan seluruh perubahan lokal dengan aman. Jika tidak aman, jangan menulis ke file tersebut dan jangan memajukan checkpoint.
+Patuhi aturan proyek selama seluruh proses analisis.
 
-## 3. Pemeriksaan Awal Repository
+Jika file aturan yang wajib dibaca tidak ditemukan atau tidak dapat dibaca:
 
-Lakukan pemeriksaan berikut sebelum membaca rentang commit:
+- Jangan mengarang isi aturan.
+- Jangan menganggap aturan tersebut tidak berlaku.
+- Laporkan file yang tidak ditemukan atau tidak dapat dibaca.
+- Jika ketidaktersediaan aturan membuat analisis tidak dapat dilakukan dengan benar, hentikan proses dan minta arahan pengguna.
 
-1. Pastikan direktori aktif adalah root repository Git dengan `git rev-parse --show-toplevel`.
-2. Catat branch aktif dengan `git branch --show-current`.
-3. Catat apakah repository berada pada detached HEAD.
-4. Ambil SHA lengkap HEAD dengan `git rev-parse HEAD`.
-5. Periksa kondisi working tree dengan `git status --short`.
-6. Catat perubahan staged, unstaged, dan untracked secara terpisah.
-7. Tetapkan SHA HEAD tersebut sebagai `TARGET_HEAD` dan jangan menggantinya di tengah evaluasi.
+---
 
-Jika HEAD berubah sebelum pencatatan akhir, batalkan pembaruan checkpoint. Jangan mencampur hasil evaluasi dari dua HEAD yang berbeda.
+# 2. Menentukan commit yang akan dievaluasi
 
-Detached HEAD tidak otomatis menggagalkan evaluasi. Jika SHA HEAD valid dan rentang commit dapat ditentukan, evaluasi tetap dapat dilakukan dengan melaporkan bahwa repository berada pada detached HEAD.
+**Jangan membaca semua riwayat commit tanpa batas. Evaluasi hanya commit yang belum pernah diperiksa.**
 
-## 4. Membaca Aturan Proyek Sebelum Menganalisis Kode
+Gunakan `catatan.md` sebagai penanda checkpoint evaluasi terakhir.
 
-**Jangan mulai menilai perubahan kode sebelum membaca aturan yang berlaku.**
+## 2.1. Jika catatan.md sudah memiliki checkpoint
 
-### 4.1. Urutan Membaca Aturan
+1. Baca commit hash terakhir yang tercatat sebagai commit yang sudah dievaluasi.
+2. Pastikan commit tersebut dapat ditemukan di riwayat Git.
+3. Tentukan seluruh commit setelah checkpoint tersebut sampai HEAD saat penentuan target.
+4. Commit checkpoint tidak boleh dianalisis ulang.
+5. Jangan membaca commit sebelum checkpoint.
+6. Catat hash HEAD pada saat penentuan target sebagai `TARGET_HEAD`.
 
-1. Baca `AGENTS.md` di root repository secara menyeluruh.
-2. Ikuti instruksi dan referensi file yang ditentukan oleh `AGENTS.md`.
-3. Cari `AGENTS.md` tambahan pada direktori atau induk direktori dari setiap file yang berubah.
-4. Temukan dan baca file aturan yang berlaku di repository, termasuk aturan pada `.agents/`, `.kilo/rules/`, `.kilocode/rules/`, `prompt/aturan/`, atau lokasi lain yang benar-benar ditemukan.
-5. Periksa aturan umum dan aturan khusus proyek yang berhubungan dengan file atau jenis perubahan yang sedang dievaluasi.
-6. Baca instruksi Skills yang secara eksplisit diwajibkan oleh aturan proyek dan relevan dengan API atau teknologi yang berubah.
-7. Catat path dan nomor baris aturan yang berpotensi menjadi dasar penilaian.
+## 2.2. Jika belum ada checkpoint
 
-Jangan menganggap semua file Markdown sebagai aturan. Pastikan file tersebut memang berisi instruksi yang berlaku.
+Jika `catatan.md` belum tersedia, kosong, atau belum memiliki informasi checkpoint evaluasi yang valid:
 
-Jangan hanya membaca nama atau ringkasan aturan. Baca isi ketentuannya agar penilaian tidak terlepas dari pengecualian, konteks, atau prioritas aturan.
+1. Ambil 5 commit terbaru dari riwayat Git.
+2. Tentukan commit paling baru yang akan menjadi `TARGET_HEAD`.
+3. Evaluasi hanya 5 commit yang sudah ditentukan tersebut.
+4. Jangan memperluas target ke commit lain selama sesi berjalan.
 
-### 4.2. Konflik Antaraturan
+Jika `catatan.md` memiliki checkpoint tetapi commit tersebut tidak dapat ditemukan atau riwayatnya tidak dapat diverifikasi, jangan langsung menggunakan 5 commit terbaru. Laporkan masalah checkpoint kepada pengguna agar tidak ada commit yang terlewat atau dievaluasi dua kali tanpa alasan.
 
-Jika dua atau lebih aturan bertentangan:
+## 2.3. Tetapkan daftar target sebelum analisis
 
-1. Catat isi inti aturan yang bertentangan.
-2. Catat path dan nomor baris setiap aturan.
-3. Periksa apakah `AGENTS.md` atau aturan lain sudah menetapkan prioritas secara eksplisit.
-4. Jika prioritas sudah jelas, gunakan aturan yang ditetapkan sebagai prioritas.
-5. Jika prioritas tidak jelas, jangan memilih sendiri aturan yang dianggap benar.
-6. Laporkan sebagai **konflik aturan yang memerlukan keputusan**, bukan sebagai pelanggaran kode yang sudah pasti.
+Sebelum membaca isi perubahan:
 
-Jangan menyebut kode melanggar aturan sebelum konflik dan prioritas aturan diselesaikan.
+1. Tetapkan `TARGET_HEAD`.
+2. Tetapkan daftar hash seluruh commit yang akan dievaluasi.
+3. Catat jumlah commit yang menjadi target.
+4. Urutkan commit dari yang paling lama ke yang paling baru.
+5. Gunakan daftar tersebut sebagai batas tetap selama sesi.
 
-## 5. Membaca `catatan.md` dan `saran.md`
+**Jangan menambahkan commit baru ke daftar target setelah proses analisis dimulai.**
 
-Baca kedua file di root repository sebelum menentukan rentang commit dan menyusun temuan.
+## 2.4. Jika ada commit baru setelah target ditentukan
 
-### 5.1. `catatan.md`
+Jika terdapat commit baru setelah `TARGET_HEAD` ditentukan:
 
-Baca `catatan.md` secara menyeluruh untuk memahami struktur dan memastikan bagian command lain tidak tertimpa.
+1. Abaikan commit baru tersebut selama sesi ini.
+2. Jangan memasukkannya ke daftar target.
+3. Jangan membaca diff atau isi commit baru tersebut.
+4. Selesaikan hanya commit yang sudah masuk daftar target.
+5. Saat memperbarui `catatan.md`, gunakan hash `TARGET_HEAD`, bukan HEAD terbaru yang muncul selama pengerjaan.
+6. Commit baru akan dievaluasi pada pemanggilan command berikutnya.
 
-Untuk menentukan commit terakhir yang sudah diperiksa oleh command ini, **hanya gunakan checkpoint di antara penanda berikut**:
+**Contoh:**
 
-`<!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->`
+Pada awal analisis:
 
-`<!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->`
+- Commit A
+- Commit B
+- Commit C
 
-Abaikan checkpoint, riwayat, atau catatan milik command lain. Jangan menggunakan checkpoint milik `.kilo/commands/evaluasi_aturan_khusus.md` atau command lain.
+`TARGET_HEAD` ditentukan pada Commit C.
 
-Jangan menebak checkpoint dari judul commit, tanggal, urutan paragraf, atau posisi entri terakhir.
+Ketika AI sedang menganalisis, pengguna membuat:
 
-### 5.2. `saran.md`
+- Commit D
+- Commit E
 
-Baca `saran.md` untuk mengetahui:
+AI hanya boleh mengevaluasi Commit A, B, dan C jika ketiganya memang termasuk daftar target.
 
-- Temuan yang sudah pernah dicatat.
-- Saran yang masih belum diperbaiki.
-- Saran yang sudah diperbaiki atau sebagian diperbaiki.
-- Saran yang perlu diperbarui berdasarkan kondisi kode pada HEAD.
-- Temuan yang sama agar tidak dibuat berulang.
+Commit D dan E tidak boleh ikut dianalisis. Keduanya harus tetap terdeteksi sebagai commit baru untuk evaluasi berikutnya.
 
-Gunakan akar masalah dan perilaku yang sama untuk mengenali duplikasi, bukan hanya membandingkan judul atau path file.
+**Dilarang menggeser checkpoint ke Commit E hanya karena Commit E merupakan HEAD terbaru ketika sesi selesai.**
 
-## 6. Menentukan Rentang Commit
+---
 
-Tentukan rentang evaluasi hanya berdasarkan checkpoint command ini dan riwayat Git.
+# 3. Membaca perubahan setiap commit
 
-### 6.1. Checkpoint Sudah Ada dan Valid
+Setelah daftar target ditetapkan:
 
-Jika checkpoint berisi SHA lengkap:
+1. Periksa setiap commit berdasarkan urutan yang sudah ditentukan.
+2. Baca pesan commit.
+3. Periksa file yang ditambahkan, diubah, dipindahkan, dan dihapus.
+4. Baca diff setiap file yang berubah.
+5. Baca konteks kode di sekitar perubahan agar memahami fungsi dan dampaknya.
+6. Periksa hubungan perubahan dengan file lain yang terkait.
+7. Jangan hanya mengandalkan pesan commit.
+8. Jangan menganggap perubahan sudah benar hanya karena berhasil di-commit.
+9. Jangan mengabaikan perubahan kecil, termasuk perubahan pada widget, parameter, konstruktor, import, dan konfigurasi.
+10. Jangan memperluas analisis ke perubahan yang tidak termasuk dalam daftar target.
 
-1. Pastikan SHA tersebut merupakan commit yang dapat ditemukan di repository.
-2. Pastikan checkpoint merupakan ancestor dari `TARGET_HEAD`, misalnya dengan `git merge-base --is-ancestor <checkpoint> <TARGET_HEAD>`.
-3. Jika valid dan berbeda dari `TARGET_HEAD`, ambil seluruh commit pada first-parent history setelah checkpoint sampai `TARGET_HEAD`.
-4. Urutkan commit dari yang paling lama ke paling baru.
-5. Evaluasi hanya commit dalam rentang tersebut.
+Jika beberapa commit mengubah file yang sama, periksa urutan perubahan agar dapat memahami kondisi akhir dan hubungan antarperubahannya.
 
-Rentang commit harus ditentukan dari graf Git, bukan dari tanggal atau judul commit.
+Jika file dihapus atau dipindahkan, periksa diff dan riwayat yang relevan tanpa menganggap file tersebut masih tersedia pada HEAD.
 
-Jika checkpoint sama dengan `TARGET_HEAD`, tidak ada commit baru. Laporkan bahwa tidak ada perubahan commit yang perlu dievaluasi, lalu hentikan proses tanpa mengubah `catatan.md` atau `saran.md`.
+---
 
-### 6.2. Belum Pernah Ada Checkpoint
+# 4. Audit kesesuaian dengan AGENTS.md dan aturan proyek
 
-Gunakan kondisi ini hanya jika kedua penanda checkpoint memang belum pernah dibuat dan tidak ada bukti checkpoint lama milik command ini, atau kedua penanda tersedia dengan nilai kosong karena command belum pernah dijalankan. Jika terdapat riwayat lama yang menunjukkan command ini pernah berjalan tetapi checkpoint hilang, jangan anggap sebagai evaluasi pertama; gunakan ketentuan checkpoint tidak valid.
+Untuk setiap perubahan:
 
-1. Ambil maksimal 5 commit terakhir dari first-parent history sampai `TARGET_HEAD`.
-2. Jika repository memiliki kurang dari 5 commit, gunakan seluruh commit yang tersedia.
-3. Urutkan dari yang paling lama ke paling baru.
+1. Identifikasi aturan yang berkaitan dengan kode tersebut.
+2. Periksa apakah implementasi mematuhi aturan.
+3. Periksa apakah perubahan melanggar aturan proyek.
+4. Periksa apakah ada konflik antara implementasi baru dan aturan yang berlaku.
+5. Periksa apakah perubahan menyebabkan ketidakkonsistenan dengan pola kode yang sudah digunakan.
+6. Periksa apakah implementasi menimbulkan risiko bug runtime, kesalahan state, kebocoran resource, atau masalah performa.
+7. Periksa apakah perubahan memengaruhi UX dan UI.
+8. Periksa apakah implementasi menambahkan kompleksitas yang tidak diperlukan.
+9. Periksa apakah solusi sudah sesuai dengan tujuan perubahan.
+10. Catat aturan yang dilanggar beserta path file dan lokasi kode yang relevan.
 
-Gunakan perintah yang setara dengan `git log -5 --first-parent --reverse --format=%H <TARGET_HEAD>` dan pastikan setiap hasil berupa SHA lengkap.
+Jika tidak menemukan pelanggaran, jangan membuat temuan yang tidak memiliki dasar.
 
-**Fallback 5 commit hanya untuk evaluasi pertama.** Jangan menggunakan fallback ini untuk menggantikan checkpoint lama yang rusak atau tidak valid.
+Jangan mengarang aturan yang tidak tertulis dalam dokumentasi proyek atau dokumentasi SDK.
 
-### 6.3. Checkpoint Tidak Valid atau Ambigu
+---
 
-Checkpoint dianggap tidak valid apabila:
+# 5. WAJIB MEMBACA SOURCE SDK DAN SOURCE PACKAGE
 
-- SHA tidak ditemukan dalam repository.
-- SHA bukan ancestor dari `TARGET_HEAD`.
-- Riwayat berubah akibat rebase atau force push sehingga hubungan checkpoint tidak dapat dipastikan.
-- Penanda START atau END hilang, terbalik, atau muncul lebih dari satu kali.
-- Terdapat lebih dari satu nilai checkpoint yang menyebabkan posisi terakhir tidak jelas.
-- Format checkpoint rusak atau tidak dapat diidentifikasi.
+**AI TIDAK BOLEH MENGABAIKAN SOURCE SDK, MESKIPUN PERUBAHAN HANYA MELIBATKAN WIDGET BIASA.**
 
-Jika checkpoint pernah ada tetapi sekarang tidak valid:
+Setiap kode yang berubah harus diperiksa terhadap API dan implementasi yang benar-benar tersedia pada versi SDK atau package yang digunakan proyek.
 
-1. Jangan menggunakan fallback 5 commit.
-2. Jangan menebak rentang evaluasi.
-3. Jangan mengubah atau menghapus checkpoint yang rusak.
-4. Laporkan masalah dan bukti Git yang ditemukan.
-5. Hentikan evaluasi sebelum memperbarui `catatan.md` atau `saran.md`.
+## 5.1. Tentukan versi yang digunakan
 
-Jika file `catatan.md` belum ada, hentikan proses dan laporkan. Jika kedua penanda checkpoint tidak ada dan tidak ada bukti evaluasi terdahulu milik command ini, perlakukan sebagai evaluasi pertama sesuai bagian 6.2. Jika ada bukti evaluasi terdahulu tetapi penanda hilang atau tidak dapat dipastikan, perlakukan sebagai checkpoint tidak valid dan hentikan proses.
+Sebelum membaca source:
 
-### 6.4. Perlakuan terhadap Merge Commit
+1. Periksa versi Flutter dan Dart proyek.
+2. Periksa konfigurasi SDK di `pubspec.yaml`.
+3. Periksa versi dependency yang terkunci di `pubspec.lock`.
+4. Pastikan source yang dibaca sesuai dengan versi yang benar-benar digunakan proyek.
+5. Jangan menggunakan dokumentasi versi terbaru jika proyek menggunakan versi yang berbeda tanpa memverifikasi kesesuaiannya.
 
-Gunakan first-parent history agar commit yang masuk melalui merge tidak diperiksa berulang sebagai rangkaian commit cabang samping sekaligus sebagai merge.
+## 5.2. Lokasi source yang harus diperiksa
 
-- Commit biasa: evaluasi diff terhadap parent-nya.
-- Merge commit: evaluasi diff terhadap first parent (`<commit>^1`).
-- Root commit tanpa parent: gunakan diff root commit terhadap keadaan kosong.
+Gunakan source lokal yang sesuai dengan lingkungan proyek, misalnya:
 
-Diff merge terhadap first parent harus mencakup perubahan bersih yang masuk ke branch utama, termasuk resolusi konflik merge.
+- Source Flutter SDK.
+- Source Dart SDK.
+- Source package di `.pub-cache`.
+- Source package yang dikelola melalui dependency proyek.
+- Dokumentasi API resmi yang sesuai dengan versi dependency jika source lokal tidak tersedia.
 
-## 7. Menganalisis Setiap Commit
+Untuk proyek Flutter, periksa source yang relevan di instalasi Flutter SDK dan package cache.
 
-Evaluasi semua commit yang sudah dipilih, dari yang paling lama hingga paling baru. Jangan melewatkan commit hanya karena judulnya terlihat seperti dokumentasi atau perubahan kecil.
+Jangan menganggap dokumentasi umum sudah cukup jika source implementasinya tersedia.
+
+## 5.3. Periksa setiap API yang digunakan
+
+Untuk setiap kode yang berubah, periksa hal-hal berikut sesuai relevansinya:
+
+1. Apakah class atau widget benar-benar tersedia pada versi yang digunakan?
+2. Apakah konstruktor yang dipanggil sesuai dengan source?
+3. Apakah parameter wajib dan opsional sudah benar?
+4. Apakah tipe parameter dan nilai kembaliannya sesuai?
+5. Apakah terdapat parameter baru yang belum dimanfaatkan?
+6. Apakah terdapat parameter yang sudah deprecated?
+7. Apakah API tersebut sudah diganti atau tidak direkomendasikan?
+8. Apakah terdapat perubahan perilaku pada versi SDK yang digunakan?
+9. Apakah penggunaan API sesuai dengan dokumentasi dan contoh implementasi resmi?
+10. Apakah terdapat cara penggunaan yang lebih tepat berdasarkan source SDK?
+
+## 5.4. Pemeriksaan widget biasa tetap wajib
+
+Jangan hanya membaca source untuk API yang dianggap rumit.
+
+Contoh kode yang tetap harus diperiksa source-nya:
+
+- `Container`
+- `Padding`
+- `Row`
+- `Column`
+- `Stack`
+- `Scaffold`
+- `AppBar`
+- `Text`
+- `Icon`
+- `ListView`
+- `GridView`
+- `ListTile`
+- `TextField`
+- `ElevatedButton`
+- `IconButton`
+- `FutureBuilder`
+- `StreamBuilder`
+- Widget dan API lain yang berubah.
+
+Jika konstruktor, parameter, atau perilaku widget mengalami perubahan, catat temuan tersebut.
+
+Tujuannya agar AI dan pengguna memahami API berdasarkan implementasi SDK yang sebenarnya, bukan hanya berdasarkan ingatan model.
+
+## 5.5. Bukti pemeriksaan source
+
+Setiap temuan yang berkaitan dengan SDK atau package harus mencantumkan:
+
+- Nama API, class, atau widget.
+- Versi SDK atau package yang diperiksa.
+- Lokasi source yang diperiksa.
+- Konstruktor atau parameter yang relevan.
+- Hasil pemeriksaan.
+- Dampak terhadap kode yang berubah.
+- Rekomendasi penggunaan yang sesuai.
+
+Jika source tidak ditemukan atau tidak dapat dibaca:
+
+- Jangan mengklaim API sudah sesuai.
+- Jangan menebak konstruktor atau parameter.
+- Catat bagian yang belum dapat diverifikasi.
+- Jelaskan sumber yang sudah dicoba diperiksa.
+
+**Tidak boleh memberikan kesimpulan bahwa kode sesuai SDK jika source yang relevan belum diperiksa.**
+
+---
+
+# 6. Analisis dampak dan saran perbaikan
+
+Setelah memeriksa commit, aturan proyek, dan source SDK:
+
+1. Tentukan apakah perubahan sudah benar.
+2. Identifikasi masalah yang benar-benar ditemukan.
+3. Jelaskan penyebab masalah.
+4. Jelaskan dampak masalah terhadap aplikasi.
+5. Tunjukkan lokasi file dan baris yang relevan jika tersedia.
+6. Cantumkan aturan proyek atau source SDK yang menjadi dasar penilaian.
+7. Berikan saran perbaikan yang spesifik dan dapat diterapkan.
+8. Pisahkan masalah yang wajib diperbaiki dari saran peningkatan.
+9. Jangan menyarankan refactor besar jika perbaikan kecil sudah mencukupi.
+10. Jangan menambahkan persyaratan yang tidak berkaitan dengan perubahan.
+
+Gunakan kategori prioritas sesuai format `task.md` dan aturan proyek.
+
+Jika perubahan sudah sesuai, nyatakan bahwa tidak ditemukan masalah berdasarkan pemeriksaan yang dilakukan. Jangan membuat task hanya untuk mengisi daftar.
+
+---
+
+# 7. Pembaruan task.md
+
+Jika ditemukan masalah yang membutuhkan perbaikan kode:
+
+1. Tambahkan task baru atau perbarui task yang sudah ada di `task.md` root.
+2. Baca kembali `.agents/rules/global/format_task.md` sebelum mengubah `task.md`.
+3. Ikuti format penulisan, pengelompokan, prioritas, dan struktur task sesuai aturan tersebut.
+4. Kelompokkan task berdasarkan file terdampak sesuai aturan `format_task.md`.
+5. Jika task yang sama sudah tersedia, perbarui task tersebut daripada membuat duplikat.
+6. Jangan menghapus task lama yang tidak berkaitan.
+7. Jangan mengubah status task yang sudah ada tanpa alasan yang dibenarkan.
+8. Tuliskan masalah berdasarkan hasil pemeriksaan aktual.
+9. Tuliskan solusi yang spesifik dan dapat diterapkan.
+10. Cantumkan aturan yang dilanggar.
+11. Cantumkan seluruh file yang bermasalah.
+12. Sertakan referensi commit yang menjadi sumber temuan jika relevan.
+
+Jangan membuat task untuk hal yang belum terbukti bermasalah.
+
+Jika tidak ditemukan masalah yang memerlukan implementasi, jangan menambahkan task baru.
+
+**Penting:** Memperbarui `task.md` bukan berarti memberikan izin untuk langsung mengerjakan task tersebut.
+
+Jangan mengubah status task menjadi `Kerjakan` hanya karena AI menemukan masalah. Status pengerjaan tetap mengikuti aturan dan keputusan pengguna.
+
+---
+
+# 8. Aturan pengelolaan catatan.md
+
+File `catatan.md` di root berfungsi sebagai checkpoint evaluasi dan ringkasan pengetahuan hasil evaluasi commit.
+
+**Tujuan utamanya adalah mencegah commit yang sudah dievaluasi dibaca dan dianalisis berulang kali, sekaligus mencegah isi catatan membengkak.**
+
+## 8.1. Informasi yang wajib disimpan
+
+Simpan informasi berikut:
+
+1. Hash commit terakhir yang sudah dievaluasi.
+2. Tanggal evaluasi terakhir.
+3. Ringkasan singkat hasil evaluasi.
+4. Temuan penting yang masih relevan untuk pekerjaan berikutnya.
+5. Aturan atau pengetahuan SDK yang penting dan perlu dipertahankan.
+
+## 8.2. Jangan menyimpan seluruh riwayat evaluasi
+
+Hindari:
+
+- Menyalin seluruh pesan commit.
+- Menyalin seluruh diff.
+- Menyimpan ulang seluruh isi laporan.
+- Menyimpan daftar perubahan setiap file secara panjang.
+- Menyimpan temuan yang sudah tidak relevan.
+- Mengulang informasi yang sudah tersedia di `task.md`.
+- Menambahkan laporan lengkap setiap sesi tanpa merangkum catatan sebelumnya.
+
+## 8.3. Cara menjaga ukuran catatan tetap terkendali
+
+Setiap kali memperbarui `catatan.md`:
+
+1. Pertahankan checkpoint evaluasi terakhir yang benar.
+2. Perbarui checkpoint ke `TARGET_HEAD` setelah seluruh commit target berhasil dievaluasi.
+3. Perbarui ringkasan evaluasi sebelumnya menjadi ringkasan yang lebih padat jika diperlukan.
+4. Pertahankan hanya pengetahuan SDK dan aturan yang masih relevan untuk evaluasi mendatang.
+5. Hapus catatan sementara yang sudah tidak diperlukan.
+6. Jangan menyimpan detail temuan yang sudah dicatat lengkap di `task.md`.
+7. Jangan menumpuk laporan setiap sesi menjadi riwayat panjang.
+
+Gunakan struktur ringkas seperti berikut:
+
+```markdown
+# Catatan Evaluasi Commit
+
+## Checkpoint
+
+- Commit terakhir dievaluasi: <hash>
+- Tanggal evaluasi: <tanggal>
+- Jumlah commit yang dievaluasi: <jumlah>
+
+## Ringkasan Evaluasi Terakhir
+
+- <ringkasan singkat>
+
+## Pengetahuan Penting
+
+- <aturan atau pengetahuan SDK yang masih relevan>
+
+## Temuan yang Masih Perlu Diperhatikan
+
+- <temuan ringkas yang belum tercatat di task.md>
+```
+
+Struktur tersebut merupakan pedoman ringkas. Jika `catatan.md` sudah memiliki format yang lebih sesuai, pertahankan bagian yang masih berguna dan rapikan tanpa menghilangkan checkpoint.
+
+**Jangan mengorbankan ketepatan checkpoint demi membuat catatan lebih pendek.**
+
+## 8.4. Kapan checkpoint boleh diperbarui
+
+Checkpoint hanya boleh diperbarui setelah:
+
+1. Seluruh commit target berhasil diperiksa.
+2. Seluruh perubahan yang termasuk target sudah dianalisis.
+3. Temuan sudah dicatat.
+4. `task.md` sudah diperbarui jika diperlukan.
+5. Tidak ada commit target yang sengaja terlewat tanpa penjelasan.
+
+Jika ada commit target yang gagal dibaca atau belum selesai dievaluasi:
+
+- Jangan mengklaim seluruh target sudah selesai.
+- Jangan menggeser checkpoint melewati commit yang belum dievaluasi.
+- Laporkan commit yang belum berhasil diperiksa.
+- Simpan checkpoint hanya sampai commit terakhir yang benar-benar selesai dievaluasi secara berurutan.
+
+Jika commit baru muncul setelah `TARGET_HEAD`, jangan gunakan commit baru tersebut sebagai checkpoint.
+
+---
+
+# 9. Larangan mengubah kode
+
+**COMMAND INI TIDAK BOLEH MELAKUKAN IMPLEMENTASI.**
+
+Dilarang:
+
+1. Mengubah file `.dart`.
+2. Memperbaiki bug secara langsung.
+3. Mengubah konstruktor atau parameter widget.
+4. Mengganti API deprecated.
+5. Melakukan refactor.
+6. Memformat ulang kode.
+7. Mengubah konfigurasi proyek untuk memperbaiki temuan.
+8. Mengubah dependency.
+9. Membuat perubahan implementasi yang tidak diminta.
+
+File yang boleh diperbarui oleh command ini hanya:
+
+- `catatan.md` di root.
+- `task.md` di root.
+
+File dokumentasi lain hanya boleh dibaca, kecuali pengguna memberikan instruksi terpisah.
+
+Jika menemukan masalah pada kode, cukup catat di `task.md` dan berikan saran perbaikan dalam laporan.
+
+**Jangan memperbaiki kode meskipun perbaikannya terlihat sangat sederhana.**
+
+---
+
+# 10. Urutan pelaksanaan wajib
+
+Lakukan pekerjaan dengan urutan berikut:
+
+1. Baca `AGENTS.md` dan aturan proyek.
+2. Baca `.agents/rules/global/format_task.md`.
+3. Baca `pubspec.yaml` dan `pubspec.lock`.
+4. Baca `catatan.md`.
+5. Baca `task.md`.
+6. Tentukan checkpoint evaluasi sebelumnya.
+7. Tetapkan `TARGET_HEAD`.
+8. Tetapkan seluruh daftar commit target.
+9. Pastikan daftar target tidak berubah selama sesi.
+10. Analisis setiap commit sesuai urutan.
+11. Periksa seluruh kode yang berubah.
+12. Baca source SDK dan source package untuk API yang digunakan oleh perubahan.
+13. Bandingkan hasil pemeriksaan dengan aturan proyek.
+14. Identifikasi masalah dan saran perbaikan.
+15. Tambahkan atau perbarui temuan di `task.md` sesuai `format_task.md`.
+16. Perbarui `catatan.md` dengan checkpoint terakhir yang benar-benar selesai dievaluasi.
+17. Periksa ulang kedua file dokumentasi yang diperbarui.
+18. Berikan laporan akhir kepada pengguna.
+
+Jangan mengubah urutan tersebut tanpa alasan teknis yang jelas.
+
+---
+
+# 11. Format laporan akhir
+
+Berikan laporan yang terstruktur dan tidak hanya menyatakan bahwa pemeriksaan selesai.
+
+## A. Informasi evaluasi
+
+- Checkpoint sebelumnya.
+- `TARGET_HEAD`.
+- Jumlah commit target.
+- Rentang commit yang diperiksa.
+- Apakah terdapat commit baru setelah target ditentukan.
+- Konfirmasi bahwa commit baru tersebut tidak ikut dianalisis.
+
+## B. Hasil evaluasi per commit
 
 Untuk setiap commit:
 
-1. Catat SHA lengkap.
-2. Catat tanggal commit dan judul commit.
-3. Identifikasi file yang ditambah, diubah, dihapus, dipindahkan, atau diganti nama.
-4. Baca diff lengkap untuk setiap file yang relevan.
-5. Periksa konteks kode di sekitar baris yang berubah.
-6. Identifikasi class, fungsi, widget, konstruktor, parameter, properti, metode, enum, callback, dan API yang terpengaruh.
-7. Periksa perubahan dependency, versi SDK, konfigurasi, skema database, serta file pendukung yang berkaitan.
-8. Periksa apakah perubahan berikutnya memperbaiki atau mengubah kembali implementasi yang diperkenalkan oleh commit sebelumnya.
-
-Gunakan diff commit untuk mengetahui perubahan yang diperkenalkan oleh commit tersebut. Setelah itu, periksa kondisi file pada `TARGET_HEAD` untuk menentukan apakah masalah tersebut masih ada.
-
-Bedakan tiga hal berikut:
-
-- **Masalah diperkenalkan:** commit tertentu pertama kali menambahkan perilaku yang bermasalah.
-- **Masalah masih aktif:** perilaku tersebut masih terdapat pada `TARGET_HEAD`.
-- **Masalah sudah diperbaiki:** commit berikutnya terbukti menghilangkan masalah pada `TARGET_HEAD`.
-
-Jangan melaporkan masalah lama sebagai masalah aktif apabila perubahan berikutnya sudah memperbaikinya. Jika relevan, catat commit yang memperkenalkan dan commit yang memperbaikinya.
-
-Evaluasi semua jenis file yang memengaruhi implementasi, termasuk Dart, konfigurasi, dependency, database/migrasi, pengujian, serta dokumentasi teknis. Jangan menganggap file non-Dart otomatis tidak relevan.
-
-## 8. Memeriksa Kesesuaian dengan Aturan
-
-Bandingkan setiap perubahan kode dengan aturan yang relevan dan sudah dibaca.
-
-Periksa sesuai konteks perubahan, sekurang-kurangnya:
-
-1. Arsitektur dan struktur proyek.
-2. Gaya penulisan dan konvensi kode.
-3. Pemanfaatan SDK dan paket.
-4. Pengelolaan state dan lifecycle widget.
-5. Database, transaksi, migrasi, dan integritas data.
-6. Null safety, parsing, asynchronous, dan penanganan error.
-7. Keamanan dan privasi data.
-8. Performa dan pengelolaan sumber daya.
-9. UX/UI apabila perubahan berhubungan dengan tampilan atau interaksi.
-10. Testing apabila perubahan berkaitan dengan perilaku yang wajib diuji menurut aturan proyek.
-11. Ketentuan khusus lain yang berlaku pada file yang berubah.
-
-Jangan memaksakan aturan yang tidak relevan terhadap perubahan. Namun, jangan melewatkan aturan yang memang berlaku hanya karena perubahan terlihat sederhana.
-
-### 8.1. Bukti Pelanggaran Wajib
-
-Setiap pelanggaran aturan harus memuat kedua lokasi berikut.
-
-**Lokasi kode:**
-
-- Path file kode.
-- Nomor baris atau rentang baris.
-- Penjelasan kode yang bermasalah.
-
-**Lokasi aturan:**
-
-- Path file aturan.
-- Nomor baris atau rentang baris aturan.
-- Inti ketentuan yang dilanggar.
-
-Contoh format:
-
-```text
-Pelanggaran aturan:
-- Kode: lib/fitur/contoh.dart:35-42
-- Aturan: .agents/rules/global/optimasi_bug_runtime.md:40-48
-- Ketentuan: Periksa mounted sebelum menggunakan State atau BuildContext setelah await.
-- Bukti: Kode menggunakan context setelah await tanpa pemeriksaan context.mounted.
-- Dampak: Dapat menggunakan BuildContext yang sudah tidak valid.
-```
-
-Jangan menulis "melanggar aturan proyek" tanpa menyebutkan file aturan dan nomor baris yang membuktikannya.
-
-Jika tidak ditemukan aturan tertulis yang secara langsung mengatur suatu masalah, jangan mengarang pelanggaran. Masukkan sebagai **risiko teknis atau saran peningkatan**, bukan pelanggaran aturan.
-
-## 9. Pemeriksaan Source Flutter SDK, Dart SDK, dan Paket — WAJIB
-
-Bagian ini wajib dilakukan untuk setiap perubahan yang menggunakan atau mengubah API SDK/paket. **Tidak ada pengecualian hanya karena widget atau API dianggap sederhana, umum, atau sudah dikenal.**
-
-Jangan mengandalkan ingatan model, contoh dari versi lain, atau asumsi bahwa API masih sama. Baca source dari versi yang benar-benar dipakai repository.
-
-### 9.1. Identifikasi Versi dan Lokasi SDK
-
-1. Identifikasi executable Flutter yang benar-benar digunakan melalui `command -v flutter`.
-2. Temukan lokasi sebenarnya executable tersebut, misalnya menggunakan `readlink -f`.
-3. Identifikasi root Flutter SDK dari lokasi executable yang ditemukan.
-4. Catat versi Flutter dan Dart menggunakan `flutter --version` dan `dart --version`.
-5. Jangan mengasumsikan path SDK selalu sama. Gunakan path hasil pemeriksaan lingkungan saat ini.
-
-Untuk Flutter, source biasanya berada di bawah:
-
-`<FLUTTER_SDK>/packages/flutter/lib/`
-
-Untuk Dart, source SDK berada di bawah:
-
-`<DART_SDK>/lib/`
-
-Jika source yang dibutuhkan tidak tersedia pada instalasi tersebut, nyatakan bahwa pemeriksaan source belum dapat diverifikasi. Jangan menggantinya dengan klaim berdasarkan ingatan.
-
-### 9.2. Identifikasi Versi Paket yang Benar-benar Digunakan
-
-Untuk setiap paket yang API-nya digunakan atau diubah:
-
-1. Periksa versi terkunci pada `pubspec.lock`.
-2. Periksa dependency yang benar-benar terselesaikan melalui `.dart_tool/package_config.json` apabila tersedia.
-3. Temukan direktori source paket berdasarkan `rootUri` atau lokasi cache paket yang benar-benar digunakan.
-4. Verifikasi versi pada `pubspec.yaml` milik paket tersebut.
-5. Catat nama paket, versi tepat, dan lokasi source.
-
-Jangan hanya membaca batas versi pada `pubspec.yaml` proyek. Batas versi dependency tidak selalu sama dengan versi yang terpasang.
-
-Jangan menjalankan `flutter pub get`, `flutter pub upgrade`, atau perintah lain yang mengubah dependency/lockfile untuk mempermudah pemeriksaan.
-
-Jika paket merupakan dependency lokal/path dependency, baca source pada lokasi aktual yang dirujuk konfigurasi paket.
-
-### 9.3. Baca Source API yang Berubah atau Digunakan
-
-Untuk setiap API SDK/paket yang berhubungan dengan diff, baca definisi dan implementasi source yang relevan. Periksa sekurang-kurangnya:
-
-- Deklarasi class atau fungsi.
-- Konstruktor dan seluruh parameter bernama/posisional yang digunakan.
-- Tipe data setiap parameter.
-- Nilai default parameter.
-- Nullability parameter dan nilai balik.
-- Properti, getter, setter, metode, enum, dan callback terkait.
-- Dokumentasi komentar pada deklarasi.
-- Anotasi `@Deprecated` atau penanda deprecated lain.
-- Perubahan API yang memengaruhi perilaku atau kompatibilitas.
-- Implementasi internal yang diperlukan untuk memahami perilaku aktual.
-
-Gunakan pencarian simbol pada source, lalu baca konteks deklarasi dan implementasinya. Gunakan nomor baris aktual, misalnya melalui `rg -n` dan `nl -ba`.
-
-Jangan hanya membaca nama class atau hasil pencarian satu baris. Baca rentang source yang cukup untuk memahami konstruktor, parameter, default, anotasi, dan perilaku yang sedang dipakai.
-
-### 9.4. Widget Flutter Biasa Tetap Wajib Diperiksa
-
-Setiap widget Flutter yang konstruktor, parameter, properti, atau penggunaannya berubah wajib diperiksa ke source SDK. Termasuk, tetapi tidak terbatas pada:
-
-- `Scaffold`
-- `AppBar`
-- `SafeArea`
-- `Padding`
-- `Container`
-- `Row` dan `Column`
-- `Text` dan `RichText`
-- `Icon`
-- `Card`
-- `ListView` dan `GridView`
-- `SingleChildScrollView`
-- `TextField` dan `TextFormField`
-- `ElevatedButton`, `TextButton`, dan `IconButton`
-- Widget Material, Cupertino, atau widget framework lain yang muncul dalam perubahan.
-
-Daftar tersebut hanya contoh, bukan daftar pengecualian. Jika widget lain berubah, periksa juga source widget tersebut.
-
-Jangan menyatakan widget aman hanya karena sering digunakan atau sudah dikenal.
-
-### 9.5. Paket Pihak Ketiga
-
-Untuk setiap class, widget, konstruktor, metode, atau enum dari paket pihak ketiga:
-
-1. Baca source paket pada versi tepat yang dikunci dan terselesaikan.
-2. Periksa deklarasi API yang digunakan.
-3. Periksa implementasi yang berkaitan dengan perilaku perubahan.
-4. Periksa penanda deprecated dan alternatif yang disediakan versi tersebut.
-5. Periksa contoh pada folder `example` atau dokumentasi paket apabila tersedia dan relevan.
-
-Dokumentasi README atau contoh hanya menjadi sumber pendukung. Dokumentasi tersebut tidak menggantikan pemeriksaan deklarasi dan source API pada versi paket yang terpasang.
-
-### 9.6. Perubahan Versi Dependency
-
-Jika commit mengubah `pubspec.yaml` atau `pubspec.lock`:
-
-1. Catat versi sebelum dan sesudah perubahan.
-2. Identifikasi API yang dipakai kode dan berpengaruh terhadap perubahan versi.
-3. Periksa source versi yang benar-benar terselesaikan pada kondisi `TARGET_HEAD`.
-4. Jika source versi sebelumnya tersedia, bandingkan deklarasi API yang relevan untuk mengetahui perubahan kompatibilitas.
-5. Jangan menganggap API pada versi terbaru otomatis tersedia pada versi yang terkunci di proyek.
-
-### 9.7. Bukti Pemeriksaan SDK
-
-Untuk setiap API/widget yang diperiksa, catat:
-
-- Nama API/widget.
-- Nama SDK atau paket.
-- Versi Flutter/Dart atau versi paket.
-- Path source yang dibaca.
-- Nomor baris deklarasi/konstruktor/implementasi yang relevan.
-- Hasil: sesuai, tidak sesuai, deprecated, berisiko, atau belum dapat diverifikasi.
-
-Contoh format:
-
-```text
-Pemeriksaan SDK:
-- API: AppBar
-- SDK: Flutter 3.x.x
-- Source: /path/flutter/packages/flutter/lib/src/material/app_bar.dart:190-260
-- Pemeriksaan: Konstruktor, default value, dan parameter yang digunakan pada kode.
-- Hasil: Sesuai dengan API versi Flutter yang terpasang.
-```
-
-Contoh di atas hanya format. Jangan menyalin versi atau path contoh sebagai fakta. Gunakan hasil pemeriksaan aktual.
-
-Jika source SDK/paket yang wajib diperiksa tidak dapat ditemukan atau dibaca, tulis **Belum dapat diverifikasi** dan jelaskan alasannya. Jangan menandai API tersebut sesuai atau tidak deprecated tanpa bukti source. Evaluasi commit terkait harus berstatus **Sebagian selesai**; jangan memajukan checkpoint melewati commit yang masih memiliki API wajib yang belum diverifikasi.
-
-## 10. Menentukan Temuan dan Rekomendasi
-
-Kelompokkan hasil menjadi kategori yang jelas:
-
-1. **Pelanggaran aturan:** kode terbukti tidak sesuai dengan aturan tertulis.
-2. **Ketidaksesuaian SDK/paket:** penggunaan API tidak cocok dengan source atau versi yang terpasang, termasuk API deprecated yang masih digunakan tanpa alasan yang dapat diterima.
-3. **Bug atau risiko runtime:** terdapat bukti teknis bahwa perubahan dapat menghasilkan perilaku salah, crash, kehilangan data, atau kegagalan proses.
-4. **Risiko UX/UI atau performa:** terdapat bukti dampak terhadap penggunaan atau performa.
-5. **Saran peningkatan opsional:** penyederhanaan atau perbaikan kualitas yang bukan pelanggaran aturan dan bukan bug yang terbukti.
-
-Untuk setiap temuan:
-
-- Tentukan prioritas Tinggi, Sedang, atau Rendah berdasarkan dampak dan kemungkinan terjadi.
-- Jelaskan bukti, dampak, dan alasan prioritas.
-- Sertakan path dan nomor baris kode.
-- Sertakan path dan nomor baris aturan jika merupakan pelanggaran.
-- Sertakan path dan nomor baris source SDK/paket jika berkaitan dengan API.
-- Berikan saran perbaikan yang spesifik, tanpa menerapkannya.
-- Tentukan status pada kondisi `TARGET_HEAD`: Belum diperbaiki, Sebagian diperbaiki, Sudah diperbaiki, atau Perlu verifikasi.
-
-Pisahkan rekomendasi opsional dari pelanggaran dan bug. Jangan membuat masalah terlihat seperti pelanggaran aturan apabila tidak ada aturan tertulis yang dilanggar.
-
-Jangan membuat temuan hanya karena suatu file test tidak muncul pada commit. Nyatakan kekurangan test sebagai pelanggaran hanya jika aturan proyek memang mewajibkannya untuk perubahan tersebut. Jika tidak, tulis sebagai saran pengujian.
-
-## 11. Memperbarui `saran.md`
-
-Perbarui `saran.md` hanya jika evaluasi menghasilkan saran baru atau informasi saran lama perlu diperbarui.
-
-### 11.1. Mencegah Duplikasi
-
-1. Cari saran lama berdasarkan akar masalah, perilaku, dan API yang terlibat.
-2. Jika masalah yang sama sudah tercatat, perbarui entri lama. Jangan membuat entri duplikat.
-3. Jika implementasi sudah diperbaiki oleh commit berikutnya, perbarui status dan sertakan bukti commit perbaikannya.
-4. Jika baru sebagian diperbaiki, jelaskan bagian yang selesai dan bagian yang masih bermasalah.
-5. Jika masalah baru dan benar-benar berbeda, buat entri baru.
-6. Jangan menghapus saran lama hanya karena tidak muncul pada commit yang sedang dievaluasi.
-
-### 11.2. Urutan Entri
-
-- Entri baru wajib diletakkan tepat di bawah judul `# Saran Perbaikan`, sebelum entri yang lebih lama.
-- Entri yang diperbarui wajib dipindahkan ke bagian paling atas setelah judul.
-- Jika beberapa entri diperbarui dalam satu evaluasi, urutkan berdasarkan tanggal pembaruan terbaru; untuk tanggal yang sama, urutkan berdasarkan prioritas tertinggi.
-- Jangan mengubah urutan entri lama yang tidak diperbarui.
-- Jangan mengubah judul utama file.
-
-### 11.3. Format Entri
-
-Gunakan format yang konsisten dan mudah dipindai:
-
-```markdown
-## [YYYY-MM-DD] [SHA_COMMIT_PEMICU]
-
-### Prioritas: Tinggi/Sedang/Rendah
-
-**Status:** Belum diperbaiki/Sebagian diperbaiki/Sudah diperbaiki/Perlu verifikasi.
-
-**Masalah:**
-Penjelasan masalah dan bukti perilaku yang ditemukan.
-
-**Lokasi kode:**
-
-- `path/file.dart:baris-awal-akhir`
-
-**Aturan yang dilanggar:**
-
-- `path/aturan.md:baris-awal-akhir` — inti ketentuan yang dilanggar.
-
-**Bukti SDK/paket:**
-
-- `path/source_sdk_atau_paket.dart:baris-awal-akhir` — nama API dan versi yang diperiksa.
-
-**Dampak:**
-Dampak teknis atau dampak terhadap pengguna.
-
-**Rekomendasi:**
-Langkah perbaikan yang disarankan tanpa mengubah kode.
-
-**Riwayat status:**
-Informasi commit perbaikan atau alasan status terakhir, jika ada.
-```
-
-Sesuaikan bagian **Aturan yang dilanggar** dan **Bukti SDK/paket** dengan jenis temuannya. Jika tidak ada aturan yang dilanggar, tulis `Tidak ditemukan pelanggaran aturan tertulis` dan jangan mencantumkan aturan yang tidak relevan. Jika tidak ada API SDK/paket yang terkait, tulis `Tidak relevan`.
-
-Gunakan tanggal aktual dan SHA commit pemicu yang benar. Jangan memasukkan link atau URL. Gunakan path file dan nomor baris.
-
-Jika tidak ada saran baru dan tidak ada saran lama yang perlu diperbarui, jangan mengubah `saran.md`.
-
-## 12. Memperbarui `catatan.md` dan Mencegah Pembengkakan File
-
-`catatan.md` dapat digunakan oleh beberapa command. Karena itu, jangan menulis ulang seluruh file dan jangan mengubah bagian milik command lain.
-
-### 12.1. Memperbarui Checkpoint
-
-Setelah seluruh commit pada rentang evaluasi berhasil diperiksa, seluruh pemeriksaan source wajib selesai, dan pembaruan `saran.md` berhasil dilakukan apabila diperlukan, perbarui hanya isi di antara penanda checkpoint milik command ini:
-
-`<!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->`
-
-`<!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->`
-
-Isi checkpoint harus ringkas dan tetap, menggunakan format:
-
-```text
-Commit terakhir dievaluasi penuh: <SHA_LENGKAP_TARGET_HEAD>
-Tanggal evaluasi: <YYYY-MM-DD>
-Rentang evaluasi: <SHA_COMMIT_PERTAMA> sampai <SHA_LENGKAP_TARGET_HEAD>
-Jumlah commit dievaluasi: <JUMLAH>
-Status evaluasi: Selesai
-Ringkasan: <maksimal 2 kalimat>
-```
-
-Jika fallback 5 commit digunakan, isi rentang sesuai lima commit atau jumlah commit yang benar-benar tersedia.
-
-Checkpoint harus berisi SHA lengkap, bukan SHA pendek.
-
-### 12.2. Batas Riwayat Agar `catatan.md` Tidak Membeludak
-
-1. Jangan menambahkan uraian panjang untuk setiap commit ke `catatan.md`.
-2. Jangan menambahkan diff, daftar seluruh file, atau seluruh temuan secara berulang ke `catatan.md`.
-3. Jangan membuat riwayat evaluasi baru dengan menambahkan blok panjang setiap kali command dijalankan.
-4. Gunakan checkpoint dan satu ringkasan evaluasi terbaru sebagai satu-satunya catatan berkelanjutan milik command ini.
-5. Pada evaluasi berikutnya, **ganti isi checkpoint dan ringkasan lama di dalam blok yang sama**; jangan menambahkan ringkasan baru di bawahnya.
-6. Simpan rincian rekomendasi di `saran.md`, bukan menyalinnya berulang kali ke `catatan.md`.
-7. Jangan menghapus atau mengubah checkpoint dan riwayat milik command lain.
-
-Jika `catatan.md` sudah memiliki bagian `## Riwayat Evaluasi Commit` lama yang jelas berada di bawah judul command ini dan sebelum bagian command lain, ringkas bagian milik command ini menjadi satu ringkasan evaluasi terbaru. Jangan menghapus bagian lain. Jika batas kepemilikan bagian lama tidak dapat dipastikan, jangan menghapusnya; cukup hentikan penambahan riwayat rinci dan gunakan blok checkpoint sebagai catatan berkelanjutan.
-
-Jangan menambah atau memperbarui checkpoint jika:
-
-- Ada commit yang belum selesai dievaluasi.
-- Ada source SDK/paket wajib yang belum dapat diperiksa untuk API pada commit terkait.
-- Pembaruan `saran.md` yang diperlukan gagal dilakukan.
-- `TARGET_HEAD` berubah.
-- Struktur checkpoint tidak valid atau ambigu.
-- Pembaruan akan menimpa perubahan lokal pengguna.
-
-**Checkpoint hanya boleh dimajukan sampai commit terakhir yang benar-benar selesai dievaluasi.**
-
-## 13. Pemeriksaan Sebelum Menyelesaikan Command
-
-Sebelum memberikan laporan:
-
-1. Pastikan seluruh commit dalam rentang sudah diperiksa.
-2. Pastikan setiap perubahan API/widget yang relevan sudah dicocokkan dengan source SDK/paket versi aktual.
-3. Pastikan setiap klaim deprecated didukung anotasi atau keterangan source yang dapat ditunjukkan.
-4. Pastikan setiap pelanggaran memiliki path dan nomor baris kode serta path dan nomor baris aturan.
-5. Pastikan setiap rekomendasi di `saran.md` tidak menduplikasi masalah yang sudah ada.
-6. Pastikan entri baru atau entri yang diperbarui berada di paling atas `saran.md`.
-7. Pastikan checkpoint berisi SHA lengkap `TARGET_HEAD` dan hanya dimajukan setelah evaluasi selesai.
-8. Pastikan bagian milik command lain di `catatan.md` tidak berubah.
-9. Pastikan tidak ada file kode, konfigurasi, dependency, atau file lain yang diubah oleh command ini.
-10. Periksa kembali `git status --short` dan bandingkan dengan kondisi awal. Perubahan yang muncul hanya boleh berupa pembaruan yang memang diizinkan pada `catatan.md` dan/atau `saran.md`.
-11. Pastikan `TARGET_HEAD` tetap sama dengan `git rev-parse HEAD`.
-
-Jika ada langkah wajib yang gagal, ubah status akhir menjadi **Sebagian selesai** atau **Terhenti**, jelaskan alasannya, dan jangan memajukan checkpoint melewati commit yang belum selesai.
-
-## 14. Format Laporan Akhir
-
-Gunakan bahasa Indonesia yang baik dan benar. Susun laporan dengan urutan berikut.
-
-### A. Status Evaluasi
-
-- Status: Selesai / Sebagian selesai / Terhenti / Tidak ada commit baru.
-- Branch dan kondisi detached HEAD jika ada.
-- SHA lengkap `TARGET_HEAD`.
-- Checkpoint sebelum evaluasi.
-- Rentang commit yang dievaluasi.
-- Jumlah commit yang dievaluasi.
-
-### B. Ringkasan Hasil
-
-Ringkas hasil utama, jumlah temuan berdasarkan prioritas, jumlah pelanggaran aturan, jumlah ketidaksesuaian SDK/paket, serta apakah ada pemeriksaan yang belum dapat diverifikasi.
-
-### C. Daftar Commit yang Diperiksa
-
-Untuk setiap commit, tampilkan:
-
-- SHA lengkap.
-- Tanggal.
-- Judul commit.
+- Hash commit.
+- Pesan commit.
+- File yang berubah.
 - Ringkasan perubahan.
-- Status evaluasi.
+- Hasil pemeriksaan aturan proyek.
+- Hasil pemeriksaan source SDK.
+- Masalah yang ditemukan.
+- Saran perbaikan.
 
-### D. Temuan dan Pelanggaran
+## C. Temuan
 
-Urutkan dari prioritas tertinggi ke terendah. Untuk setiap temuan, gunakan struktur:
+Kelompokkan temuan berdasarkan prioritas dan jenis masalah sesuai aturan proyek.
 
-- **Prioritas dan kategori.**
-- **Status pada HEAD.**
-- **Commit pemicu:** SHA lengkap.
-- **Lokasi kode:** `path/file:baris-awal-akhir`.
-- **Aturan yang dilanggar:** `path/aturan:baris-awal-akhir` dan inti ketentuannya.
-- **Bukti source SDK/paket:** versi dan `path/source:baris-awal-akhir`.
-- **Masalah dan bukti:** jelaskan apa yang tidak sesuai.
-- **Dampak:** jelaskan konsekuensi teknis atau pengguna.
-- **Saran perbaikan:** tuliskan tindakan spesifik, tetapi jangan menerapkannya.
+Pisahkan:
 
-Jika tidak ada aturan yang dilanggar, jangan mengarang lokasi aturan. Tandai sebagai risiko teknis atau saran opsional.
+- Pelanggaran aturan.
+- Kesalahan penggunaan SDK atau package.
+- Potensi bug runtime.
+- Masalah UX/UI.
+- Masalah performa.
+- Saran peningkatan yang tidak wajib.
 
-### E. Hasil Pemeriksaan Source SDK/Paket
+## D. Pembaruan dokumentasi
 
-Tampilkan daftar API/widget yang wajib diperiksa, termasuk yang hasilnya sesuai. Untuk setiap item cantumkan nama API, versi SDK/paket, path source, nomor baris yang dibaca, dan kesimpulan.
+Laporkan:
 
-Jangan hanya menampilkan API yang bermasalah. Bagian ini harus membuktikan bahwa source untuk API/widget yang berubah benar-benar telah diperiksa.
+- Apakah `catatan.md` diperbarui.
+- Checkpoint yang disimpan.
+- Apakah ukuran dan isi catatan sudah diringkas.
+- Apakah `task.md` ditambahkan atau diperbarui.
+- Daftar task yang ditambahkan atau diperbarui.
 
-### F. Pembaruan Dokumentasi
+## E. Status implementasi
 
-Nyatakan secara terpisah:
+Nyatakan secara eksplisit:
 
-- `catatan.md`: checkpoint diperbarui atau tidak, SHA yang disimpan, serta apakah ringkasan lama dipadatkan.
-- `saran.md`: entri baru, entri yang diperbarui, atau tidak ada perubahan.
+**Tidak ada kode Dart yang diubah atau diimplementasikan.**
 
-### G. Keterbatasan
+Jika ada kendala pemeriksaan, sebutkan dengan jelas agar pengguna mengetahui bagian yang belum dapat diverifikasi.
 
-Sebutkan source yang tidak dapat diakses, versi yang belum dapat dipastikan, file yang tidak dapat dibaca, konflik aturan yang belum memiliki prioritas, atau pemeriksaan lain yang belum selesai.
+---
 
-### H. Konfirmasi Batasan
+# 12. Prinsip utama yang tidak boleh dilanggar
 
-Nyatakan secara eksplisit bahwa tidak ada kode Dart, kode sumber program, konfigurasi, dependency, atau file lain di luar `catatan.md` dan `saran.md` yang diubah oleh command ini.
+1. Evaluasi hanya commit yang belum diperiksa.
+2. Baca `catatan.md` sebelum menentukan commit target.
+3. Jika belum ada checkpoint, gunakan 5 commit terbaru.
+4. Tetapkan `TARGET_HEAD` sebelum membaca perubahan.
+5. Jangan memasukkan commit baru setelah target ditentukan.
+6. Baca dan patuhi seluruh aturan proyek.
+7. Baca source SDK dan package, termasuk untuk widget biasa.
+8. Jangan menyimpulkan API sesuai tanpa memeriksa source yang relevan.
+9. Tambahkan atau perbarui temuan di `task.md` sesuai `format_task.md`.
+10. Jaga `catatan.md` tetap ringkas dan tidak membengkak.
+11. Jangan mengubah kode Dart.
+12. Jangan mengimplementasikan saran perbaikan.
+13. Laporkan hasil pemeriksaan secara jelas dan dapat diverifikasi.
 
-## 15. Ketentuan Akhir
-
-- Utamakan bukti aktual dari diff, aturan repository, dan source SDK/paket versi terpasang.
-- Jangan mengganti pembacaan source dengan asumsi atau ingatan.
-- Jangan melewatkan pemeriksaan widget sederhana.
-- Jangan menyimpulkan pelanggaran tanpa menunjukkan aturan yang tepat.
-- Jangan menyertakan link; gunakan path dan nomor baris.
-- Jangan mengubah kode. Tugas perbaikan kode hanya dilakukan setelah pengguna memberikan instruksi terpisah dan jelas.
+**Prioritas tertinggi command ini adalah ketepatan evaluasi, kepatuhan terhadap aturan proyek, pemeriksaan source SDK, dan keamanan agar tidak ada perubahan kode yang dilakukan tanpa persetujuan pengguna.**

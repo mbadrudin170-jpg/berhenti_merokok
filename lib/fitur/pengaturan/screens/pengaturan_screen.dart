@@ -113,7 +113,7 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     } on Exception catch (e, s) {
       L.e('Gagal mengubah notifikasi: $e $s');
       if (mounted) {
-        final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
+        final isIzin = e is IzinNotifikasiTidakDiberikanException;
         try {
           final aktifSekarang = await NotifikasiService.aktif();
           if (!mounted) return;
@@ -338,11 +338,10 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     if (_memuatNotifikasi) {
       return const Center(child: CircularProgressIndicator());
     }
-    // Platform yang tidak mendukung notifikasi terjadwal.
+    // Platform yang tidak mendukung notifikasi terjadwal (Web, Linux, Windows).
     if (kIsWeb ||
         defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
+        defaultTargetPlatform == TargetPlatform.windows) {
       return const SizedBox.shrink();
     }
     final waktu =
