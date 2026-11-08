@@ -27,6 +27,15 @@ class NamaKolom {
   static const String tanggalMulaiBerhentiMerokok =
       'tanggal_mulai_berhenti_merokok';
 
+  /// Kolom mode berhenti biodata (seketika/bertahap).
+  static const String modeBerhenti = 'mode_berhenti';
+
+  /// Kolom penurunan rokok per minggu untuk mode bertahap.
+  static const String penurunanPerMinggu = 'penurunan_per_minggu';
+
+  /// Kolom tanggal mulai rencana penurunan (tapering).
+  static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
+
   // Kolom tabel impian.
   /// Kolom target tanggal impian.
   static const String targetTanggal = 'target_tanggal';

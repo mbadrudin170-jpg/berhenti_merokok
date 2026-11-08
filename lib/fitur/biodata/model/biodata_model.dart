@@ -1,3 +1,4 @@
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -17,6 +18,9 @@ abstract class BiodataModel with _$BiodataModel {
     @Default(20.0) double batangPerBungkus,
     DateTime? tanggalMulaiMerokok,
     DateTime? tanggalMulaiBerhentiMerokok,
+    @Default(ModeBerhenti.seketika) ModeBerhenti modeBerhenti,
+    @Default(0) int penurunanPerMinggu,
+    DateTime? tanggalMulaiTapering,
   }) = _BiodataModel;
 
   /// Membuat [BiodataModel] dari baris database SQLite.
@@ -43,6 +47,18 @@ abstract class BiodataModel with _$BiodataModel {
       tanggalMulaiBerhentiMerokok: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiBerhentiMerokok],
       )?.toLocal(),
+      modeBerhenti:
+          ParserUtil.safeParseEnum(
+            ModeBerhenti.values,
+            ParserUtil.parseString(row[NamaKolom.modeBerhenti]),
+          ) ??
+          ModeBerhenti.seketika,
+      penurunanPerMinggu: ParserUtil.parseInt(
+        row[NamaKolom.penurunanPerMinggu],
+      ),
+      tanggalMulaiTapering: ParserUtil.parseDateTime(
+        row[NamaKolom.tanggalMulaiTapering],
+      )?.toLocal(),
     );
   }
 
@@ -59,6 +75,11 @@ abstract class BiodataModel with _$BiodataModel {
           ?.toUtc()
           .toIso8601String(),
       NamaKolom.tanggalMulaiBerhentiMerokok: tanggalMulaiBerhentiMerokok
+          ?.toUtc()
+          .toIso8601String(),
+      NamaKolom.modeBerhenti: modeBerhenti.name,
+      NamaKolom.penurunanPerMinggu: penurunanPerMinggu,
+      NamaKolom.tanggalMulaiTapering: tanggalMulaiTapering
           ?.toUtc()
           .toIso8601String(),
     };
@@ -89,5 +110,27 @@ extension BiodataModelPerhitungan on BiodataModel {
   double get uangDihemat {
     if (batangPerBungkus == 0) return 0;
     return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+
+  /// Apakah pengguna menggunakan mode berhenti bertahap (tapering).
+  bool get sedangTapering => modeBerhenti == ModeBerhenti.bertahap;
+
+  /// Target jumlah rokok per hari saat ini untuk mode tapering.
+  ///
+  /// Dihitung dari [jumlahRokokPerHari] dikurangi penurunan kumulatif
+  /// berdasarkan minggu yang telah berlalu sejak [tanggalMulaiTapering].
+  int get targetRokokHariIni {
+    if (!sedangTapering) return jumlahRokokPerHari;
+    final mulai = tanggalMulaiTapering ?? DateTime.now();
+    final sekarang = DateTime.now();
+    final mulaiDate = DateTime(mulai.year, mulai.month, mulai.day);
+    final sekarangDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final hariBerlalu = sekarangDate.difference(mulaiDate).inDays;
+    final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
+    final penurunan = penurunanPerMinggu * mingguBerlalu;
+    final target = jumlahRokokPerHari - penurunan;
+    if (target < 0) return 0;
+    if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
+    return target;
   }
 }

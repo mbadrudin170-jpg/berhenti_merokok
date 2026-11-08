@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:flutter/material.dart';
@@ -128,6 +130,23 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                             ? 'Belum dipilih'
                             : FormatTanggal.formatDasar(
                                 tanggalMulaiBerhentiMerokok,
+                              ),
+                      ),
+                      _buildItem('Mode berhenti', biodata.modeBerhenti.label),
+                      _buildItem(
+                        'Penurunan per minggu',
+                        biodata.penurunanPerMinggu.toString(),
+                      ),
+                      _buildItem(
+                        'Target rokok per hari (saat ini)',
+                        biodata.targetRokokHariIni.toString(),
+                      ),
+                      _buildItem(
+                        'Tanggal mulai penurunan',
+                        biodata.tanggalMulaiTapering == null
+                            ? 'Belum dipilih'
+                            : FormatTanggal.formatDasar(
+                                biodata.tanggalMulaiTapering!,
                               ),
                       ),
                       const SizedBox(height: 8),

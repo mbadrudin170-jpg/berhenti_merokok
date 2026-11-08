@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/home.dart';
@@ -23,15 +24,20 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _jumlahRokokController = TextEditingController();
   final _hargaRokokController = TextEditingController();
   final _batangPerBungkusController = TextEditingController();
+  final _penurunanPerMingguController = TextEditingController();
 
   final _namaFocusNode = FocusNode();
   final _jumlahRokokFocusNode = FocusNode();
   final _hargaRokokFocusNode = FocusNode();
   final _batangPerBungkusFocusNode = FocusNode();
+  final _penurunanPerMingguFocusNode = FocusNode();
 
   DateTime? _tanggalLahir;
   DateTime? _tanggalMulaiMerokok;
   DateTime? _tanggalMulaiBerhentiMerokok;
+  DateTime? _tanggalMulaiTapering;
+
+  ModeBerhenti _modeBerhenti = ModeBerhenti.seketika;
 
   bool _isLoading = false;
   bool _sudahDiisi = false;
@@ -63,6 +69,9 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _tanggalLahir = model.tanggalLahir;
     _tanggalMulaiMerokok = model.tanggalMulaiMerokok;
     _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
+    _modeBerhenti = model.modeBerhenti;
+    _penurunanPerMingguController.text = model.penurunanPerMinggu.toString();
+    _tanggalMulaiTapering = model.tanggalMulaiTapering;
   }
 
   @override
@@ -72,10 +81,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _jumlahRokokController.dispose();
     _hargaRokokController.dispose();
     _batangPerBungkusController.dispose();
+    _penurunanPerMingguController.dispose();
     _namaFocusNode.dispose();
     _jumlahRokokFocusNode.dispose();
     _hargaRokokFocusNode.dispose();
     _batangPerBungkusFocusNode.dispose();
+    _penurunanPerMingguFocusNode.dispose();
     super.dispose();
   }
 
@@ -118,6 +129,19 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     }
   }
 
+  Future<void> _pilihTanggalMulaiTapering() async {
+    final awal = _tanggalMulaiTapering ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && mounted) {
+      setState(() => _tanggalMulaiTapering = picked);
+    }
+  }
+
   Future<void> _simpan() async {
     if (_isLoading) {
       L.w('Form biodata masih loading, simpan diabaikan');
@@ -155,6 +179,10 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
+        modeBerhenti: _modeBerhenti,
+        penurunanPerMinggu:
+            int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+        tanggalMulaiTapering: _tanggalMulaiTapering,
       );
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
@@ -289,6 +317,47 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                   child: const Text('Pilih'),
                 ),
               ),
+              // Mode berhenti: seketika atau bertahap (tapering).
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Berhenti bertahap (tapering)'),
+                subtitle: const Text(
+                  'Kurangi jumlah rokok per hari secara bertahap.',
+                ),
+                value: _modeBerhenti == ModeBerhenti.bertahap,
+                onChanged: (value) {
+                  setState(() {
+                    _modeBerhenti = value
+                        ? ModeBerhenti.bertahap
+                        : ModeBerhenti.seketika;
+                    if (value && _tanggalMulaiTapering == null) {
+                      _tanggalMulaiTapering = DateTime.now();
+                    }
+                  });
+                },
+              ),
+              if (_modeBerhenti == ModeBerhenti.bertahap) ...[
+                InputAngka(
+                  controller: _penurunanPerMingguController,
+                  label: 'Penurunan per minggu (batang)',
+                  hintText: 'Masukkan jumlah penurunan per minggu',
+                  focusNode: _penurunanPerMingguFocusNode,
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.calendar_today_outlined),
+                  title: const Text('Tanggal mulai penurunan'),
+                  subtitle: Text(
+                    _tanggalMulaiTapering == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(_tanggalMulaiTapering!),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalMulaiTapering,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
               OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
             ],

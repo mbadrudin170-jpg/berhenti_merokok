@@ -22,8 +22,8 @@
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
 - **Tujuan fitur:** Memberikan penghargaan (badge) saat mencapai milestone untuk meningkatkan motivasi.
 - **Penerapan pada aplikasi referensi:** Badge otomatis saat mencapai durasi/uang tertentu, ditampilkan di profil atau dashboard.
-- **Relevansi terhadap proyek:** Proyek belum memiliki sistem pencapaian. Dapat meningkatkan engagement.
-- **Rekomendasi:** Tambahkan sistem badge sederhana berbasis durasi smoke-free dan jumlah impian tercapai.
+- **Relevansi terhadap proyek:** Sistem pencapaian sudah tersedia (fitur `badge`), ditampilkan pada Dashboard dan BadgeScreen.
+- **Rekomendasi:** Sistem badge berbasis durasi smoke-free dan jumlah impian tercapai sudah diterapkan.
 
 ### Widget Layar Beranda
 
@@ -40,7 +40,7 @@
 ### Mode Berhenti Bertahap (Tapering)
 
 - **Prioritas:** Sedang
-- **Status implementasi:** Belum diimplementasikan.
+- **Status implementasi:** Sudah diimplementasikan (mode, penurunan per minggu, tanggal mulai penurunan, target rokok per hari).
 - **Aplikasi referensi:** EasyQuit (Herzberg); Quit It (Antonis Evmorfopoulos); QuitSure (RapidKart)
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking ; https://play.google.com/store/apps/details?id=com.quititapp ; https://play.google.com/store/apps/details?id=org.instaquit.app
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
@@ -86,8 +86,8 @@
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.aura.stopsmoking ; https://play.google.com/store/apps/details?id=net.offlinefirst.flamy ; https://play.google.com/store/apps/details?id=com.quititapp
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
 - **Penerapan pada aplikasi referensi:** Piggy bank visual dengan tema (Breev), savings goals dengan item keinginan (Flamy), savings goals dengan reward (Quit It).
-- **Perbandingan:** Proyek menyimpan impian sebagai daftar dengan jumlah uang dan target tanggal, tetapi belum memiliki visualisasi tabungan (piggy bank) atau pencapaian reward.
-- **Potensi peningkatan:** Tambahkan visualisasi progres tabungan (mis. progress bar menuju target impian) dan opsi "hadiah" (reward) saat impian tercapai.
+- **Perbandingan:** Proyek menyimpan impian sebagai daftar dengan jumlah uang dan target tanggal, serta menampilkan progress bar menuju target impian. Belum ada visualisasi piggy bank atau pencapaian reward.
+- **Potensi peningkatan:** Tambahkan visualisasi progres tabungan (mis. piggy bank) dan opsi "hadiah" (reward) saat impian tercapai.
 - **Tujuan peningkatan:** Meningkatkan motivasi dan kejelasan progres menuju tujuan finansial.
 
 ### Biodata (Profil Merokok)
@@ -106,14 +106,14 @@
 ### Dashboard (Ringkasan Progres)
 
 - **Prioritas:** Sedang
-- **Status implementasi:** Sebagian (metrik smoke-free dasar sudah ada; jumlah impian/impian tercapai/milestone terdekat belum).
-- **Fitur pada proyek:** Dashboard (km terbaru, saldo, jadwal service terdekat, jumlah impian, impian tercapai) — catatan: sebagian field berasal dari template kendaraan dan perlu disesuaikan dengan konteks berhenti merokok.
+- **Status implementasi:** Sebagian (metrik smoke-free dasar, milestone kesehatan terdekat, dan badge sudah ada; jumlah impian/impian tercapai belum ditampilkan).
+- **Fitur pada proyek:** Dashboard (uang dihemat, rokok tidak dihisap, milestone kesehatan terdekat, pencapaian/badge).
 - **Aplikasi referensi:** QuitNow (Fewlaps); Smoke Free (Portable Pixels); Quit Tracker (despDev)
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.despdev.quitsmoking
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
 - **Penerapan pada aplikasi referensi:** Dashboard dengan counter smoke-free, uang tersimpan, rokok tidak terhisap, dan milestone tercapai.
-- **Perbandingan:** Proyek dashboard masih menampilkan field kendaraan (km, jadwal service) yang tidak relevan dengan berhenti merokok; perlu diganti dengan metrik smoke-free.
-- **Potensi peningkatan:** Ganti field dashboard menjadi: hari smoke-free, uang tersimpan, rokok tidak terhisap, impian tercapai, milestone kesehatan terdekat.
+- **Perbandingan:** Proyek dashboard sudah menampilkan metrik smoke-free (uang dihemat, rokok tidak dihisap), milestone kesehatan terdekat, dan shortcut ke pencapaian. Belum menampilkan jumlah impian/impian tercapai.
+- **Potensi peningkatan:** Tambahkan ringkasan jumlah impian dan impian tercapai pada Dashboard.
 - **Tujuan peningkatan:** Menyelaraskan dashboard dengan tujuan aplikasi dan memberikan informasi yang bermakna.
 
 ---
@@ -123,14 +123,14 @@
 ### Timeline Milestone Kesehatan
 
 - **Prioritas:** Sedang
-- **Status implementasi:** Belum diimplementasikan.
+- **Status implementasi:** Sudah diimplementasikan.
 - **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); Smoke Free (Portable Pixels)
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
 - **Bagian yang menjadi referensi:** Daftar milestone dengan waktu target dan indikator tercapai.
 - **Tujuan UI/UX:** Menjelaskan manfaat kesehatan secara bertahap dan terukur.
-- **Relevansi terhadap proyek:** Dapat ditambahkan sebagai section di Dashboard atau halaman terpisah.
-- **Rekomendasi:** Tampilkan milestone sebagai list dengan status (tercapai/belum) dan waktu target.
+- **Relevansi terhadap proyek:** Sudah tersedia melalui fitur `pemulihan_kesehatan` (daftar milestone dengan status tercapai/belum dan waktu target).
+- **Rekomendasi:** Ditampilkan sebagai card pada Dashboard yang membuka halaman Pemulihan Kesehatan.
 
 ### Empty State dan Onboarding yang Jelas
 
@@ -141,7 +141,7 @@
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
 - **Bagian yang menjadi referensi:** Onboarding dengan tips persiapan berhenti dan empty state yang menjelaskan langkah berikutnya.
 - **Tujuan UI/UX:** Memandu pengguna baru agar tidak bingung saat pertama membuka app.
-- **Relevansi terhadap proyek:** Proyek sudah memiliki flow FormBiodata awal, tetapi onboarding bisa lebih informatif.
+- **Relevansi terhadap proyek:** Proyek sudah memiliki flow FormBiodata awal dan empty state pada daftar, tetapi onboarding bisa lebih informatif.
 - **Rekomendasi:** Tambahkan tips singkat pada FormBiodata awal (mis. "Tentukan tanggal berhenti dan target").
 
 ---
@@ -150,12 +150,14 @@
 
 ### Fitur Baru yang Paling Layak Dipertimbangkan
 
-1. Milestone kesehatan (pemulihan tubuh) berdasarkan durasi smoke-free. (Belum diimplementasikan)
+1. Widget layar beranda (home widget) — Belum diimplementasikan.
+2. Mode berhenti bertahap (tapering) — Belum diimplementasikan.
 
 ### Peningkatan Fitur yang Sudah Ada
 
-1. Sesuaikan Dashboard agar menampilkan metrik smoke-free (bukan km/jadwal service). (Sebagian)
-2. Tambahkan visualisasi progres tabungan pada Impian (progress bar menuju target). (Sebagian)
+1. Tambahkan visualisasi piggy bank/reward pada Impian. (Sebagian)
+2. Tambahkan field "alasan berhenti" dan "target smoke-free" pada Biodata. (Sebagian)
+3. Tambahkan ringkasan jumlah impian dan impian tercapai pada Dashboard. (Sebagian)
 
 ### Peningkatan UI dan UX
 
