@@ -70,6 +70,8 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
     final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
     final tanggalMulaiTapering = biodata?.tanggalMulaiTapering;
+    final targetSmokeFreeHari = biodata?.targetSmokeFreeHari;
+    L.i('targetSmokeFreeHari=$targetSmokeFreeHari');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
@@ -151,6 +153,8 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                             ? 'Belum dipilih'
                             : FormatTanggal.formatDasar(tanggalMulaiTapering),
                       ),
+                      if (targetSmokeFreeHari != null)
+                        ..._buildProgresTarget(biodata, targetSmokeFreeHari),
                       const SizedBox(height: 8),
                       OutlinedButton(
                         onPressed: () => unawaited(
@@ -189,5 +193,28 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
         Text(nilai, style: Theme.of(context).textTheme.bodyMedium),
       ],
     );
+  }
+
+  /// Daftar widget tampilan progres target smoke-free "X dari N hari".
+  List<Widget> _buildProgresTarget(BiodataModel biodata, int target) {
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) {
+      return [
+        _buildItem('Target smoke-free', 'Target: $target hari'),
+        _buildItem(
+          'Progres',
+          'Belum dapat dihitung (tanggal berhenti belum dipilih)',
+        ),
+      ];
+    }
+    final hariBerhenti = biodata.hariBerhenti;
+    final n = target;
+    final teksProgres = hariBerhenti >= n
+        ? '$n dari $n hari — Target tercapai'
+        : '$hariBerhenti dari $n hari';
+    return [
+      _buildItem('Target smoke-free', '$target hari'),
+      _buildItem('Progres', teksProgres),
+    ];
   }
 }

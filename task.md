@@ -144,9 +144,9 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Selesai
-- Masalah: Urutan import pada `detail_impian_screen.dart` tidak mengikuti urutan alfabetis berdasarkan path package. Baris 8 `widget/visual_tabungan_impian.dart` berada sebelum baris 9 `notifier/impian_notifier.dart`, padahal `notifier` secara alfabetis mendahului `widget`. Urutan yang benar: `notifier/impian_notifier.dart` sebelum `widget/visual_tabungan_impian.dart`.
-- Solusi: Tukar urutan kedua import tersebut sehingga `notifier/impian_notifier.dart` berada sebelum `widget/visual_tabungan_impian.dart`.
+- Status: Sedang
+- Masalah: Urutan import pada `detail_impian_screen.dart` masih tidak sepenuhnya alfabetis berdasarkan path package. Commit 0b0b564 telah menukar `widget/visual_tabungan_impian.dart` dan `notifier/impian_notifier.dart` (notifier sekarang sebelum widget ✓), tetapi baris 7 `screens/form_impian.dart` masih berada di atas baris 8 `notifier/impian_notifier.dart`, padahal `notifier` secara alfabetis mendahului `screens`.
+- Solusi: Pindahkan `screens/form_impian.dart` ke bawah `notifier/impian_notifier.dart`, sehingga urutan menjadi: `notifier/impian_notifier.dart`, `screens/form_impian.dart`, `widget/visual_tabungan_impian.dart`.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99-L104), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L31)
-- File bermasalah: [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L8-L9)
+- File bermasalah: [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L7-L9)
 - Prompt:

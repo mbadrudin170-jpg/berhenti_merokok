@@ -21,6 +21,7 @@ abstract class BiodataModel with _$BiodataModel {
     @Default(ModeBerhenti.seketika) ModeBerhenti modeBerhenti,
     @Default(0) int penurunanPerMinggu,
     DateTime? tanggalMulaiTapering,
+    int? targetSmokeFreeHari,
   }) = _BiodataModel;
 
   /// Membuat [BiodataModel] dari baris database SQLite.
@@ -60,6 +61,9 @@ abstract class BiodataModel with _$BiodataModel {
       tanggalMulaiTapering: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiTapering],
       )?.toLocal(),
+      targetSmokeFreeHari: ParserUtil.parseInt(
+        row[NamaKolom.targetSmokeFreeHari],
+      ),
     );
   }
 
@@ -83,6 +87,7 @@ abstract class BiodataModel with _$BiodataModel {
       NamaKolom.tanggalMulaiTapering: tanggalMulaiTapering
           ?.toUtc()
           .toIso8601String(),
+      NamaKolom.targetSmokeFreeHari: targetSmokeFreeHari,
     };
   }
 }

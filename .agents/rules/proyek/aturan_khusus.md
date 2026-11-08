@@ -1241,3 +1241,42 @@ onTap: () => unawaited(Nav.to(context, const SosCravingScreen()));
 // Tidak ada pengecekan data kosong.
 return Padding(...); // crash jika listAlasan null
 ```
+
+
+## Larangan Membawa Berkas Cadangan `.backup task/` ke Repository
+
+**Cakupan:**
+- Seluruh file yang berakh `.bak`, `.backup`, atau `.sebelum_*` di folder `.backup task/` (dan serupa) yang dibuat sebagai arsip cadangan sebelum mengedit `task.md` atau file lain.
+- Commit yang menghasilkan arsip cadangan.
+
+**Aturan wajib:**
+1. Berkas cadangan (`.bak`, `.backup`, `.sebelum_*`) hanya boleh ada di working tree, bukan di commit.
+2. Jangan menjalankan `git add` terhadap berkas cadangan ketika commit perubahan `task.md` atau file lain.
+3. Jika perlu menyimpan versi lama, simpan di luar repository atau gunakan `git stash`/`git reflog`, bukan sebagai file `.bak` yang di-commit.
+4. Commit hanya boleh berisi perubahan yang benar-benar diperlukan untuk task tersebut.
+
+**Larangan:**
+- Jangan meng-commit berkas `.bak`, `.backup`, atau `.sebelum_*` ke repository.
+- Jangan meninggalkan arsip cadangan di working tree setelah commit selesai (bersihkan jika sudah tidak diperlukan).
+- Jangan menggunakan berkas cadangan sebagai pengganti riwayat Git yang sudah ada.
+
+**Alasan:**
+Commit `0b0b564` membawa empat arsip cadangan ke repository: `.backup task/lib/fitur/impian/screens/detail_impian_screen.dart.bak`, `.backup task/lib/fitur/impian/screens/impian_screen.dart.bak`, `.backup task/task.md.bak`, dan `.backup task/task.md.sebelum_kelompok12.bak`. Arsip ini duplication data yang sudah tersedia melalui riwayat Git, mencemari repository, dan dapat membingungkan pembaca yang mencari versi terbaru. Commit sebelumnya (`08746b5`) juga Already menunjukkan pola yang sama. Riwayat commit (`git show <sha>:<path>`) sudah cukup untuk mengembalikan versi lama tanpa perlu berkas `.bak`.
+
+**Sumber evaluasi:**
+- Commit: `0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0`
+- File: `.backup task/lib/fitur/impian/screens/detail_impian_screen.dart.bak`, `.backup task/lib/fitur/impian/screens/impian_screen.dart.bak`, `.backup task/task.md.bak`, `.backup task/task.md.sebelum_kelompok12.bak`
+
+**Contoh benar:**
+```bash
+# Edit task.md, lalu commit HANYA task.md.
+git add task.md
+git commit -m "task: tandai tugas selesai"
+```
+
+**Contoh salah:**
+```bash
+# Membawa arsip cadangan ke commit (dilarang).
+git add task.md .backup\ task/task.md.bak
+git commit -m "task: tandai tugas selesai"
+```

@@ -103,9 +103,10 @@ _buildItem(
 2. Import dari package proyek (`package:berhenti_merokok/...`) wajib diurutkan berdasarkan path lengkap.
 3. Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
 4. Prinsip ini berlaku untuk seluruh file Dart dalam proyek.
+5. Saat memperbaiki urutan import, verifikasi seluruh blok import sudah terurut alfabetis secara penuh, bukan hanya menukar dua baris yang terlihat bermasalah. Satu pasang import yang salah urut tetap melanggar aturan, dan perbaikan parsial harus dianggap belum selesai.
 
 **Alasan:**
-Urutan import yang konsisten memudahkan pembacaan kode dan pengelolaan dependensi. Commit `1e7b71e` menunjukkan perubahan urutan import pada `biodata_screen.dart` agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+Urutan import yang konsisten memudahkan pembacaan kode dan pengelolaan dependensi. Commit `1e7b71e` menunjukkan perubahan urutan import pada `biodata_screen.dart` agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`). Commit `0b0b564` menunjukkan risiko perbaikan parsial: pada `detail_impian_screen.dart` hanya dua baris (`widget/` dan `notifier/`) yang ditukar, tetapi `screens/form_impian.dart` masih berada sebelum `notifier/impian_notifier.dart` (padahal `notifier` < `screens`), sehingga aturan tetap dilanggar meskipup task sudah ditandai selesai. Seluruh blok harus diurutkan ulang dan diverifikasi sebelum dinyatakan selesai.
 
 **Contoh benar:**
 ```dart

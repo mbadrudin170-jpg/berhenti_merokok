@@ -186,8 +186,8 @@ Ringkasan: 2 commit. 7a2163b = dokumen saja (command kerjakan_prd, PRD analisis 
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
 
 - Branch evaluasi: master
-- Commit terakhir yang dievaluasi: 7a2163b338ae7b037186a3880c4992af4127d282
-- SHA lengkap: 7a2163b338ae7b037186a3880c4992af4127d282
+- Commit terakhir yang dievaluasi: 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
+- SHA lengkap: 0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0
 - Tanggal evaluasi: 2026-11-08
 - Status: Selesai
 

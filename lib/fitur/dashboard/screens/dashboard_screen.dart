@@ -135,12 +135,57 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               _buildCardSosCraving(),
               _buildCardProgres(biodata),
+              _buildCardTargetSmokeFree(biodata),
               _buildCardAlasanBerhenti(),
               _buildCardMilestone(biodata),
               _buildCardBadge(),
               _buildInfoKerugian(biodata),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Kartu motivasi progres target smoke-free "X dari N hari".
+  Widget _buildCardTargetSmokeFree(BiodataModel biodata) {
+    final target = biodata.targetSmokeFreeHari;
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    final hariBerhenti = biodata.hariBerhenti;
+
+    if (target == null) return const SizedBox.shrink();
+
+    String teksProgres;
+    if (tanggalBerhenti == null) {
+      teksProgres = 'Target: $target hari';
+    } else if (hariBerhenti >= target) {
+      teksProgres = '$target dari $target hari — Target tercapai';
+    } else {
+      teksProgres = '$hariBerhenti dari $target hari';
+    }
+
+    L.i(
+      'targetSmokeFreeHari=$target, tanggalBerhenti=$tanggalBerhenti, hariBerhenti=$hariBerhenti, teksProgres=$teksProgres',
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              'Target Smoke-Free',
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              teksProgres,
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     );

@@ -25,12 +25,14 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _hargaRokokController = TextEditingController();
   final _batangPerBungkusController = TextEditingController();
   final _penurunanPerMingguController = TextEditingController();
+  final _targetSmokeFreeController = TextEditingController();
 
   final _namaFocusNode = FocusNode();
   final _jumlahRokokFocusNode = FocusNode();
   final _hargaRokokFocusNode = FocusNode();
   final _batangPerBungkusFocusNode = FocusNode();
   final _penurunanPerMingguFocusNode = FocusNode();
+  final _targetSmokeFreeFocusNode = FocusNode();
 
   DateTime? _tanggalLahir;
   DateTime? _tanggalMulaiMerokok;
@@ -73,11 +75,14 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
     _modeBerhenti = model.modeBerhenti;
     _penurunanPerMingguController.text = model.penurunanPerMinggu.toString();
+    _targetSmokeFreeController.text = (model.targetSmokeFreeHari ?? '')
+        .toString();
     _tanggalMulaiTapering = model.tanggalMulaiTapering;
     L.i(
       'modeBerhenti=$_modeBerhenti, '
       'penurunanPerMinggu=${_penurunanPerMingguController.text}, '
-      'tanggalMulaiTapering=$_tanggalMulaiTapering',
+      'tanggalMulaiTapering=$_tanggalMulaiTapering, '
+      'targetSmokeFreeHari=${_targetSmokeFreeController.text}',
     );
   }
 
@@ -94,6 +99,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _hargaRokokFocusNode.dispose();
     _batangPerBungkusFocusNode.dispose();
     _penurunanPerMingguFocusNode.dispose();
+    _targetSmokeFreeFocusNode.dispose();
     super.dispose();
   }
 
@@ -210,6 +216,19 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
         }
         penurunanPerMinggu = parsedPenurunan;
       }
+      int? targetSmokeFreeHari;
+      final targetText = _targetSmokeFreeController.text.trim();
+      if (targetText.isNotEmpty) {
+        final parsedTarget = int.tryParse(targetText);
+        if (parsedTarget == null || parsedTarget <= 0) {
+          AppToast.gagal(
+            context,
+            'Target smoke-free harus bilangan bulat lebih dari 0',
+          );
+          return;
+        }
+        targetSmokeFreeHari = parsedTarget;
+      }
       final model = BiodataModel(
         id: widget.biodataModel?.id ?? '',
         nama: _namaController.text.trim(),
@@ -224,8 +243,9 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
         modeBerhenti: _modeBerhenti,
         penurunanPerMinggu: penurunanPerMinggu,
         tanggalMulaiTapering: _tanggalMulaiTapering,
+        targetSmokeFreeHari: targetSmokeFreeHari,
       );
-      L.i('model=$model');
+      L.i('model=$model, targetSmokeFreeHari=$targetSmokeFreeHari');
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
       if (widget.buatPertama) {
@@ -449,6 +469,21 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                   ),
                 ],
                 const SizedBox(height: 8),
+                InputAngka(
+                  controller: _targetSmokeFreeController,
+                  label: 'Target smoke-free (hari)',
+                  hintText: 'Masukkan target hari bebas rokok',
+                  focusNode: _targetSmokeFreeFocusNode,
+                  validator: (value) {
+                    final cleaned = (value ?? '').trim();
+                    if (cleaned.isEmpty) return null;
+                    final n = int.tryParse(cleaned);
+                    if (n == null || n <= 0) {
+                      return 'Wajib bilangan bulat lebih dari 0';
+                    }
+                    return null;
+                  },
+                ),
                 OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
               ],
             ),

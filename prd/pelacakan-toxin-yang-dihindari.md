@@ -1,6 +1,6 @@
 # PRD: Pelacakan Toxin yang Dihindari
 
-Status: DRAFT
+Status: FINAL
 Terakhir diperbarui: 2026-11-08
 
 ## 1. Referensi
