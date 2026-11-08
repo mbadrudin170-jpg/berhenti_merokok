@@ -167,7 +167,8 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 #### 3. Biodata (Profil Merokok)
 
-- **Kondisi fitur pada proyek:** Biodata mencakup nama, tanggal lahir, jumlah rokok/hari, harga rokok/bungkus, tanggal mulai merokok, tanggal mulai berhenti, mode berhenti (seketika/bertahap), penurunan per minggu, dan tanggal mulai penurunan.
+- **Status PRD:** PRD Final — `prd/optimasi-biodata-profil-merokok.md`
+- **Kondisi fitur pada proyek:** Biodata mencakup nama, tanggal lahir, jumlah rokok/hari, harga rokok/bungkus, tanggal mulai merokok, tanggal mulai berhenti, mode berhenti (seketika/bertahap), penurunan per minggu, dan tanggal mulai penurunan. Catatan: modul daftar alasan berhenti (`alasan_berhenti`, DB v7) sudah ada terpisah dan dipakai dashboard/SOS; target smoke-free (hari) dan penyajian motivasi di dashboard didokumentasikan di PRD.
 - **Status implementasi:** Sebagian (field dasar dan tapering ada; alasan berhenti dan target smoke-free belum).
 - **Path implementasi proyek:** `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/fitur/biodata/model/biodata_model.dart`.
 - **Aplikasi pembanding:** Smoke Free (Portable Pixels); Quit Tracker (despDev); Kick It (UC San Diego).

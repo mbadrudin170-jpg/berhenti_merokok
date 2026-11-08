@@ -2,32 +2,56 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 64dc7758c35b46458f2bd4e36aada77f2362896e
+Commit terakhir dievaluasi penuh: 338a0216257bb9f75617f144fd2fae0d7faf63d2
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 4952b13b4b26ebf338f2b3d2cbc512915f413e8f sampai 64dc7758c35b46458f2bd4e36aada77f2362896e
-Jumlah commit yang dievaluasi: 2
-Status evaluasi: Selesai
-Ringkasan: Audit 2 commit (4952b13, 64dc775). 4952b13 hanya whitespace/format + pembaruan catatan checkpoint ke 08746b5 (biodata_screen blank line, impian_screen AppBar). 64dc775 menghapus entri task yang sudah Selesai (Kelompok 4 Task 1-2, Kelompok 11 Task 1). Temuan: Kelompok 11 Task 1 (ketidaksesuaian versi flutter_local_notifications 23.0.0 vs aturan 22.3.3) belum benar-benar diselesaikan, sehingga penghapusan entri mengurangi pelacakan; re-ditambahkan sebagai task Belum dikerjakan. flutter analyze: No issues found. Tidak ada API SDK/package baru. Backup .bak tracked masih ada (clutter, pre-existing).
+Rentang evaluasi: 64dc7758c35b46458f2bd4e36aada77f2362896e sampai 338a0216257bb9f75617f144fd2fae0d7faf63d2
+Jumlah commit yang dievaluasi: 22
+Status evaluasi: Selesai (dengan temuan)
+Ringkasan: 22 commit, 2 commit berisi perubahan kode (e659574: dashboard/alasan/sos; 338a021: fitur cadangan ekspor/pemulihan + 3 dependensi baru), 20 commit lainnya dokumen/rules/commands/task.md. Temuan: (1) 3 dependensi baru (file_picker, path_provider, share_plus, restart_app) tidak digunakan di aplikasi; (2) `L` diimport via `core_shared` (bukan `l.dart` yang tidak ada di lib) — konsisten, bukan pelanggaran; (3) `asData?.value` pada alasan provider di dashboard/sos (bukan loading/error) — aman, bukan pelanggaran; (4) `pickFiles` tanpa `withData`/`withReadBytes` pada Android 13+ berpotensi crash; (5) `picked.readAsBytes()` pada web tanpa `path` bisa crash; (6) `picked.uri` tidak digunakan; (7) `Uri.toFilePath()` pada web bisa throw; (8) `restart_app` dan `share_plus` ada di pubspec tapi tidak dipakai; (9) `L.i` di dalam loop `build()` (snippet chip, cadangan build) — noise. `flutter analyze` pada modul terkait: No issues found. Tidak ada API SDK deprecated.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
 ## Riwayat Evaluasi Commit
 
-### Commit: a30b6b6e4377b55eadecb6b83b0e4c05faa985b5
+### Commit: 338a0216257bb9f75617f144fd2fae0d7faf63d2
 
-- Tanggal: 2026-11-08 08:48:07 +0000
-- Judul: refactor(notifikasi): tangani tap notifikasi berdasarkan payload dan perbarui UX pengaturan
+- Tanggal: 2026-11-08 21:51:14 +0000
+- Judul: feat(cadangan): implementasikan ekspor dan pemulihan data lokal以及 integrasikan ke pengaturan
 - Status evaluasi: Selesai (dengan temuan)
-- Ringkasan: Memperbarui `_onTapNotifikasi` untuk parsing payload dan navigasi ke Home; menambah `_sedangMemproses`, loading overlay, dan guard double-submit pada pengaturan notifikasi. Ditemukan pelanggaran: unawaited Future tanpa penanganan error, penanganan kondisi terminated tidak diimplementasikan, serta `_ubahNotifikasi` tanpa `finally` (berisiko flag terkunci dan loading tertinggal).
-- Temuan penting: lib/shared/notifikasi/notifikasi_service.dart:88 (unawaited tanpa catchError); lib/fitur/pengaturan/screens/pengaturan_screen.dart:76-135 (tanpa finally); terminated handling belum diimplementasikan.
+- Ringkasan: Fitur baru Cadangan & Ekspor Data (helper + screen 320 baris, integrasi Tile pada pengaturan) + 3 dependensi baru (file_picker ^13.3.2, path_provider ^2.1.6, share_plus ^13.3.1, restart_app ^1.10.2). Temuan: (1) restart_app dan share_plus tidak digunakan di aplikasi; (2) FilePicker.pickFiles() tanpa withData/withReadBytes pada Android 13+ (API 33) berpotensi crash; (3) picked.readAsBytes() tanpa penanganan path-null pada web; (4) picked.uri tidak digunakan; (5) Uri.toFilePath() pada web bisa throw; (6) L.i di build() (CadanganScreen build, snippet chip loop) menambah noise. flutter analyze pada modul terkait: No issues found. SDK diverifikasi: file_picker 13.3.2 (saveFile/pickFiles/PlatformFile.path/readAsBytes), path_provider 2.1.6 (getApplicationDocumentsDirectory), share_plus 13.3.1 (Share.share/shareXFiles — tidak dipakai), restart_app 1.10.2 (Restart.restartApp/RestartResult.success — tidak dipakai).
 
-### Commit: 4cd91ac97ee39d24940439d40e92f42e30152c18
+### Commit: e6595744b3840998d840e398ca1782e7be7d50b4
 
-- Tanggal: 2026-11-08 08:55:33 +0000
-- Judul: a
+- Tanggal: 2026-11-08 21:33:40 +0000
+- Judul: ui(dashboard,alasan,sos): integrasikan kartu motivasi, pintasan darurat, dan saran alasan pada antarmuka
+- Status evaluasi: Selesai (tanpa temuan)
+- Ringkasan: Menambah kartu SOS Craving dan kartu Alasan Berhenti (dengan navigate + catchError) di dashboard, kartu motivasi alasan terbaru di SOS Craving, dan 8 snippet FilterChip pada form alasan berhenti. Semua unawaited Nav.to() sudah dilengkapi .catchError(...). Penggunaan alasanAsync.asData?.value (bukan requireValue) pada dashboard/sos aman karena tidak mengharuskan loading/error. Semua L.i/w/e sudah mengikuti aturan bersama (singkat, model langsung, stack trace di catch). flutter analyze: No issues found. Tidak ada API SDK baru/deprecated.
+
+### Commit: 73a22b7, 4b3429f, d1a4100, 77601bd, be06bda, a01e5b1, 579dc30, d277d32, 34a8882, c848f3c, 5621073, 27b7edc, 8ce62bb, edf6fd7, d9f8214, 6a8e421, a6e4ae0, 79a0cc5, a87b3cd, c17903c
+
+- Tanggal: 2026-11-08
 - Status evaluasi: Selesai
-- Ringkasan: Menambahkan file `catatan.md` awal (placeholder kosong).
+- Ringkasan: 20 commit dokumen/rules/commands/task.md. Tidak ada perubahan kode sumber. Perubahan: penulisan/penyederhanaan aturan notifikasi (aturan_notifikasi.md), aturan bersama penanganan error Future unawaited (aturan_bersama.md), perbarui command evaluasi (cek_perubahan_sekarang.md, evaluasi_aturan_khusus.md, evaluasi_struktur_rules.md), penambahan/penyusunan PRD (alasan-berhenti, penyimpanan-cadangan, optimasi-pemulihan-kesehatan-milestone, optimasi-dashboard-ringkasan-progres, optimasi-impian-tabungan, akses-cepat-sos-craving), perbarui refrensi_apk.md, hapus task batal, dan tambah task versi notifikasi. Tidak ada pelanggaran aturan atau SDK.
+
+### Commit: 4b39928
+
+- Tanggal: 2026-11-08
+- Judul: docs(task): hapus entri tugas selesai dan tambahkan catatan prompt pada task.md
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui task.md (menghapus 19 baris entri tugas selesai, menambah catatan prompt).
 - Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 4cd91ac97ee39d24940439d40e92f42e30152c18, 3cca34845ae2613008aff352d953b6b2f2ef9a43, db0cdc48046e4578158645001556d43702090935, 6f2e02153e86f0e0cb943835f96d4b0abfa2ce52, b40fcade9259891828cd0da9e8baab60dd4c1ebf, 12b577d3c059a7ce61016eb6360f628da0b9d669, bf9144cda34743275b132ce6f1d592149a66123a, 73ecb2d17ae95a5a798e2b57ef96940ea287623b, 24a8659261bbf8406852adf60564b794066341c3, 2a5a357429d44d7302ce54d46b378fe2ce6a0cb6, 992a624711948b58124483b57acea3520e3a1930, 618ab90, 434b5ca, 318c61b, e6b97ab, 6e1a767, 94c4ec92c3221e0f845639aab41f0c38c84350da, eee7e6b5df247b4c83a59b863fdf7fc545d2678f, 08746b52ce1855792f0f1981d5f50ee0522b99ae, 4952b13b4b26ebf338f2b3d2cbc512915f413e8f, 64dc7758c35b46458f2bd4e36aada77f2362896e
+
+- Tanggal: 2026-11-08 (entri evaluasi sebelumnya, 2026-11-08 08:48–21:33)
+- Status evaluasi: Selesai (entri lama, sudah digabung)
+- Ringkasan: 20 commit evaluasi sebelumnya (catatan.md, task.md, saran.md, aturan notifikasi, command evaluasi, PRD, refrensi_apk.md, pengujian notifikasi, perbaikan tapering, perbaikan logging). Semua sudah di evaluasi pada tahap sebelumnya. Tidak ada perubahan kode sumber baru selain yang sudah tercatat pada entri 338a021 dan e659574 di atas. Ringkasan temuan sebelumnya: penanganan error Future unawaited (catchError), tipe exception khusus, deteksi zona waktu perangkat, validasi form tapering, dan sinkronisasi versi notifikasi.
+
+### Commit: 618ab90, 434b5ca, 318c61b, e6b97ab, 6e1a767, 94c4ec92c3221e0f845639aab41f0c38c84350da, eee7e6b5df247b4c83a59b863fdf7fc545d2678f, 08746b52ce1855792f0f1981d5f50ee0522b99ae, 4952b13b4b26ebf338f2b3d2cbc512915f413e8f, 64dc7758c35b46458f2bd4e36aada77f2362896e
+
+- Tanggal: 2026-11-08
+- Status evaluasi: Selesai (entri lama, sudah digabung)
+- Ringkasan: 10 commit evaluasi sebelumnya (refrensi_apk.md, catatan.md/task.md, AGENTS.md/docs, pengujian notifikasi, aturan notifikasi, perbaikan tapering/logging). Semua sudah di evaluasi pada tahap sebelumnya. Tidak ada perubahan kode sumber baru selain yang sudah tercatat pada entri 338a021 dan e659574 di atas. Ringkasan temuan sebelumnya: penanganan error Future unawaited (catchError), tipe exception khusus, deteksi zona waktu perangkat, validasi form tapering, dan sinkronisasi versi notifikasi.
 
 ### Commit: 3cca34845ae2613008aff352d953b6b2f2ef9a43
 
@@ -337,10 +361,6 @@ Ringkasan: Audit 2 commit (4952b13, 64dc775). 4952b13 hanya whitespace/format + 
 - Pesan commit: docs(eval): perbarui checkpoint evaluasi dan catatan pengujian notifikasi
 - File yang berubah: catatan.md, task.md
 - Ringkasan evaluasi: Commit dokumentasi. Memperbarui checkpoint evaluasi ke commit 6e1a767, rentang 4b39928–6e1a767, 6 commit dievaluasi. Menambah entri evaluasi untuk 6 commit. Memperbarui task.md (hapus Task 1 kosong Kelompok 1, tambah notifikasi_service_test.dart pada file terdampak, perbarui deskripsi masalah pengujian notifikasi sesuai kondisi aktual 7 pengujian lulus). Bukan perubahan kode aplikasi.
-- Aturan khusus yang diperbarui: Tidak ada.
-- Aturan bersama yang diperbarui: Tidak ada.
-- Status evaluasi: Selesai
-
 - Aturan khusus yang diperbarui: Tidak ada.
 - Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai
