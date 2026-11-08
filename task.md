@@ -13,6 +13,15 @@ Tidak ada temuan.
 
 ## Rendah
 
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `_buildSaldoTerkumpul` di `impian_screen.dart` digunakan `SizedBox(width: 8)` untuk memberi jarak antara ikon `Icons.savings_outlined` dan kolom teks. Jarak seragam antar-anak Row sebaiknya diatur dengan properti `spacing` pada `Row`, bukan `SizedBox` individual, sesuai `optimasi_ui.md` #4.
+- Solusi: Ganti `SizedBox(width: 8)` dengan menambahkan `spacing: 8` pada `Row`, dan hapus `SizedBox` tersebut.
+- Aturan dilanggar: [optimasi_ui.md](.agents/rules/global/optimasi_ui.md#L51-L53)
+- File bermasalah: [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L328)
+- Prompt:
+
 # Kelompok 2
 
 ## File terdampak
@@ -124,4 +133,21 @@ Tidak ada temuan.
 - [pubspec.yaml](pubspec.yaml)
 
 ## Sedang
+
+# Kelompok 12
+
+## File terdampak
+
+- [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Urutan import pada `detail_impian_screen.dart` tidak mengikuti urutan alfabetis berdasarkan path package. Baris 8 `widget/visual_tabungan_impian.dart` berada sebelum baris 9 `notifier/impian_notifier.dart`, padahal `notifier` secara alfabetis mendahului `widget`. Urutan yang benar: `notifier/impian_notifier.dart` sebelum `widget/visual_tabungan_impian.dart`.
+- Solusi: Tukar urutan kedua import tersebut sehingga `notifier/impian_notifier.dart` berada sebelum `widget/visual_tabungan_impian.dart`.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99-L104), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L31)
+- File bermasalah: [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L8-L9)
+- Prompt:
 
