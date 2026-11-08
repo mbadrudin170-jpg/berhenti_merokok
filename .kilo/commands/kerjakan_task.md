@@ -1,130 +1,141 @@
-# EKSEKUSI TASK — STRICT TASK EXECUTION
+# Eksekusi Task Berdasarkan Kelompok
 
-## 1. Tujuan
+**Path file:** `prompt/lainnya/kerjakan_task.md`
 
-Jalankan maksimal 5 task dari `task.md` di root repositori berdasarkan status yang secara eksplisit mengizinkan implementasi.
+## Tujuan
 
-Kerjakan setiap task secara terpisah, terukur, dan dapat diverifikasi.
+Mengerjakan seluruh task yang berstatus `Kerjakan` di dalam `task.md` berdasarkan urutan kelompok.
 
-Prioritas utama:
+Pengerjaan wajib diselesaikan per kelompok. Jangan berpindah ke kelompok berikutnya sebelum seluruh task berstatus `Kerjakan` pada kelompok aktif selesai diproses.
 
-1. Jangan berasumsi liar.
-2. Jangan mengerjakan task yang tidak diizinkan.
-3. Jangan mengubah kode di luar ruang lingkup task.
-4. Lindungi file sebelum melakukan perubahan menggunakan backup.
-5. Pastikan setiap task memiliki hasil yang jelas.
-6. Perbarui status task segera setelah satu task selesai atau dilewati.
+Jangan berasumsi liar. Periksa kode aktual, patuhi aturan proyek, buat backup sebelum perubahan, dan verifikasi setiap implementasi.
 
-## 2. Persiapan Wajib
+# 1. Baca aturan proyek
 
-Sebelum mengerjakan apa pun:
+1. Baca seluruh isi `.agents/rules/AGENTS.md` sebelum melakukan pekerjaan apa pun.
+2. Patuhi seluruh aturan yang terdapat di dalamnya.
+3. Baca aturan proyek lain yang relevan dengan task.
+4. Baca seluruh isi `task.md` untuk memahami kelompok, prioritas, status, deskripsi, dan file terdampak.
+5. Pahami urutan kelompok sebagaimana tertulis di `task.md`.
+6. Jika `.agents/rules/AGENTS.md` tidak ditemukan atau tidak dapat dibaca, hentikan seluruh proses dan laporkan kepada pengguna.
+7. Jangan melanjutkan pekerjaan berdasarkan asumsi jika aturan proyek belum dapat dipastikan.
 
-1. Baca seluruh isi `.agents/rules/AGENTS.md`.
-2. Patuhi seluruh instruksi di dalamnya.
-3. Baca aturan global dan aturan proyek yang relevan.
-4. Baca seluruh isi `task.md` pada root repositori.
-5. Pahami struktur pengelompokan, prioritas, status, dan file yang terdampak.
-6. Periksa apakah terdapat perubahan kode atau perubahan file dari pekerjaan sebelumnya yang belum disimpan atau belum dikomit.
-7. Jangan menimpa perubahan yang sudah ada.
-8. Catat kondisi awal hasil `flutter analyze` sebelum mengubah kode.
+# 2. ATURAN MUTLAK: HANYA BOLEH MENGERJAKAN TASK BERSTATUS `Kerjakan`
 
-Apabila file `.agents/rules/AGENTS.md` tidak ditemukan, hentikan eksekusi dan laporkan kepada pengguna. Jangan menggantinya dengan asumsi atau mencari aturan pengganti tanpa persetujuan.
+**PERHATIAN: INI ADALAH ATURAN PALING PENTING. KILO CODE HANYA BOLEH MENGERJAKAN TASK YANG STATUSNYA `Kerjakan`.**
 
-## 3. Seleksi Task — Aturan Paling Ketat
-
-**HANYA TASK DENGAN STATUS `Implementasikan` YANG BOLEH DIPROSES.**
+Jangan mengerjakan task dengan status lain, apa pun alasannya.
 
 Ketentuan wajib:
 
-1. Status harus sama persis dengan `Implementasikan`.
-2. Status `Belum`, `Kerjakan`, `Setengah`, `Selesai`, dan `Dilewati` tidak boleh dikerjakan.
-3. Jangan menganggap status `Kerjakan` sama dengan `Implementasikan`.
-4. Jangan menganggap status kosong sebagai izin implementasi.
-5. Jangan memilih task hanya berdasarkan prioritas Tinggi, Sedang, atau Rendah.
-6. Prioritas hanya digunakan untuk menentukan urutan task yang memang berstatus `Implementasikan`.
-7. Jangan mengubah status task dari `Kerjakan`, `Belum`, atau status lainnya menjadi `Implementasikan` atas inisiatif sendiri.
-8. Jangan mengubah status hanya untuk membuat task memenuhi syarat pengerjaan.
-9. Apabila tidak ada task berstatus `Implementasikan`, hentikan pekerjaan dan laporkan bahwa tidak ada task yang memenuhi syarat.
+1. Periksa status setiap task sebelum melakukan pemeriksaan kode maupun implementasi.
+2. Task hanya boleh diproses jika statusnya tertulis persis `Kerjakan`.
+3. Task dengan status `Belum`, `Setengah`, `Selesai`, `Dilewati`, atau status lainnya tidak boleh dikerjakan.
+4. Jangan menganggap menemukan bug, lint, masalah runtime, masalah UI, atau masalah UX sebagai izin untuk mengerjakan task yang statusnya bukan `Kerjakan`.
+5. Jangan mengubah status task lain agar menjadi `Kerjakan`.
+6. Jangan mengambil pekerjaan tambahan dari hasil pemeriksaan kode di luar task yang berstatus `Kerjakan`.
+7. Jangan mengerjakan task yang tidak diminta hanya karena AI menganggapnya penting, mudah, mendesak, atau berkaitan dengan task yang sedang dikerjakan.
+8. Jika menemukan task berstatus selain `Kerjakan` yang menurut AI perlu ditindaklanjuti, catat dan laporkan kepada pengguna. Jangan mengerjakannya.
+9. Jangan mengubah status task yang tidak sedang diproses.
 
-### Urutan Seleksi
+**Larangan keras:** Tidak ada pengecualian terhadap aturan status ini. Satu-satunya status yang memberikan izin implementasi adalah `Kerjakan`.
 
-Pilih maksimal 5 task berdasarkan urutan berikut:
+## Pemeriksaan wajib sebelum memproses task
 
-1. Prioritas Tinggi.
-2. Prioritas Sedang.
-3. Prioritas Rendah.
+Lakukan urutan berikut setiap kali akan memproses task:
 
-Dalam prioritas yang sama, ikuti urutan kemunculan task dalam `task.md`.
+1. Identifikasi kelompok task.
+2. Identifikasi task di dalam kelompok tersebut.
+3. Baca status task.
+4. Pastikan statusnya persis `Kerjakan`.
+5. Jika statusnya `Kerjakan`, task boleh dilanjutkan ke tahap pemeriksaan dan implementasi.
+6. Jika statusnya bukan `Kerjakan`, jangan memproses atau mengubah task tersebut.
 
-Jangan melewati task yang memenuhi syarat hanya karena task tersebut dianggap sulit.
+Jangan melewati pemeriksaan status ini, termasuk ketika berpindah ke task berikutnya dalam kelompok yang sama.
 
-## 4. Batas Pengerjaan
+# 3. URUTAN PENGERJAAN WAJIB BERDASARKAN KELOMPOK
 
-1. Maksimal 5 task yang diperiksa dalam satu sesi.
-2. Setiap task yang diperiksa dihitung sebagai satu dari lima task.
-3. Task yang ternyata sudah diimplementasikan tetap dihitung.
-4. Task yang dilewati tetap dihitung.
-5. Task yang gagal diperbaiki dan di-rollback tetap dihitung.
-6. Jangan mengganti task yang dilewati dengan task keenam.
-7. Setelah mencapai 5 task, hentikan seluruh pekerjaan.
-8. Tunggu perintah pengguna sebelum melanjutkan 5 task berikutnya.
-
-### Contoh Penghitungan
-
-| Task   | Hasil                                          | Hitungan |
-| ------ | ---------------------------------------------- | -------- |
-| Task 1 | Ternyata sudah diimplementasikan               | 1/5      |
-| Task 2 | Dilewati karena file terbuka                   | 2/5      |
-| Task 3 | Dilewati karena lint error tidak terselesaikan | 3/5      |
-| Task 4 | Berhasil diimplementasikan                     | 4/5      |
-| Task 5 | Berhasil diimplementasikan                     | 5/5      |
-
-Setelah 5/5, wajib berhenti.
-
-## 5. Pemeriksaan Setiap Task Sebelum Implementasi
-
-Sebelum mengubah file:
-
-1. Baca kembali deskripsi task secara lengkap.
-2. Periksa seluruh file yang tercantum pada bagian `File Bermasalah`.
-3. Periksa aturan yang tercantum pada bagian `Aturan Dilanggar`.
-4. Baca kode aktual, jangan hanya mengandalkan deskripsi task.
-5. Pastikan masalah masih benar-benar terjadi.
-6. Pastikan solusi yang direkomendasikan sesuai dengan kondisi kode aktual.
-7. Pastikan perubahan tidak bertentangan dengan aturan repositori.
-8. Pastikan tidak ada task lain yang sedang dikerjakan pada file yang sama.
-9. Periksa apakah file yang akan diedit sedang terbuka di editor.
-
-Apabila ditemukan ketidaksesuaian antara deskripsi task dan kode aktual, jangan memaksakan implementasi. Laporkan temuannya dan tandai task sebagai `Dilewati` jika memang tidak dapat dilanjutkan dengan aman.
-
-## 6. Larangan Mengedit File yang Sedang Terbuka
-
-1. Jangan mengedit file yang sedang terbuka di editor.
-2. Apabila file yang akan diedit sedang terbuka, hentikan pengerjaan task tersebut.
-3. Perbarui status task menjadi `Dilewati`.
-4. Jelaskan nama file dan alasan task dilewati.
-5. Jangan mencoba mengatasi larangan ini dengan mengedit file melalui metode lain.
-6. Lanjutkan ke task berikutnya yang memenuhi syarat.
-
-Apabila status file terbuka tidak dapat diketahui melalui lingkungan editor atau integrasi yang tersedia, jangan mengklaim bahwa file aman untuk diedit. Laporkan keterbatasan tersebut dan minta konfirmasi pengguna.
-
-## 7. Backup Wajib Sebelum Mengedit
-
-**Setiap file wajib memiliki backup sebelum perubahan pertama dilakukan.**
-
-Lokasi backup:
-
-`.backup task/`
+**Selesaikan seluruh task berstatus `Kerjakan` dalam satu kelompok sebelum berpindah ke kelompok berikutnya.**
 
 Ketentuan:
 
-1. Buat backup sebelum mengedit file.
-2. Gunakan ekstensi `.bak`.
-3. Pertahankan struktur direktori asli agar tidak terjadi benturan nama.
+1. Mulai dari kelompok pertama yang tercantum di `task.md`.
+2. Periksa task dalam kelompok tersebut satu per satu.
+3. Kerjakan hanya task yang berstatus `Kerjakan`.
+4. Selesaikan seluruh task berstatus `Kerjakan` pada kelompok aktif sebelum berpindah.
+5. Task yang berstatus selain `Kerjakan` harus dilewati tanpa implementasi dan tanpa perubahan status.
+6. Setelah tidak ada lagi task berstatus `Kerjakan` dalam kelompok aktif, kelompok tersebut dianggap selesai diproses.
+7. Barulah lanjutkan ke kelompok berikutnya sesuai urutan dalam `task.md`.
+8. Ulangi proses tersebut sampai seluruh kelompok selesai diperiksa.
+9. Jangan melompat ke kelompok lain hanya karena menemukan task yang dianggap lebih mudah atau lebih penting.
+10. Jangan mencampur pengerjaan task dari dua kelompok berbeda sebelum kelompok sebelumnya selesai diproses.
+
+### Contoh urutan pengerjaan
+
+Misalnya `task.md` memiliki susunan berikut:
+
+- Kelompok 1
+  - Task A: `Kerjakan`
+  - Task B: `Belum`
+  - Task C: `Kerjakan`
+- Kelompok 2
+  - Task D: `Kerjakan`
+  - Task E: `Kerjakan`
+- Kelompok 3
+  - Task F: `Kerjakan`
+
+Urutan yang wajib dilakukan:
+
+1. Kelompok 1: kerjakan Task A.
+2. Kelompok 1: lewati Task B karena statusnya bukan `Kerjakan`.
+3. Kelompok 1: kerjakan Task C.
+4. Pastikan tidak ada lagi task berstatus `Kerjakan` di Kelompok 1.
+5. Kelompok 2: kerjakan Task D.
+6. Kelompok 2: kerjakan Task E.
+7. Pastikan tidak ada lagi task berstatus `Kerjakan` di Kelompok 2.
+8. Kelompok 3: kerjakan Task F.
+
+**Dilarang mengerjakan Task D sebelum Task A dan Task C di Kelompok 1 selesai diproses.**
+
+# 4. Pemeriksaan sebelum implementasi
+
+Untuk setiap task berstatus `Kerjakan`:
+
+1. Baca deskripsi masalah.
+2. Baca solusi yang diusulkan.
+3. Baca aturan yang dilanggar.
+4. Periksa seluruh file yang disebutkan dalam task.
+5. Periksa kode aktual, bukan hanya mengandalkan deskripsi task.
+6. Periksa aturan proyek yang berkaitan dengan masalah tersebut.
+7. Pastikan masalah masih terjadi.
+8. Pastikan solusi sesuai dengan kondisi kode aktual.
+9. Jika masalah ternyata sudah diperbaiki dan hasilnya sudah sesuai, jangan mengulangi implementasi. Tandai task sebagai `Selesai`.
+10. Jika solusi tidak sesuai dengan kondisi kode aktual atau berpotensi merusak bagian lain, hentikan pengerjaan task dan laporkan kepada pengguna. Jangan mengarang solusi sendiri.
+
+# 5. File yang sedang terbuka di editor
+
+1. Sebelum mengedit file, pastikan file tersebut tidak sedang terbuka di editor.
+2. Jika salah satu file yang harus diubah sedang terbuka di editor, jangan mengedit file tersebut.
+3. Hentikan pengerjaan task yang bersangkutan.
+4. Tandai task sebagai `Dilewati`.
+5. Tuliskan alasan bahwa task dilewati karena file yang diperlukan sedang terbuka di editor.
+6. Setelah status diperbarui, lanjutkan ke task `Kerjakan` berikutnya dalam kelompok yang sama.
+
+Jika AI tidak dapat memastikan apakah file sedang terbuka melalui editor atau integrasi yang tersedia, jangan mengklaim bahwa file aman untuk diedit. Laporkan keterbatasan tersebut kepada pengguna dan jangan mengedit file yang status keterbukaannya belum dapat dipastikan.
+
+# 6. Backup sebelum mengedit
+
+**WAJIB membuat backup sebelum mengubah isi file apa pun. Tidak boleh ada pengecualian.**
+
+Ketentuan:
+
+1. Buat folder `.backup task` jika belum tersedia.
+2. Simpan backup menggunakan ekstensi `.bak`.
+3. Pertahankan struktur direktori asli agar lokasi file mudah dikenali.
 4. Jangan menimpa backup sebelumnya.
-5. Backup harus berisi kondisi file sebelum perubahan.
-6. Pastikan backup berhasil dibuat dan dapat dibaca sebelum melanjutkan.
-7. Backup juga wajib dibuat untuk `task.md` sebelum memperbarui status task.
+5. Backup harus berisi kondisi file sebelum perubahan dilakukan.
+6. Sebelum mengubah `task.md`, buat backup `task.md` terlebih dahulu.
+7. Jika backup gagal dibuat, jangan lanjutkan pengeditan file tersebut. Laporkan kendalanya.
 
 Contoh:
 
@@ -132,175 +143,170 @@ File asli:
 
 `lib/fitur/home/app.dart`
 
-File backup:
+Lokasi backup:
 
 `.backup task/lib/fitur/home/app.dart.bak`
 
-File asli:
+File task:
 
 `task.md`
 
-File backup:
+Lokasi backup:
 
 `.backup task/task.md.bak`
 
-Apabila backup gagal dibuat, jangan mengedit file tersebut. Hentikan task dan laporkan kendalanya.
-
-## 8. Ketentuan Implementasi
+# 7. Aturan implementasi
 
 1. Kerjakan hanya masalah yang dijelaskan dalam task.
-2. Jangan melakukan refactoring yang tidak diperlukan.
-3. Jangan menambahkan fitur yang tidak diminta.
-4. Jangan mengubah file yang tidak berhubungan dengan penyelesaian task.
-5. Jangan mengubah logika bisnis di luar kebutuhan perbaikan.
-6. Patuhi seluruh aturan global dan aturan proyek.
-7. Periksa dependensi dan SDK yang digunakan sebelum menggunakan API.
-8. Gunakan implementasi paling sederhana yang memenuhi kebutuhan dan aturan proyek.
-9. Jangan mengarang fungsi, class, variabel, atau API yang belum diverifikasi.
-10. Jangan menganggap implementasi berhasil sebelum pemeriksaan selesai.
+2. Jangan melakukan refactor yang tidak diperlukan.
+3. Jangan menambahkan fitur di luar ruang lingkup task.
+4. Jangan mengubah perilaku bagian aplikasi lain tanpa alasan yang berkaitan langsung dengan task.
+5. Ikuti seluruh aturan proyek dan pola implementasi yang sudah digunakan.
+6. Periksa dampak perubahan terhadap file atau fungsi yang berkaitan.
+7. Jika menemukan masalah tambahan di luar ruang lingkup task, catat dan laporkan kepada pengguna.
+8. Jangan langsung mengerjakan masalah tambahan tersebut.
+9. Jangan mengambil task tambahan hanya karena file yang sedang dikerjakan memiliki masalah lain.
 
-### Komentar Kode
+# 8. Aturan komentar kode
 
-Setiap kode yang ditambahkan atau diubah wajib disertai komentar yang menjelaskan alasan perubahan.
+Setiap kode yang ditambahkan atau diubah wajib memiliki komentar yang menjelaskan alasan perubahan.
 
 Ketentuan:
 
-1. Komentar harus menjelaskan mengapa kode ditambahkan atau diubah.
-2. Gunakan bahasa Indonesia yang baik dan benar.
-3. Komentar harus singkat, deskriptif, dan relevan.
-4. Letakkan komentar dekat dengan kode yang dijelaskan.
-5. Jangan menulis komentar yang hanya mengulang kode.
-6. Jangan menambahkan komentar yang tidak memberikan informasi.
-7. Jangan mengubah komentar lama yang tidak berhubungan dengan task.
+1. Gunakan bahasa Indonesia yang baik dan benar.
+2. Komentar harus singkat, deskriptif, dan mudah dipahami.
+3. Jelaskan alasan kode ditambahkan atau diubah.
+4. Jangan hanya mengulang apa yang sudah jelas dari kode.
+5. Jangan menambahkan komentar yang tidak memberikan informasi berguna.
+6. Letakkan komentar pada bagian kode yang relevan.
 
-Contoh:
+# 9. Aturan `flutter analyze`
 
-```dart
-// Normalisasi tanggal agar perhitungan hari tidak terpengaruh waktu.
-final hariIni = DateTime(now.year, now.month, now.day);
-```
-
-## 9. Pemeriksaan dan Perbaikan Lint
-
-Setelah implementasi:
+Setelah implementasi setiap task:
 
 1. Jalankan `flutter analyze`.
-2. Periksa seluruh error dan lint yang muncul.
-3. Bedakan masalah yang sudah ada sebelum perubahan dengan masalah yang disebabkan oleh implementasi.
-4. Perbaiki masalah yang disebabkan oleh perubahan task.
-5. Jalankan kembali `flutter analyze` setelah perbaikan.
+2. Periksa seluruh hasil analisis.
+3. Target akhir adalah tidak ada error maupun lint.
+4. Jika ditemukan masalah yang disebabkan oleh perubahan task, lakukan perbaikan.
+5. Maksimal 3 kali siklus perbaikan dan pemeriksaan ulang.
+6. Jika setelah 3 kali percobaan masalah tetap belum terselesaikan:
+   - Hentikan pengerjaan task.
+   - Kembalikan seluruh file yang diubah oleh task tersebut ke kondisi sebelum implementasi menggunakan backup.
+   - Pastikan perubahan lain yang bukan bagian dari task tidak ikut terhapus.
+   - Tandai task sebagai `Dilewati`.
+   - Tuliskan alasan bahwa task dilewati karena masalah analisis tidak berhasil diperbaiki setelah 3 kali percobaan.
+7. Jangan menghapus atau menyembunyikan error hanya agar hasil analisis terlihat bersih.
+8. Jika sebelum implementasi sudah terdapat error atau lint, catat kondisi awalnya.
+9. Jangan menganggap masalah yang sudah ada sebelum implementasi sebagai akibat perubahan task.
+10. Jangan memperbaiki error yang tidak berkaitan dengan task.
 
-### Batas Perbaikan
+Jika diperlukan rollback, pastikan file yang dikembalikan benar-benar sesuai dengan backup dan tidak menimpa perubahan lain.
 
-1. Maksimal 3 siklus perbaikan dan pemeriksaan untuk satu task.
-2. Jika setelah 3 siklus masalah belum terselesaikan, hentikan pengerjaan task tersebut.
-3. Jangan melakukan percobaan perbaikan tanpa batas.
-4. Kembalikan seluruh perubahan kode yang dibuat khusus untuk task tersebut ke kondisi sebelum implementasi.
-5. Gunakan backup yang telah dibuat sebagai acuan pemulihan.
-6. Jangan mengembalikan perubahan milik pengguna atau pekerjaan lain yang sudah ada sebelumnya.
-7. Setelah rollback, verifikasi kembali kondisi file.
-8. Perbarui status task menjadi `Dilewati`.
-9. Jelaskan lint atau error yang tidak berhasil diselesaikan.
+# 10. Pembaruan status `task.md`
 
-### Standar Hasil Analyze
+**Setelah menyelesaikan atau melewati satu task, wajib perbarui `task.md` terlebih dahulu sebelum mengerjakan task berikutnya.**
 
-Target akhir adalah `flutter analyze` bersih tanpa error maupun lint.
+Ketentuan:
 
-Apabila sebelum implementasi sudah terdapat masalah:
+1. Buat backup `task.md` sebelum mengubahnya.
+2. Ubah hanya status task yang sedang diproses.
+3. Jangan mengubah deskripsi, solusi, prioritas, kelompok, atau task lainnya tanpa alasan yang diperlukan.
+4. Jika implementasi berhasil dan sudah diverifikasi, tandai `Selesai`.
+5. Jika masalah ternyata sudah diperbaiki sebelumnya, tandai `Selesai`.
+6. Jika task tidak dapat dikerjakan karena file terbuka, tandai `Dilewati`.
+7. Jika implementasi gagal setelah tiga kali percobaan dan sudah di-rollback, tandai `Dilewati`.
+8. Setiap status `Dilewati` wajib disertai alasan yang jelas.
+9. Jangan menandai task `Selesai` sebelum implementasi atau pemeriksaan hasil benar-benar berhasil.
+10. Jangan mengubah status task lain.
+11. Setelah status diperbarui, verifikasi bahwa perubahan pada `task.md` sudah benar.
 
-- Catat masalah awal beserta jumlah dan lokasinya.
-- Jangan mengklaim masalah awal sebagai akibat implementasi.
-- Jangan memperbaiki masalah yang tidak berhubungan dengan task.
-- Pastikan perubahan task tidak menambah masalah baru.
-- Laporkan apabila kondisi awal repositori membuat target bersih belum dapat dicapai.
+Setelah pembaruan status, periksa kembali kelompok aktif untuk memastikan masih ada atau tidak ada task berstatus `Kerjakan`.
 
-## 10. Penanganan Task yang Sudah Diimplementasikan
+# 11. Keamanan rollback
 
-Apabila setelah pemeriksaan kode aktual ditemukan bahwa task sudah diimplementasikan:
+1. Gunakan backup sebagai sumber pemulihan.
+2. Rollback hanya boleh menyentuh file yang diubah oleh task yang gagal.
+3. Jangan menghapus perubahan pengguna yang sudah ada sebelum pengerjaan.
+4. Jangan menghapus perubahan dari task lain.
+5. Dilarang menggunakan perintah yang dapat membatalkan seluruh perubahan repositori, seperti:
+   - `git reset --hard`
+   - `git checkout -- .`
+   - Perintah rollback massal yang tidak dibatasi pada file task.
+6. Jika kondisi file sudah berubah karena pekerjaan lain, hentikan rollback dan laporkan kepada pengguna daripada menimpa perubahan tersebut.
 
-1. Jangan mengulang implementasi.
-2. Verifikasi bahwa masalah benar-benar sudah diselesaikan.
-3. Pastikan implementasi yang tersedia sesuai dengan solusi dan aturan repositori.
-4. Jalankan pemeriksaan yang relevan.
-5. Perbarui status menjadi `Selesai`.
-6. Berikan penjelasan bahwa task sudah diimplementasikan sebelumnya.
+# 12. Laporan hasil pengerjaan
 
-Task tersebut tetap dihitung sebagai satu dari lima task.
+Catat hasil setiap task yang diproses:
 
-## 11. Pembaruan task.md Setelah Setiap Task
-
-**Ini merupakan kewajiban dan tidak boleh ditunda sampai seluruh task selesai.**
-
-Setelah satu task selesai atau dilewati:
-
-1. Buat backup terbaru `task.md` sebelum mengeditnya.
-2. Perbarui status task tersebut.
-3. Jika berhasil, ubah status menjadi `Selesai`.
-4. Jika tidak dapat dilanjutkan, ubah status menjadi `Dilewati`.
-5. Berikan alasan yang jelas untuk setiap task berstatus `Dilewati`.
-6. Jangan mengubah status task lainnya.
-7. Pertahankan struktur dan format penulisan `task.md`.
-8. Jangan menghapus deskripsi masalah, solusi, referensi aturan, atau file bermasalah yang masih relevan.
-9. Verifikasi perubahan `task.md` setelah disimpan.
-
-Apabila task dilewati, penjelasan wajib menyebutkan alasan spesifik, misalnya:
-
-- Dilewati karena file sedang terbuka di editor.
-- Dilewati karena backup gagal dibuat.
-- Dilewati karena lint error tidak berhasil diselesaikan setelah tiga siklus perbaikan.
-- Dilewati karena kondisi aktual tidak sesuai dengan deskripsi task dan membutuhkan keputusan pengguna.
-
-Jangan menggunakan alasan umum seperti "tidak bisa dikerjakan".
-
-## 12. Aturan Keamanan Perubahan dan Rollback
-
-1. Jangan menghapus perubahan pengguna yang sudah ada.
-2. Jangan melakukan `git reset --hard`.
-3. Jangan melakukan `git checkout -- .` atau perintah lain yang dapat membuang perubahan di luar task.
-4. Jangan mengembalikan seluruh repositori hanya untuk membatalkan satu task.
-5. Lakukan rollback hanya pada perubahan yang dibuat selama pengerjaan task tersebut.
-6. Gunakan backup sebagai acuan pemulihan.
-7. Periksa status Git sebelum dan sesudah perubahan.
-8. Jangan menghapus file backup selama sesi pengerjaan.
-
-## 13. Aturan Tambahan Anti-Salah-Seleksi
-
-Bagian ini merupakan pengaman utama agar AI tidak mengerjakan task yang tidak diizinkan.
-
-1. Sebelum memulai setiap task, baca kembali nilai status task dari `task.md`.
-2. Pastikan statusnya tepat `Implementasikan`.
-3. Jangan menggunakan interpretasi semantik untuk menyamakan status yang berbeda.
-4. Jangan menganggap kata "kerjakan", "belum", atau "setengah" sebagai izin implementasi.
-5. Jangan memilih task yang hanya memiliki prioritas Tinggi apabila statusnya bukan `Implementasikan`.
-6. Jangan menjalankan implementasi berdasarkan rekomendasi solusi apabila status task tidak mengizinkan.
-7. Jangan mengubah status task untuk menghindari aturan seleksi.
-8. Apabila terdapat ketidaksesuaian format status, jangan menebak maksud pengguna.
-9. Laporkan task yang statusnya tidak sesuai dan jangan mengerjakannya.
-10. Aturan seleksi ini memiliki prioritas lebih tinggi daripada pertimbangan AI sendiri mengenai task yang dianggap penting atau mudah dikerjakan.
-
-**Keputusan akhir mengenai task yang boleh diimplementasikan ditentukan oleh status eksplisit dalam `task.md`, bukan penilaian AI.**
-
-## 14. Laporan Setiap Task
-
-Setelah setiap task diproses, catat:
-
-- Nomor urutan pengerjaan, misalnya 1/5.
-- Nama kelompok dan nomor task.
+- Nama atau identitas task.
+- Nama kelompok.
+- Prioritas task.
 - Status awal.
 - Status akhir.
+- Masalah yang ditemukan.
 - File yang diperiksa.
 - File yang diubah.
-- File backup yang dibuat.
-- Hasil implementasi atau alasan dilewati.
+- Lokasi backup.
+- Hasil implementasi.
 - Hasil `flutter analyze`.
-- Informasi rollback apabila dilakukan.
+- Apakah dilakukan rollback.
+- Alasan jika task dilewati.
 
-## 15. Laporan Akhir Sesi
+Setelah seluruh kelompok selesai diproses, berikan laporan akhir yang berisi:
 
-Setelah maksimal 5 task diperiksa, buat laporan dengan format:
+1. Jumlah seluruh task yang diproses.
+2. Jumlah task yang berhasil diselesaikan.
+3. Jumlah task yang dilewati.
+4. Ringkasan hasil per kelompok.
+5. Daftar task yang telah diproses.
+6. Daftar task yang tidak dikerjakan karena statusnya bukan `Kerjakan`.
+7. Masalah yang belum terselesaikan.
+8. Hasil akhir `flutter analyze`.
+9. Lokasi seluruh backup yang dibuat.
 
-### Ringkasan
+# 13. Kondisi wajib berhenti
 
-- Total task diperiksa: X/5
-- Berhasil diimplementasikan: X
-- Sud
+Hentikan pengerjaan task yang bersangkutan jika:
+
+- Task memiliki instruksi ambigu atau bertentangan yang tidak dapat diselesaikan berdasarkan aturan proyek.
+- Backup gagal dibuat.
+- File yang harus diedit sedang terbuka di editor.
+- AI tidak dapat memastikan keamanan perubahan atau rollback.
+- Masalah analisis tidak berhasil diperbaiki setelah tiga kali percobaan.
+
+Untuk kondisi yang hanya memengaruhi satu task, tandai `Dilewati` jika memang sesuai dengan ketentuan, berikan alasan, lalu lanjutkan ke task `Kerjakan` berikutnya dalam kelompok yang sama.
+
+Jika masalah memengaruhi keamanan seluruh proses atau aturan proyek tidak dapat dipastikan, hentikan seluruh proses dan laporkan kepada pengguna.
+
+# 14. Pemeriksaan akhir
+
+Setelah seluruh kelompok selesai diproses:
+
+1. Periksa kembali `task.md`.
+2. Pastikan seluruh task berstatus `Kerjakan` sudah diproses.
+3. Pastikan tidak ada task yang dikerjakan dari kelompok yang salah urutan.
+4. Pastikan task berstatus selain `Kerjakan` tidak mengalami perubahan.
+5. Pastikan task yang diproses sudah memiliki status akhir yang benar.
+6. Pastikan setiap task berstatus `Dilewati` memiliki alasan.
+7. Pastikan backup tersedia untuk seluruh file yang diubah.
+8. Laporkan hasil akhir `flutter analyze`.
+9. Laporkan task yang tidak dikerjakan karena statusnya bukan `Kerjakan`.
+
+**Setelah seluruh task berstatus `Kerjakan` di semua kelompok selesai diproses, hentikan proses dan tunggu instruksi pengguna berikutnya.**
+
+---
+
+# PRINSIP UTAMA
+
+1. HANYA STATUS `Kerjakan` YANG BOLEH DIIMPLEMENTASIKAN.
+2. STATUS SELAIN `Kerjakan` BUKAN IZIN IMPLEMENTASI.
+3. KERJAKAN TASK BERDASARKAN KELOMPOK.
+4. SELESAIKAN KELOMPOK AKTIF SEBELUM PINDAH KE KELOMPOK BERIKUTNYA.
+5. JANGAN MELONCATI URUTAN KELOMPOK.
+6. BACKUP WAJIB SEBELUM SETIAP PERUBAHAN.
+7. PERBARUI `task.md` SETELAH SETIAP TASK.
+8. JALANKAN `flutter analyze` SETELAH IMPLEMENTASI.
+9. ROLLBACK HANYA PADA PERUBAHAN TASK YANG GAGAL.
+10. SETIAP TASK YANG DILEWATI WAJIB MEMILIKI ALASAN.
+11. JANGAN MENGERJAKAN PEKERJAAN DI LUAR TASK YANG DIIZINKAN.
+12. UTAMAKAN KEPATUHAN TERHADAP STATUS TASK, URUTAN KELOMPOK, DAN KEAMANAN PERUBAHAN.
