@@ -2,12 +2,14 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 94c4ec92c3221e0f845639aab41f0c38c84350da
+Commit terakhir dievaluasi penuh: f478c36cc405e214abdba6accfe89680d1d90ce7
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: ceacc6a sampai 94c4ec92c3221e0f845639aab41f0c38c84350da
-Jumlah commit yang dievaluasi: 2
+Rentang evaluasi: 94c4ec9 sampai f478c36cc405e214abdba6accfe89680d1d90ce7
+Jumlah commit yang dievaluasi: 1
 Status evaluasi: Selesai
-Ringkasan: Audit 2 commit (ceacc6a, 94c4ec9): implementasi mode berhenti bertahap (tapering) pada biodata (enum ModeBerhenti, perluasan BiodataModel, migrasi skema v6, form, dan layar biodata) serta pembaruan checkpoint evaluasi. Temuan: (1) pelanggaran type promotion pada biodata_screen.dart baris 149 (penggunaan `!` pada field nullable `tanggalMulaiTapering` tanpa penyalinan ke variabel lokal); (2) ketiadaan log debug pada kode baru tapering. SDK/package diverifikasi: ParserUtil.safeParseEnum, Freezed, sqflite migrasi v5->v6, adaptive_dialog. `flutter analyze` bersih (No issues found).
+Ringkasan: Audit 1 commit (f478c36): perbaikan type promotion dan penambahan log debug pada fitur tapering (biodata_screen.dart, mode_berhenti.dart, biodata_model.dart, form_biodata.dart, sqflite.dart). Temuan baru: (1) prioritas Sedang — validasi form pada form_biodata.dart (tidak ada Form/validate, penurunanPerMinggu diganti 0, InputAngka tanpa batas >0, tanggal mulai tapering belum dipastikan); (2) prioritas Rendah — log berulang pada getter/build (mode_berhenti, biodata_model, biodata_screen); (3) prioritas Rendah — L.i pada _onUpgrade sebelum L.init; (4) prioritas Rendah — format Dart pada form_biodata.dart baris 80. Source lokal diverifikasi: share_global_saya/lib/src/utils/l.dart (L.i(String)), input_angka.dart (validator bawaan tanpa batas >0). SDK: sqflite migrasi v5->v6, adaptive_dialog, freezed. `flutter analyze` bersih.
+
+<!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
@@ -318,6 +320,15 @@ Ringkasan: Audit 2 commit (ceacc6a, 94c4ec9): implementasi mode berhenti bertaha
 - Pesan commit: docs(eval): perbarui checkpoint evaluasi dan catatan pengujian notifikasi
 - File yang berubah: catatan.md, task.md
 - Ringkasan evaluasi: Commit dokumentasi. Memperbarui checkpoint evaluasi ke commit 6e1a767, rentang 4b39928–6e1a767, 6 commit dievaluasi. Menambah entri evaluasi untuk 6 commit. Memperbarui task.md (hapus Task 1 kosong Kelompok 1, tambah notifikasi_service_test.dart pada file terdampak, perbarui deskripsi masalah pengujian notifikasi sesuai kondisi aktual 7 pengujian lulus). Bukan perubahan kode aplikasi.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: f478c36cc405e214abdba6accfe89680d1d90ce7
+- Tanggal: 2026-11-08
+- Pesan commit: fix(biodata): perbaiki type promotion dan tambahkan log debug pada fitur tapering
+- File yang berubah: lib/fitur/biodata/screens/biodata_screen.dart, lib/fitur/biodata/enum/mode_berhenti.dart, lib/fitur/biodata/model/biodata_model.dart, lib/fitur/biodata/screens/form_biodata.dart, lib/shared/db/sqflite/sqflite.dart, AGENTS.md, task.md, catatan.md
+- Ringkasan evaluasi: Memperbaiki type promotion `tanggalMulaiTapering` (salin ke variabel lokal) dan menambahkan log debug pada fitur tapering. Ditemukan temuan baru: validasi form (Sedang), log berulang (Rendah), L.i sebelum L.init (Rendah), format Dart (Rendah). Tercatat di task.md Kelompok 4. Source lokal diverifikasi: share_global_saya L.i dan InputAngka.
 - Aturan khusus yang diperbarui: Tidak ada.
 - Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai
