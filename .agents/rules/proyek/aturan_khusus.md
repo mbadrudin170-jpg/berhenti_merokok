@@ -524,4 +524,69 @@ class _EmptyDiaryCraving extends StatelessWidget {
 ```dart
 // Menampilkan layar kosong tanpa informasi.
 if (list.isEmpty) return const Scaffold(body: SizedBox.shrink());
+
+
+## Penanganan State Asynchronous dan Data Kosong pada Layar
+
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/diary_craving_screen.dart` — `_DiaryCravingScreenState.build`.
+- `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart` — `_PemulihanKesehatanScreenState.build`.
+
+**Aturan wajib:**
+1. Layar yang memuat data asynchronous wajib menangani status `isLoading` terlebih dahulu (tampilkan indikator loading).
+2. Setelah itu, tangani status `hasError` (tampilkan pesan error dan tombol retry yang memanggil `ref.refresh(provider)`).
+3. Setelah data tersedia (`requireValue`), tangani kondisi data kosong (empty state) dan kondisi data tidak lengkap (mis. biodata null, tanggal berhenti null) sebagai tampilan tersendiri dengan informasi dan call-to-action.
+4. Gunakan early return (guard clause) untuk setiap kondisi tersebut agar alur build tetap linear dan mudah dibaca.
+5. Gunakan `const SizedBox.shrink()` untuk widget kondisional yang disembunyikan (mis. kartu milestone ketika belum ada tanggal berhenti).
+6. Setelah `await`/operasi asynchronous, periksa `mounted` sebelum mengakses `context` atau memanggil `setState`.
+
+**Larangan:**
+- Jangan memanggil `requireValue` sebelum memastikan `isLoading` dan `hasError` sudah ditangani.
+- Jangan menampilkan layar kosong tanpa informasi atau CTA ketika data kosong.
+- Jangan menggabungkan penanganan loading, error, dan data kosong dalam satu blok yang sulit dibaca.
+
+**Alasan:**
+Pola ini konsisten pada `DiaryCravingScreen` (loading → error dengan retry → empty state dengan FAB) dan `PemulihanKesehatanScreen` (loading → error dengan retry → biodata null → belum berhenti → daftar milestone). Penanganan setiap status sebagai tampilan tersendiri memberikan kepastian kepada pengguna (UX) dan mencegah crash akibat `requireValue` pada data yang belum tersedia. Early return menjaga keterbacaan build method.
+
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- File: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+
+**Contoh benar:**
+```dart
+final dataAsync = ref.watch(provider);
+
+if (dataAsync.isLoading) {
+  return const Scaffold(body: Center(child: CircularProgressIndicator()));
+}
+if (dataAsync.hasError) {
+  return Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Gagal memuat data'),
+          OutlinedButton(
+            onPressed: () => ref.refresh(provider),
+            child: const Text('Coba lagi'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+final state = dataAsync.requireValue;
+if (state.list.isEmpty) {
+  return const Scaffold(body: _EmptyState());
+}
+return Scaffold(body: _Daftar(state.list));
+```
+
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final state = dataAsync.requireValue;
+return Scaffold(body: ListView(...));
+```
 ```

@@ -227,3 +227,72 @@ warna.withOpacity(0.2)
 **Sumber evaluasi:**
 - Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
 - File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`
+
+
+## Isolasi Widget yang Diperbarui Berkala (Timer/Animasi)
+
+**Aturan:**
+1. Widget yang diperbarui secara berkala (mis. `Timer.periodic` per detik) wajib diisolasi ke widget terpisah (`StatefulWidget`) agar hanya widget tersebut yang melakukan rebuild, bukan seluruh halaman.
+2. Timer wajib dibatalkan (`cancel()`) di `dispose()` widget yang memilikinya.
+3. Di dalam callback timer, periksa `mounted` sebelum memanggil `setState`.
+4. Jangan menjalankan `Timer.periodic` pada widget yang mencakup seluruh halaman apabila hanya sebagian tampilan yang perlu diperbarui.
+5. Jangan membiarkan timer tetap aktif setelah widget tidak lagi terpasang.
+
+**Alasan:**
+Timer yang diletakkan pada widget tingkat halaman menyebabkan seluruh halaman rebuild setiap detik, yang tidak efisien dan dapat mengganggu interaksi pengguna. Isolasi ke widget kecil (mis. `_HeaderPemulihan`, `_TimerCravingView`) membatasi rebuild hanya pada bagian yang membutuhkan pembaruan berkala. Pemeriksaan `mounted` mencegah pembaruan state pada widget yang sudah tidak terpasang. Pola ini terlihat konsisten pada `SosCravingScreen` (`_TimerCravingView`) dan `PemulihanKesehatanScreen` (`_HeaderPemulihan`), yang masing-masing menjalankan `Timer.periodic` sendiri dan membatalkannya di `dispose()`.
+
+**Contoh benar:**
+```dart
+class _HeaderPemulihan extends StatefulWidget {
+  const _HeaderPemulihan({required this.tanggalBerhenti});
+  final DateTime tanggalBerhenti;
+
+  @override
+  State<_HeaderPemulihan> createState() => _HeaderPemulihanState();
+}
+
+class _HeaderPemulihanState extends State<_HeaderPemulihan> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // hanya widget ini yang rebuild tiap detik
+    return ...;
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+// Timer.periodic dijalankan di widget tingkat halaman, menyebabkan
+// seluruh halaman rebuild setiap detik.
+class _HalamanState extends State<Halaman> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {}); // rebuild seluruh halaman
+    });
+  }
+}
+```
+
+**Sumber evaluasi:**
+- Commit: `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`, `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`
