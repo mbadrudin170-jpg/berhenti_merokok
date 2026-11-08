@@ -83,6 +83,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 2,
+        forceMaterialTransparency: false,
         actions: [
           IconButton(
             tooltip: 'SOS Craving',

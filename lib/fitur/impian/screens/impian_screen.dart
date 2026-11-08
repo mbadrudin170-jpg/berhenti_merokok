@@ -83,7 +83,13 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
       return Scaffold(
-        appBar: AppBar(title: const Text('Impian')),
+        appBar: AppBar(
+          title: const Text('Impian'),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          elevation: 0,
+          scrolledUnderElevation: 2,
+          forceMaterialTransparency: false,
+        ),
         body: const _EmptyImpian(),
         floatingActionButton: FloatingActionButton(
           onPressed: () => unawaited(Nav.to(context, const FormImpian())),
@@ -92,7 +98,13 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
       );
     }
     return Scaffold(
-      appBar: AppBar(title: const Text('Impian')),
+      appBar: AppBar(
+        title: const Text('Impian'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 2,
+        forceMaterialTransparency: false,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

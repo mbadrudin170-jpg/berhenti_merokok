@@ -1,5 +1,14 @@
 # Saran Perbaikan
 
+## 2026-11-08 — Parameter AppBar redundan (opsional) pada dashboard dan impian
+
+- **Masalah:** `lib/fitur/dashboard/screens/dashboard_screen.dart` dan `lib/fitur/impian/screens/impian_screen.dart` menambahkan `backgroundColor: Theme.of(context).colorScheme.surface`, `elevation: 0`, dan `forceMaterialTransparency: false` pada `AppBar`. Nilai tersebut merupakan default pada Material 3 (Flutter 3.47.9): `backgroundColor` default ke `colorScheme.surface`, `elevation` default `0`, `forceMaterialTransparency` default `false`.
+- **Path dan baris:** `lib/fitur/dashboard/screens/dashboard_screen.dart` (AppBar utama, baris 84-90); `lib/fitur/impian/screens/impian_screen.dart` (dua AppBar, baris 86-93 dan 98-105).
+- **Aturan terkait:** -
+- **Referensi SDK:** `/google/flutter/packages/flutter/lib/src/material/app_bar.dart` (konstruktor `AppBar`, baris 198-225; `forceMaterialTransparency = false` default baris 225).
+- **Saran perbaikan:** Pertahankan jika ingin menegaskan opasitas app bar; atau hapus baris redundan untuk menyederhanakan. `scrolledUnderElevation: 2` tetap berguna sebagai pemisah visual saat scroll.
+- **Alasan:** Menghindari duplikasi default SDK tanpa mengubah perilaku; menjaga kejelasan.
+
 ## 2026-11-08 — Kerapian import pada `dashboard_screen.dart`
 
 - **Masalah:** `lib/fitur/dashboard/screens/dashboard_screen.dart:1-7` memiliki baris kosong ganda setelah import `badge_screen.dart`.
