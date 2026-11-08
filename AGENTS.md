@@ -276,6 +276,36 @@ final totalHari = DateTime.now().difference(tanggalBerhenti).inDays + 1;
 **Sumber evaluasi:**
 - Commit: `6fd979fd9e8296bc7d9c40e9037870faef9c846a`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
 - File: `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+## Ekstraksi Logika Perhitungan Turunan yang Diduplikasi
+**Aturan:**
+1. Apabila perhitungan turunan yang sama digunakan di lebih dari satu layar, ekstrak ke satu lokasi bersama (ekstensi pada model, helper murni, atau utilitas) agar logika hanya ditulis sekali.
+2. Konsumen (layar/widget) wajib menggunakan hasil dari lokasi bersama, bukan menghitung ulang secara inline.
+3. Helper murni wajib menerima parameter primitif dan tidak bergantung pada `BuildContext` atau provider.
+4. Guard pembagian dengan nol wajib diterapkan pada perhitungan yang melakukan pembagian.
+**Alasan:**
+Duplikasi perhitungan turunan (mis. `hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) di beberapa layar berisiko tidak konsisten jika salah satu diubah. Commit `19f43e5` mengekstrak perhitungan ke ekstensi `BiodataModelPerhitungan` dan helper `hitungBadge`, sehingga logika hanya ditulis sekali dan konsisten di dashboard, impian, dan badge. Prinsip ini berlaku pada seluruh proyek Flutter yang memiliki perhitungan turunan yang digunakan bersama.
+**Contoh benar:**
+```dart
+extension BiodataModelPerhitungan on BiodataModel {
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+// Konsumsi di layar.
+final uangDihemat = biodata?.uangDihemat ?? 0;
+```
+**Contoh salah:**
+```dart
+// Duplikasi perhitungan inline di layar.
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
+  ...
+}
+```
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
 
 
 // ============================================================
@@ -2487,28 +2517,54 @@ print('data=$data'); // menggunakan print() alih-alih L.*
 ```
 ## Penggunaan Biodata untuk Menghitung Saldo Terkumpul pada Impian
 **Cakupan:**
-- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`, `_hitungUangDihemat`, `_buildSaldoTerkumpul`.
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`, `_buildSaldoTerkumpul`.
 - `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
-- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan`.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardProgres`.
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState`.
 **Aturan wajib:**
 1. Impian screen wajib melakukan `ref.watch(biodataProvider)` untuk memperoleh data biodata yang digunakan menghitung saldo terkumpul.
-2. Saldo terkumpul merupakan uang yang dihemat dari tidak merokok, dihitung dari biodata: hari berhenti (`DateTime.now().difference(tanggalMulaiBerhentiMerokok).inDays`, minimum 0), rokok tidak dihisap (`jumlahRokokPerHari * hariBerhenti`), dan uang dihemat (`(rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus`).
+2. Saldo terkumpul merupakan uang yang dihemat dari tidak merokok, dihitung dari biodata: hari berhenti (dinormalisasi ke komponen tanggal, minimum 0), rokok tidak dihisap (`jumlahRokokPerHari * hariBerhenti`), dan uang dihemat (`(rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus`).
 3. Selama `biodataAsync` masih loading atau error, saldo terkumpul dianggap 0; jangan memanggil `requireValue` sebelum memastikan data tersedia.
-4. Perhitungan saldo terkumpul wajib dilakukan di widget (mis. method `_hitungUangDihemat`), bukan di provider, karena merupakan perhitungan turunan sederhana yang bergantung pada waktu saat ini.
+4. Perhitungan turunan (`hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) wajib didefinisikan sekali pada ekstensi `BiodataModelPerhitungan` di `lib/fitur/biodata/model/biodata_model.dart`, bukan diduplikasi inline di setiap layar. Setiap layar (dashboard, impian, badge) wajib menggunakan getter dari ekstensi (`biodata.hariBerhenti`, `biodata.rokokTidakDiHisap`, `biodata.uangDihemat`).
 5. Progress bar dan teks "Sisa" pada setiap item impian wajib berbasis saldo terkumpul (uang yang dihemat), bukan `totalJumlah` dari `ImpianState`.
-6. Perhitungan uang yang dihemat wajib konsisten dengan perhitungan pada dashboard (`_buildCardProgres`); jangan menduplikasi logika dengan formula yang berbeda.
+6. Perhitungan turunan wajib konsisten di seluruh layar; jangan menduplikasi formula dengan versi yang berbeda antara dashboard, impian, dan badge.
+7. Guard pembagian dengan nol wajib diterapkan pada getter `uangDihemat` (mis. `if (batangPerBungkus == 0) return 0;`).
 **Larangan:**
 - Jangan menggunakan `totalJumlah` dari `ImpianState` sebagai saldo terkumpul (saldo berasal dari biodata, bukan dari jumlah impian).
 - Jangan memanggil `biodataAsync.requireValue` tanpa memeriksa loading/error terlebih dahulu.
-- Jangan menghitung saldo terkumpul di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di widget).
-- Jangan menduplikasi formula perhitungan uang yang dihemat dengan versi yang berbeda antara dashboard dan impian.
+- Jangan menghitung saldo terkumpul di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di ekstensi model).
+- Jangan menduplikasi formula perhitungan uang yang dihemat dengan versi yang berbeda antara dashboard, impian, dan badge.
+- Jangan membuat method `_hitungUangDihemat` (atau sejenis) inline di layar; gunakan getter dari ekstensi.
 **Alasan:**
-Commit `336a72f` mengubah impian screen agar menggunakan biodata sebagai sumber saldo terkumpul (uang yang dihemat dari tidak merokok), menggantikan `totalJumlah` dari `ImpianState`. Perubahan ini menyelaraskan impian dengan dashboard yang sudah menggunakan perhitungan yang sama. Penanganan loading/error biodata dengan nilai default 0 mencegah crash dan tampilan kosong sementara. Perhitungan di widget (bukan provider) sesuai dengan prinsip bahwa perhitungan sederhana yang bergantung pada waktu saat ini dapat dilakukan di widget.
+Commit `336a72f` mengubah impian screen agar menggunakan biodata sebagai sumber saldo terkumpul (uang yang dihemat dari tidak merokok), menggantikan `totalJumlah` dari `ImpianState`. Perubahan ini menyelaraskan impian dengan dashboard yang sudah menggunakan perhitungan yang sama. Penanganan loading/error biodata dengan nilai default 0 mencegah crash dan tampilan kosong sementara. Commit `19f43e5` mengekstrak perhitungan turunan ke ekstensi `BiodataModelPerhitungan` agar logika `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` hanya ditulis sekali dan konsisten di dashboard, impian, dan badge (menghapus duplikasi `_hitungUangDihemat`). Perhitungan yang bergantung pada waktu saat ini tetap berada di getter ekstensi (memanggil `DateTime.now()`), bukan di provider, sesuai prinsip bahwa perhitungan sederhana yang bergantung pada waktu saat ini dapat dilakukan di lapisan model.
 **Sumber evaluasi:**
-- Commit: `336a72f3b67ea7361aea95ac36ae90d08b1e2c6c`
-- File: `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/model/biodata_model.dart`
+- Commit: `336a72f3b67ea7361aea95ac36ae90d08b1e2c6c`, `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
 **Contoh benar:**
 ```dart
+// Ekstensi pada model (didefinisikan sekali).
+extension BiodataModelPerhitungan on BiodataModel {
+  int get hariBerhenti {
+    final tanggalBerhenti = tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return 0;
+    final sekarang = DateTime.now();
+    final hariIniDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final tanggalBerhentiDate = DateTime(
+      tanggalBerhenti.year,
+      tanggalBerhenti.month,
+      tanggalBerhenti.day,
+    );
+    final hari = hariIniDate.difference(tanggalBerhentiDate).inDays;
+    return hari < 0 ? 0 : hari;
+  }
+  int get rokokTidakDiHisap => jumlahRokokPerHari * hariBerhenti;
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+// Penggunaan di layar.
 final biodataAsync = ref.watch(biodataProvider);
 BiodataModel? biodata;
 if (biodataAsync.isLoading) {
@@ -2518,19 +2574,7 @@ if (biodataAsync.isLoading) {
 } else {
   biodata = biodataAsync.requireValue;
 }
-final uangDihemat = _hitungUangDihemat(biodata);
-double _hitungUangDihemat(BiodataModel? biodata) {
-  if (biodata == null) return 0;
-  int hariBerhenti = 0;
-  final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-  if (tanggalBerhenti != null) {
-    hariBerhenti = DateTime.now().difference(tanggalBerhenti).inDays;
-    if (hariBerhenti < 0) hariBerhenti = 0;
-  }
-  final rokokTidakDiHisap = biodata.jumlahRokokPerHari * hariBerhenti;
-  return (rokokTidakDiHisap / biodata.batangPerBungkus) *
-      biodata.hargaRokokPerBungkus;
-}
+final uangDihemat = biodata?.uangDihemat ?? 0;
 ```
 **Contoh salah:**
 ```dart
@@ -2539,8 +2583,10 @@ _buildSaldoTerkumpul(impianState.totalJumlah);
 // Memanggil requireValue tanpa memeriksa loading/error (berisiko crash).
 final biodata = biodataAsync.requireValue;
 final uangDihemat = _hitungUangDihemat(biodata);
-// Formula berbeda dengan dashboard (tidak konsisten).
-final uangDihemat = rokokTidakDiHisap * biodata.hargaRokokPerBungkus; // salah: tidak membagi dengan batangPerBungkus
+// Duplikasi method inline di layar (salah, gunakan getter ekstensi).
+double _hitungUangDihemat(BiodataModel? biodata) { ... }
+// Formula berbeda antar layar (tidak konsisten).
+final uangDihemat = rokokTidakDiHisap * biodata.hargaRokokPerBungkus; // salah
 ```
 ## Type Promotion untuk Null Safety pada Biodata Screen
 **Cakupan:**
@@ -2952,6 +2998,86 @@ final aman = durasi.isNegative ? Duration.zero : durasi;
 final totalHari = DateTime.now().difference(tanggalBerhenti).inDays + 1;
 // Bisa salah satu hari karena komponen waktu.
 ```
+## Penanganan Beberapa Provider Asynchronous pada Satu Layar
+**Cakupan:**
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState.build`.
+**Aturan wajib:**
+1. Ketika layar memuat lebih dari satu provider asynchronous, tangani status `isLoading` gabungan (tampilkan indikator loading jika salah satu masih loading).
+2. Tangani status `hasError` untuk setiap provider secara terpisah, dengan pesan error dan tombol retry yang memanggil `ref.refresh(provider)` yang sesuai.
+3. Panggil `requireValue` pada masing-masing provider hanya setelah status loading dan error-nya ditangani.
+4. Kondisi data tidak lengkap (mis. biodata null) tetap ditangani sebagai tampilan tersendiri dengan informasi dan call-to-action.
+**Larangan:**
+- Jangan memanggil `requireValue` pada provider yang masih loading atau error.
+- Jangan menggabungkan penanganan error beberapa provider menjadi satu blok yang tidak jelas provider mana yang gagal.
+**Alasan:**
+Commit `19f43e5` menambahkan `BadgeScreen` yang memuat `biodataProvider` dan `impianProvider` sekaligus. Loading ditangani secara gabungan (`biodataAsync.isLoading || impianAsync.isLoading`), sedangkan error ditangani terpisah dengan retry yang sesuai provider. Pola ini menjaga kejelasan sumber kegagalan dan mencegah crash akibat `requireValue` pada data yang belum tersedia.
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/badge/screens/badge_screen.dart`
+**Contoh benar:**
+```dart
+final biodataAsync = ref.watch(biodataProvider);
+final impianAsync = ref.watch(impianProvider);
+if (biodataAsync.isLoading || impianAsync.isLoading) {
+  return const Scaffold(body: Center(child: CircularProgressIndicator()));
+}
+if (biodataAsync.hasError) {
+  // retry biodataProvider
+}
+if (impianAsync.hasError) {
+  // retry impianProvider
+}
+final biodata = biodataAsync.requireValue;
+final impianState = impianAsync.requireValue;
+```
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final biodata = biodataAsync.requireValue;
+final impianState = impianAsync.requireValue;
+```
+## Ekstraksi Perhitungan Turunan ke Ekstensi Model
+**Cakupan:**
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — form input yang menyimpan field sumber perhitungan.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardProgres`.
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`.
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState`.
+- `lib/fitur/badge/helper/badge_helper.dart` — `hitungBadge`.
+**Aturan wajib:**
+1. Perhitungan turunan yang digunakan lebih dari satu layar (mis. `hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) wajib didefinisikan sekali pada ekstensi di atas model sumber (`BiodataModelPerhitungan`), bukan diduplikasi inline di setiap layar.
+2. Ekstensi wajib ditempatkan pada file model yang sama (`lib/fitur/biodata/model/biodata_model.dart`), setelah definisi class Freezed.
+3. Guard pembagian dengan nol wajib diterapkan pada getter yang melakukan pembagian (mis. `if (batangPerBungkus == 0) return 0;`).
+4. Perhitungan yang bergantung pada waktu saat ini (`DateTime.now()`) boleh dilakukan di getter ekstensi, dengan normalisasi tanggal sesuai aturan normalisasi tanggal.
+5. Helper fungsi murni yang menerima parameter primitif (mis. `hitungBadge`) wajib ditempatkan pada folder `helper/` fitur terkait dan tidak bergantung pada `BuildContext` atau provider.
+6. Layar wajib mengonsumsi getter/helper tersebut, bukan menghitung ulang secara inline.
+**Larangan:**
+- Jangan membuat method perhitungan inline (mis. `_hitungUangDihemat`) di layar yang menggandakan logika yang sudah ada di ekstensi/helper.
+- Jangan meletakkan perhitungan turunan di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di lapisan model).
+- Jangan membiarkan formula berbeda antar layar untuk besaran yang sama.
+**Alasan:**
+Commit `19f43e5` mengekstrak perhitungan turunan ke ekstensi `BiodataModelPerhitungan` dan helper `hitungBadge` agar logika hanya ditulis sekali dan konsisten di dashboard, impian, dan badge. Perubahan ini juga menghapus saran sebelumnya tentang duplikasi `_hitungUangDihemat`. Ekstensi pada model menjaga konsistensi dan memudahkan pengujian; helper murni di folder `helper/` menjaga pemisahan tanggung jawab. Guard pembagian dengan nol mencegah crash ketika `batangPerBungkus` bernilai 0.
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
+**Contoh benar:**
+```dart
+extension BiodataModelPerhitungan on BiodataModel {
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+// Konsumsi di layar.
+final uangDihemat = biodata?.uangDihemat ?? 0;
+```
+**Contoh salah:**
+```dart
+// Duplikasi perhitungan inline di layar.
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
+  ...
+}
 ```
 
 

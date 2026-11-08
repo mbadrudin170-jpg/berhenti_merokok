@@ -336,3 +336,40 @@ final totalHari = DateTime.now().difference(tanggalBerhenti).inDays + 1;
 **Sumber evaluasi:**
 - Commit: `6fd979fd9e8296bc7d9c40e9037870faef9c846a`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
 - File: `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+
+## Ekstraksi Logika Perhitungan Turunan yang Diduplikasi
+
+**Aturan:**
+1. Apabila perhitungan turunan yang sama digunakan di lebih dari satu layar, ekstrak ke satu lokasi bersama (ekstensi pada model, helper murni, atau utilitas) agar logika hanya ditulis sekali.
+2. Konsumen (layar/widget) wajib menggunakan hasil dari lokasi bersama, bukan menghitung ulang secara inline.
+3. Helper murni wajib menerima parameter primitif dan tidak bergantung pada `BuildContext` atau provider.
+4. Guard pembagian dengan nol wajib diterapkan pada perhitungan yang melakukan pembagian.
+
+**Alasan:**
+Duplikasi perhitungan turunan (mis. `hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) di beberapa layar berisiko tidak konsisten jika salah satu diubah. Commit `19f43e5` mengekstrak perhitungan ke ekstensi `BiodataModelPerhitungan` dan helper `hitungBadge`, sehingga logika hanya ditulis sekali dan konsisten di dashboard, impian, dan badge. Prinsip ini berlaku pada seluruh proyek Flutter yang memiliki perhitungan turunan yang digunakan bersama.
+
+**Contoh benar:**
+```dart
+extension BiodataModelPerhitungan on BiodataModel {
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+
+// Konsumsi di layar.
+final uangDihemat = biodata?.uangDihemat ?? 0;
+```
+
+**Contoh salah:**
+```dart
+// Duplikasi perhitungan inline di layar.
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
+  ...
+}
+```
+
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
