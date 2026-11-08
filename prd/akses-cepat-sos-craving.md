@@ -73,7 +73,7 @@ Pola UI/UX yang diadopsi: kartu SOS besar/mencolok pada layar utama dengan akses
 
 ## 7. Rencana Implementasi (Ringkas)
 
-1. Pada `DashboardScreen`, tambahkan kartu SOS besar di posisi paling atas `ListView` (sebelum kartu "Lama berhenti merokok"), berisi ikon `Icons.sos`, judul "SOS Craving", deskripsi singkat "Butuh bantuan saat craving?", dan tombol/area sentuh yang membuka `SosCravingScreen`.
+1. Pada `DashboardScreen`, tambahkan kartu SOS yang menonjol pada `ListView` (bukan di posisi paling atas; misalnya setelah kartu "Lama berhenti merokok" atau setelah kartu progres), berisi ikon `Icons.sos`, judul "SOS Craving", deskripsi singkat "Butuh bantuan saat craving?", dan tombol/area sentuh yang membuka `SosCravingScreen`.
 2. Gunakan pola navigasi proyek: `unawaited(Nav.to(context, const SosCravingScreen()).catchError(...))` dengan pencatatan error melalui `L.e`.
 3. Pastikan kartu memiliki label/tooltip yang jelas dan area sentuh minimal 48x48 dp (gunakan `InkWell`/`GestureDetector` pada seluruh kartu atau tombol `ElevatedButton`).
 4. Pertahankan penanganan state asynchronous Dashboard (loading/error/data) agar kartu SOS hanya muncul pada kondisi data valid; pada kondisi loading/error, jangan tampilkan kartu (atau tampilkan dengan perilaku yang aman).
@@ -83,7 +83,7 @@ Pola UI/UX yang diadopsi: kartu SOS besar/mencolok pada layar utama dengan akses
 ## 8. Contoh Kode Singkat
 
 ```dart
-// Pada bagian atas children ListView Dashboard (sebelum kartu "Lama berhenti merokok"):
+// Pada children ListView Dashboard (setelah kartu "Lama berhenti merokok", bukan paling atas):
 Card(
   color: Theme.of(context).colorScheme.errorContainer,
   child: InkWell(
