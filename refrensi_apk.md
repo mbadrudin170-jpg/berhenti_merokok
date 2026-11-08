@@ -16,7 +16,7 @@
 ### Badge dan Pencapaian (Gamifikasi)
 
 - **Prioritas:** Sedang
-- **Status implementasi:** Belum diimplementasikan.
+- **Status implementasi:** Sudah diimplementasikan.
 - **Aplikasi referensi:** QuitNow (Fewlaps); Smoke Free (Portable Pixels); EasyQuit (Herzberg); Kick It (UC San Diego)
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking ; https://play.google.com/store/apps/details?id=com.kickitca
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
