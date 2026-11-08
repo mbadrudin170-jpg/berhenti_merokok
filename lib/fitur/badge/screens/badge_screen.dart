@@ -30,7 +30,6 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
   Widget build(BuildContext context) {
     final biodataAsync = ref.watch(biodataProvider);
     final impianAsync = ref.watch(impianProvider);
-    L.i('biodataAsync=$biodataAsync, impianAsync=$impianAsync');
 
     if (biodataAsync.isLoading || impianAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -92,7 +91,6 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
 
     final biodata = biodataAsync.requireValue;
     final impianState = impianAsync.requireValue;
-    L.i('biodata=$biodata');
 
     if (biodata == null) {
       return Scaffold(
@@ -123,9 +121,6 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
         impianTercapai++;
       }
     }
-    L.i(
-      'hariSmokeFree=$hariSmokeFree, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat, impianTercapai=$impianTercapai',
-    );
 
     final daftarBadge = hitungBadge(
       hariSmokeFree: hariSmokeFree,
@@ -134,7 +129,6 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
       impianTercapai: impianTercapai,
     );
     final jumlahTercapai = daftarBadge.where((b) => b.tercapai).length;
-    L.i('jumlahTercapai=$jumlahTercapai/${daftarBadge.length}');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pencapaian')),

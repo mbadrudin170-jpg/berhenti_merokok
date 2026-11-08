@@ -122,7 +122,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum dikerjakan
+- Status: Selesai
 - Masalah: Pada `badge_helper.dart` (fungsi `hitungBadge`) dan `badge_screen.dart` (method `build`), pemanggilan `L.i(...)` berada pada jalur yang dapat dipanggil berulang saat build, sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
 - Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam build/getter yang dipanggil berulang.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
@@ -156,7 +156,7 @@ Tidak ada temuan.
 
 #### Task 3
 
-- Status: Belum dikerjakan
+- Status: Selesai
 - Masalah: Pada `dashboard_screen.dart` sekitar baris 313-318, perhitungan `totalHariMerokok` menggunakan `tanggalBerhenti.difference(tanggalMulaiMerokok).inDays` tanpa normalisasi tanggal ke komponen tanggal saja. Hasil perhitungan hari dapat bergeser akibat komponen waktu pada nilai `DateTime`.
 - Solusi: Normalisasi kedua tanggal dengan `DateTime(tanggal.year, tanggal.month, tanggal.day)` sebelum menghitung selisih hari, agar hasil perhitungan berbasis hari akurat.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L303); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L620)

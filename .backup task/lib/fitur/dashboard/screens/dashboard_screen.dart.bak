@@ -83,16 +83,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
         scrolledUnderElevation: 2,
-        forceMaterialTransparency: false,
         actions: [
           IconButton(
             tooltip: 'SOS Craving',
             icon: const Icon(Icons.sos),
-            onPressed: () =>
-                unawaited(Nav.to(context, const SosCravingScreen())),
+            onPressed: () => unawaited(
+              Nav.to(context, const SosCravingScreen()).catchError((
+                Object e,
+                StackTrace s,
+              ) {
+                L.e('Gagal navigasi ke SOS Craving: $e $s');
+                return null;
+              }),
+            ),
           ),
         ],
       ),
@@ -197,8 +201,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Card(
       child: InkWell(
-        onTap: () =>
-            unawaited(Nav.to(context, const PemulihanKesehatanScreen())),
+        onTap: () => unawaited(
+          Nav.to(context, const PemulihanKesehatanScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
+            return null;
+          }),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -274,7 +285,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildCardBadge() {
     return Card(
       child: InkWell(
-        onTap: () => unawaited(Nav.to(context, const BadgeScreen())),
+        onTap: () => unawaited(
+          Nav.to(context, const BadgeScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Badge: $e $s');
+            return null;
+          }),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -321,8 +340,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final rokokDihisap = jumlahRokokPerHari * totalHariMerokok;
-    final uangTerbuang =
-        (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
+    final uangTerbuang = biodata.batangPerBungkus == 0
+        ? 0.0
+        : (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
     final menitHilang = (rokokDihisap * 11).round();
     final hariHilang = menitHilang / (24 * 60);
     L.i(
@@ -390,7 +410,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 const Text('Belum ada data biodata'),
                 OutlinedButton(
                   onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                    Nav.to(
+                      context,
+                      const FormBiodata(buatPertama: false),
+                    ).catchError((Object e, StackTrace s) {
+                      L.e('Gagal navigasi ke Form Biodata: $e $s');
+                      return null;
+                    }),
                   ),
                   child: const Text('Isi Biodata'),
                 ),

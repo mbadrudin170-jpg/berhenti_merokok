@@ -333,7 +333,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     int totalHariMerokok = 0;
     if (tanggalMulaiMerokok != null && tanggalBerhenti != null) {
-      totalHariMerokok = tanggalBerhenti.difference(tanggalMulaiMerokok).inDays;
+      final mulaiDate = DateTime(
+        tanggalMulaiMerokok.year,
+        tanggalMulaiMerokok.month,
+        tanggalMulaiMerokok.day,
+      );
+      final berhentiDate = DateTime(
+        tanggalBerhenti.year,
+        tanggalBerhenti.month,
+        tanggalBerhenti.day,
+      );
+      totalHariMerokok = berhentiDate.difference(mulaiDate).inDays;
       if (totalHariMerokok < 0) {
         totalHariMerokok = 0;
       }

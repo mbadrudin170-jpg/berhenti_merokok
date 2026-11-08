@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:share_global_saya/core_shared.dart';
 
 /// Representasi satu badge/pencapaian pengguna.
 class BadgePencapaian {
@@ -26,9 +25,6 @@ List<BadgePencapaian> hitungBadge({
   required double uangDihemat,
   required int impianTercapai,
 }) {
-  L.i(
-    'hariSmokeFree=$hariSmokeFree, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat, impianTercapai=$impianTercapai',
-  );
   final List<BadgePencapaian> daftar = <BadgePencapaian>[
     // Badge berbasis durasi smoke-free.
     BadgePencapaian(
@@ -147,6 +143,5 @@ List<BadgePencapaian> hitungBadge({
       tercapai: impianTercapai >= 3,
     ),
   ];
-  L.i('daftar.length=${daftar.length}');
   return daftar;
 }
