@@ -409,6 +409,48 @@ await setAktif(true);
 - Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
 - File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `saran.md`
 
+## Penggunaan Tipe Exception Khusus untuk Deteksi Error
+
+**Aturan:**
+1. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception` atau `Error`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`.
+2. Pemanggil wajib mendeteksi error melalui `is` (type check), bukan pencocokan string.
+3. Tipe exception khusus wajib dideklarasikan sebagai class terpisah dengan dokumentasi singkat, agar mudah diidentifikasi dan diuji.
+4. Jangan bergantung pada teks pesan exception untuk menentukan alur program, karena teks dapat berubah dan menyebabkan deteksi gagal.
+
+**Alasan:**
+Pencocokan string pada pesan exception (mis. `e.toString().contains('Izin notifikasi tidak diberikan')`) bergantung pada teks yang sama persis. Jika pesan berubah, deteksi gagal dan alur program salah. Commit `07fc8df` mengganti pola ini dengan `IzinNotifikasiTidakDiberikanException` yang diimplementasikan sebagai class khusus, sehingga deteksi dilakukan melalui `e is IzinNotifikasiTidakDiberikanException`. Pola ini dapat diterapkan pada proyek Flutter lain yang membutuhkan deteksi error berdasarkan jenis, bukan teks.
+
+**Contoh benar:**
+```dart
+class IzinNotifikasiTidakDiberikanException implements Exception {
+  const IzinNotifikasiTidakDiberikanException();
+  @override
+  String toString() => 'Izin notifikasi tidak diberikan';
+}
+
+// Melempar.
+throw const IzinNotifikasiTidakDiberikanException();
+
+// Mendeteksi.
+} on Exception catch (e, s) {
+  if (e is IzinNotifikasiTidakDiberikanException) {
+    // tangani kegagalan izin
+  }
+}
+```
+
+**Contoh salah:**
+```dart
+throw Exception('Izin notifikasi tidak diberikan');
+
+// Mendeteksi melalui pencocokan string (rentan).
+final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
+```
+
+**Sumber evaluasi:**
+- Commit: `07fc8df6cf5ea28fe7133b1aee5dae7b05b96590`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`
+
 ## Prinsip Umum Penanganan Beberapa `AsyncValue` pada Satu Layar
 
 **Aturan:**

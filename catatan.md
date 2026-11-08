@@ -113,8 +113,8 @@ Ringkasan: Audit 4 commit target (67211d2, f3880a3, 6fd4a4a, 2be8c6b). UI impian
 
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
 - Branch evaluasi: master
-- Commit terakhir yang dievaluasi: f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8
-- SHA lengkap: f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8
+- Commit terakhir yang dievaluasi: e6b97abd5aa1b2f264c6aa7e783448703e1383fa
+- SHA lengkap: e6b97abd5aa1b2f264c6aa7e783448703e1383fa
 - Tanggal evaluasi: 2026-11-08
 - Status: Selesai
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_END -->
@@ -245,4 +245,13 @@ Ringkasan: Audit 4 commit target (67211d2, f3880a3, 6fd4a4a, 2be8c6b). UI impian
 - Ringkasan evaluasi: Menambahkan enum pengurutan impian (SortImpian) dan tombol pengurutan di AppBar. Ditemukan _showModalSort() masih kosong (implementasi pengurutan belum lengkap). Potensi overflow pada kartu impian sudah tercakup optimasi_ui.md. Pencocokan pesan exception untuk mendeteksi kegagalan izin merupakan temuan yang belum cukup kuat untuk dijadikan aturan umum baru. Tidak ada aturan baru.
 - Aturan khusus yang diperbarui: Tidak ada.
 - Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: e6b97abd5aa1b2f264c6aa7e783448703e1383fa
+- Tanggal: 2026-11-08
+- Pesan commit: chore: sinkronkan status implementasi badge, selesaikan task notifikasi, dan tambahkan pengujian preferensi
+- File yang berubah: refrensi_apk.md, task.md, test/notifikasi_service_test.dart
+- Ringkasan evaluasi: Menambahkan pengujian preferensi notifikasi menggunakan SharedPreferences mock. Menyelesaikan task notifikasi. 31 commit dievaluasi dari f4d850b hingga e6b97ab. Temuan utama: penggunaan tipe exception khusus alih-alih pencocokan string (commit 07fc8df), dukungan macOS untuk penjadwalan terjadwal, penggunaan `sorted` dari package collection, penggunaan Flexible untuk overflow teks, penghapusan properti AppBar berlebih, SafeArea + Padding pada container halaman, penghapusan padding ganda di Home, penanganan error inisialisasi zona waktu.
+- Aturan khusus yang diperbarui: Aturan notifikasi #2 (macOS didukung), #15 (tipe exception khusus).
+- Aturan bersama yang diperbarui: Aturan baru "Penggunaan Tipe Exception Khusus untuk Deteksi Error".
 - Status evaluasi: Selesai

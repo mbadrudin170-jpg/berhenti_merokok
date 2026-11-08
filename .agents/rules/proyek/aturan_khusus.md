@@ -772,7 +772,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 
 **Aturan wajib:**
 1. Periksa dukungan fitur berdasarkan platform dan versi plugin sebelum menggunakan API penjadwalan. Jangan mengasumsikan API yang sama tersedia di semua platform.
-2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web atau Linux dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini.
+2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web, Linux, atau Windows dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini. macOS didukung untuk penjadwalan terjadwal melalui `zonedSchedule` (hapus macOS dari daftar platform yang melempar `UnsupportedError`).
 3. Lengkapi receiver dan izin Android untuk penjadwalan serta pemulihan setelah restart: tambahkan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver` sesuai dokumentasi plugin. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
 4. Aktifkan core library desugaring sesuai persyaratan plugin bila diperlukan: `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. AGP minimal 8.11.1.
 5. Jangan meminta izin notifikasi secara otomatis saat aplikasi baru dibuka (termasuk iOS `DarwinInitializationSettings` dengan `requestAlertPermission`/`requestSoundPermission`/`requestBadgePermission` default `true`). Minta izin ketika pengguna secara sadar mengaktifkan pengingat.
@@ -785,6 +785,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 12. Ketika izin sistem dicabut, batalkan jadwal yang tersimpan di sistem operasi (`_plugin.cancel`), perbarui preferensi (`setAktif(false)`), dan pastikan tidak ada jadwal lama tertinggal. Saat pengguna mengaktifkan kembali, minta izin terlebih dahulu dan buat jadwal baru. Jangan hanya mengubah SharedPreferences tanpa memeriksa kondisi jadwal pada sistem operasi.
 13. Konsistensi perubahan waktu pengingat: simpan nilai waktu lama sebelum perubahan; terapkan nilai baru hanya setelah penjadwalan atau penyimpanan berhasil; jika gagal, pulihkan nilai lama dan tampilkan pesan kegagalan; pastikan jadwal sistem operasi, preferensi, dan tampilan tetap konsisten. Jangan membiarkan kegagalan pada salah satu tahap meninggalkan kondisi data yang berbeda.
 14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus `Nav.pushAndRemoveUntil(...)` serta `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan global penanganan error Future yang dilepas.
+15. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`. Pemanggil wajib mendeteksi melalui `is` (type check). Contoh: `IzinNotifikasiTidakDiberikanException` menggantikan `Exception('Izin notifikasi tidak diberikan')` dan `e.toString().contains('Izin notifikasi tidak diberikan')`.
 
 **Larangan:**
 - Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
@@ -795,6 +796,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 - Jangan memproses kategori notifikasi yang tidak dikenal tanpa pencatatan peringatan.
 - Jangan mengubah preferensi tanpa memastikan jadwal sistem operasi konsisten.
 - Jangan memanggil `EasyLoading.show()` atau `EasyLoading.dismiss()` tanpa `.catchError(...)` ketika dilepas dengan `unawaited()`.
+- Jangan mendeteksi error melalui `e.toString().contains(...)`; gunakan tipe exception khusus dan `is`.
 
 **Alasan:**
 Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.

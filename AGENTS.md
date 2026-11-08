@@ -335,6 +335,39 @@ await setAktif(true);
 **Sumber evaluasi:**
 - Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
 - File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `saran.md`
+## Penggunaan Tipe Exception Khusus untuk Deteksi Error
+**Aturan:**
+1. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception` atau `Error`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`.
+2. Pemanggil wajib mendeteksi error melalui `is` (type check), bukan pencocokan string.
+3. Tipe exception khusus wajib dideklarasikan sebagai class terpisah dengan dokumentasi singkat, agar mudah diidentifikasi dan diuji.
+4. Jangan bergantung pada teks pesan exception untuk menentukan alur program, karena teks dapat berubah dan menyebabkan deteksi gagal.
+**Alasan:**
+Pencocokan string pada pesan exception (mis. `e.toString().contains('Izin notifikasi tidak diberikan')`) bergantung pada teks yang sama persis. Jika pesan berubah, deteksi gagal dan alur program salah. Commit `07fc8df` mengganti pola ini dengan `IzinNotifikasiTidakDiberikanException` yang diimplementasikan sebagai class khusus, sehingga deteksi dilakukan melalui `e is IzinNotifikasiTidakDiberikanException`. Pola ini dapat diterapkan pada proyek Flutter lain yang membutuhkan deteksi error berdasarkan jenis, bukan teks.
+**Contoh benar:**
+```dart
+class IzinNotifikasiTidakDiberikanException implements Exception {
+  const IzinNotifikasiTidakDiberikanException();
+  @override
+  String toString() => 'Izin notifikasi tidak diberikan';
+}
+// Melempar.
+throw const IzinNotifikasiTidakDiberikanException();
+// Mendeteksi.
+} on Exception catch (e, s) {
+  if (e is IzinNotifikasiTidakDiberikanException) {
+    // tangani kegagalan izin
+  }
+}
+```
+**Contoh salah:**
+```dart
+throw Exception('Izin notifikasi tidak diberikan');
+// Mendeteksi melalui pencocokan string (rentan).
+final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
+```
+**Sumber evaluasi:**
+- Commit: `07fc8df6cf5ea28fe7133b1aee5dae7b05b96590`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`
 ## Prinsip Umum Penanganan Beberapa `AsyncValue` pada Satu Layar
 **Aturan:**
 1. Ketika satu layar menggunakan beberapa provider asynchronous, tangani status loading secara gabungan apabila salah satu data yang dibutuhkan masih loading.
@@ -3428,7 +3461,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 **Catatan versi:** Aturan ini ditulis untuk `flutter_local_notifications` versi `22.3.3`. Jika versi package berubah, AI wajib memeriksa dokumentasi versi baru sebelum menerapkan konfigurasi lama.
 **Aturan wajib:**
 1. Periksa dukungan fitur berdasarkan platform dan versi plugin sebelum menggunakan API penjadwalan. Jangan mengasumsikan API yang sama tersedia di semua platform.
-2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web atau Linux dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini.
+2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web, Linux, atau Windows dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini. macOS didukung untuk penjadwalan terjadwal melalui `zonedSchedule` (hapus macOS dari daftar platform yang melempar `UnsupportedError`).
 3. Lengkapi receiver dan izin Android untuk penjadwalan serta pemulihan setelah restart: tambahkan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver` sesuai dokumentasi plugin. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
 4. Aktifkan core library desugaring sesuai persyaratan plugin bila diperlukan: `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. AGP minimal 8.11.1.
 5. Jangan meminta izin notifikasi secara otomatis saat aplikasi baru dibuka (termasuk iOS `DarwinInitializationSettings` dengan `requestAlertPermission`/`requestSoundPermission`/`requestBadgePermission` default `true`). Minta izin ketika pengguna secara sadar mengaktifkan pengingat.
@@ -3441,6 +3474,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 12. Ketika izin sistem dicabut, batalkan jadwal yang tersimpan di sistem operasi (`_plugin.cancel`), perbarui preferensi (`setAktif(false)`), dan pastikan tidak ada jadwal lama tertinggal. Saat pengguna mengaktifkan kembali, minta izin terlebih dahulu dan buat jadwal baru. Jangan hanya mengubah SharedPreferences tanpa memeriksa kondisi jadwal pada sistem operasi.
 13. Konsistensi perubahan waktu pengingat: simpan nilai waktu lama sebelum perubahan; terapkan nilai baru hanya setelah penjadwalan atau penyimpanan berhasil; jika gagal, pulihkan nilai lama dan tampilkan pesan kegagalan; pastikan jadwal sistem operasi, preferensi, dan tampilan tetap konsisten. Jangan membiarkan kegagalan pada salah satu tahap meninggalkan kondisi data yang berbeda.
 14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus `Nav.pushAndRemoveUntil(...)` serta `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan global penanganan error Future yang dilepas.
+15. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`. Pemanggil wajib mendeteksi melalui `is` (type check). Contoh: `IzinNotifikasiTidakDiberikanException` menggantikan `Exception('Izin notifikasi tidak diberikan')` dan `e.toString().contains('Izin notifikasi tidak diberikan')`.
 **Larangan:**
 - Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
 - Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
@@ -3450,6 +3484,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 - Jangan memproses kategori notifikasi yang tidak dikenal tanpa pencatatan peringatan.
 - Jangan mengubah preferensi tanpa memastikan jadwal sistem operasi konsisten.
 - Jangan memanggil `EasyLoading.show()` atau `EasyLoading.dismiss()` tanpa `.catchError(...)` ketika dilepas dengan `unawaited()`.
+- Jangan mendeteksi error melalui `e.toString().contains(...)`; gunakan tipe exception khusus dan `is`.
 **Alasan:**
 Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
 **Contoh benar:**
