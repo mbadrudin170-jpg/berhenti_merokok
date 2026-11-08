@@ -13,10 +13,6 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 1
-
----
-
 # Kelompok 2
 
 ## File terdampak
@@ -24,6 +20,7 @@ Tidak ada temuan.
 - [pengaturan_screen.dart](lib/fitur/pengaturan/screens/pengaturan_screen.dart)
 - [main.dart](lib/main.dart)
 - [notifikasi_service.dart](lib/shared/notifikasi/notifikasi_service.dart)
+- [notifikasi_service_test.dart](test/notifikasi_service_test.dart)
 
 ## Tinggi
 
@@ -32,7 +29,7 @@ Tidak ada temuan.
 #### Task 1
 
 - Status: Selesai
-- Masalah: Commit menambahkan layanan notifikasi dan interaksi pengaturan, tetapi tidak terlihat file pengujian baru dalam perubahan commit tersebut. `test/` hanya berisi `widget_test.dart`; tidak ada pengujian untuk notifikasi. Implementasi pengujian ditangguhkan karena `NotifikasiService` menggunakan anggota statis dan bergantung pada plugin platform (`FlutterLocalNotificationsPlugin`) serta `SharedPreferences`, sehingga memerlukan refactor dependency injection dan mock/fake pada batas plugin/penyimpanan sebelum dapat diuji secara bermakna.
+- Masalah: Audit pengujian notifikasi (2026-11-08) menunjukkan file pengujian preferensi `test/notifikasi_service_test.dart` telah tersedia dan lulus (`flutter test test/notifikasi_service_test.dart`: 7 pengujian lulus). Cakupan yang sudah teruji: nilai default aktif/jam/menit, penyimpanan `setAktif` dan `setWaktu`, serta persistensi ke `SharedPreferences`. Namun skenario yang lebih luas (izin diberikan/ditolak, aktivasi/nonaktif pengingat, perubahan waktu, kegagalan penjadwalan dan penyimpanan preferensi, penjadwalan ulang saat aplikasi dibuka, platform yang tidak mendukung notifikasi terjadwal, pemulihan jadwal setelah restart) belum tercakup. `NotifikasiService` menggunakan anggota statis dan bergantung pada plugin platform (`FlutterLocalNotificationsPlugin`) serta `SharedPreferences`, sehingga memerlukan mock/fake pada batas plugin/penyimpanan sebelum dapat diuji secara bermakna. `flutter analyze` bersih (No issues found).
 - Solusi: Evaluasi pengujian untuk izin diberikan/ditolak, mengaktifkan/menonaktifkan pengingat, mengubah waktu, kegagalan penjadwalan dan penyimpanan preferensi, penjadwalan ulang saat aplikasi dibuka, platform yang tidak mendukung notifikasi terjadwal, dan pemulihan jadwal setelah perangkat restart. Gunakan mock atau fake pada batas plugin dan penyimpanan. Jangan menyimpulkan seluruh proyek belum memiliki pengujian hanya karena commit ini tidak menyertakan file pengujian.
 - Aturan dilanggar: [aturan_testing.md](.agents/rules/global/aturan_testing.md)
 - File bermasalah: [notifikasi_service.dart](lib/shared/notifikasi/notifikasi_service.dart), [pengaturan_screen.dart](lib/fitur/pengaturan/screens/pengaturan_screen.dart)

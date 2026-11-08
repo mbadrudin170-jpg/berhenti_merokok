@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 2be8c6ba0dd2c648d9c621324543641d2a4063d1
+Commit terakhir dievaluasi penuh: 6e1a7672d58c7575f195e27dd5921d3d6a3c44af
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 67211d2f0801288fe2c3a25a6f9393e9186516e0 sampai 2be8c6ba0dd2c648d9c621324543641d2a4063d1
-Jumlah commit dievaluasi: 4
+Rentang evaluasi: 4b39928 sampai 6e1a7672d58c7575f195e27dd5921d3d6a3c44af
+Jumlah commit dievaluasi: 6
 Status evaluasi: Selesai
-Ringkasan: Audit 4 commit target (67211d2, f3880a3, 6fd4a4a, 2be8c6b). UI impian Flexible dan pembersihan properti AppBar; reformat task.md dan format_task.md; penanganan error zona waktu dan penghapusan padding ganda di Home. Ditemukan 1 temuan UI tersisa (Colors.amber pada dashboard) dan 1 temuan pengujian notifikasi. Commit setelah target (4b39928) tidak ikut dievaluasi.
+Ringkasan: Audit 6 commit (4b39928, 618ab90, 434b5ca, 318c61b, e6b97ab, 6e1a767): pembersihan task.md dan refrensi_apk.md, pembaruan checkpoint evaluasi, sinkronisasi dokumentasi proyek, penambahan pengujian preferensi notifikasi, serta pembaruan aturan notifikasi dan panduan tipe exception khusus. Verifikasi: `flutter test test/notifikasi_service_test.dart` lulus (7 pengujian); `flutter analyze` bersih (No issues found). SDK `flutter_local_notifications` 22.3.3, `flutter_timezone` 5.1.1, `timezone` 0.11.2 diverifikasi dari source lokal. task.md diperbarui: Task 1 kosong Kelompok 1 dihapus; keterangan pengujian notifikasi diperbarui sesuai kondisi aktual; file terdampak ditambah `test/notifikasi_service_test.dart`.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
@@ -107,6 +107,54 @@ Ringkasan: Audit 4 commit target (67211d2, f3880a3, 6fd4a4a, 2be8c6b). UI impian
 - Judul: chore(docs): bersihkan entri perbaikan notifikasi yang sudah selesai dari saran.md
 - Status evaluasi: Selesai
 - Ringkasan: Memperbarui `saran.md` (menghapus 61 baris entri perbaikan notifikasi yang sudah selesai).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 4b39928
+
+- Tanggal: 2026-11-08
+- Judul: docs(task): hapus entri tugas selesai dan tambahkan catatan prompt pada task.md
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui task.md (menghapus 19 baris entri tugas selesai, menambah catatan prompt).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 618ab90
+
+- Tanggal: 2026-11-08
+- Judul: chore(ref): hapus entri fitur yang sudah diimplementasikan dari refrensi_apk.md
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui refrensi_apk.md (menghapus 127 baris entri fitur yang sudah diimplementasikan).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 434b5ca
+
+- Tanggal: 2026-11-08
+- Judul: docs(eval): perbarui checkpoint evaluasi dan reformat entri task
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui catatan.md dan task.md (checkpoint evaluasi dan reformat entri task).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 318c61b
+
+- Tanggal: 2026-11-08
+- Judul: chore(docs): sinkronkan dokumentasi proyek dan perbarui status task
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui AGENTS.md, docs/*, info.md, task.md (sinkronisasi dokumentasi proyek).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: e6b97ab
+
+- Tanggal: 2026-11-08
+- Judul: chore: sinkronkan status implementasi badge, selesaikan task notifikasi, dan tambahkan pengujian preferensi
+- Status evaluasi: Selesai
+- Ringkasan: Menambahkan `test/notifikasi_service_test.dart` (7 pengujian preferensi) yang lulus; memperbarui task.md dan refrensi_apk.md. Verifikasi: `flutter test test/notifikasi_service_test.dart` lulus; `flutter analyze` bersih.
+- Temuan penting: Pengujian notifikasi preferensi terverifikasi; skenario luas (izin, penjadwalan, platform, rollback, terminated) belum tercakup.
+
+### Commit: 6e1a767
+
+- Tanggal: 2026-11-08
+- Judul: docs: perbarui aturan notifikasi dan tambahkan panduan tipe exception khusus
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui aturan notifikasi (aturan #15 tipe exception khusus) dan aturan bersama (aturan baru "Penggunaan Tipe Exception Khusus untuk Deteksi Error"); memperbarui catatan.md.
 - Temuan penting: Tidak ada perubahan kode sumber.
 
 # Commit terakhir yang dievaluasi oleh commands [evaluasi_aturan_khusus.md](.kilo/commands/evaluasi_aturan_khusus.md)
