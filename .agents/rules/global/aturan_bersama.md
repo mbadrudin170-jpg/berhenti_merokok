@@ -489,3 +489,64 @@ final b = bAsync.requireValue;
 **Sumber evaluasi:**
 - Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
 - File: `lib/fitur/badge/screens/badge_screen.dart`
+## Validasi Form Sebelum Penyimpanan
+
+**Cakupan:**
+- Seluruh layar/form yang menggunakan `TextFormField` atau widget yang menyediakan `validator`.
+- Proses penyimpanan ke database atau repository yang bergantung pada validasi input.
+
+**Aturan wajib:**
+1. Apabila field menggunakan `TextFormField` atau widget yang menyediakan `validator`, pastikan mekanisme validasinya benar-benar dijalankan sebelum penyimpanan.
+2. Jika menggunakan mekanisme `Form`, bungkus field terkait dengan `Form` dan sediakan `GlobalKey<FormState>` atau mekanisme akses form yang sesuai.
+3. Panggil `validate()` sebelum menjalankan penyimpanan ke database atau repository.
+4. Apabila validasi gagal, hentikan proses penyimpanan.
+5. Validasi format angka tidak sama dengan validasi aturan bisnis.
+6. Validasi harus mencakup batas nilai sesuai kebutuhan, misalnya nilai wajib lebih besar dari nol.
+7. Jangan menganggap `TextInputType.number` atau input formatter sudah menjamin nilai memenuhi aturan bisnis.
+8. Jangan menggunakan nilai pengganti `0` ketika parsing gagal apabila hal tersebut menyembunyikan input yang tidak valid.
+9. Jangan mewajibkan penggunaan `Form` apabila proyek menggunakan mekanisme validasi lain yang memang dapat memastikan seluruh aturan validasi dijalankan sebelum penyimpanan.
+
+**Larangan:**
+- Jangan menyimpan data sebelum memastikan validasi dijalankan dan lulus.
+- Jangan mengganti input yang tidak valid dengan nilai default (`0`) tanpa memberi tahu pengguna.
+- Jangan mengandalkan tipe keyboard (`TextInputType.number`) sebagai satu-satunya validasi.
+- Jangan memaksa struktur `Form` tertentu apabila mekanisme validasi lain sudah dapat menjamin validasi berjalan sebelum penyimpanan.
+
+**Alasan:**
+Commit `ceacc6a` menambahkan input penurunan mingguan pada form biodata (`_penurunanPerMingguController`) tanpa `Form` yang membungkus field, tanpa pemanggilan `validate()`, dan dengan parsing `int.tryParse(...) ?? 0` yang mengganti input tidak valid dengan `0`. Akibatnya, mode tapering dapat tersimpan tanpa benar-benar melakukan penurunan rokok. Validasi format angka (parsing) tidak menjamin nilai memenuhi aturan bisnis (mis. nilai positif). Prinsip ini berlaku pada proyek Flutter lain yang menggunakan `TextFormField` atau widget dengan `validator`.
+
+**Contoh benar:**
+```dart
+final _formKey = GlobalKey<FormState>();
+
+Form(
+  key: _formKey,
+  child: TextFormField(
+    controller: _penurunanController,
+    keyboardType: TextInputType.number,
+    validator: (value) {
+      final n = int.tryParse(value ?? '');
+      if (n == null || n <= 0) return 'Wajib bilangan bulat positif';
+      return null;
+    },
+  ),
+)
+
+Future<void> _simpan() async {
+  if (!(_formKey.currentState?.validate() ?? false)) return;
+  // lanjutkan penyimpanan
+}
+```
+
+**Contoh salah:**
+```dart
+// Tidak ada Form/validate; parsing gagal diganti 0.
+penurunanPerMinggu:
+    int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+// Menyimpan langsung tanpa validasi.
+await ref.read(biodataProvider.notifier).simpan(model);
+```
+
+**Sumber evaluasi:**
+- Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
+- File: `lib/fitur/biodata/screens/form_biodata.dart`.

@@ -69,6 +69,12 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     final tanggalLahir = biodata?.tanggalLahir;
     final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
     final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+    final tanggalMulaiTapering = biodata?.tanggalMulaiTapering;
+    L.i(
+      'tanggalLahir=$tanggalLahir, tanggalMulaiMerokok=$tanggalMulaiMerokok, '
+      'tanggalMulaiBerhentiMerokok=$tanggalMulaiBerhentiMerokok, '
+      'tanggalMulaiTapering=$tanggalMulaiTapering',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
@@ -143,10 +149,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                       ),
                       _buildItem(
                         'Tanggal mulai penurunan',
-                        biodata.tanggalMulaiTapering == null
+                        tanggalMulaiTapering == null
                             ? 'Belum dipilih'
                             : FormatTanggal.formatDasar(
-                                biodata.tanggalMulaiTapering!,
+                                tanggalMulaiTapering,
                               ),
                       ),
                       const SizedBox(height: 8),

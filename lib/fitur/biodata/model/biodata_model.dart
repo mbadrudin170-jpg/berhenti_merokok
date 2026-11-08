@@ -25,6 +25,7 @@ abstract class BiodataModel with _$BiodataModel {
 
   /// Membuat [BiodataModel] dari baris database SQLite.
   factory BiodataModel.fromSqflite(Map<String, Object?> row) {
+    L.i('row=$row');
     return BiodataModel(
       id: ParserUtil.parseString(row[NamaKolom.id]),
       nama: ParserUtil.parseString(row[NamaKolom.nama]),
@@ -120,6 +121,7 @@ extension BiodataModelPerhitungan on BiodataModel {
   /// Dihitung dari [jumlahRokokPerHari] dikurangi penurunan kumulatif
   /// berdasarkan minggu yang telah berlalu sejak [tanggalMulaiTapering].
   int get targetRokokHariIni {
+    L.i('sedangTapering=$sedangTapering');
     if (!sedangTapering) return jumlahRokokPerHari;
     final mulai = tanggalMulaiTapering ?? DateTime.now();
     final sekarang = DateTime.now();
@@ -129,6 +131,10 @@ extension BiodataModelPerhitungan on BiodataModel {
     final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
     final penurunan = penurunanPerMinggu * mingguBerlalu;
     final target = jumlahRokokPerHari - penurunan;
+    L.i(
+      'mulai=$mulai, hariBerlalu=$hariBerlalu, mingguBerlalu=$mingguBerlalu, '
+      'penurunan=$penurunan, target=$target',
+    );
     if (target < 0) return 0;
     if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
     return target;

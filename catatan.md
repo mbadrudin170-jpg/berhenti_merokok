@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 6e1a7672d58c7575f195e27dd5921d3d6a3c44af
+Commit terakhir dievaluasi penuh: 94c4ec92c3221e0f845639aab41f0c38c84350da
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 4b39928 sampai 6e1a7672d58c7575f195e27dd5921d3d6a3c44af
-Jumlah commit dievaluasi: 6
+Rentang evaluasi: ceacc6a sampai 94c4ec92c3221e0f845639aab41f0c38c84350da
+Jumlah commit yang dievaluasi: 2
 Status evaluasi: Selesai
-Ringkasan: Audit 6 commit (4b39928, 618ab90, 434b5ca, 318c61b, e6b97ab, 6e1a767): pembersihan task.md dan refrensi_apk.md, pembaruan checkpoint evaluasi, sinkronisasi dokumentasi proyek, penambahan pengujian preferensi notifikasi, serta pembaruan aturan notifikasi dan panduan tipe exception khusus. Verifikasi: `flutter test test/notifikasi_service_test.dart` lulus (7 pengujian); `flutter analyze` bersih (No issues found). SDK `flutter_local_notifications` 22.3.3, `flutter_timezone` 5.1.1, `timezone` 0.11.2 diverifikasi dari source lokal. task.md diperbarui: Task 1 kosong Kelompok 1 dihapus; keterangan pengujian notifikasi diperbarui sesuai kondisi aktual; file terdampak ditambah `test/notifikasi_service_test.dart`.
+Ringkasan: Audit 2 commit (ceacc6a, 94c4ec9): implementasi mode berhenti bertahap (tapering) pada biodata (enum ModeBerhenti, perluasan BiodataModel, migrasi skema v6, form, dan layar biodata) serta pembaruan checkpoint evaluasi. Temuan: (1) pelanggaran type promotion pada biodata_screen.dart baris 149 (penggunaan `!` pada field nullable `tanggalMulaiTapering` tanpa penyalinan ke variabel lokal); (2) ketiadaan log debug pada kode baru tapering. SDK/package diverifikasi: ParserUtil.safeParseEnum, Freezed, sqflite migrasi v5->v6, adaptive_dialog. `flutter analyze` bersih (No issues found).
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
@@ -161,8 +161,8 @@ Ringkasan: Audit 6 commit (4b39928, 618ab90, 434b5ca, 318c61b, e6b97ab, 6e1a767)
 
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
 - Branch evaluasi: master
-- Commit terakhir yang dievaluasi: e6b97abd5aa1b2f264c6aa7e783448703e1383fa
-- SHA lengkap: e6b97abd5aa1b2f264c6aa7e783448703e1383fa
+- Commit terakhir yang dievaluasi: 94c4ec92c3221e0f845639aab41f0c38c84350da
+- SHA lengkap: 94c4ec92c3221e0f845639aab41f0c38c84350da
 - Tanggal evaluasi: 2026-11-08
 - Status: Selesai
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_END -->
@@ -302,4 +302,22 @@ Ringkasan: Audit 6 commit (4b39928, 618ab90, 434b5ca, 318c61b, e6b97ab, 6e1a767)
 - Ringkasan evaluasi: Menambahkan pengujian preferensi notifikasi menggunakan SharedPreferences mock. Menyelesaikan task notifikasi. 31 commit dievaluasi dari f4d850b hingga e6b97ab. Temuan utama: penggunaan tipe exception khusus alih-alih pencocokan string (commit 07fc8df), dukungan macOS untuk penjadwalan terjadwal, penggunaan `sorted` dari package collection, penggunaan Flexible untuk overflow teks, penghapusan properti AppBar berlebih, SafeArea + Padding pada container halaman, penghapusan padding ganda di Home, penanganan error inisialisasi zona waktu.
 - Aturan khusus yang diperbarui: Aturan notifikasi #2 (macOS didukung), #15 (tipe exception khusus).
 - Aturan bersama yang diperbarui: Aturan baru "Penggunaan Tipe Exception Khusus untuk Deteksi Error".
+- Status evaluasi: Selesai
+
+### Commit: ceacc6a1c388b24b7647a37ccde411d6c85ee01c
+- Tanggal: 2026-11-08
+- Pesan commit: feat(biodata): implementasi mode berhenti bertahap (tapering) dengan target rokok per hari
+- File yang berubah: lib/fitur/biodata/enum/mode_berhenti.dart, lib/fitur/biodata/model/biodata_model.dart, lib/fitur/biodata/model/biodata_model.freezed.dart, lib/fitur/biodata/screens/biodata_screen.dart, lib/fitur/biodata/screens/form_biodata.dart, lib/shared/db/sqflite/sqflite.dart, lib/shared/konstanta/nama_kolom.dart, refrensi_apk.md
+- Ringkasan evaluasi: Menambahkan mode berhenti bertahap (tapering) pada biodata: enum ModeBerhenti, perluasan BiodataModel (modeBerhenti, penurunanPerMinggu, tanggalMulaiTapering), getter sedangTapering dan targetRokokHariIni, migrasi skema v5 ke v6, input dan tampilan pada form/biodata screen. Temuan: (1) validasi input penurunan mingguan tidak dijalankan sebelum penyimpanan (tidak ada Form/validate, parsing gagal diganti 0); (2) penggunaan `tanggalMulaiTapering!` melanggar type promotion/null safety; (3) refrensi_apk.md baris 154 masih mencatat mode tapering "Belum diimplementasikan"; (4) belum ada pengujian untuk targetRokokHariIni, validasi penurunan mingguan, serialisasi tapering, dan migrasi v5->v6. Migrasi database mengikuti pola yang sudah ada. `flutter analyze` bersih.
+- Aturan khusus yang diperbarui: Aturan baru "Validasi dan Perhitungan Mode Berhenti Bertahap (Tapering)".
+- Aturan bersama yang diperbarui: Aturan baru "Validasi Form Sebelum Penyimpanan".
+- Status evaluasi: Selesai
+
+### Commit: 94c4ec92c3221e0f845639aab41f0c38c84350da
+- Tanggal: 2026-11-08
+- Pesan commit: docs(eval): perbarui checkpoint evaluasi dan catatan pengujian notifikasi
+- File yang berubah: catatan.md, task.md
+- Ringkasan evaluasi: Commit dokumentasi. Memperbarui checkpoint evaluasi ke commit 6e1a767, rentang 4b39928–6e1a767, 6 commit dievaluasi. Menambah entri evaluasi untuk 6 commit. Memperbarui task.md (hapus Task 1 kosong Kelompok 1, tambah notifikasi_service_test.dart pada file terdampak, perbarui deskripsi masalah pengujian notifikasi sesuai kondisi aktual 7 pengujian lulus). Bukan perubahan kode aplikasi.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
 - Status evaluasi: Selesai

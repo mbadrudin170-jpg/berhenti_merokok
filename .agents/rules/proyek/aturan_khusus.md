@@ -933,3 +933,84 @@ Commit `19eece7` menambahkan dependensi `flutter_timezone` dan commit `d42422b` 
 **Sumber evaluasi:**
 - Commit: `19eece75351cd8deee5a2a01cf65464a8e2a1bc1`, `d42422ba65a0f3c90b46a0736a197af572b62c33`.
 - File: `pubspec.yaml`, `pubspec.lock`, `lib/shared/notifikasi/notifikasi_service.dart`, `saran.md`.
+
+## Validasi dan Perhitungan Mode Berhenti Bertahap (Tapering)
+
+**Cakupan:**
+- `lib/fitur/biodata/enum/mode_berhenti.dart` — `ModeBerhenti`, `ModeBerhentiExtension`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan` (`sedangTapering`, `targetRokokHariIni`).
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState._simpan`, input mode tapering, penurunan per minggu, tanggal mulai penurunan.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — tampilan mode berhenti, penurunan per minggu, target rokok per hari, tanggal mulai penurunan.
+- `lib/shared/db/sqflite/sqflite.dart` — migrasi skema v5 ke v6 (kolom baru pada tabel biodata).
+- `lib/shared/konstanta/nama_kolom.dart` — konstanta `modeBerhenti`, `penurunanPerMinggu`, `tanggalMulaiTapering`.
+
+**Aturan wajib:**
+1. `ModeBerhenti.seketika` menggunakan jumlah rokok per hari sebagai target, tanpa menerapkan penurunan bertahap.
+2. `ModeBerhenti.bertahap` wajib memiliki nilai `penurunanPerMinggu` berupa bilangan bulat positif.
+3. Input penurunan mingguan tidak boleh kosong, nol, atau negatif ketika mode bertahap aktif.
+4. Tanggal mulai tapering harus diinisialisasi ketika pengguna mengaktifkan mode bertahap dan dipastikan valid sebelum data disimpan.
+5. Jika tanggal mulai berada di masa depan, jumlah minggu yang telah berlalu dianggap nol sampai tanggal tersebut tercapai.
+6. Perhitungan jumlah minggu wajib memakai tanggal yang telah dinormalisasi, sesuai aturan normalisasi tanggal yang sudah tersedia.
+7. Target rokok dihitung dengan prinsip:
+
+   `target = jumlahRokokPerHari - (penurunanPerMinggu * mingguBerlalu)`
+
+8. Hasil target tidak boleh kurang dari nol.
+9. Nilai target pada mode seketika harus tetap sama dengan jumlah rokok per hari.
+10. Jangan menghitung ulang formula yang sama di setiap layar. Gunakan ekstensi `BiodataModelPerhitungan` pada `biodata_model.dart`.
+11. Setiap perubahan logika tapering wajib mempertahankan kompatibilitas pembacaan data lama (nilai fallback pada `fromSqflite`).
+12. Uji perhitungan pada batas tanggal dan kondisi penting, termasuk:
+    - Sebelum tanggal mulai.
+    - Hari pertama.
+    - Enam hari setelah tanggal mulai.
+    - Tujuh hari setelah tanggal mulai.
+    - Empat belas hari setelah tanggal mulai.
+    - Target mencapai nol.
+    - Mode seketika.
+
+**Larangan:**
+- Jangan menduplikasi formula target rokok di layar; gunakan getter `targetRokokHariIni` dari ekstensi.
+- Jangan menyimpan mode bertahap tanpa `penurunanPerMinggu` positif dan tanggal mulai yang valid.
+- Jangan membiarkan target bernilai negatif (klamping ke nol).
+- Jangan menghitung minggu berlalu dari tanggal yang belum dinormalisasi.
+- Jangan membuat aturan migrasi database baru yang menduplikasi aturan migrasi yang sudah tersedia (versi dinaikkan, tabel/kolom lengkap di `onCreate` dan `onUpgrade`, konstanta untuk nama kolom).
+
+**Alasan:**
+Commit `ceacc6a` menambahkan mode berhenti bertahap (tapering) pada biodata: enum `ModeBerhenti`, perluasan `BiodataModel` dengan `modeBerhenti`, `penurunanPerMinggu`, `tanggalMulaiTapering`, getter `sedangTapering` dan `targetRokokHariIni`, migrasi skema v5 ke v6, serta input dan tampilan pada form dan layar biodata. Perhitungan target menggunakan penurunan kumulatif per minggu sejak tanggal mulai, dengan klamping target ke rentang 0–`jumlahRokokPerHari`. Normalisasi tanggal mencegah hasil bergeser akibat komponen waktu. Kompatibilitas data lama dijaga melalui nilai fallback pada `fromSqflite` (`safeParseEnum` dengan default `seketika`, `parseInt` dengan default 0, `parseDateTime` yang mengembalikan null).
+
+**Contoh benar:**
+```dart
+// Ekstensi pada model (didefinisikan sekali).
+int get targetRokokHariIni {
+  if (!sedangTapering) return jumlahRokokPerHari;
+  final mulai = tanggalMulaiTapering ?? DateTime.now();
+  final sekarang = DateTime.now();
+  final mulaiDate = DateTime(mulai.year, mulai.month, mulai.day);
+  final sekarangDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+  final hariBerlalu = sekarangDate.difference(mulaiDate).inDays;
+  final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
+  final penurunan = penurunanPerMinggu * mingguBerlalu;
+  final target = jumlahRokokPerHari - penurunan;
+  if (target < 0) return 0;
+  if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
+  return target;
+}
+// Konsumsi di layar.
+final target = biodata.targetRokokHariIni;
+```
+
+**Contoh salah:**
+```dart
+// Menghitung ulang formula di layar (duplikasi).
+final target = biodata.jumlahRokokPerHari - biodata.penurunanPerMinggu * minggu;
+// Menggunakan tanggal tanpa normalisasi.
+final hariBerlalu = DateTime.now().difference(tanggalMulaiTapering!).inDays;
+// Menggunakan tanggalMulaiTapering! tanpa penyalinan ke variabel lokal (melanggar type promotion).
+FormatTanggal.formatDasar(biodata.tanggalMulaiTapering!);
+// Mengganti nilai parsing yang tidak valid dengan 0 tanpa validasi (menyembunyikan input tidak valid).
+penurunanPerMinggu: int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+```
+
+**Sumber evaluasi:**
+- Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
+- File: `lib/fitur/biodata/enum/mode_berhenti.dart`, `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_kolom.dart`, `refrensi_apk.md`.

@@ -47,6 +47,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   @override
   void initState() {
     super.initState();
+    L.i('FormBiodata initState, buatPertama=${widget.buatPertama}');
     final modelAwal = widget.biodataModel;
     if (modelAwal != null) {
       _isiDariModel(modelAwal);
@@ -72,7 +73,11 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _modeBerhenti = model.modeBerhenti;
     _penurunanPerMingguController.text = model.penurunanPerMinggu.toString();
     _tanggalMulaiTapering = model.tanggalMulaiTapering;
-  }
+    L.i(
+      'modeBerhenti=$_modeBerhenti, '
+      'penurunanPerMinggu=${_penurunanPerMingguController.text}, '
+      'tanggalMulaiTapering=$_tanggalMulaiTapering',
+    );  }
 
   @override
   void dispose() {
@@ -138,6 +143,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null && mounted) {
+      L.i('tanggalMulaiTapering=$picked');
       setState(() => _tanggalMulaiTapering = picked);
     }
   }
@@ -184,6 +190,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
         tanggalMulaiTapering: _tanggalMulaiTapering,
       );
+      L.i('model=$model');
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
       if (widget.buatPertama) {
