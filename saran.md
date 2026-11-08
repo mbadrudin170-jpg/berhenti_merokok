@@ -26,7 +26,7 @@ Pengguna tidak dapat menekan tombol pengaturan notifikasi lagi setelah satu kali
 
 Tambahkan blok `finally` yang memanggil `unawaited(EasyLoading.dismiss())` dan mengembalikan `_sedangMemproses = false` dengan pemeriksaan `mounted`, konsisten dengan `_pilihWaktu()` dan `_ujiNotifikasi()`.
 
-**Status:** Belum diperbaiki.
+**Status:** Sudah diperbaiki. Blok `finally` sudah ada pada `_ubahNotifikasi()` (baris 127-134), memanggil `unawaited(EasyLoading.dismiss())` dan mengembalikan `_sedangMemproses = false` dengan pemeriksaan `mounted`, konsisten dengan `_pilihWaktu()` dan `_ujiNotifikasi()`. Verifikasi `flutter analyze` bersih.
 
 ---
 
