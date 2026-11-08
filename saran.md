@@ -1,64 +1,5 @@
 # Saran Perbaikan
 
-## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
-
-### Prioritas: Sedang
-
-**File:**
-
-- lib/fitur/pengaturan/screens/pengaturan_screen.dart:83-88, 128, 154-159, 190, 205-210, 220
-- lib/shared/notifikasi/notifikasi_service.dart:88
-
-**Masalah:**
-
-Beberapa `unawaited(EasyLoading.show(...))` dan `unawaited(EasyLoading.dismiss())` dilepas tanpa penanganan error, padahal keduanya mengembalikan `Future<void>`. Hal yang sama berlaku pada `unawaited(Nav.pushAndRemoveUntil(...))` di atas.
-
-**Bukti aturan atau SDK:**
-
-- .agents/rules/proyek/aturan_khusus.md: (aturan notifikasi #14)
-- .agents/rules/global/optimasi_bug_runtime.md: (bagian 10 — Penggunaan await dan unawaited)
-- Source SDK: /home/mbadrudin170/.pub-cache/hosted/pub.dev/flutter_easyloading-4.0.2/lib/src/easy_loading.dart:124, 276 (mengembalikan Future<void>)
-
-**Dampak:**
-
-Kegagalan pada overlay loading dapat menjadi unhandled Future (meskipun jarang).
-
-**Rekomendasi:**
-
-**Status:** Sebagian diperbaiki (berdasarkan HEAD 992a624). `Nav.pushAndRemoveUntil(...)` pada `notifikasi_service.dart` kini dibungkus `.catchError(...)` (commit 2a5a357). `EasyLoading.show(...)` dan `EasyLoading.dismiss()` pada `pengaturan_screen.dart` masih dilepas tanpa `catchError` pada HEAD; perbaikan lokal (staged) menambahkan `.catchError(...)`, tetapi belum di-commit sehingga belum menjadi bukti pada HEAD.
-
----
-
-## [2026-11-08] [a30b6b6e4377b55eadecb6b83b0e4c05faa985b5]
-
-### Prioritas: Sedang
-
-**File:**
-
-- lib/shared/notifikasi/notifikasi_service.dart:122-187
-- lib/fitur/pengaturan/screens/pengaturan_screen.dart:90-110
-
-**Masalah:**
-
-Ketika izin sistem dicabut pada saat `jadwalkanPengingatHarian()` berjalan, method tersebut memanggil `setAktif(false)` dan membatalkan jadwal, lalu melempar `Exception('Izin notifikasi tidak diberikan')`. Namun `_ubahNotifikasi()` telah menetapkan `_notifikasiAktif = true` sebelumnya dan pada jalur exception hanya menyetel `_notifikasiAktif = !value` (false), sehingga tampilan dan preferensi dapat tidak konsisten dengan jadwal sistem (aturan #12). Selain itu, pesan toast yang ditampilkan adalah "Gagal mengubah pengingat harian", bukan informasi izin.
-
-**Bukti aturan atau SDK:**
-
-- .agents/rules/proyek/aturan_khusus.md: (aturan notifikasi #12 dan #13)
-- Source SDK: flutter_local_notifications 22.3.3 (permission handling)
-
-**Dampak:**
-
-State UI, SharedPreferences, dan jadwal sistem operasi dapat tidak sinkron setelah izin dicabut.
-
-**Rekomendasi:**
-
-Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAktif` dengan `NotifikasiService.aktif()` (atau set false) dan tampilkan pesan yang menjelaskan izin tidak tersedia; pertimbangkan memanggil `_muatPreferensiNotifikasi()` untuk menyegarkan tampilan.
-
-**Status:** Sudah diperbaiki (perubahan lokal, belum di-commit). `_ubahNotifikasi()` kini menyinkronkan `_notifikasiAktif` dengan `NotifikasiService.aktif()` pada jalur exception, menampilkan pesan izin tidak tersedia ketika kegagalan disebabkan izin, dan memanggil `_muatPreferensiNotifikasi()` untuk menyegarkan tampilan. `flutter analyze` bersih.
-
----
-
 ## 2026-11-08 — Dukungan macOS pada penjadwalan notifikasi harian
 
 - **Masalah:** Pada `lib/shared/notifikasi/notifikasi_service.dart`, method `jadwalkanPengingatHarian()` (baris 104-112) melempar `UnsupportedError` pada `TargetPlatform.macOS`, padahal plugin `flutter_local_notifications` v22.3.3 mendukung notifikasi terjadwal pada macOS melalui `zonedSchedule`. Aturan hanya melarang penjadwalan berulang pada Web dan Linux.
@@ -80,17 +21,6 @@ Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAkt
 - **Alasan:** Permintaan izin otomatis pada Web dapat ditolak atau diblokir browser, dan fitur terjadwal tidak tersedia pada Web.
 - **Status:** Sebagian diperbaiki pada perubahan terbaru (izin tidak lagi diminta saat inisialisasi, pengaturan disembunyikan pada Web/Linux/Windows/macOS, UnsupportedError ditangani). Masih perlu verifikasi perilaku pada Web.
 
-## 2026-11-08 — Konsistensi perubahan waktu pengingat
-
-- **Masalah:** `_pilihWaktu()` memperbarui `_jam` dan `_menit` sebelum proses penjadwalan selesai. Jika penjadwalan gagal, tampilan dapat berbeda dengan preferensi atau jadwal yang masih aktif.
-- **Prioritas:** Sedang
-- **Path:** `lib/fitur/pengaturan/screens/pengaturan_screen.dart`
-- **Aturan terkait:** `.agents/rules/global/optimasi_bug_runtime.md` (bagian 6); `.agents/rules/global/optimasi_ux.md` (bagian 5 dan 6)
-- **Referensi:** Aturan proyek UX; dokumentasi plugin tidak relevan langsung.
-- **Saran perbaikan:** Simpan waktu sebelumnya sebelum perubahan. Terapkan waktu baru setelah penyimpanan atau penjadwalan berhasil. Jika gagal, pulihkan nilai sebelumnya dan tampilkan pesan kegagalan yang jelas.
-- **Alasan:** Menjaga kesesuaian antara tampilan, preferensi, dan jadwal aktif.
-- **Status:** Sudah diperbaiki. `_pilihWaktu()` kini menyimpan waktu sebelumnya, hanya menerapkan waktu baru setelah penjadwalan/penyimpanan berhasil, dan memulihkan nilai sebelumnya jika gagal. Pemeriksaan `mounted` konsisten setelah setiap `await`.
-
 ## 2026-11-08 — Pemeriksaan mounted setelah operasi asynchronous pada pengaturan notifikasi
 
 - **Masalah:** `_ubahNotifikasi()`, `_pilihWaktu()`, dan `_ujiNotifikasi()` menjalankan operasi asynchronous lalu menggunakan `setState()` atau `context`. Pemeriksaan `mounted` belum konsisten setelah setiap `await`.
@@ -101,18 +31,6 @@ Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAkt
 - **Saran perbaikan:** Periksa `mounted` setelah setiap operasi asynchronous sebelum menggunakan `setState()` atau `context`.
 - **Alasan:** Mencegah penggunaan widget yang sudah tidak terpasang.
 - **Status:** Sebagian diperbaiki (mounted check ditambahkan pada `_ubahNotifikasi`, `_pilihWaktu`, dan `_ujiNotifikasi`). Masih perlu verifikasi konsistensi pada seluruh await.
-
-## 2026-11-08 — Implementasi ketika notifikasi harian ditekan
-
-- **Masalah:** `_onTapNotifikasi()` membaca payload dan mendapatkan `navigatorKey.currentState`, tetapi belum melakukan navigasi meskipun komentar menyebutkan kembali ke beranda. Belum terlihat penanganan kondisi aplikasi diluncurkan dari keadaan tertutup melalui notifikasi.
-- **Prioritas:** Sedang
-- **Path:** `lib/shared/notifikasi/notifikasi_service.dart`
-- **Aturan terkait:** `.agents/rules/global/aturan_notifikasi.md` (bagian 3)
-- **Referensi:** README plugin v22.3.3, bagian handling notification tap dan `getNotificationAppLaunchDetails`: https://github.com/MaikuB/flutter_local_notifications/blob/flutter_local_notifications-v22.3.3/flutter_local_notifications/README.md
-- **Saran perbaikan:** Tentukan perilaku ketika notifikasi ditekan, implementasikan navigasi sesuai tujuan, dan evaluasi penggunaan `getNotificationAppLaunchDetails()` untuk kondisi aplikasi diluncurkan melalui notifikasi ketika sebelumnya terminated. Pastikan penanganan bekerja untuk foreground, background, dan terminated.
-- **Alasan:** Pengguna yang menekan notifikasi belum diarahkan ke tampilan yang diharapkan.
-
-- **Status:** Sudah diperbaiki (commit 2a5a357). `_onTapNotifikasi()` kini mendelegasikan ke `_navigasiDariPayload()` yang melakukan navigasi ke `Home` via `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)`. Ditambahkan `cekNotifikasiSaatBuka()` yang memanggil `getNotificationAppLaunchDetails()` dan menavigasi setelah navigator siap (`addPostFrameCallback`) untuk kondisi terminated. Pemanggilan dilakukan di `main.dart` setelah `runApp`. Payload divalidasi (kategori/id); kategori tidak dikenal dicatat peringatan. `flutter analyze` bersih. Catatan: navigasi dilewati tanpa retry jika navigator masih null; platform Web/Linux tidak dibatasi sebelum `getNotificationAppLaunchDetails()` (kegagalan ditangkap catch).
 
 ## 2026-11-08 — Penentuan zona waktu pengingat harian
 
