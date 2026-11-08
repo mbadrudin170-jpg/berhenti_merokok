@@ -1,5 +1,6 @@
 import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
 import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
+import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/pengaturan/screens/pengaturan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,6 +26,10 @@ class LainnyaScreen extends StatelessWidget {
             _buildTombolCustom(
               () => Nav.to(context, const SosCravingScreen()),
               'SOS Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const PemulihanKesehatanScreen()),
+              'Pemulihan Kesehatan',
             ),
             _buildTombolCustom(
               () => Nav.to(context, const DiaryCravingScreen()),

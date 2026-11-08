@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
+import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,6 +123,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
               _buildCardProgres(biodata),
+              _buildCardMilestone(biodata),
               _buildInfoKerugian(biodata),
             ],
           ),
@@ -182,6 +185,76 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildCardMilestone(BiodataModel biodata) {
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return const SizedBox.shrink();
+
+    final durasi = DateTime.now().difference(tanggalBerhenti);
+    final aman = durasi.isNegative ? Duration.zero : durasi;
+    final berikutnya = milestoneBerikutnya(aman);
+    L.i('milestoneBerikutnya=${berikutnya?.judul}');
+
+    return Card(
+      child: InkWell(
+        onTap: () =>
+            unawaited(Nav.to(context, const PemulihanKesehatanScreen())),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            spacing: 12,
+            children: [
+              const Icon(CupertinoIcons.heart, size: 32, color: Colors.green),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      'Pemulihan Kesehatan',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      berikutnya == null
+                          ? 'Semua milestone tercapai'
+                          : 'Berikutnya: ${berikutnya.judul}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    if (berikutnya != null)
+                      Text(
+                        'Tersisa ${_formatDurasiSingkat(berikutnya.target - aman)}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                  ],
+                ),
+              ),
+              const Icon(CupertinoIcons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatDurasiSingkat(Duration d) {
+    if (d.inDays > 0) {
+      final hari = d.inDays;
+      final jam = d.inHours % 24;
+      if (jam > 0) return '$hari hari $jam jam';
+      return '$hari hari';
+    }
+    if (d.inHours > 0) {
+      final jam = d.inHours;
+      final menit = d.inMinutes % 60;
+      if (menit > 0) return '$jam jam $menit menit';
+      return '$jam jam';
+    }
+    final menit = d.inMinutes;
+    final detik = d.inSeconds % 60;
+    if (menit > 0) return '$menit menit $detik detik';
+    return '$detik detik';
   }
 
   Widget _buildInfoKerugian(BiodataModel biodata) {

@@ -28,8 +28,7 @@
 ### Milestone Kesehatan (Pemulihan Tubuh)
 
 - **Prioritas:** Tinggi
-- **Status implementasi:** Belum diimplementasikan.
-- **Aplikasi referensi:** Quit Smoking : Tracker & Timer (H2M apps); Smoke Free (Portable Pixels); EasyQuit (Herzberg)
+- **Status implementasi:** Sudah diimplementasikan (layar Pemulihan Kesehatan menampilkan milestone berdasarkan durasi smoke-free; kartu ringkasan di Dashboard).
 - **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree ; https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking
 - **Link sumber pendukung:** Deskripsi resmi Google Play Store.
 - **Tujuan fitur:** Menunjukkan perubahan kesehatan tubuh berdasarkan waktu tanpa rokok (mis. 20 menit tekanan darah normal, 48 jam pengecapan membaik, 72 jam nikotin hilang, 1 tahun risiko jantung turun).
