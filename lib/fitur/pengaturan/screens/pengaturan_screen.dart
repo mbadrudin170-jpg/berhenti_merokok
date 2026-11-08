@@ -84,7 +84,9 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
       EasyLoading.show(
         status: 'Memproses...',
         maskType: EasyLoadingMaskType.black,
-      ),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
     );
     try {
       if (value) {
@@ -125,7 +127,11 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
         AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
       }
     } finally {
-      unawaited(EasyLoading.dismiss());
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
       if (mounted) {
         setState(() {
           _sedangMemproses = false;
@@ -155,7 +161,9 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
       EasyLoading.show(
         status: 'Memproses...',
         maskType: EasyLoadingMaskType.black,
-      ),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
     );
     try {
       if (_notifikasiAktif) {
@@ -187,7 +195,11 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
         AppToast.gagal(context, 'Platform tidak mendukung pengingat harian');
       }
     } finally {
-      unawaited(EasyLoading.dismiss());
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
       if (mounted) {
         setState(() {
           _sedangMemproses = false;
@@ -206,7 +218,9 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
       EasyLoading.show(
         status: 'Memproses...',
         maskType: EasyLoadingMaskType.black,
-      ),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
     );
     try {
       await NotifikasiService.tampilkanSekarang();
@@ -217,7 +231,11 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
       if (!mounted) return;
       AppToast.gagal(context, 'Gagal menampilkan notifikasi');
     } finally {
-      unawaited(EasyLoading.dismiss());
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
       if (mounted) {
         setState(() {
           _sedangMemproses = false;

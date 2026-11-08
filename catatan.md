@@ -2,7 +2,7 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 6f2e02153e86f0e0cb943835f96d4b0abfa2ce52
+Commit terakhir dievaluasi penuh: 992a624711948b58124483b57acea3520e3a1930
 Tanggal evaluasi: 2026-11-08
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
@@ -47,6 +47,62 @@ Tanggal evaluasi: 2026-11-08
 - Judul: refactor(commands): perbarui alur evaluasi commit per commit dan struktur aturan khusus
 - Status evaluasi: Selesai
 - Ringkasan: Memperbarui command `evaluasi_aturan_khusus.md`.
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: b40fcade9259891828cd0da9e8baab60dd4c1ebf
+
+- Tanggal: 2026-11-08 09:36:58 +0000
+- Judul: docs: perbarui catatan evaluasi commit dan saran perbaikan
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui `catatan.md` (menambah riwayat evaluasi) dan `saran.md` (menambah saran perbaikan).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 12b577d3c059a7ce61016eb6360f628da0b9d669
+
+- Tanggal: 2026-11-08 09:40:36 +0000
+- Judul: docs(saran): tandai item perbaikan notifikasi sebagai selesai
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui `saran.md` (menandai item perbaikan notifikasi sebagai selesai).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: bf9144cda34743275b132ce6f1d592149a66123a
+
+- Tanggal: 2026-11-08 09:42:29 +0000
+- Judul: chore(commands): perbarui instruksi evaluasi commit dan penanganan checkpoint
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui command `cek_perubahan_sekarang.md` (instruksi evaluasi dan checkpoint).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 73ecb2d17ae95a5a798e2b57ef96940ea287623b
+
+- Tanggal: 2026-11-08 09:47:10 +0000
+- Judul: docs(catatan): rapikan indentasi path file dan tambahkan newline akhir
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui `catatan.md` (indentasi path dan newline akhir).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 24a8659261bbf8406852adf60564b794066341c3
+
+- Tanggal: 2026-11-08 09:48:36 +0000
+- Judul: chore(commands): perbarui batasan, tujuan, dan instruksi evaluasi commit
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui command `cek_perubahan_sekarang.md` (batasan, tujuan, instruksi).
+- Temuan penting: Tidak ada perubahan kode sumber.
+
+### Commit: 2a5a357429d44d7302ce54d46b378fe2ce6a0cb6
+
+- Tanggal: 2026-11-08 09:51:45 +0000
+- Judul: feat(notifikasi): tangani navigasi dari tap notifikasi termasuk kondisi terminated
+- Status evaluasi: Selesai (dengan temuan minor)
+- Ringkasan: Menambahkan `WidgetsBinding.instance.addPostFrameCallback` di `main.dart` untuk memanggil `NotifikasiService.cekNotifikasiSaatBuka()`. Memfaktorkan `_onTapNotifikasi` menjadi `_navigasiDariPayload()` yang membungkus `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)` dan menambahkan `cekNotifikasiSaatBuka()` yang menggunakan `getNotificationAppLaunchDetails()` untuk kondisi terminated, lalu menavigasi setelah navigator siap via `addPostFrameCallback`. Payload divalidasi (kategori/id) dan kategori tidak dikenal dicatat peringatan.
+- Temuan penting: `lib/main.dart` (baris 32-34) memanggil `cekNotifikasiSaatBuka()` setelah `runApp`; `lib/shared/notifikasi/notifikasi_service.dart` (baris 62-115) implementasi navigasi dan cek terminated. Temuan minor: (1) `cekNotifikasiSaatBuka()` tidak membatasi platform (Web/Linux) sebelum memanggil `getNotificationAppLaunchDetails()`, meskipun kegagalan ditangkap `catch`; (2) penanganan `UnsupportedError` tidak eksplisit (hanya `catch (e, s)`), berpotensi tidak sesuai aturan #6 global bug runtime; (3) jika navigator masih null saat `_navigasiDariPayload()` dipanggil, navigasi dilewati tanpa retry; (4) variabel `id` hasil parsing payload tidak digunakan (tidak berdampak). `flutter analyze` bersih pada HEAD.
+
+### Commit: 992a624711948b58124483b57acea3520e3a1930
+
+- Tanggal: 2026-11-08 09:54:11 +0000
+- Judul: chore(docs): bersihkan entri perbaikan notifikasi yang sudah selesai dari saran.md
+- Status evaluasi: Selesai
+- Ringkasan: Memperbarui `saran.md` (menghapus 61 baris entri perbaikan notifikasi yang sudah selesai).
 - Temuan penting: Tidak ada perubahan kode sumber.
 
 # commit terakhir yang di baca oleh commands [evaluasi_aturan_khusus.md](.kilo/commands/evaluasi_aturan_khusus.md)

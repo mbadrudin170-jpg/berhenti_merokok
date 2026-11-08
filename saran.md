@@ -25,9 +25,7 @@ Kegagalan pada overlay loading dapat menjadi unhandled Future (meskipun jarang).
 
 **Rekomendasi:**
 
-Bungkus setiap Future yang dilepas dengan `catchError` yang mencatat error via `L.e`, atau jalankan dalam fungsi dengan try/catch sebelum dilepas.
-
-**Status:** Belum diperbaiki.
+**Status:** Sebagian diperbaiki (berdasarkan HEAD 992a624). `Nav.pushAndRemoveUntil(...)` pada `notifikasi_service.dart` kini dibungkus `.catchError(...)` (commit 2a5a357). `EasyLoading.show(...)` dan `EasyLoading.dismiss()` pada `pengaturan_screen.dart` masih dilepas tanpa `catchError` pada HEAD; perbaikan lokal (staged) menambahkan `.catchError(...)`, tetapi belum di-commit sehingga belum menjadi bukti pada HEAD.
 
 ---
 
@@ -114,6 +112,8 @@ Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAkt
 - **Saran perbaikan:** Tentukan perilaku ketika notifikasi ditekan, implementasikan navigasi sesuai tujuan, dan evaluasi penggunaan `getNotificationAppLaunchDetails()` untuk kondisi aplikasi diluncurkan melalui notifikasi ketika sebelumnya terminated. Pastikan penanganan bekerja untuk foreground, background, dan terminated.
 - **Alasan:** Pengguna yang menekan notifikasi belum diarahkan ke tampilan yang diharapkan.
 
+- **Status:** Sudah diperbaiki (commit 2a5a357). `_onTapNotifikasi()` kini mendelegasikan ke `_navigasiDariPayload()` yang melakukan navigasi ke `Home` via `Nav.pushAndRemoveUntil(...)` dengan `.catchError(...)`. Ditambahkan `cekNotifikasiSaatBuka()` yang memanggil `getNotificationAppLaunchDetails()` dan menavigasi setelah navigator siap (`addPostFrameCallback`) untuk kondisi terminated. Pemanggilan dilakukan di `main.dart` setelah `runApp`. Payload divalidasi (kategori/id); kategori tidak dikenal dicatat peringatan. `flutter analyze` bersih. Catatan: navigasi dilewati tanpa retry jika navigator masih null; platform Web/Linux tidak dibatasi sebelum `getNotificationAppLaunchDetails()` (kegagalan ditangkap catch).
+
 ## 2026-11-08 — Penentuan zona waktu pengingat harian
 
 - **Masalah:** Zona waktu ditetapkan permanen menggunakan `Asia/Jakarta` melalui `tz.setLocalLocation(tz.getLocation('Asia/Jakarta'))`.
@@ -166,6 +166,17 @@ Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAkt
 - **Aturan terkait:** `.agents/rules/global/optimasi_bug_runtime.md` (bagian 11 — Hindari penggunaan logger di dalam metode `build()`).
 - **Saran perbaikan:** Pindahkan atau hapus log yang tidak memberikan nilai tambahan di luar alur rebuild, atau batasi logging pada titik yang tidak sering dipanggil. Jika dipertahankan, pastikan tidak berada di dalam loop item (`itemBuilder`).
 - **Alasan:** Metode `build()` dapat dipanggil berulang oleh framework; logging berfrekuensi tinggi menambah noise dan mempersulit pelacakan.
+
+## 2026-11-08 — Pengecekan platform dan penanganan error pada cekNotifikasiSaatBuka (commit 2a5a357)
+
+- **Masalah:** `NotifikasiService.cekNotifikasiSaatBuka()` (lib/shared/notifikasi/notifikasi_service.dart) memanggil `getNotificationAppLaunchDetails()` tanpa membatasi platform terlebih dahulu. Pada Web/Linux, perilaku plugin berbeda dan method dapat mengembalikan null atau melempar. Penanganan menggunakan `catch (e, s)` (tanpa tipe) sehingga `UnsupportedError` tidak ditangani secara eksplisit, berpotensi tidak sesuai aturan #6 global bug runtime dan aturan #6 validasi platform. Selain itu, jika `navigatorKey.currentState` masih null saat `_navigasiDariPayload()` dipanggil, navigasi dilewati tanpa retry.
+- **Prioritas:** Rendah
+- **Path:** `lib/shared/notifikasi/notifikasi_service.dart` (method `cekNotifikasiSaatBuka`, `_navigasiDariPayload`)
+- **Aturan terkait:** `.agents/rules/global/aturan_notifikasi.md` (bagian 4); `.agents/rules/global/optimasi_bug_runtime.md` (bagian 6); `.agents/rules/global/aturan_lainnya.md` (validasi platform)
+- **Referensi:** `flutter_local_notifications` 22.3.3 (`getNotificationAppLaunchDetails`).
+- **Saran perbaikan:** Tambahkan guard platform (mis. lewati pada Web/Linux atau tangani sesuai kemampuan), tangani `UnsupportedError` secara eksplisit sebelum `Exception`, dan pertimbangkan retry/penundaan navigasi apabila navigator belum siap. Variabel `id` hasil parsing payload saat ini tidak digunakan (tidak berdampak).
+- **Alasan:** Menjaga konsistensi dengan aturan penanganan platform dan error Future.
+- **Status:** Belum diperbaiki.
 
 ## 2026-11-07 — Progress menampilkan 0 saat biodata masih loading
 
