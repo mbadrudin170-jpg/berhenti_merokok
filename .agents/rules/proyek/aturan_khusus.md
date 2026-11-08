@@ -780,41 +780,68 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 7. Pastikan jadwal, `SharedPreferences`, dan tampilan tetap konsisten ketika operasi gagal: rollback state, tampilkan feedback kegagalan, dan jangan simpan status aktif jika penjadwalan gagal.
 8. Tangani kegagalan penjadwalan ulang ketika aplikasi dibuka: catat error melalui logger, jangan biarkan Future menjadi unhandled, dan pastikan kegagalan fitur notifikasi tidak mengganggu fitur utama aplikasi.
 9. Pisahkan ID notifikasi uji coba dari ID pengingat utama agar notifikasi uji coba tidak memperbarui atau menggantikan jadwal utama.
+10. Penanganan tap notifikasi wajib membedakan tiga kondisi lifecycle aplikasi: foreground (aplikasi aktif), background, dan terminated. Pada kondisi terminated, gunakan `getNotificationAppLaunchDetails()` untuk memperoleh notifikasi yang meluncurkan aplikasi dan lakukan navigasi setelah navigator siap. Jangan mengandalkan callback `onDidReceiveNotificationResponse` saja untuk kondisi terminated.
+11. Validasi payload notifikasi: parse `kategori` dan `id`; hanya proses kategori yang dikenal; jika payload null, tidak valid, atau kategori tidak dikenal, catat peringatan dan jangan lakukan navigasi yang tidak sesuai. ID yang tidak ditemukan atau tidak diperlukan oleh tujuan navigasi tidak boleh menyebabkan crash.
+12. Ketika izin sistem dicabut, batalkan jadwal yang tersimpan di sistem operasi (`_plugin.cancel`), perbarui preferensi (`setAktif(false)`), dan pastikan tidak ada jadwal lama tertinggal. Saat pengguna mengaktifkan kembali, minta izin terlebih dahulu dan buat jadwal baru. Jangan hanya mengubah SharedPreferences tanpa memeriksa kondisi jadwal pada sistem operasi.
+13. Konsistensi perubahan waktu pengingat: simpan nilai waktu lama sebelum perubahan; terapkan nilai baru hanya setelah penjadwalan atau penyimpanan berhasil; jika gagal, pulihkan nilai lama dan tampilkan pesan kegagalan; pastikan jadwal sistem operasi, preferensi, dan tampilan tetap konsisten. Jangan membiarkan kegagalan pada salah satu tahap meninggalkan kondisi data yang berbeda.
+14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus dengan `try/catch` atau `catchError` sesuai aturan global penanganan error Future yang dilepas.
 
 **Larangan:**
 - Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
 - Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
 - Jangan gunakan ID yang sama untuk notifikasi uji coba dan pengingat utama.
 - Jangan menyatakan fitur notifikasi aktif tanpa memeriksa izin sistem terlebih dahulu.
+- Jangan mengandalkan callback tap biasa untuk menangani notifikasi yang meluncurkan aplikasi dari kondisi terminated.
+- Jangan memproses kategori notifikasi yang tidak dikenal tanpa pencatatan peringatan.
+- Jangan mengubah preferensi tanpa memastikan jadwal sistem operasi konsisten.
 
 **Alasan:**
 Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
 
 **Contoh benar:**
 ```dart
-// Pisahkan ID notifikasi uji coba dari pengingat utama.
-static const int _idPengingatHarian = 1001;
-static const int _idUjiCoba = 1002;
-
-// Periksa izin sebelum menyimpan status aktif.
-final izinDiberikan = await mintaIzinDanPeriksa();
-if (!izinDiberikan) {
-  await setAktif(false);
-  return;
+// Menangani tap notifikasi pada tiga kondisi lifecycle.
+final launchDetails = await _plugin.getNotificationAppLaunchDetails();
+if (launchDetails?.didNotificationLaunchApp ?? false) {
+  final response = launchDetails!.notificationResponse;
+  _navigasiBerdasarkanPayload(response?.payload);
 }
-await jadwalkanPengingatHarian(jam: jam, menit: menit);
+
+// Validasi payload dengan kategori yang dikenal.
+String? kategori;
+String? id;
+if (payload != null) {
+  for (final part in payload.split('&')) {
+    final kv = part.split('=');
+    if (kv.length == 2) {
+      if (kv[0] == 'kategori') kategori = kv[1];
+      if (kv[0] == 'id') id = kv[1];
+    }
+  }
+}
+if (kategori == 'pengingat_harian') {
+  unawaited(Nav.pushAndRemoveUntil(context, const Home())
+      .catchError((Object e, StackTrace s) {
+    L.e('Gagal navigasi dari notifikasi: $e $s');
+  }));
+} else {
+  L.w('kategori notifikasi tidak dikenal: $kategori');
+}
 ```
 
 **Contoh salah:**
 ```dart
-// Menggunakan ID yang sama untuk uji coba dan pengingat utama.
-await _plugin.show(id: _idPengingatHarian, ...); // uji coba menimpa jadwal utama
+// Mengandalkan callback tap biasa untuk kondisi terminated.
+static void _onTapNotifikasi(NotificationResponse response) {
+  Nav.pushAndRemoveUntil(context, const Home()); // tanpa penanganan error
+}
 
-// Menyimpan status aktif tanpa memeriksa izin.
-await jadwalkanPengingatHarian(jam: jam, menit: menit);
-await setAktif(true); // izin mungkin belum diberikan
+// Memproses kategori tidak dikenal tanpa validasi.
+if (kategori != null) {
+  Nav.pushAndRemoveUntil(context, const HalamanLain()); // kategori tidak divalidasi
+}
 ```
 
 **Sumber evaluasi:**
-- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`, `9dff35ade58c73784ce27927efad98b429ee97cb`, `a30b6b6e4377b55eadecb6b83b0e4c05faa985b5`
 - File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/main.dart`, `lib/app.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `android/app/src/main/AndroidManifest.xml`, `saran.md`
