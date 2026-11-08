@@ -65,7 +65,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum dikerjakan
+- Status:kerjakan
 - Masalah: Pada `form_biodata.dart`, form menggunakan `InputTeks`, `InputAngka`, dan `InputRupiah` yang menyediakan `TextFormField` dan validator, tetapi tidak ditemukan pembungkus `Form` dan mekanisme `GlobalKey<FormState>`. Method `_simpan()` tidak menjalankan validasi sebelum penyimpanan. `penurunanPerMinggu` menggunakan `int.tryParse(...) ?? 0` yang mengganti input tidak valid dengan `0`. Validator bawaan `InputAngka` tidak memastikan nilai lebih besar dari nol. Tanggal mulai tapering (`_tanggalMulaiTapering`) belum dipastikan tidak null sebelum penyimpanan, khususnya ketika mode bertahap aktif. Akibatnya mode tapering dapat tersimpan tanpa penurunan rokok yang valid.
 - Solusi: Validasi seluruh input sebelum penyimpanan (panggil `validate()` pada form atau mekanisme validasi yang setara), tambahkan validasi khusus agar penurunan mingguan merupakan bilangan bulat positif, pastikan tanggal mulai tapering valid sebelum menyimpan, dan jangan menyimpan nilai pengganti (`0`) yang menyembunyikan input tidak valid.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L492); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L937)
@@ -74,7 +74,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Pada `biodata_screen.dart` dan `form_biodata.dart`, beberapa `Future` dilepas menggunakan `unawaited(...)` tanpa penanganan error: `Nav.to(...)` pada `biodata_screen.dart` (sekitar baris 92-97 dan 160-168), serta `EasyLoading.show(...)`, `Nav.pushAndRemoveUntil(...)`, dan `EasyLoading.dismiss()` pada `form_biodata.dart` (sekitar baris 168-173, 197, dan 208). Kegagalan pada Future tersebut tidak dicatat, sehingga error dapat menjadi unhandled dan sulit ditelusuri.
 - Solusi: Bungkus setiap Future yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan penanganan error Future yang dilepas. Untuk `Nav.pushAndRemoveUntil(...)` dan `EasyLoading.show(...)`/`EasyLoading.dismiss()` gunakan pola `.catchError((Object e, StackTrace s) { L.e(...); })`.
 - Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L226); [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L375)
@@ -94,12 +94,12 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: Belum dikerjakan
+- Status: Selesai
 - Masalah: Pada `sqflite.dart`, method `_onUpgrade()` memanggil `L.i('oldVersion=$oldVersion, newVersion=$newVersion')`. Namun database dibuka di `main.dart` melalui `AppDatabase.database` sebelum `runApp()`, sedangkan `L.init(ref.container)` baru dipanggil di `app.dart` dalam `initState()` setelah `runApp()`. Akibatnya log tersebut berjalan sebelum `L` diinisialisasi, bertentangan dengan aturan proyek yang mewajibkan penggunaan `debugPrint()` dengan pengecekan `kDebugMode` pada jalur yang belum melewati `L.init()`.
 - Solusi: Ganti pemanggilan `L.i(...)` pada `_onUpgrade()` (dan jalur eksekusi sebelum `L.init()`) dengan `debugPrint(...)` yang dibungkus pengecekan `kDebugMode`, atau pindahkan logging ke titik setelah `L.init()` terpanggil.
 - Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L15)
 - File bermasalah: [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L87)
-- Prompt:
+- Prompt: ubah menjadi debugprint
 
 #### Task 3
 
@@ -162,3 +162,65 @@ Tidak ada temuan.
 - File bermasalah: [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L11); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L14); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L34)
 - Prompt:
 
+# Kelompok 8
+
+## File terdampak
+
+- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
+
+## Sedang
+
+#### Task 1
+
+- Status: Selesai
+- Masalah: Pada `dashboard_screen.dart`, beberapa `Future` dari `Nav.to(...)` dilepas menggunakan `unawaited(...)` tanpa penanganan error (baris 92, 198, 274, dan 389). Kegagalan navigasi pada Future tersebut tidak dicatat, sehingga error dapat menjadi unhandled dan sulit ditelusuri.
+- Solusi: Bungkus setiap Future yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan penanganan error Future yang dilepas.
+- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L226); [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L375)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L92); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L198); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L274); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L389)
+- Prompt:
+
+#### Task 2
+
+- Status: Selesai
+- Masalah: Pada `dashboard_screen.dart` sekitar baris 312-322, perhitungan `uangTerbuang` melakukan pembagian dengan `biodata.batangPerBungkus` tanpa guard pembagian dengan nol. Jika nilai `batangPerBungkus` adalah 0, hasil perhitungan dapat menjadi Infinity/NaN dan tampilan kerugian menjadi tidak valid.
+- Solusi: Tambahkan guard pembagian dengan nol (mis. `if (biodata.batangPerBungkus == 0) return 0;` atau gunakan getter yang sudah memiliki guard pada ekstensi model), agar perhitungan tetap aman.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L346); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L723)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L322)
+- Prompt:
+
+#### Task 3
+
+- Status: Belum dikerjakan
+- Masalah: Pada `dashboard_screen.dart` sekitar baris 313-318, perhitungan `totalHariMerokok` menggunakan `tanggalBerhenti.difference(tanggalMulaiMerokok).inDays` tanpa normalisasi tanggal ke komponen tanggal saja. Hasil perhitungan hari dapat bergeser akibat komponen waktu pada nilai `DateTime`.
+- Solusi: Normalisasi kedua tanggal dengan `DateTime(tanggal.year, tanggal.month, tanggal.day)` sebelum menghitung selisih hari, agar hasil perhitungan berbasis hari akurat.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L303); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L620)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L313)
+- Prompt:
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `dashboard_screen.dart`, pemanggilan `L.i(...)` berada langsung di dalam `build()` (baris 39, 75, dan 81), sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam `build()`.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L11); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L39); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L75); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L81)
+- Prompt:
+
+# Kelompok 9
+
+## File terdampak
+
+- [diary_craving_notifier.dart](lib/fitur/diary_craving/notifier/diary_craving_notifier.dart)
+
+## Rendah
+
+#### Task 1
+
+- Status: Selesai
+- Masalah: Pada `diary_craving_notifier.dart`, method `tambah()` (baris 39) dan `ubah()` (baris 62) mencatat properti model secara terurai (`craving.id` dan `craving.pemicu`) alih-alih menampilkan objek model langsung.
+- Solusi: Ganti log tersebut dengan `L.i('craving=$craving')` agar format log singkat dan konsisten.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L8); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L12)
+- File bermasalah: [diary_craving_notifier.dart](lib/fitur/diary_craving/notifier/diary_craving_notifier.dart#L39); [diary_craving_notifier.dart](lib/fitur/diary_craving/notifier/diary_craving_notifier.dart#L62)
+- Prompt:

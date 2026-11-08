@@ -36,7 +36,7 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
   }
 
   Future<void> tambah(DiaryCravingModel craving) async {
-    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    L.i('craving=$craving');
     try {
       final dataLama = await future;
       final op = const SqfliteOp();
@@ -59,7 +59,7 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
   }
 
   Future<void> ubah(DiaryCravingModel craving) async {
-    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    L.i('craving=$craving');
     try {
       final dataLama = await future;
       final op = const SqfliteOp();

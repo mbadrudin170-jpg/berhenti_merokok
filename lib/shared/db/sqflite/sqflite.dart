@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
 import 'package:path/path.dart';
-import 'package:share_global_saya/core_shared.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Konfigurasi dan akses database SQLite untuk aplikasi berhenti_merokok.
@@ -84,7 +84,9 @@ class AppDatabase {
     int oldVersion,
     int newVersion,
   ) async {
-    L.i('oldVersion=$oldVersion, newVersion=$newVersion');
+    if (kDebugMode) {
+      debugPrint('oldVersion=$oldVersion, newVersion=$newVersion');
+    }
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
