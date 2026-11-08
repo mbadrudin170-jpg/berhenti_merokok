@@ -2,12 +2,12 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: 98e24860f04f7624bda99a9c796a654299cc537f
+Commit terakhir dievaluasi penuh: 07fc8df6cf5ea28fe7133b1aee5dae7b05b96590
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: f4d850b1aeca0c9a5e31fd637e62fef5cc1f4bc8 sampai 98e24860f04f7624bda99a9c796a654299cc537f
-Jumlah commit dievaluasi: 3
+Rentang evaluasi: eea59603a2bc73de164b93256de4157eea0425f4 sampai 07fc8df6cf5ea28fe7133b1aee5dae7b05b96590
+Jumlah commit dievaluasi: 15
 Status evaluasi: Selesai
-Ringkasan: Audit perubahan non-Markdown pada fitur pengurutan Impian. Pemeriksaan aturan proyek dan source SDK/paket telah diselesaikan.
+Ringkasan: Audit 15 commit setelah checkpoint sebelumnya. Perubahan dashboard (format hari hilang), impian (progres + sorted collection + label pengurutan), notifikasi (atomik preferensi, retry navigasi, guard platform, dukungan macOS, exception khusus izin), Home (SafeArea/padding + tab lazy), serta aturan/command/task. Ditemukan 1 temuan UI baru (padding ganda pada Home) yang dicatat di task.md.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 

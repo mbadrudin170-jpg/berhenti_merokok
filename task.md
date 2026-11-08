@@ -11,50 +11,7 @@ Tidak ada temuan.
 
 ## Sedang
 
-#### Task 1
-
-- Status: Selesai
-- Kategori: Bug Runtime
-- Masalah: Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 136-143), comparator `mendekatiTerkumpulZa` menukar operand `a` dan `b` pada perhitungan `sisa` tetapi membandingkan dalam arah yang sama, sehingga hasilnya identik dengan `mendekatiTerkumpulAz`. Verifikasi dengan data contoh (uang terkumpul 0, 50, 100, 150, 300 dan target 50, 100, 200) menunjukkan kedua pilihan selalu menghasilkan urutan yang sama. Pilihan "besar" (descending) tidak pernah menghasilkan urutan terbalik. Label "Paling mendekati terkumpul (besar)" juga berpotensi membingungkan karena secara aktual berarti sisa terbesar (paling jauh dari terkumpul).
-- Solusi: Perbaiki comparator `mendekatiTerkumpulZa` agar benar-benar descending, misalnya:
-  ```dart
-  case SortImpian.mendekatiTerkumpulZa:
-    final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
-    final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
-    return sisaB.compareTo(sisaA);
-  ```
-  Pertimbangkan juga memperjelas label "Paling mendekati terkumpul (besar)" menjadi "Sisa terbesar" agar maknanya tidak ambigu.
-- Aturan Dilanggar: Tidak ada.
-- File Bermasalah: [impian_screen.dart:136-143](lib/fitur/impian/screens/impian_screen.dart#L136-L143)
-
-#### Task 2
-
-- Status: Selesai
-- Kategori: Bug Runtime
-- Masalah: `lib/fitur/impian/screens/impian_screen.dart` (baris 125-145) menggunakan `[...listImpianAsli]..sort(...)`. Aturan proyek mengarahkan penggunaan fungsi `sorted` dari paket `collection` untuk pengurutan koleksi. Paket `collection` tidak terdaftar sebagai dependency langsung pada `pubspec.yaml` (hanya transitive).
-- Solusi: Ganti `[...listImpianAsli]..sort(...)` dengan `listImpianAsli.sorted(...)`, tambahkan `import 'package:collection/collection.dart';`, dan daftarkan `collection` sebagai dependency langsung bila diperlukan.
-- Aturan Dilanggar: [aturan_pemanfaatan_sdk_dan_paket.md:31-49](.agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md#L31-L49)
-- File Bermasalah: [impian_screen.dart:125-145](lib/fitur/impian/screens/impian_screen.dart#L125-L145)
-
 ## Rendah
-
-#### Task 4
-
-- Status: Selesai
-- Kategori: UI
-- Masalah: Pada `lib/fitur/impian/screens/impian_screen.dart` (baris 209-216), `Row` dengan `MainAxisAlignment.spaceBetween` menampilkan dua `Text` tanpa `Flexible`/`Expanded`. Pada layar sempit atau skala teks besar, total lebar teks dapat melebihi lebar kartu dan menyebabkan overflow. Nominal target juga ditampilkan tanpa label, sehingga maknanya kurang jelas dibanding "Sisa".
-- Solusi: Bungkus salah satu atau kedua `Text` dengan `Flexible`/`Expanded`, atau gunakan `Wrap`/`FittedBox` sesuai kebutuhan. Tambahkan label singkat (mis. "Target") pada nominal kanan agar maknanya jelas.
-- Aturan Dilanggar: [optimasi_ui.md](.agents/rules/global/optimasi_ui.md) (bagian 3 — Penanganan Text Overflow)
-- File Bermasalah: [impian_screen.dart:209-216](lib/fitur/impian/screens/impian_screen.dart#L209-L216)
-
-#### Task 5
-
-- Status: Selesai
-- Kategori: UI
-- Masalah: `lib/fitur/dashboard/screens/dashboard_screen.dart` dan `lib/fitur/impian/screens/impian_screen.dart` menambahkan `backgroundColor: Theme.of(context).colorScheme.surface`, `elevation: 0`, dan `forceMaterialTransparency: false` pada `AppBar`. Nilai tersebut merupakan default pada Material 3 (Flutter 3.47.9): `backgroundColor` default ke `colorScheme.surface`, `elevation` default `0`, `forceMaterialTransparency` default `false`.
-- Solusi: Pertahankan jika ingin menegaskan opasitas app bar; atau hapus baris redundan untuk menyederhanakan. `scrolledUnderElevation: 2` tetap berguna sebagai pemisah visual saat scroll.
-- Aturan Dilanggar: Tidak ada.
-- File Bermasalah: [dashboard_screen.dart:84-90](lib/fitur/dashboard/screens/dashboard_screen.dart#L84-L90), [impian_screen.dart:86-93](lib/fitur/impian/screens/impian_screen.dart#L86-L93), [impian_screen.dart:98-105](lib/fitur/impian/screens/impian_screen.dart#L98-L105)
 
 #### Task 7
 
@@ -77,25 +34,7 @@ Tidak ada temuan.
 
 ## Tinggi
 
-#### Task 1
-
-- Status: Selesai
-- Kategori: Bug Runtime
-- Masalah: `NotifikasiService.inisialisasi()` memanggil `mintaIzin()` saat aplikasi dibuka, termasuk pada Web. Dokumentasi plugin menyatakan izin Web harus diminta hanya sebagai respons interaksi pengguna. Selain itu, browser tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini. `mintaIzin()` dan UI pengaturan belum memisahkan kemampuan berdasarkan platform, dan `catch (Exception)` tidak menangkap `UnsupportedError`. Permintaan izin otomatis pada Web dapat ditolak atau diblokir browser, dan fitur terjadwal tidak tersedia pada Web.
-- Solusi: Jangan meminta izin Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Pisahkan kemampuan notifikasi berdasarkan platform dan jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung. Tangani `UnsupportedError` secara eksplisit.
-- Aturan Dilanggar: [aturan_notifikasi.md:4](.agents/rules/global/aturan_notifikasi.md#L4), [optimasi_bug_runtime.md:6](.agents/rules/global/optimasi_bug_runtime.md#L6)
-- File Bermasalah: [main.dart](lib/main.dart), [notifikasi_service.dart](lib/shared/notifikasi/notifikasi_service.dart), [pengaturan_screen.dart](lib/fitur/pengaturan/screens/pengaturan_screen.dart)
-
 ## Sedang
-
-#### Task 2
-
-- Status: Selesai
-- Kategori: Bug Runtime
-- Masalah: `_ubahNotifikasi()`, `_pilihWaktu()`, dan `_ujiNotifikasi()` menjalankan operasi asynchronous lalu menggunakan `setState()` atau `context`. Pemeriksaan `mounted` belum konsisten setelah setiap `await`.
-- Solusi: Periksa `mounted` setelah setiap operasi asynchronous sebelum menggunakan `setState()` atau `context`.
-- Aturan Dilanggar: [optimasi_bug_runtime.md:4](.agents/rules/global/optimasi_bug_runtime.md#L4)
-- File Bermasalah: [pengaturan_screen.dart](lib/fitur/pengaturan/screens/pengaturan_screen.dart)
 
 #### Task 3
 
@@ -108,15 +47,6 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 4
-
-- Status: Selesai
-- Kategori: Bug Runtime
-- Masalah: Pada `lib/fitur/pengaturan/screens/pengaturan_screen.dart` (baris 116), kegagalan izin dideteksi dengan `e.toString().contains('Izin notifikasi tidak diberikan')`. Pencocokan string bergantung pada teks exception yang sama persis, sehingga rentan jika pesan berubah.
-- Solusi: Gunakan tipe exception khusus atau hasil boolean dari operasi izin, bukan pencocokan string, agar deteksi kegagalan tidak bergantung pada teks.
-- Aturan Dilanggar: Tidak ada.
-- File Bermasalah: [pengaturan_screen.dart:113-129](lib/fitur/pengaturan/screens/pengaturan_screen.dart#L113-L129)
-
 #### Task 5
 
 - Status: Belum
@@ -126,11 +56,29 @@ Tidak ada temuan.
 - Aturan Dilanggar: [aturan_pemanfaatan_sdk_dan_paket.md](.agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md) (bagian 4.3.C — Penanganan Kesalahan)
 - File Bermasalah: [notifikasi_service.dart:33-59](lib/shared/notifikasi/notifikasi_service.dart#L33-L59)
 
-#### Task 6
+---
 
-- Status: Selesai
-- Kategori: Bug Runtime
-- Masalah: Pada `lib/shared/notifikasi/notifikasi_service.dart`, method `jadwalkanPengingatHarian()` (baris 104-112) melempar `UnsupportedError` pada `TargetPlatform.macOS`, padahal plugin `flutter_local_notifications` v22.3.3 mendukung notifikasi terjadwal pada macOS melalui `zonedSchedule`. Aturan hanya melarang penjadwalan berulang pada Web dan Linux.
-- Solusi: Hapus `TargetPlatform.macOS` dari kondisi yang melempar `UnsupportedError`, atau pisahkan pengecekan berdasarkan kemampuan aktual platform.
-- Aturan Dilanggar: [aturan_notifikasi.md:1](.agents/rules/global/aturan_notifikasi.md#L1)
-- File Bermasalah: [notifikasi_service.dart:104-112](lib/shared/notifikasi/notifikasi_service.dart#L104-L112)
+# Kelompok 3
+
+## File Terdampak
+
+- [home.dart](lib/home.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status: Belum
+- Kategori: UI
+- Masalah: `lib/home.dart` membungkus `IndexedStack` (yang berisi layar lengkap dengan `Scaffold`, `SafeArea`, dan `Padding`) dengan `SafeArea` dan `Padding(const EdgeInsets.all(16))`. Hal ini menyebabkan `SafeArea` dan padding tepi layar diterapkan dua kali (di Home dan di tiap layar tab), sehingga konten (termasuk AppBar) mendapat inset ganda dan jarak tepi layar berlebih.
+- Solusi: Pilih satu lapisan yang bertanggung jawab atas `SafeArea` dan padding tepi layar. Jika layar tab tetap mengelola `SafeArea` dan padding sendiri, hapus pembungkus `SafeArea` + `Padding` pada Home; atau sebaliknya konsolidasikan. Pastikan tidak ada padding ganda dan AppBar tetap edge-to-edge.
+- Aturan Dilanggar: [optimasi_ux.md](.agents/rules/global/optimasi_ux.md) bagian 10 (Padding tepi layar) dan bagian 14 (SafeArea).
+- File Bermasalah: [home.dart](lib/home.dart)
+
+## Rendah
+
+Tidak ada temuan.

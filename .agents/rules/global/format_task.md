@@ -1,368 +1,308 @@
-# Aturan Format Penulisan `task.md`
+# ATURAN FORMAT PENULISAN task.md
 
-**Path aturan:** `.agents/rules/global/format_task.md`  
-**File yang diatur:** `task.md` pada root repositori.
+**Lokasi file aturan:** `.agents/rules/global/format_task.md`  
+**File yang diatur:** `task.md` di root repositori  
+**Cakupan:** Semua orang dan AI yang membuat, menambahkan, memperbarui, menghapus, atau menyusun ulang isi `task.md`.
 
-## 1. Tujuan
+## 1. Tujuan dan ketentuan utama
 
-File ini menetapkan standar penulisan, penyusunan, pengelompokan, dan pembaruan seluruh task di `task.md` pada root repositori.
+Aturan ini bertujuan menjaga agar seluruh isi `task.md` selalu memiliki format penulisan, struktur, pengelompokan, dan informasi yang konsisten.
 
-Tujuannya:
+Ketentuan wajib:
 
-1. Memastikan seluruh AI dan manusia menggunakan format penulisan yang konsisten.
-2. Memastikan setiap task dikelompokkan berdasarkan file yang terdampak.
-3. Memudahkan identifikasi file yang harus diperbaiki.
-4. Memudahkan penentuan prioritas pengerjaan.
-5. Mencegah duplikasi, kehilangan informasi, dan ketidakkonsistenan ketika task diperbarui.
-6. Memastikan setiap rekomendasi solusi dapat dipahami dan dilaksanakan oleh developer.
+1. Setiap orang dan AI yang akan mengubah `task.md` wajib membaca dan memahami seluruh isi file aturan ini terlebih dahulu.
+2. Setiap penambahan atau pembaruan task wajib mengikuti struktur dan format yang ditetapkan dalam aturan ini.
+3. Jangan membuat format penulisan sendiri atau mengubah struktur yang sudah ditetapkan.
+4. Jangan menghilangkan informasi atau field yang sudah menjadi bagian dari format task.
+5. Jangan mengubah isi field `Prompt` karena field tersebut hanya boleh diisi dan diperbarui oleh pemilik repositori.
+6. Jangan membuat informasi, nama file, lokasi file, nomor baris, atau pelanggaran aturan berdasarkan perkiraan. Periksa kondisi repositori terlebih dahulu.
+7. Jika menemukan ketidakjelasan atau informasi yang belum dapat diverifikasi, tuliskan secara eksplisit bahwa informasi tersebut belum diketahui atau belum diverifikasi.
 
-## 2. Cakupan Penerapan
+## 2. Pengelompokan task berdasarkan file terdampak
 
-1. Aturan ini berlaku untuk seluruh pihak yang menambahkan, memperbarui, mengubah, memindahkan, atau menghapus isi `task.md` di root repositori.
-2. AI wajib membaca dan memahami file ini sebelum melakukan perubahan terhadap `task.md`.
-3. Aturan ini berlaku untuk seluruh kategori temuan, termasuk Bug Runtime, UX, dan UI.
-4. Tidak boleh membuat format penulisan alternatif tanpa persetujuan pengguna.
-5. Seluruh isi `task.md` wajib mengikuti struktur yang ditentukan dalam dokumen ini.
-6. Perubahan terhadap task tidak boleh menghilangkan informasi penting dari temuan sebelumnya.
+**Ketentuan utama: task harus dikelompokkan berdasarkan hubungan file yang terdampak, bukan berdasarkan kemiripan masalah atau jenis pekerjaan.**
 
-## 3. Aturan Pengelompokan Task Berdasarkan File Terdampak
+### 2.1. Ketentuan pembentukan kelompok
 
-### 3.1 Prinsip Pengelompokan
+1. Setiap task harus mencantumkan seluruh file yang perlu diubah atau diperbaiki untuk menyelesaikan task tersebut.
+2. Dua atau lebih task wajib berada dalam kelompok yang sama apabila memiliki setidaknya satu file terdampak yang sama.
+3. Pengelompokan berlaku secara berantai (transitif). Apabila Task A dan Task B memiliki file yang sama, kemudian Task B dan Task C juga memiliki file yang sama, ketiganya harus berada dalam satu kelompok.
+4. Task yang tidak memiliki hubungan file terdampak dengan task lainnya harus ditempatkan dalam kelompok yang berbeda.
+5. Satu task hanya boleh dicantumkan satu kali. Jangan menggandakan task hanya untuk memasukkannya ke beberapa kelompok.
+6. Setiap kelompok wajib memiliki daftar `File terdampak` yang berisi gabungan seluruh file terdampak dari semua task di kelompok tersebut.
+7. File yang sama hanya boleh dicantumkan satu kali dalam daftar `File terdampak` kelompok.
+8. Urutkan daftar file berdasarkan path secara alfabetis agar konsisten.
+9. Nomor kelompok dimulai dari `Kelompok 1` dan dilanjutkan secara berurutan.
+10. Jika file yang terdampak belum dapat diketahui, jangan menebak. Tempatkan task tersebut dalam kelompok tersendiri dengan keterangan `Belum teridentifikasi` sampai file terdampaknya diketahui.
 
-1. Setiap task wajib memiliki daftar file yang terdampak.
-2. Task yang memiliki setidaknya satu file terdampak yang sama wajib dimasukkan ke dalam kelompok yang sama.
-3. Pengelompokan menggunakan prinsip keterhubungan file secara transitif.
-4. Apabila Task A dan Task B memiliki file yang sama, keduanya masuk kelompok yang sama.
-5. Apabila Task C memiliki file yang sama dengan Task A atau Task B, Task C juga wajib dimasukkan ke kelompok tersebut.
-6. Task yang tidak memiliki hubungan file dengan kelompok lain wajib ditempatkan pada kelompok tersendiri.
-7. Setiap task hanya boleh tercatat satu kali. Jangan menduplikasi task ke beberapa kelompok.
+### 2.2. Contoh pengelompokan
 
-### 3.2 Contoh Pengelompokan
+Misalnya ditemukan task berikut:
 
-Data awal:
+- Task A memperbaiki file A, B, dan C.
+- Task B memperbaiki file A saja.
+- Task C memperbaiki file C dan D.
+- Task D memperbaiki file E saja.
 
-| Task   | File terdampak                           |
-| ------ | ---------------------------------------- |
-| Task A | `lib/a.dart`, `lib/b.dart`, `lib/c.dart` |
-| Task B | `lib/a.dart`                             |
-| Task C | `lib/c.dart`, `lib/d.dart`               |
-| Task D | `lib/e.dart`                             |
+Hasil pengelompokan yang benar:
 
-Hasil pengelompokan:
+**Kelompok 1:**
 
-**Kelompok 1**
+- Task A: file A, B, dan C.
+- Task B: file A.
+- Task C: file C dan D.
+- File terdampak kelompok: A, B, C, dan D.
 
-- Task A
-- Task B
-- Task C
+Task A, B, dan C berada dalam satu kelompok karena memiliki hubungan file terdampak, baik secara langsung maupun berantai.
 
-File terdampak: `lib/a.dart`, `lib/b.dart`, `lib/c.dart`, `lib/d.dart`.
+**Kelompok 2:**
 
-**Kelompok 2**
+- Task D: file E.
+- File terdampak kelompok: E.
 
-- Task D
+Task D berada dalam kelompok berbeda karena tidak memiliki file terdampak yang sama dengan task lainnya.
 
-File terdampak: `lib/e.dart`.
+## 3. Struktur kelompok dan prioritas
 
-### 3.3 Ketentuan Daftar File Terdampak
+Setiap kelompok wajib menggunakan struktur berikut:
 
-1. Setiap kelompok wajib memiliki bagian `File Terdampak`.
-2. Cantumkan seluruh file yang berhubungan dengan task dalam kelompok tersebut.
-3. Setiap path file hanya boleh dicantumkan satu kali dalam daftar kelompok.
-4. Gunakan path relatif terhadap root repositori.
-5. Gunakan tautan Markdown yang mengarah ke file sebenarnya.
-6. Urutkan daftar file secara alfabetis.
-7. Jangan mengarang path file.
-8. Pastikan file benar-benar ada atau telah teridentifikasi berdasarkan pemeriksaan kode dan struktur repositori.
-9. Apabila file belum dapat diidentifikasi, jangan membuat asumsi. Tandai sebagai belum teridentifikasi dan laporkan keterbatasannya.
+1. Judul kelompok menggunakan format `# Kelompok N`.
+2. Daftar file menggunakan heading `## File terdampak`.
+3. Task dikelompokkan berdasarkan prioritas.
+4. Urutan prioritas mengikuti urutan dari yang paling tinggi ke yang lebih rendah.
+5. Gunakan heading `## Tinggi` dan `## Rendah` sebagaimana format utama yang ditetapkan dalam contoh.
+6. Apabila repositori telah menetapkan kategori prioritas lain, seperti `Sedang`, pertahankan kategori tersebut di antara `Tinggi` dan `Rendah`. Jangan membuat atau menghapus kategori prioritas tanpa persetujuan pemilik repositori.
+7. Penomoran task dimulai kembali dari `Task 1` pada setiap bagian prioritas dalam setiap kelompok.
+8. Setiap task wajib memiliki field yang sama dan mengikuti urutan field yang ditentukan pada bagian 4.
 
-## 4. Struktur Prioritas Task
+## 4. Format wajib setiap task
 
-Setiap kelompok wajib memiliki tiga bagian prioritas:
+Setiap task wajib menggunakan urutan field berikut:
 
-1. Tinggi
-2. Sedang
-3. Rendah
+### 4.1. Status
+
+Menunjukkan kondisi pengerjaan task.
+
+Gunakan hanya nilai berikut:
+
+- `Belum dikerjakan`: pekerjaan belum dimulai.
+- `Sedang dikerjakan`: pekerjaan sudah dimulai, tetapi belum selesai.
+- `Selesai`: seluruh pekerjaan sudah diselesaikan dan hasilnya telah diverifikasi.
 
 Ketentuan:
 
-- Tempatkan setiap task pada prioritas yang sesuai.
-- Jangan menghilangkan tingkat prioritas yang tidak memiliki task. Tuliskan `Tidak ada temuan.`.
-- Jangan mengubah prioritas tanpa alasan yang dapat dipertanggungjawabkan.
-- Setiap task hanya boleh memiliki satu prioritas utama.
-- Urutkan task dalam prioritas yang sama berdasarkan urutan pengerjaan yang direkomendasikan.
+- Jangan menggunakan istilah yang tidak konsisten seperti `setengah`, `proses`, atau `kerjakan`.
+- Istilah `kerjakan` merupakan instruksi untuk melakukan pekerjaan, bukan status pengerjaan.
+- Jangan menetapkan status `Selesai` hanya berdasarkan asumsi. Harus ada bukti bahwa pekerjaan benar-benar selesai.
 
-## 5. Format Penulisan Setiap Task
+### 4.2. Masalah
 
-Gunakan struktur berikut untuk setiap task.
-
-### 5.1 Identitas Task
-
-Gunakan heading:
-
-`#### Task 1`
-
-Nomor task dimulai dari 1 untuk setiap kelompok dan bertambah secara berurutan.
-
-Jangan menggunakan nomor task yang sama untuk dua task dalam kelompok yang sama.
-
-### 5.2 Status
-
-Gunakan format:
-
-`- Status: [status]`
-
-Status yang diperbolehkan:
-
-- `Belum`: Task belum dikerjakan.
-- `Setengah`: Task sudah dikerjakan sebagian, tetapi belum selesai.
-- `Kerjakan`: Task sudah diidentifikasi dan siap untuk dikerjakan.
-- `Selesai`: Task sudah diselesaikan dan hasilnya telah diverifikasi.
-
-Jangan menggunakan istilah status lain tanpa persetujuan pengguna.
-
-### 5.3 Kategori
-
-Gunakan format:
-
-`- Kategori: [kategori]`
-
-Kategori yang digunakan:
-
-- Bug Runtime
-- UX
-- UI
-
-Pertahankan kategori temuan agar klasifikasi yang sudah digunakan dalam `task.md` tidak hilang.
-
-### 5.4 Masalah
-
-Gunakan format:
-
-`- Masalah: [penjelasan masalah]`
+Berisi penjelasan masalah yang ditemukan pada task tersebut.
 
 Ketentuan:
 
 1. Jelaskan masalah secara spesifik dan mudah dipahami.
-2. Jelaskan kondisi aktual yang ditemukan.
-3. Jelaskan dampak masalah terhadap aplikasi, pengguna, atau kode.
-4. Hindari penjelasan yang terlalu umum.
-5. Jangan menyatakan dugaan sebagai fakta.
-6. Apabila penyebab belum diketahui, jelaskan bahwa penyebab masih perlu diperiksa.
+2. Jelaskan kondisi aktual yang menyebabkan task diperlukan.
+3. Gunakan informasi berdasarkan hasil pemeriksaan kode, file, dokumentasi, atau aturan yang relevan.
+4. Jangan menuliskan dugaan sebagai fakta.
+5. Apabila informasi belum cukup, jelaskan bagian yang belum diketahui.
 
-### 5.5 Solusi
+### 4.3. Solusi
 
-Gunakan format:
-
-`- Solusi: [rekomendasi penyelesaian]`
+Berisi rekomendasi penyelesaian masalah.
 
 Ketentuan:
 
-1. Berikan solusi yang spesifik dan dapat dilaksanakan.
-2. Jelaskan bagian yang harus diperbaiki.
-3. Berikan contoh implementasi apabila diperlukan untuk memperjelas solusi.
-4. Contoh harus relevan dengan struktur kode aktual.
-5. Jangan memberikan solusi yang bertentangan dengan aturan repositori.
-6. Jangan merekomendasikan perubahan yang tidak berhubungan dengan masalah.
-7. Apabila terdapat beberapa alternatif, pisahkan rekomendasi utama dan alternatifnya.
-8. Jangan menganggap solusi sudah diterapkan sebelum diverifikasi.
+1. Jelaskan solusi yang direkomendasikan secara spesifik.
+2. Jelaskan bagian atau perilaku yang perlu diperbaiki.
+3. Berikan contoh penerapan apabila contoh dapat membantu memperjelas solusi.
+4. Pastikan solusi berhubungan langsung dengan masalah yang dijelaskan.
+5. Jangan menambahkan pekerjaan lain yang tidak diperlukan untuk menyelesaikan masalah tersebut.
+6. Solusi merupakan rekomendasi teknis, bukan klaim bahwa perubahan sudah diterapkan.
 
-### 5.6 Aturan Dilanggar
+### 4.4. Aturan dilanggar
 
-Gunakan format:
-
-`- Aturan Dilanggar: [daftar aturan]`
+Berisi seluruh aturan repositori yang terbukti dilanggar oleh masalah tersebut.
 
 Ketentuan:
 
-1. Cantumkan seluruh aturan yang benar-benar dilanggar oleh task.
-2. Gunakan nama file aturan dan nomor baris atau referensi bagian yang relevan.
-3. Gunakan tautan Markdown yang dapat dibuka.
-4. Jangan mengarang nama file aturan, nomor baris, atau isi aturan.
-5. Apabila tidak ada aturan yang dilanggar, tuliskan `Tidak ada.`.
-6. Apabila pelanggaran belum dapat dipastikan, tuliskan `Belum terverifikasi.`.
+1. Periksa aturan repositori yang relevan sebelum mencantumkan pelanggaran.
+2. Cantumkan seluruh aturan yang benar-benar dilanggar, bukan hanya satu aturan yang paling terlihat.
+3. Setiap aturan wajib memiliki tautan menuju file aturan yang tepat.
+4. Sertakan nomor baris apabila lokasi pelanggaran aturan dapat diketahui.
+5. Jangan mencantumkan aturan yang tidak relevan atau belum terbukti dilanggar.
+6. Apabila tidak ditemukan pelanggaran, tuliskan `Tidak ada`.
+7. Apabila pemeriksaan belum dilakukan, tuliskan `Belum diverifikasi`. Jangan menyamakan kondisi ini dengan `Tidak ada`.
+
+### 4.5. File bermasalah
+
+Berisi seluruh file yang perlu diperbaiki atau diubah untuk menyelesaikan task tersebut.
+
+Ketentuan:
+
+1. Cantumkan semua file yang benar-benar perlu diperbaiki.
+2. Setiap file wajib menggunakan path yang benar dan dapat ditemukan di repositori.
+3. Sertakan nomor baris apabila bagian yang bermasalah dapat diketahui.
+4. Jangan mencantumkan file yang hanya dibaca atau diperiksa apabila file tersebut tidak perlu diubah.
+5. Jangan mengarang path atau lokasi kode.
+6. Apabila file belum dapat diidentifikasi, tuliskan `Belum teridentifikasi`.
+7. Daftar file pada bagian ini harus sesuai dengan file yang menjadi dasar pengelompokan task.
+
+### 4.6. Prompt
+
+Field `Prompt` hanya boleh diisi, diubah, atau dihapus oleh pemilik repositori.
+
+Ketentuan:
+
+1. AI dan pihak lain dilarang mengisi field ini.
+2. AI dan pihak lain dilarang mengubah, memperbaiki redaksi, meringkas, menerjemahkan, atau menghapus isi yang sudah ditulis pemilik repositori.
+3. Apabila field masih kosong, biarkan tetap kosong.
+4. Field ini wajib tetap tersedia pada setiap task, termasuk task prioritas rendah.
+5. Jangan menggantinya dengan rekomendasi atau instruksi buatan AI.
+
+## 5. Ketentuan tautan dan referensi file
+
+Gunakan sintaks tautan Markdown standar agar nama file dan aturan dapat dibuka melalui tautan.
+
+### 5.1. Tautan file
+
+Gunakan format:
+
+`[Nama file](path/relatif/menuju/file)`
 
 Contoh:
 
-`- Aturan Dilanggar: [optimasi_boilerplate.md:32](.agents/rules/global/optimasi_boilerplate.md#L32)`
+`[File A](lib/fitur/file_a.dart)`
 
-### 5.7 File Bermasalah
+### 5.2. Tautan aturan beserta nomor baris
 
 Gunakan format:
 
-`- File Bermasalah: [daftar file]`
-
-Ketentuan:
-
-1. Cantumkan seluruh file yang benar-benar perlu diperbaiki untuk menyelesaikan task.
-2. Gunakan path relatif terhadap root repositori.
-3. Gunakan tautan Markdown.
-4. Apabila memungkinkan, sertakan nomor baris yang relevan.
-5. Jangan mencantumkan file hanya karena file tersebut berhubungan secara tidak langsung.
-6. File yang hanya perlu diperiksa tetapi tidak perlu diubah tidak boleh dianggap sebagai file bermasalah.
-7. Apabila belum diketahui file mana yang harus diperbaiki, tuliskan `Belum teridentifikasi.`.
+`[Nama aturan](path/relatif/menuju/aturan.md#L32)`
 
 Contoh:
 
-`- File Bermasalah: [tema_notifier.dart:9](lib/fitur/tema/notifier/tema_notifier.dart#L9)`
+`[aturan_boilprate.md](.agents/rules/aturan_boilprate.md#L32)`
 
-## 6. Standar Penulisan Markdown
+Jika perlu menunjukkan rentang baris, gunakan format:
 
-1. Gunakan bahasa Indonesia yang baik dan benar.
-2. Gunakan istilah teknis secara konsisten.
-3. Gunakan heading Markdown sesuai struktur yang ditentukan.
-4. Gunakan format `- Nama Field: Isi`.
-5. Jangan mengubah urutan field dalam task.
-6. Gunakan tautan Markdown dengan format `[nama](path)`.
-7. Hindari penggunaan format tautan yang tidak valid.
-8. Gunakan satu baris kosong untuk memisahkan bagian agar mudah dibaca.
-9. Jangan menggunakan heading yang tidak diperlukan.
-10. Jangan menambahkan penjelasan di luar struktur task apabila tidak diperlukan.
+`[aturan_boilprate.md](.agents/rules/aturan_boilprate.md#L32-L36)`
 
-## 7. Ketentuan Pembaruan Task
+### 5.3. Ketentuan penggunaan tautan
 
-### 7.1 Menambahkan Task
+1. Semua path harus relatif terhadap root repositori karena file `task.md` berada di root.
+2. Gunakan path file yang benar-benar ada di repositori.
+3. Nomor baris harus berdasarkan isi file yang diperiksa saat itu.
+4. Jangan menggunakan nomor baris perkiraan.
+5. Jika nomor baris tidak diketahui, tautkan ke file tanpa menambahkan nomor baris.
+6. Jangan menggunakan format tautan terbalik seperti `(Nama file)[path/file]`. Gunakan format Markdown standar seperti `[Nama file](path/file)`.
 
-1. Periksa terlebih dahulu apakah masalah sudah tercatat.
-2. Jangan menambahkan task duplikat.
-3. Identifikasi seluruh file terdampak.
-4. Tentukan kelompok berdasarkan hubungan file.
-5. Tentukan kategori dan prioritas.
-6. Tuliskan seluruh field sesuai format.
-7. Pastikan rekomendasi solusi dapat dipahami.
+## 6. Ketentuan ketika menambahkan atau memperbarui task
 
-### 7.2 Memperbarui Task
+Setiap kali mengubah `task.md`, lakukan hal berikut:
 
-1. Pertahankan identitas dan informasi task yang masih relevan.
-2. Perbarui status sesuai hasil pekerjaan aktual.
-3. Perbarui masalah atau solusi hanya apabila terdapat informasi baru yang terverifikasi.
-4. Perbarui daftar file apabila cakupan perubahan diketahui bertambah atau berkurang.
-5. Apabila daftar file berubah, evaluasi kembali pengelompokan seluruh task.
-6. Jangan menghapus informasi penting tanpa alasan yang jelas.
+1. Baca seluruh aturan dalam file `.agents/rules/global/format_task.md`.
+2. Periksa struktur dan isi `task.md` yang sudah ada sebelum melakukan perubahan.
+3. Periksa file yang berhubungan dengan task agar daftar file terdampak akurat.
+4. Periksa aturan repositori yang relevan untuk mengidentifikasi pelanggaran.
+5. Tentukan seluruh file yang perlu diubah untuk setiap task.
+6. Kelompokkan task berdasarkan hubungan file terdampak sesuai bagian 2.
+7. Masukkan task ke kelompok dan prioritas yang sesuai.
+8. Gunakan seluruh field dan urutan penulisan yang diwajibkan.
+9. Pastikan daftar file terdampak kelompok merupakan gabungan seluruh file dari task di dalam kelompok tersebut.
+10. Pastikan tidak ada task ganda, kelompok yang salah, tautan yang rusak, atau informasi yang tidak terverifikasi.
+11. Pertahankan isi `Prompt` yang sudah ditulis pemilik repositori tanpa perubahan.
+12. Setelah perubahan, periksa kembali seluruh struktur `task.md` untuk memastikan konsistensinya.
 
-### 7.3 Memindahkan Task
+Jika perubahan pada sebuah task menyebabkan daftar file terdampaknya berubah, lakukan pengelompokan ulang berdasarkan daftar file terbaru. Jangan mempertahankan pengelompokan lama apabila sudah tidak sesuai dengan ketentuan.
 
-Apabila perubahan file terdampak menyebabkan suatu task harus berpindah kelompok:
+## 7. Template baku task.md
 
-1. Periksa kembali hubungan file seluruh task.
-2. Susun ulang kelompok berdasarkan prinsip keterhubungan file.
-3. Pindahkan task ke kelompok yang benar.
-4. Jangan menggandakan task.
-5. Sesuaikan nomor kelompok dan nomor task jika diperlukan.
+Template berikut menjadi acuan format penulisan. Gunakan struktur ini ketika membuat atau menyusun ulang kelompok dan task.
 
-### 7.4 Menghapus Task
-
-Task hanya boleh dihapus apabila:
-
-1. Task terbukti duplikat.
-2. Temuan terbukti tidak valid.
-3. Task tidak lagi relevan berdasarkan hasil pemeriksaan.
-4. Pengguna secara langsung meminta penghapusan.
-
-Jangan menghapus task hanya karena belum dikerjakan atau sulit diperbaiki.
-
-## 8. Template Wajib `task.md`
-
-Seluruh isi `task.md` wajib menggunakan struktur berikut:
-
+```markdown
 # Kelompok 1
 
-## File Terdampak
+## File terdampak
 
-- [file_a.dart](lib/file_a.dart)
-- [file_b.dart](lib/file_b.dart)
-- [file_c.dart](lib/file_c.dart)
+- [path/menuju/file_a.dart](path/menuju/file_a.dart)
+- [path/menuju/file_b.dart](path/menuju/file_b.dart)
 
 ## Tinggi
 
 #### Task 1
 
-- Status: Belum
-- Kategori: Bug Runtime
+- Status: Belum dikerjakan
 - Masalah: Jelaskan masalah yang ditemukan secara spesifik.
-- Solusi: Jelaskan solusi yang direkomendasikan beserta contoh implementasi apabila diperlukan.
-- Aturan Dilanggar: [nama_aturan.md:32](.agents/rules/global/nama_aturan.md#L32)
-- File Bermasalah: [file_a.dart:10](lib/file_a.dart#L10)
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: [Nama aturan](.agents/rules/nama_aturan.md#L32)
+- File bermasalah: [file_a.dart](path/menuju/file_a.dart#L15)
+- Prompt:
 
 #### Task 2
 
-- Status: Kerjakan
-- Kategori: UX
-- Masalah: Jelaskan masalah yang ditemukan.
-- Solusi: Jelaskan solusi yang direkomendasikan.
-- Aturan Dilanggar: Tidak ada.
-- File Bermasalah: [file_b.dart](lib/file_b.dart)
-
-## Sedang
-
-Tidak ada temuan.
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: Tidak ada
+- File bermasalah: [file_b.dart](path/menuju/file_b.dart)
+- Prompt:
 
 ## Rendah
-
-#### Task 3
-
-- Status: Setengah
-- Kategori: UI
-- Masalah: Jelaskan masalah yang ditemukan.
-- Solusi: Jelaskan solusi yang direkomendasikan.
-- Aturan Dilanggar: Belum terverifikasi.
-- File Bermasalah: Belum teridentifikasi.
-
----
-
-# Kelompok 2
-
-## File Terdampak
-
-- [file_d.dart](lib/file_d.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
 
 #### Task 1
 
-- Status: Belum
-- Kategori: Bug Runtime
-- Masalah: Jelaskan masalah yang ditemukan.
-- Solusi: Jelaskan solusi yang direkomendasikan.
-- Aturan Dilanggar: Tidak ada.
-- File Bermasalah: [file_d.dart](lib/file_d.dart)
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: Tidak ada
+- File bermasalah: [file_a.dart](path/menuju/file_a.dart)
+- Prompt:
+
+# Kelompok 2
+
+## File terdampak
+
+- [path/menuju/file_c.dart](path/menuju/file_c.dart)
+
+## Tinggi
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: [Nama aturan](.agents/rules/nama_aturan.md#L32)
+- File bermasalah: [file_c.dart](path/menuju/file_c.dart#L20)
+- Prompt:
 
 ## Rendah
 
-Tidak ada temuan.
+#### Task 1
 
-## 9. Pemeriksaan Sebelum Menyimpan `task.md`
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: Tidak ada
+- File bermasalah: [file_c.dart](path/menuju/file_c.dart)
+- Prompt:
+```
 
-Sebelum menyimpan perubahan, wajib melakukan pemeriksaan berikut:
+## 8. Larangan
 
-1. Seluruh task sudah dikelompokkan berdasarkan hubungan file terdampak.
-2. Tidak ada task yang tercatat lebih dari satu kali.
-3. Tidak ada task yang salah kelompok.
-4. Setiap kelompok memiliki daftar file terdampak.
-5. Setiap task memiliki seluruh field wajib.
-6. Status menggunakan nilai yang diperbolehkan.
-7. Kategori menggunakan kategori yang diperbolehkan.
-8. Prioritas menggunakan Tinggi, Sedang, atau Rendah.
-9. Tautan file menggunakan sintaks Markdown yang benar.
-10. Seluruh path file telah diverifikasi.
-11. Referensi aturan tidak dibuat berdasarkan perkiraan.
-12. Rekomendasi solusi sesuai dengan masalah.
-13. Tidak ada informasi penting dari task sebelumnya yang hilang.
-14. Struktur heading dan urutan field konsisten.
-15. Tidak ada bagian yang bertentangan dengan aturan repositori.
+Semua pihak yang mengubah `task.md` dilarang:
 
-Apabila ditemukan kesalahan, perbaiki sebelum menyimpan.
+1. Menggunakan format penulisan task yang berbeda dari template.
+2. Mengelompokkan task hanya berdasarkan kemiripan masalah tanpa memperhatikan file terdampak.
+3. Memisahkan task yang seharusnya berada dalam satu kelompok karena memiliki hubungan file terdampak.
+4. Menggabungkan task yang tidak memiliki hubungan file terdampak.
+5. Menghilangkan daftar `File terdampak` pada kelompok.
+6. Menghilangkan salah satu field wajib dari task.
+7. Mengubah urutan field yang telah ditetapkan.
+8. Mengisi atau mengubah field `Prompt`.
+9. Membuat tautan file atau aturan yang tidak sesuai dengan path sebenarnya.
+10. Mengarang nomor baris, pelanggaran aturan, masalah, atau solusi.
+11. Menandai task selesai tanpa bukti penyelesaian.
+12. Mengubah struktur format ini tanpa persetujuan pemilik repositori.
 
-## 10. Ketentuan Utama
-
-Aturan dalam file ini wajib diterapkan oleh seluruh AI dan manusia yang mengelola `task.md` di root repositori.
-
-Tidak diperbolehkan menggunakan format alternatif, mengabaikan pengelompokan berdasarkan file terdampak, atau mengubah struktur secara sepihak.
-
-Apabila terdapat kondisi yang belum diatur dalam dokumen ini, jangan membuat asumsi yang dapat mengubah tujuan atau struktur utama. Laporkan kondisi tersebut kepada pengguna untuk mendapatkan keputusan.
-
-**Prioritas utama: konsistensi format, ketepatan pengelompokan file, keterlacakan masalah, dan kejelasan solusi.**
+**Ketentuan akhir:** Konsistensi struktur dan isi `task.md` wajib dipertahankan setiap kali file dibuat, ditambahkan, diperbarui, maupun disusun ulang. Apabila terdapat konflik antara kebiasaan penulisan sebelumnya dengan aturan ini, gunakan aturan dalam `.agents/rules/global/format_task.md` sebagai acuan format `task.md`.
