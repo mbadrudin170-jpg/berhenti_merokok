@@ -64,3 +64,30 @@ abstract class BiodataModel with _$BiodataModel {
     };
   }
 }
+
+/// Ekstensi perhitungan turunan dari [BiodataModel] agar logika `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` hanya ditulis sekali dan konsisten di seluruh halaman (dashboard, impian, badge).
+extension BiodataModelPerhitungan on BiodataModel {
+  /// Hari smoke-free, dinormalisasi agar tidak terpengaruh komponen waktu.
+  int get hariBerhenti {
+    final tanggalBerhenti = tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return 0;
+    final sekarang = DateTime.now();
+    final hariIniDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final tanggalBerhentiDate = DateTime(
+      tanggalBerhenti.year,
+      tanggalBerhenti.month,
+      tanggalBerhenti.day,
+    );
+    final hari = hariIniDate.difference(tanggalBerhentiDate).inDays;
+    return hari < 0 ? 0 : hari;
+  }
+
+  /// Jumlah rokok yang tidak dihisap selama periode smoke-free.
+  int get rokokTidakDiHisap => jumlahRokokPerHari * hariBerhenti;
+
+  /// Uang yang dihemat dari tidak merokok.
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}

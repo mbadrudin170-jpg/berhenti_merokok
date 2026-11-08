@@ -146,11 +146,13 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
         id: widget.biodataModel?.id ?? '',
         nama: _namaController.text.trim(),
         tanggalLahir: _tanggalLahir,
-        jumlahRokokPerHari: int.tryParse(_jumlahRokokController.text.trim()) ?? 0,
+        jumlahRokokPerHari:
+            int.tryParse(_jumlahRokokController.text.trim()) ?? 0,
         hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
             ? 0.0
             : InputRupiah.parse(_hargaRokokController.text),
-        batangPerBungkus: double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
+        batangPerBungkus:
+            double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
       );
@@ -231,7 +233,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                 focusNode: _jumlahRokokFocusNode,
                 nextFocusNode: _hargaRokokFocusNode,
               ),
-               InputRupiah(
+              InputRupiah(
                 controller: _hargaRokokController,
                 label: 'Harga rokok per bungkus',
                 hintText: 'Masukkan harga rokok per bungkus',

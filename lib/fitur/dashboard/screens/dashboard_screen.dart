@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/badge/screens/badge_screen.dart';
+
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
@@ -124,6 +126,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               _buildCardProgres(biodata),
               _buildCardMilestone(biodata),
+              _buildCardBadge(),
               _buildInfoKerugian(biodata),
             ],
           ),
@@ -137,17 +140,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final jumlahRokokPerHari = biodata.jumlahRokokPerHari;
     final hargaPerBungkus = biodata.hargaRokokPerBungkus;
 
-    int hariBerhenti = 0;
-    if (tanggalBerhenti != null) {
-      hariBerhenti = DateTime.now().difference(tanggalBerhenti).inDays;
-      if (hariBerhenti < 0) {
-        hariBerhenti = 0;
-      }
-    }
-
-    final rokokTidakDiHisap = jumlahRokokPerHari * hariBerhenti;
-    final uangDihemat =
-        (rokokTidakDiHisap / biodata.batangPerBungkus) * hargaPerBungkus;
+    final hariBerhenti = biodata.hariBerhenti;
+    final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
+    final uangDihemat = biodata.uangDihemat;
     L.i(
       'tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat',
     );
@@ -255,6 +250,41 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final detik = d.inSeconds % 60;
     if (menit > 0) return '$menit menit $detik detik';
     return '$detik detik';
+  }
+
+  Widget _buildCardBadge() {
+    return Card(
+      child: InkWell(
+        onTap: () => unawaited(Nav.to(context, const BadgeScreen())),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            spacing: 12,
+            children: [
+              const Icon(CupertinoIcons.rosette, size: 32, color: Colors.amber),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      'Pencapaian',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Lihat badge yang telah tercapai',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(CupertinoIcons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildInfoKerugian(BiodataModel biodata) {

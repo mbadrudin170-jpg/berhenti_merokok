@@ -1,0 +1,241 @@
+import 'package:berhenti_merokok/fitur/badge/helper/badge_helper.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_global_saya/core_shared.dart';
+
+class BadgeScreen extends ConsumerStatefulWidget {
+  const BadgeScreen({super.key});
+
+  @override
+  ConsumerState<BadgeScreen> createState() => _BadgeScreenState();
+}
+
+class _BadgeScreenState extends ConsumerState<BadgeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    L.i('BadgeScreen initState');
+  }
+
+  @override
+  void dispose() {
+    L.i('BadgeScreen dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final biodataAsync = ref.watch(biodataProvider);
+    final impianAsync = ref.watch(impianProvider);
+    L.i('biodataAsync=$biodataAsync, impianAsync=$impianAsync');
+
+    if (biodataAsync.isLoading || impianAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (biodataAsync.hasError) {
+      L.e(
+        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
+      );
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pencapaian')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(biodataProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (impianAsync.hasError) {
+      L.e('impianAsync error: ${impianAsync.error} ${impianAsync.stackTrace}');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pencapaian')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data impian'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(impianProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final biodata = biodataAsync.requireValue;
+    final impianState = impianAsync.requireValue;
+    L.i('biodata=$biodata');
+
+    if (biodata == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pencapaian')),
+        body: const SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(
+              child: Text(
+                'Lengkapi biodata terlebih dahulu untuk melihat pencapaian.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Hitung progres smoke-free.
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    int hariSmokeFree = 0;
+    if (tanggalBerhenti != null) {
+      final sekarang = DateTime.now();
+      final hariIniDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+      final tanggalBerhentiDate = DateTime(
+        tanggalBerhenti.year,
+        tanggalBerhenti.month,
+        tanggalBerhenti.day,
+      );
+      hariSmokeFree = hariIniDate.difference(tanggalBerhentiDate).inDays;
+      if (hariSmokeFree < 0) hariSmokeFree = 0;
+    }
+    final rokokTidakDiHisap = biodata.jumlahRokokPerHari * hariSmokeFree;
+    final uangDihemat =
+        (rokokTidakDiHisap / biodata.batangPerBungkus) *
+        biodata.hargaRokokPerBungkus;
+
+    // Hitung impian tercapai.
+    int impianTercapai = 0;
+    for (final impian in impianState.listImpian) {
+      if (uangDihemat >= impian.jumlah) {
+        impianTercapai++;
+      }
+    }
+    L.i(
+      'hariSmokeFree=$hariSmokeFree, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat, impianTercapai=$impianTercapai',
+    );
+
+    final daftarBadge = hitungBadge(
+      hariSmokeFree: hariSmokeFree,
+      rokokTidakDiHisap: rokokTidakDiHisap,
+      uangDihemat: uangDihemat,
+      impianTercapai: impianTercapai,
+    );
+    final jumlahTercapai = daftarBadge.where((b) => b.tercapai).length;
+    L.i('jumlahTercapai=$jumlahTercapai/${daftarBadge.length}');
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pencapaian')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 8,
+            children: [
+              Text(
+                '$jumlahTercapai dari ${daftarBadge.length} badge tercapai',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 1.1,
+                  ),
+                  itemCount: daftarBadge.length,
+                  itemBuilder: (context, index) {
+                    final badge = daftarBadge[index];
+                    return _BadgeCard(badge: badge);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BadgeCard extends StatelessWidget {
+  const _BadgeCard({required this.badge});
+
+  final BadgePencapaian badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final tercapai = badge.tercapai;
+    return Card(
+      color: tercapai
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 8,
+          children: [
+            Icon(
+              badge.icon,
+              size: 32,
+              color: tercapai
+                  ? colorScheme.onPrimaryContainer
+                  : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
+            Text(
+              badge.nama,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: tercapai
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Text(
+              badge.deskripsi,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: tercapai
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

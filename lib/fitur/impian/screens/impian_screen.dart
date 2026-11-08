@@ -77,7 +77,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     } else {
       biodata = biodataAsync.requireValue;
     }
-    final uangDihemat = _hitungUangDihemat(biodata);
+    final uangDihemat = biodata?.uangDihemat ?? 0;
     L.i('uangDihemat=$uangDihemat');
 
     if (listImpian.isEmpty) {
@@ -146,24 +146,6 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         child: const Icon(CupertinoIcons.add),
       ),
     );
-  }
-
-  /// Menghitung uang yang dihemat dari tidak merokok berdasarkan biodata.
-  double _hitungUangDihemat(BiodataModel? biodata) {
-    if (biodata == null) {
-      return 0;
-    }
-    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-    int hariBerhenti = 0;
-    if (tanggalBerhenti != null) {
-      hariBerhenti = DateTime.now().difference(tanggalBerhenti).inDays;
-      if (hariBerhenti < 0) {
-        hariBerhenti = 0;
-      }
-    }
-    final rokokTidakDiHisap = biodata.jumlahRokokPerHari * hariBerhenti;
-    return (rokokTidakDiHisap / biodata.batangPerBungkus) *
-        biodata.hargaRokokPerBungkus;
   }
 
   Widget _buildSaldoTerkumpul(double saldoTerkumpul) {

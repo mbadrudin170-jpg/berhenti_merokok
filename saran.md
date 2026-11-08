@@ -1,5 +1,21 @@
 # Saran Perbaikan
 
+## 2026-11-08 — Kerapian import pada `dashboard_screen.dart`
+
+- **Masalah:** `lib/fitur/dashboard/screens/dashboard_screen.dart:1-7` memiliki baris kosong ganda setelah import `badge_screen.dart`.
+- **Path dan baris:** `lib/fitur/dashboard/screens/dashboard_screen.dart:1-7`
+- **Aturan terkait:** `.agents/rules/global/aturan_lainnya.md` (bagian 31 — Aturan Import).
+- **Saran perbaikan:** Rapikan baris kosong agar konsisten dengan gaya file lain.
+- **Alasan:** Menjaga keterbacaan dan konsistensi import.
+
+## 2026-11-08 — Warna hardcode `Colors.amber` pada kartu Pencapaian (dashboard_screen.dart)
+
+- **Masalah:** `lib/fitur/dashboard/screens/dashboard_screen.dart` (method `_buildCardBadge`) menggunakan `Colors.amber` untuk ikon, bukan warna dari tema.
+- **Path dan baris:** `lib/fitur/dashboard/screens/dashboard_screen.dart` (method `_buildCardBadge`)
+- **Aturan terkait:** `.agents/rules/global/optimasi_ui.md` (bagian 2 — Penggunaan Warna dan Tema).
+- **Saran perbaikan:** Pertimbangkan `Theme.of(context).colorScheme` (mis. `secondary`/`tertiary`) agar menyesuaikan tema, kecuali amber memang diinginkan tetap.
+- **Alasan:** Menjaga konsistensi tema terang/gelap.
+
 ## 2026-11-07 — Logging di dalam metode `build()` pada `impian_screen.dart`
 
 - **Masalah:** `L.i('uangDihemat=$uangDihemat')` ditambahkan di dalam `build()` pada `lib/fitur/impian/screens/impian_screen.dart:74`. Metode `build()` dapat dipanggil berulang kali (setiap rebuild), sehingga log ini akan muncul berulang dan menambah noise. Hal serupa juga berlaku pada log `L.i('impianAsync.isLoading=...')`, `L.i('listImpian.length=...')`, dan `L.i('item.id=...')` yang sudah ada sebelumnya.
@@ -7,14 +23,6 @@
 - **Aturan terkait:** `.agents/rules/global/optimasi_bug_runtime.md` (bagian 11 — Hindari penggunaan logger di dalam metode `build()`).
 - **Saran perbaikan:** Pindahkan atau hapus log yang tidak memberikan nilai tambahan di luar alur rebuild, atau batasi logging pada titik yang tidak sering dipanggil. Jika dipertahankan, pastikan tidak berada di dalam loop item (`itemBuilder`).
 - **Alasan:** Metode `build()` dapat dipanggil berulang oleh framework; logging berfrekuensi tinggi menambah noise dan mempersulit pelacakan.
-
-## 2026-11-07 — Duplikasi perhitungan uang yang dihemat (`_hitungUangDihemat`)
-
-- **Masalah:** Perhitungan `uangDihemat` pada `lib/fitur/impian/screens/impian_screen.dart:152-170` menduplikasi logika yang sama dengan `_buildCardProgres` pada `lib/fitur/dashboard/screens/dashboard_screen.dart` (perhitungan `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat`). Duplikasi ini berisiko tidak konsisten jika salah satu diubah.
-- **Path dan baris:** `lib/fitur/impian/screens/impian_screen.dart:152-170`, `lib/fitur/dashboard/screens/dashboard_screen.dart:120-145`
-- **Aturan terkait:** `.agents/rules/global/optimasi_boilerplate.md` (bagian 3 — Penggunaan Kembali Fungsi).
-- **Saran perbaikan:** Ekstrak perhitungan ke satu tempat yang dapat digunakan bersama (misalnya method pada `BiodataModel` atau helper di `core_shared`), lalu panggil dari dashboard dan impian.
-- **Alasan:** Menghindari penulisan ulang kode dengan fungsi yang sama dan menjaga konsistensi perhitungan.
 
 ## 2026-11-07 — Progress menampilkan 0 saat biodata masih loading
 
