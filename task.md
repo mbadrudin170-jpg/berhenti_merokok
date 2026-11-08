@@ -65,7 +65,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status:kerjakan
+- Status: Selesai
 - Masalah: Pada `form_biodata.dart`, form menggunakan `InputTeks`, `InputAngka`, dan `InputRupiah` yang menyediakan `TextFormField` dan validator, tetapi tidak ditemukan pembungkus `Form` dan mekanisme `GlobalKey<FormState>`. Method `_simpan()` tidak menjalankan validasi sebelum penyimpanan. `penurunanPerMinggu` menggunakan `int.tryParse(...) ?? 0` yang mengganti input tidak valid dengan `0`. Validator bawaan `InputAngka` tidak memastikan nilai lebih besar dari nol. Tanggal mulai tapering (`_tanggalMulaiTapering`) belum dipastikan tidak null sebelum penyimpanan, khususnya ketika mode bertahap aktif. Akibatnya mode tapering dapat tersimpan tanpa penurunan rokok yang valid.
 - Solusi: Validasi seluruh input sebelum penyimpanan (panggil `validate()` pada form atau mekanisme validasi yang setara), tambahkan validasi khusus agar penurunan mingguan merupakan bilangan bulat positif, pastikan tanggal mulai tapering valid sebelum menyimpan, dan jangan menyimpan nilai pengganti (`0`) yang menyembunyikan input tidak valid.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L492); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L937)
@@ -74,7 +74,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Pada `biodata_screen.dart` dan `form_biodata.dart`, beberapa `Future` dilepas menggunakan `unawaited(...)` tanpa penanganan error: `Nav.to(...)` pada `biodata_screen.dart` (sekitar baris 92-97 dan 160-168), serta `EasyLoading.show(...)`, `Nav.pushAndRemoveUntil(...)`, dan `EasyLoading.dismiss()` pada `form_biodata.dart` (sekitar baris 168-173, 197, dan 208). Kegagalan pada Future tersebut tidak dicatat, sehingga error dapat menjadi unhandled dan sulit ditelusuri.
 - Solusi: Bungkus setiap Future yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan penanganan error Future yang dilepas. Untuk `Nav.pushAndRemoveUntil(...)` dan `EasyLoading.show(...)`/`EasyLoading.dismiss()` gunakan pola `.catchError((Object e, StackTrace s) { L.e(...); })`.
 - Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L226); [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L375)

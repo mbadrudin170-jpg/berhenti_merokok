@@ -39,6 +39,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
 
   ModeBerhenti _modeBerhenti = ModeBerhenti.seketika;
 
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _sudahDiisi = false;
 
@@ -77,7 +78,8 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       'modeBerhenti=$_modeBerhenti, '
       'penurunanPerMinggu=${_penurunanPerMingguController.text}, '
       'tanggalMulaiTapering=$_tanggalMulaiTapering',
-    );  }
+    );
+  }
 
   @override
   void dispose() {
@@ -164,12 +166,23 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       return;
     }
     if (!mounted) return;
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    if (_modeBerhenti == ModeBerhenti.bertahap &&
+        _tanggalMulaiTapering == null) {
+      AppToast.gagal(context, 'Tanggal mulai penurunan wajib dipilih');
+      return;
+    }
     setState(() => _isLoading = true);
     unawaited(
       EasyLoading.show(
         status: 'Menyimpan...',
         maskType: EasyLoadingMaskType.black,
-      ),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+        return null;
+      }),
     );
     try {
       final model = BiodataModel(
@@ -186,15 +199,27 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
         modeBerhenti: _modeBerhenti,
-        penurunanPerMinggu:
-            int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+        penurunanPerMinggu: int.parse(
+          _penurunanPerMingguController.text.trim().replaceAll(
+            RegExp(r'[^0-9]'),
+            '',
+          ),
+        ),
         tanggalMulaiTapering: _tanggalMulaiTapering,
       );
       L.i('model=$model');
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
       if (widget.buatPertama) {
-        unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+        unawaited(
+          Nav.pushAndRemoveUntil(context, const Home()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Home: $e $s');
+            return null;
+          }),
+        );
       } else if (Navigator.of(context).canPop()) {
         Nav.pop(context);
       }
@@ -205,7 +230,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       }
     } finally {
       if (mounted) {
-        unawaited(EasyLoading.dismiss());
+        unawaited(
+          EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+            L.e('Gagal menutup loading: $e $s');
+            return null;
+          }),
+        );
         setState(() => _isLoading = false);
       }
     }
@@ -244,130 +274,144 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [
-              InputTeks(
-                controller: _namaController,
-                label: 'Nama',
-                hintText: 'Masukkan nama',
-                focusNode: _namaFocusNode,
-                nextFocusNode: _jumlahRokokFocusNode,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Nama wajib diisi';
-                  }
-                  return null;
-                },
-              ),
-              InputAngka(
-                controller: _jumlahRokokController,
-                label: 'Jumlah rokok per hari',
-                hintText: 'Masukkan jumlah rokok per hari',
-                focusNode: _jumlahRokokFocusNode,
-                nextFocusNode: _hargaRokokFocusNode,
-              ),
-              InputRupiah(
-                controller: _hargaRokokController,
-                label: 'Harga rokok per bungkus',
-                hintText: 'Masukkan harga rokok per bungkus',
-                focusNode: _hargaRokokFocusNode,
-              ),
-              InputAngka(
-                controller: _batangPerBungkusController,
-                label: 'Batang per bungkus',
-                hintText: 'Masukkan jumlah batang per bungkus',
-                focusNode: _batangPerBungkusFocusNode,
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.cake_outlined),
-                title: const Text('Tanggal lahir'),
-                subtitle: Text(
-                  _tanggalLahir == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(_tanggalLahir!),
-                ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalLahir,
-                  child: const Text('Pilih'),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.smoking_rooms_outlined),
-                title: const Text('Tanggal mulai merokok'),
-                subtitle: Text(
-                  _tanggalMulaiMerokok == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
-                ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalMulaiMerokok,
-                  child: const Text('Pilih'),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.event_available_outlined),
-                title: const Text('Tanggal mulai berhenti merokok'),
-                subtitle: Text(
-                  _tanggalMulaiBerhentiMerokok == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(
-                          _tanggalMulaiBerhentiMerokok!,
-                        ),
-                ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalMulaiBerhentiMerokok,
-                  child: const Text('Pilih'),
-                ),
-              ),
-              // Mode berhenti: seketika atau bertahap (tapering).
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Berhenti bertahap (tapering)'),
-                subtitle: const Text(
-                  'Kurangi jumlah rokok per hari secara bertahap.',
-                ),
-                value: _modeBerhenti == ModeBerhenti.bertahap,
-                onChanged: (value) {
-                  setState(() {
-                    _modeBerhenti = value
-                        ? ModeBerhenti.bertahap
-                        : ModeBerhenti.seketika;
-                    if (value && _tanggalMulaiTapering == null) {
-                      _tanggalMulaiTapering = DateTime.now();
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                InputTeks(
+                  controller: _namaController,
+                  label: 'Nama',
+                  hintText: 'Masukkan nama',
+                  focusNode: _namaFocusNode,
+                  nextFocusNode: _jumlahRokokFocusNode,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama wajib diisi';
                     }
-                  });
-                },
-              ),
-              if (_modeBerhenti == ModeBerhenti.bertahap) ...[
+                    return null;
+                  },
+                ),
                 InputAngka(
-                  controller: _penurunanPerMingguController,
-                  label: 'Penurunan per minggu (batang)',
-                  hintText: 'Masukkan jumlah penurunan per minggu',
-                  focusNode: _penurunanPerMingguFocusNode,
+                  controller: _jumlahRokokController,
+                  label: 'Jumlah rokok per hari',
+                  hintText: 'Masukkan jumlah rokok per hari',
+                  focusNode: _jumlahRokokFocusNode,
+                  nextFocusNode: _hargaRokokFocusNode,
+                ),
+                InputRupiah(
+                  controller: _hargaRokokController,
+                  label: 'Harga rokok per bungkus',
+                  hintText: 'Masukkan harga rokok per bungkus',
+                  focusNode: _hargaRokokFocusNode,
+                ),
+                InputAngka(
+                  controller: _batangPerBungkusController,
+                  label: 'Batang per bungkus',
+                  hintText: 'Masukkan jumlah batang per bungkus',
+                  focusNode: _batangPerBungkusFocusNode,
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.calendar_today_outlined),
-                  title: const Text('Tanggal mulai penurunan'),
+                  leading: const Icon(Icons.cake_outlined),
+                  title: const Text('Tanggal lahir'),
                   subtitle: Text(
-                    _tanggalMulaiTapering == null
+                    _tanggalLahir == null
                         ? 'Belum dipilih'
-                        : FormatTanggal.formatDasar(_tanggalMulaiTapering!),
+                        : FormatTanggal.formatDasar(_tanggalLahir!),
                   ),
                   trailing: TextButton(
-                    onPressed: _pilihTanggalMulaiTapering,
+                    onPressed: _pilihTanggalLahir,
                     child: const Text('Pilih'),
                   ),
                 ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.smoking_rooms_outlined),
+                  title: const Text('Tanggal mulai merokok'),
+                  subtitle: Text(
+                    _tanggalMulaiMerokok == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalMulaiMerokok,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_available_outlined),
+                  title: const Text('Tanggal mulai berhenti merokok'),
+                  subtitle: Text(
+                    _tanggalMulaiBerhentiMerokok == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(
+                            _tanggalMulaiBerhentiMerokok!,
+                          ),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalMulaiBerhentiMerokok,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+                // Mode berhenti: seketika atau bertahap (tapering).
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Berhenti bertahap (tapering)'),
+                  subtitle: const Text(
+                    'Kurangi jumlah rokok per hari secara bertahap.',
+                  ),
+                  value: _modeBerhenti == ModeBerhenti.bertahap,
+                  onChanged: (value) {
+                    setState(() {
+                      _modeBerhenti = value
+                          ? ModeBerhenti.bertahap
+                          : ModeBerhenti.seketika;
+                      if (value && _tanggalMulaiTapering == null) {
+                        _tanggalMulaiTapering = DateTime.now();
+                      }
+                    });
+                  },
+                ),
+                if (_modeBerhenti == ModeBerhenti.bertahap) ...[
+                  InputAngka(
+                    controller: _penurunanPerMingguController,
+                    label: 'Penurunan per minggu (batang)',
+                    hintText: 'Masukkan jumlah penurunan per minggu',
+                    focusNode: _penurunanPerMingguFocusNode,
+                    validator: (value) {
+                      final cleaned = (value ?? '').replaceAll(
+                        RegExp(r'[^0-9]'),
+                        '',
+                      );
+                      final n = int.tryParse(cleaned);
+                      if (n == null || n <= 0) {
+                        return 'Wajib bilangan bulat positif';
+                      }
+                      return null;
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.calendar_today_outlined),
+                    title: const Text('Tanggal mulai penurunan'),
+                    subtitle: Text(
+                      _tanggalMulaiTapering == null
+                          ? 'Belum dipilih'
+                          : FormatTanggal.formatDasar(_tanggalMulaiTapering!),
+                    ),
+                    trailing: TextButton(
+                      onPressed: _pilihTanggalMulaiTapering,
+                      child: const Text('Pilih'),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
               ],
-              const SizedBox(height: 8),
-              OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
-            ],
+            ),
           ),
         ),
       ),
