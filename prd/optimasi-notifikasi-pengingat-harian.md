@@ -1,6 +1,6 @@
 # PRD: Optimasi Notifikasi (Pengingat Harian)
 
-Status: DRAFT
+Status: FINAL
 Terakhir diperbarui: 2026-11-08
 
 ## 1. Referensi
@@ -48,8 +48,8 @@ Bukti:
 2. Sistem memuat preferensi notifikasi (pola existing: loading, error handling).
 3. Pengguna melihat opsi terpisah: pengingat harian (existing), check-in pagi (baru), pengingat pola craving (baru).
 4. **Check-in pagi:** jika pengguna mengaktifkan, sistem meminta izin jika perlu, menjadwalkan notifikasi harian pada waktu check-in pagi (default 07:00, dapat diubah), menyimpan preferensi; jika izin/penjadwalan gagal, state di-rollback dan toast error ditampilkan. Jika dinonaktifkan, jadwal dibatalkan dan preferensi diperbarui konsisten.
-5. **Pengingat pola craving:** jika pengguna mengaktifkan, sistem membaca data Diary Craving (baca-only) dan menghitung 1 jam lokal paling sering. Jika entri < 3, tampilkan informasi "data craving belum cukup" dan jangan jadwalkan otomatis (toggle/preferensi tetap mencerminkan pilihan pengguna sesuai keputusan implementasi; [BELUM FINAL] apakah toggle otomatis nonaktif atau tetap aktif menunggu data). Jika entri >= 3, sistem menjadwalkan 1 notifikasi harian pada jam teratas. Dihitung ulang saat opsi diaktifkan dan saat aplikasi dibuka jika opsi aktif.
-6. Saat aplikasi dibuka: mekanisme penjadwalan ulang memeriksa izin dan menjadwalkan ulang semua pengingat yang aktif (pengingat harian, check-in pagi, pola craving bila memenuhi syarat).
+5. **Pengingat pola craving:** jika pengguna mengaktifkan, sistem membaca data Diary Craving (baca-only) dan menghitung 1 jam lokal paling sering. Jika entri < 3, simpan preferensi tetap aktif, tampilkan informasi "data craving belum cukup" dan jangan jadwalkan otomatis. Jika entri >= 3, sistem menjadwalkan 1 notifikasi harian pada jam teratas. Dihitung ulang saat opsi diaktifkan dan saat aplikasi dibuka jika opsi aktif (saat data sudah cukup, jadwal dibuat).
+6. Saat aplikasi dibuka: mekanisme penjadwalan ulang memeriksa izin dan menjadwalkan ulang semua pengingat yang aktif (pengingat harian, check-in pagi, pola craving bila memenuhi syarat data/izin).
 7. Saat notifikasi ditekan: payload dinavigasi ke Home/Dashboard (kategori dapat dibedakan secara internal; tujuan UI tetap Home/Dashboard).
 8. Kondisi khusus: platform tidak didukung → bagian pengingat terjadwal disembunyikan (pola existing); izin dicabut → preferensi/jadwal dinonaktifkan konsisten; kegagalan penyimpanan/jadwal → rollback.
 
@@ -59,7 +59,7 @@ Bukti:
 | Status/waktu pengingat harian existing | `SharedPreferences` | `SharedKeys.notifikasiHarian/Jam/Menit` | Tetap; kompatibel mundur |
 | Status/waktu check-in pagi | `SharedPreferences` | `SharedKeys` baru (mis. `notifikasiCheckinPagi`, `notifikasiCheckinPagiJam`, `notifikasiCheckinPagiMenit`) | Lokal; tidak sensitif |
 | Status pengingat pola craving | `SharedPreferences` | `SharedKeys` baru (mis. `notifikasiPolaCraving`) | Lokal |
-| Pola jam craving | `diaryCravingProvider` / data lokal Diary Craving | jam lokal dari `DiaryCravingModel.tanggal` | Baca-only; perhitungan murni/helper; tidak menulis DB |
+| Pola jam craving | data lokal Diary Craving | jam lokal dari `DiaryCravingModel.tanggal` | Baca-only; perhitungan murni/helper; tidak menulis DB |
 
 Tidak ada tabel SQLite baru dan tidak ada migrasi skema.
 
@@ -68,12 +68,12 @@ Tidak ada tabel SQLite baru dan tidak ada migrasi skema.
 |---|---|---|
 | `lib/shared/notifikasi/notifikasi_service.dart` | ubah | Tambah ID/kategori/jadwal untuk check-in pagi dan pengingat pola craving; method jadwal/batal/penjadwalan ulang; penanganan izin/rollback/payload; payload baru tetap navigasi ke Home/Dashboard. |
 | `lib/shared/helper/shared_keys.dart` | ubah | Tambah kunci preferensi untuk check-in pagi (status/jam/menit) dan pengingat pola craving (status). |
-| `lib/fitur/pengaturan/screens/pengaturan_screen.dart` | ubah | Tambah UI pengaturan check-in pagi (toggle + waktu, default 07:00) dan pengingat pola craving (toggle + info/fallback); pola async/izin/loading/toast/rollback. |
-| `lib/fitur/pengingat_craving/helper/pola_craving_helper.dart` | baru | Helper murni untuk menghitung 1 jam craving teratas dari daftar diary; minimum data 3 entri; tanpa `BuildContext`/provider; guard data kosong. (Nama/path mengikuti struktur fitur; dapat disesuaikan saat implementasi, tetapi tetap dalam scope ini.) |
+| `lib/fitur/pengaturan/screens/pengaturan_screen.dart` | ubah | Tambah UI pengaturan check-in pagi (toggle + waktu, default 07:00) dan pengingat pola craving (toggle + info/fallback data belum cukup); pola async/izin/loading/toast/rollback. |
+| `lib/fitur/diary_craving/helper/pola_craving_helper.dart` | baru | Helper murni untuk menghitung 1 jam craving teratas dari daftar diary; minimum data 3 entri; tanpa `BuildContext`/provider; guard data kosong. File baru; tidak bentrok dengan PRD `analisis-pemicu-diary-craving.md` (PRD tersebut hanya mengubah `lib/fitur/diary_craving/screens/diary_craving_screen.dart`). |
 | `prd/optimasi-notifikasi-pengingat-harian.md` | baru/ubah | Dokumen PRD ini. |
 | `refrensi_apk.md` | ubah (penanda saja) | Penanda "✅ PRD dibuat: prd/optimasi-notifikasi-pengingat-harian.md" pada entri baris 198-211. |
 
-Catatan bentrok: tidak ada file di tabel ini yang tumpang tindih dengan PRD lain di `prd/` (dicek terhadap analisis-pemicu-diary-craving, optimasi-dashboard-ringkasan-progres, optimasi-pemulihan-kesehatan-milestone, pelacakan-toxin-yang-dihindari). `PengaturanScreen` saat ini tidak disentuh PRD lain.
+Catatan bentrok: tidak ada file di tabel ini yang tumpang tindih dengan PRD lain di `prd/` (dicek terhadap analisis-pemicu-diary-craving, optimasi-dashboard-ringkasan-progres, optimasi-pemulihan-kesehatan-milestone, pelacakan-toxin-yang-dihindari). `PengaturanScreen` dan `NotifikasiService` saat ini tidak disentuh PRD lain.
 
 ## 9. Contoh Implementasi (ilustrasi)
 ```dart
@@ -128,11 +128,9 @@ class PolaCravingHelper {
 - [ ] Tidak ada file `.dart`/`pubspec.yaml`/konfigurasi yang diubah pada sesi PRD ini; hanya PRD dan penanda `refrensi_apk.md`.
 
 ## 12. Risiko dan Pertanyaan Terbuka
-- [BELUM FINAL] Perilaku toggle pola craving saat data < 3 entri: apakah toggle tetap aktif (menunggu data cukup saat app dibuka berikutnya) atau otomatis nonaktif dengan pesan informasi.
-- [BELUM FINAL] Sumber akses data pola craving: baca dari data Diary Craving lokal saat penjadwalan (baca-only). Lokasi teknis (service/helper/provider) diputuskan saat implementasi selama tidak menambah dependensi dan tidak menulis DB.
-- [BELUM FINAL] Path helper pola craving: diusulkan `lib/fitur/diary_craving/helper/pola_craving_helper.dart` sebagai file baru (dekat data diary, tidak disentuh PRD lain). Alternatif aman: helper baru di bawah `lib/shared/notifikasi/` bila implementor ingin isolasi notifikasi; keputusan final saat implementasi tanpa mengubah file terdampak PRD lain.
 - Risiko baterai/UX: terlalu banyak notifikasi dapat mengganggu pengguna; mitigasi: kontrol terpisah dan hanya 1 jadwal pola craving.
-- Risiko data kosong/berubah: pola jam dapat bergeser; mitigasi: perhitungan ulang saat aktivasi dan saat app dibuka.
+- Risiko data kosong/berubah: pola jam dapat bergeser; mitigasi: preferensi tetap aktif saat data belum cukup, perhitungan ulang saat aktivasi dan saat app dibuka.
+- Risiko izin dicabut: mitigasi mengikuti pola existing (periksa izin, batalkan jadwal sistem, nonaktifkan preferensi konsisten).
 - Referensi Play Store memberikan gambaran fitur, bukan spesifikasi teknis perilaku notifikasi pada app ini.
 
 ## 13. Catatan Keputusan Diskusi
@@ -142,3 +140,5 @@ class PolaCravingHelper {
 | Perilaku check-in pagi | Jadwal terpisah, waktu dapat diubah; default 07:00; ID/payload/kategori berbeda; tidak mengubah pengingat harian existing | 2026-11-08 |
 | Pengingat pola craving | 1 jam lokal teratas; minimum 3 entri; jika data kurang tampilkan info dan jangan jadwalkan otomatis; dihitung ulang saat opsi diaktifkan dan saat app dibuka jika aktif | 2026-11-08 |
 | Navigasi tap notifikasi | Ke Home/Dashboard (konsisten dengan existing) | 2026-11-08 |
+| Toggle pola craving saat data < 3 entri | Toggle/preferensi tetap aktif, tunggu data; saat app dibuka/aktivasi berikutnya dan data sudah >=3, sistem menjadwalkan | 2026-11-08 |
+| Path helper pola craving | `lib/fitur/diary_craving/helper/pola_craving_helper.dart` (file baru, dekat data diary, aman dari bentrok PRD lain) | 2026-11-08 |

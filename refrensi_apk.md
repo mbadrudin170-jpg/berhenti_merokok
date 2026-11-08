@@ -210,22 +210,6 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 ### Prioritas Rendah
 
-#### 8. Pemulihan Kesehatan (Milestone)
-
-Status PRD: Sudah dibuat — `prd/optimasi-pemulihan-kesehatan-milestone.md`
-
-- **Kondisi fitur pada proyek:** Daftar milestone dengan status tercapai/belum dan waktu target sudah tersedia.
-- **Status implementasi:** Sudah diimplementasikan (metrik dasar); penambahan "hari hidup yang diperoleh" belum.
-- **Path implementasi proyek:** `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/shared/konstanta/milestone_kesehatan.dart`.
-- **Aplikasi pembanding:** Quit Smoking : Tracker & Timer (H2M apps); Smoke Free (Portable Pixels).
-- **Implementasi referensi:** 24 milestone kesehatan, health improvement bars.
-- **Peluang optimasi:** Menambahkan metrik "hari hidup yang diperoleh" atau visual progress bar yang lebih detail.
-- **Saran optimasi:** Tambahkan visual progress bar per milestone dan metrik tambahan yang relevan.
-- **Tujuan dan manfaat:** Memperjelas manfaat kesehatan.
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke ; https://play.google.com/store/apps/details?id=com.portablepixels.smokefree
-- **Link bukti:** Deskripsi resmi Google Play Store.
-- **Alasan prioritas:** Bersifat tambahan.
-
 #### 9. Badge dan Pencapaian
 
 - **Kondisi fitur pada proyek:** Sistem badge berbasis durasi smoke-free dan impian tercapai sudah tersedia.
@@ -277,6 +261,7 @@ Status PRD: Sudah dibuat — `prd/optimasi-pemulihan-kesehatan-milestone.md`
 ### Prioritas Sedang
 
 #### 2. Counter Smoke-Free Besar pada Dashboard
+✅ PRD dibuat: prd/counter-smoke-free-besar-dashboard.md
 
 - **Fitur/halaman yang dibandingkan:** Dashboard.
 - **Aplikasi referensi:** QuitNow (Fewlaps); LastCig (VictorExplore); Quit Tracker (despDev).

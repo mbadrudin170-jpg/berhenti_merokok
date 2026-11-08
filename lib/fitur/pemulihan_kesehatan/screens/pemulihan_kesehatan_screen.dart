@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/helper/progres_milestone_helper.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,10 +98,26 @@ class _PemulihanKesehatanScreenState
                     final m = daftarMilestoneKesehatan[index];
                     final durasi = DateTime.now().difference(tanggalBerhenti);
                     final aman = durasi.isNegative ? Duration.zero : durasi;
-                    final tercapai = aman >= m.target;
+                    final tercapai = ProgresMilestoneHelper.tercapai(
+                      aman,
+                      m.target,
+                    );
+                    final rasio = ProgresMilestoneHelper.rasio(aman, m.target);
+                    final persen = ProgresMilestoneHelper.persentase(
+                      aman,
+                      m.target,
+                    );
+                    final sisa = ProgresMilestoneHelper.sisaWaktu(
+                      aman,
+                      m.target,
+                    );
+                    final labelProgres = tercapai
+                        ? 'Tercapai · 100%'
+                        : '$persen% · Tersisa ${_formatTarget(sisa)}';
                     return Card(
                       key: ValueKey(m.judul),
                       child: ListTile(
+                        isThreeLine: true,
                         leading: Icon(
                           tercapai
                               ? CupertinoIcons.check_mark_circled_solid
@@ -123,6 +140,22 @@ class _PemulihanKesehatanScreenState
                             Text(
                               'Target: ${_formatTarget(m.target)}',
                               style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            LinearProgressIndicator(
+                              value: rasio,
+                              minHeight: 6,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                              color: tercapai ? Colors.green : null,
+                            ),
+                            Text(
+                              labelProgres,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: tercapai ? Colors.green : null,
+                                  ),
                             ),
                           ],
                         ),
