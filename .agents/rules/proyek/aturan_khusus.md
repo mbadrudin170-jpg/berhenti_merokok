@@ -758,3 +758,63 @@ double _hitungUangDihemat(BiodataModel? biodata) {
   ...
 }
 ```
+
+## Standar Penggunaan `flutter_local_notifications` versi 22.3.3 pada Notifikasi Harian
+
+**Cakupan:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `NotifikasiService`.
+- `lib/main.dart` — inisialisasi plugin sebelum `runApp`.
+- `lib/app.dart` — penjadwalan ulang saat aplikasi dibuka.
+- `lib/fitur/pengaturan/screens/pengaturan_screen.dart` — toggle, pemilih waktu, uji coba.
+- `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` — konfigurasi Android.
+
+**Catatan versi:** Aturan ini ditulis untuk `flutter_local_notifications` versi `22.3.3`. Jika versi package berubah, AI wajib memeriksa dokumentasi versi baru sebelum menerapkan konfigurasi lama.
+
+**Aturan wajib:**
+1. Periksa dukungan fitur berdasarkan platform dan versi plugin sebelum menggunakan API penjadwalan. Jangan mengasumsikan API yang sama tersedia di semua platform.
+2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web atau Linux dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini.
+3. Lengkapi receiver dan izin Android untuk penjadwalan serta pemulihan setelah restart: tambahkan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver` sesuai dokumentasi plugin. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
+4. Aktifkan core library desugaring sesuai persyaratan plugin bila diperlukan: `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. AGP minimal 8.11.1.
+5. Jangan meminta izin notifikasi secara otomatis saat aplikasi baru dibuka (termasuk iOS `DarwinInitializationSettings` dengan `requestAlertPermission`/`requestSoundPermission`/`requestBadgePermission` default `true`). Minta izin ketika pengguna secara sadar mengaktifkan pengingat.
+6. Periksa hasil izin sebelum menyimpan status pengingat aktif. Jangan menyimpan status aktif jika izin sistem belum tersedia. Periksa kembali izin ketika aplikasi dibuka karena pengguna dapat mengubahnya melalui pengaturan sistem.
+7. Pastikan jadwal, `SharedPreferences`, dan tampilan tetap konsisten ketika operasi gagal: rollback state, tampilkan feedback kegagalan, dan jangan simpan status aktif jika penjadwalan gagal.
+8. Tangani kegagalan penjadwalan ulang ketika aplikasi dibuka: catat error melalui logger, jangan biarkan Future menjadi unhandled, dan pastikan kegagalan fitur notifikasi tidak mengganggu fitur utama aplikasi.
+9. Pisahkan ID notifikasi uji coba dari ID pengingat utama agar notifikasi uji coba tidak memperbarui atau menggantikan jadwal utama.
+
+**Larangan:**
+- Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
+- Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
+- Jangan gunakan ID yang sama untuk notifikasi uji coba dan pengingat utama.
+- Jangan menyatakan fitur notifikasi aktif tanpa memeriksa izin sistem terlebih dahulu.
+
+**Alasan:**
+Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
+
+**Contoh benar:**
+```dart
+// Pisahkan ID notifikasi uji coba dari pengingat utama.
+static const int _idPengingatHarian = 1001;
+static const int _idUjiCoba = 1002;
+
+// Periksa izin sebelum menyimpan status aktif.
+final izinDiberikan = await mintaIzinDanPeriksa();
+if (!izinDiberikan) {
+  await setAktif(false);
+  return;
+}
+await jadwalkanPengingatHarian(jam: jam, menit: menit);
+```
+
+**Contoh salah:**
+```dart
+// Menggunakan ID yang sama untuk uji coba dan pengingat utama.
+await _plugin.show(id: _idPengingatHarian, ...); // uji coba menimpa jadwal utama
+
+// Menyimpan status aktif tanpa memeriksa izin.
+await jadwalkanPengingatHarian(jam: jam, menit: menit);
+await setAktif(true); // izin mungkin belum diberikan
+```
+
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/main.dart`, `lib/app.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `android/app/src/main/AndroidManifest.xml`, `saran.md`

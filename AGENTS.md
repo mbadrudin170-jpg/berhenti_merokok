@@ -306,6 +306,92 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 **Sumber evaluasi:**
 - Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
 - File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
+## Validasi Dukungan Platform dan Izin Runtime
+**Aturan:**
+1. Sebelum menggunakan API package, periksa dukungan platform berdasarkan versi package yang terpasang. Jangan mengasumsikan API yang sama tersedia di semua platform.
+2. Jangan menampilkan kontrol fitur yang tidak didukung platform (misalnya pengingat terjadwal pada Web/Linux).
+3. Permintaan izin harus mengikuti kebijakan sistem operasi dan dilakukan pada konteks yang tepat (setelah interaksi pengguna, bukan saat aplikasi pertama dibuka).
+4. Periksa hasil izin sebelum menyatakan fitur berhasil diaktifkan. Jangan menyimpan status aktif jika izin sistem belum tersedia.
+5. Pisahkan inisialisasi layanan dari permintaan izin pengguna. Inisialisasi boleh dilakukan saat startup, tetapi izin diminta sesuai kebutuhan fitur.
+6. Tangani error platform yang tidak didukung (mis. `UnsupportedError`) secara eksplisit, bukan hanya `Exception`.
+**Alasan:**
+Commit notifikasi (`774431d`) dan saran (`0cb0e52`) menunjukkan kebutuhan membedakan kemampuan berdasarkan platform, meminta izin sesuai kebijakan OS, dan memeriksa hasil izin sebelum mengaktifkan fitur. Permintaan izin otomatis saat startup (termasuk iOS Darwin default) dapat ditolak atau diblokir.
+**Contoh benar:**
+```dart
+if (kIsWeb) {
+  // jangan tampilkan pengingat terjadwal
+} else if (defaultTargetPlatform == TargetPlatform.android) {
+  final izin = await mintaIzinAndroid();
+  if (!izin) return;
+}
+```
+**Contoh salah:**
+```dart
+// Meminta izin saat aplikasi pertama dibuka tanpa konteks fitur.
+await plugin.requestNotificationsPermission();
+// Menyimpan status aktif tanpa memeriksa hasil izin.
+await setAktif(true);
+```
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `saran.md`
+## Penanganan Error pada Future yang Menggunakan `unawaited()`
+**Aturan:**
+1. `unawaited()` hanya menandai bahwa Future sengaja tidak ditunggu oleh pemanggil. Fungsi tersebut tidak menangani error secara otomatis.
+2. Future yang dilepas dengan `unawaited()` tetap wajib memiliki penanganan error.
+3. Gunakan `catchError` atau bungkus proses dalam fungsi yang memiliki `try/catch` sebelum dilepas.
+4. Jangan gunakan `unawaited()` hanya untuk menghilangkan peringatan analyzer.
+**Alasan:**
+Commit notifikasi (`774431d`) memanggil `unawaited(NotifikasiService.jadwalkanUlangJikaAktif())` dari `initState()` tanpa penanganan error, sehingga kegagalan penjadwalan ulang dapat menjadi unhandled. Aturan runtime sudah mewajibkan penanganan error pada Future yang tidak ditunggu.
+**Contoh benar:**
+```dart
+unawaited(
+  prosesAsync().catchError((Object error, StackTrace stackTrace) {
+    L.e('Gagal menjalankan proses: $error $stackTrace');
+  }),
+);
+```
+**Contoh salah:**
+```dart
+// Future dapat gagal, tetapi tidak memiliki penanganan error.
+unawaited(prosesAsync());
+```
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`
+- File: `lib/app.dart`, `lib/shared/notifikasi/notifikasi_service.dart`, `saran.md`
+## Prinsip Umum Penanganan Beberapa `AsyncValue` pada Satu Layar
+**Aturan:**
+1. Ketika satu layar menggunakan beberapa provider asynchronous, tangani status loading secara gabungan apabila salah satu data yang dibutuhkan masih loading.
+2. Tangani status error untuk setiap provider secara terpisah, dengan pesan error dan tombol retry yang memanggil `ref.refresh(provider)` yang sesuai.
+3. Panggil `requireValue` pada masing-masing provider hanya setelah status loading dan error-nya ditangani.
+4. Kondisi data tidak lengkap tetap ditangani sebagai tampilan tersendiri dengan informasi dan call-to-action.
+**Alasan:**
+Aturan khusus sudah mencakup penerapan konkret pada `BadgeScreen` (memuat `biodataProvider` dan `impianProvider`). Prinsip ini dapat diterapkan pada proyek Flutter lain yang menggunakan Riverpod dengan beberapa provider asynchronous pada satu layar, agar loading dan error tetap jelas serta `requireValue` tidak dipanggil pada data yang belum tersedia.
+**Contoh benar:**
+```dart
+final aAsync = ref.watch(providerA);
+final bAsync = ref.watch(providerB);
+if (aAsync.isLoading || bAsync.isLoading) {
+  return const Center(child: CircularProgressIndicator());
+}
+if (aAsync.hasError) {
+  return _ErrorRetry(onRetry: () => ref.refresh(providerA));
+}
+if (bAsync.hasError) {
+  return _ErrorRetry(onRetry: () => ref.refresh(providerB));
+}
+final a = aAsync.requireValue;
+final b = bAsync.requireValue;
+```
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final a = aAsync.requireValue;
+final b = bAsync.requireValue;
+```
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/badge/screens/badge_screen.dart`
 
 
 // ============================================================
@@ -3079,6 +3165,55 @@ double _hitungUangDihemat(BiodataModel? biodata) {
   ...
 }
 ```
+## Standar Penggunaan `flutter_local_notifications` versi 22.3.3 pada Notifikasi Harian
+**Cakupan:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `NotifikasiService`.
+- `lib/main.dart` — inisialisasi plugin sebelum `runApp`.
+- `lib/app.dart` — penjadwalan ulang saat aplikasi dibuka.
+- `lib/fitur/pengaturan/screens/pengaturan_screen.dart` — toggle, pemilih waktu, uji coba.
+- `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` — konfigurasi Android.
+**Catatan versi:** Aturan ini ditulis untuk `flutter_local_notifications` versi `22.3.3`. Jika versi package berubah, AI wajib memeriksa dokumentasi versi baru sebelum menerapkan konfigurasi lama.
+**Aturan wajib:**
+1. Periksa dukungan fitur berdasarkan platform dan versi plugin sebelum menggunakan API penjadwalan. Jangan mengasumsikan API yang sama tersedia di semua platform.
+2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web atau Linux dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini.
+3. Lengkapi receiver dan izin Android untuk penjadwalan serta pemulihan setelah restart: tambahkan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver` sesuai dokumentasi plugin. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
+4. Aktifkan core library desugaring sesuai persyaratan plugin bila diperlukan: `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. AGP minimal 8.11.1.
+5. Jangan meminta izin notifikasi secara otomatis saat aplikasi baru dibuka (termasuk iOS `DarwinInitializationSettings` dengan `requestAlertPermission`/`requestSoundPermission`/`requestBadgePermission` default `true`). Minta izin ketika pengguna secara sadar mengaktifkan pengingat.
+6. Periksa hasil izin sebelum menyimpan status pengingat aktif. Jangan menyimpan status aktif jika izin sistem belum tersedia. Periksa kembali izin ketika aplikasi dibuka karena pengguna dapat mengubahnya melalui pengaturan sistem.
+7. Pastikan jadwal, `SharedPreferences`, dan tampilan tetap konsisten ketika operasi gagal: rollback state, tampilkan feedback kegagalan, dan jangan simpan status aktif jika penjadwalan gagal.
+8. Tangani kegagalan penjadwalan ulang ketika aplikasi dibuka: catat error melalui logger, jangan biarkan Future menjadi unhandled, dan pastikan kegagalan fitur notifikasi tidak mengganggu fitur utama aplikasi.
+9. Pisahkan ID notifikasi uji coba dari ID pengingat utama agar notifikasi uji coba tidak memperbarui atau menggantikan jadwal utama.
+**Larangan:**
+- Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
+- Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
+- Jangan gunakan ID yang sama untuk notifikasi uji coba dan pengingat utama.
+- Jangan menyatakan fitur notifikasi aktif tanpa memeriksa izin sistem terlebih dahulu.
+**Alasan:**
+Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
+**Contoh benar:**
+```dart
+// Pisahkan ID notifikasi uji coba dari pengingat utama.
+static const int _idPengingatHarian = 1001;
+static const int _idUjiCoba = 1002;
+// Periksa izin sebelum menyimpan status aktif.
+final izinDiberikan = await mintaIzinDanPeriksa();
+if (!izinDiberikan) {
+  await setAktif(false);
+  return;
+}
+await jadwalkanPengingatHarian(jam: jam, menit: menit);
+```
+**Contoh salah:**
+```dart
+// Menggunakan ID yang sama untuk uji coba dan pengingat utama.
+await _plugin.show(id: _idPengingatHarian, ...); // uji coba menimpa jadwal utama
+// Menyimpan status aktif tanpa memeriksa izin.
+await jadwalkanPengingatHarian(jam: jam, menit: menit);
+await setAktif(true); // izin mungkin belum diberikan
+```
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/main.dart`, `lib/app.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `android/app/src/main/AndroidManifest.xml`, `saran.md`
 
 
 // ============================================================
