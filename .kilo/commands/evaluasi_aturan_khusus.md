@@ -1,1069 +1,553 @@
 ---
-description: Evaluasi tepat 5 commit terakhir yang sudah tersimpan, baca satu per satu, pelajari standar implementasi pengguna, perbarui aturan khusus dan aturan bersama Flutter, kemudian perbarui AGENTS.md.
+description: Evaluasi setiap perubahan kode yang sudah staged, perbarui aturan khusus dan global Flutter, regenerasi AGENTS.md, lalu commit hanya perubahan staged.
 agent: code
 ---
 
-# EVALUASI COMMIT DAN PEMBARUAN ATURAN PROYEK
+# EVALUASI ATURAN KHUSUS DAN ATURAN BERSAMA
 
-## 1. Tujuan Utama
+## 1. Tujuan
 
-Setiap kali pengguna mengerjakan kode, baik memperbaiki bug, memperbarui implementasi, maupun menambahkan fitur, lakukan evaluasi terhadap 5 commit terakhir untuk mempelajari standar pengembangan, pola implementasi, keputusan teknis, dan preferensi pengguna.
+Setiap kali command ini dijalankan setelah pekerjaan penambahan atau perbaikan kode, lakukan evaluasi menyeluruh terhadap seluruh perubahan yang sudah masuk ke Git Staging Area.
 
-Hasil evaluasi digunakan untuk menambah atau memperbarui dua file aturan:
+Tujuan utama:
 
-**A. Aturan khusus proyek**
+1. Menemukan kesalahan, kekurangan, dan ketidaksesuaian dalam perubahan kode.
+2. Memahami pola penulisan kode yang sebenarnya diinginkan pengguna.
+3. Mencatat aturan khusus proyek agar AI tidak mengulangi kesalahan ketika mengubah kode di kemudian hari.
+4. Mengidentifikasi prinsip yang bisa diterapkan ke seluruh proyek Flutter dan memasukkannya ke aturan bersama.
+5. Memberikan contoh kode yang benar dan salah agar AI memiliki pedoman konkret.
+6. Memperbarui konteks aturan pada `AGENTS.md`.
+7. Melakukan commit hanya terhadap perubahan yang sudah berada di Git Staging Area sebelum proses evaluasi dimulai.
 
-Path:
+Jangan mengubah tujuan dan ruang lingkup pekerjaan ini.
 
-`.agents/rules/proyek/aturan_khusus.md`
+## 2. Pemeriksaan izin tools
 
-File ini berisi aturan yang hanya berlaku pada proyek yang sedang dikerjakan.
+Sebelum melakukan pekerjaan apa pun:
 
-Contohnya:
+1. Baca seluruh isi file `.kilo/commands/izin_kilo.md`.
+2. Periksa tools yang secara eksplisit diizinkan.
+3. Gunakan hanya tools yang tercantum dan diizinkan dalam file tersebut.
+4. Jangan menggunakan tools lain yang tidak tercantum, sekalipun menurut Anda tools tersebut lebih mudah atau lebih cepat.
+5. Jika tools yang diperlukan untuk membaca, mengedit, menjalankan script, atau melakukan commit tidak diizinkan, jangan mencari jalan alternatif untuk melewati pembatasan tersebut.
+6. Laporkan pekerjaan yang tidak dapat dilakukan beserta alasan dan tahapan yang terhenti.
 
-- Struktur folder proyek.
-- Arsitektur khusus proyek.
-- Pola implementasi fitur.
-- Business logic.
-- Integrasi database dan backend.
-- Penggunaan paket khusus proyek.
-- Keputusan teknis khusus aplikasi.
-- Preferensi implementasi yang hanya relevan untuk proyek tersebut.
-- Kesalahan implementasi khusus proyek yang harus dicegah agar tidak terulang.
+Jika tool untuk membaca file izin itu sendiri tidak diizinkan, hentikan pekerjaan dan laporkan kendalanya.
 
-**B. Aturan bersama seluruh proyek Flutter**
+## 3. Identifikasi Git Staging Area
 
-Path:
+**Fokus evaluasi hanya pada perubahan yang sudah staged.**
 
-`.agents/rules/global/aturan_bersama.md`
+Gunakan informasi Git berikut:
 
-File ini berisi prinsip dan standar yang bisa diterapkan pada seluruh proyek Flutter.
+- `git status --short` untuk mengetahui kondisi repository.
+- `git diff --cached --name-status` untuk mendapatkan daftar file yang sudah staged.
+- `git diff --cached --no-ext-diff --no-color` untuk membaca perubahan yang sudah staged.
+- `git diff --cached --check` untuk memeriksa kesalahan whitespace pada perubahan staged.
 
-Contohnya:
+Jangan menggunakan `git diff` tanpa `--cached` sebagai sumber perubahan yang dievaluasi.
 
-- Standar penulisan Dart.
-- Penggunaan Flutter SDK.
-- Penanganan asynchronous.
-- Pencegahan bug runtime.
-- Pengelolaan lifecycle.
-- Pengelolaan state.
-- Performa.
-- Maintainability.
-- Testing.
-- Prinsip UX/UI lintas proyek.
-- Prinsip pengembangan yang dapat digunakan kembali pada proyek Flutter lainnya.
+### Ketentuan pemeriksaan
 
-**C. Perbarui AGENTS.md**
+1. Identifikasi seluruh file yang sudah staged.
+2. Catat daftar file sebelum melakukan evaluasi.
+3. Baca setiap file staged satu per satu.
+4. Jangan hanya membaca ringkasan atau statistik perubahan.
+5. Periksa seluruh bagian diff yang berubah, termasuk penambahan, penghapusan, dan modifikasi kode.
+6. Untuk memahami kode secara utuh, periksa versi file yang terdapat dalam Git Index, bukan menganggap isi working directory selalu sama dengan isi staged.
+7. Perhatikan perubahan file baru, file yang dihapus, dan file yang dipindahkan.
+8. Jika file berisi perubahan biner atau format yang tidak dapat dibaca sebagai teks, identifikasi dan laporkan keterbatasan evaluasinya.
+9. Jangan memasukkan perubahan unstaged atau untracked ke dalam objek evaluasi.
+10. Jangan mengubah Staging Area selama proses pemeriksaan.
 
-Setelah kedua file aturan selesai diperbarui, jalankan:
+Apabila tidak terdapat perubahan staged, hentikan proses evaluasi dan jangan melakukan commit.
 
-`script/build_rules_context.sh`
+### Larangan
 
-Tujuannya memperbarui isi `AGENTS.md` berdasarkan aturan terbaru.
+- Jangan menjalankan `git add`.
+- Jangan menjalankan `git add .`.
+- Jangan menjalankan `git add -A`.
+- Jangan memasukkan file baru ke Staging Area.
+- Jangan mengeluarkan file dari Staging Area.
+- Jangan mengubah isi Git Index.
+- Jangan menggunakan perubahan unstaged sebagai dasar evaluasi.
+- Jangan menganggap seluruh perubahan pada working directory sudah staged.
 
-### Hasil akhir yang diharapkan
+**Catatan:** Git Staging Area merupakan sumber utama perubahan yang akan dievaluasi dan menjadi satu-satunya sumber perubahan yang boleh dimasukkan ke commit.
 
-AI semakin memahami cara pengguna menginginkan kode ditulis, diperbaiki, dan dikembangkan.
+## 4. Evaluasi setiap perubahan kode
 
-Aturan harus membantu mencegah kesalahan yang sama terulang apabila AI melakukan perubahan kode di kemudian hari.
+Evaluasi seluruh file staged satu per satu.
 
-Jangan hanya mengevaluasi apakah kode berjalan. Evaluasi juga apakah cara implementasinya sudah sesuai dengan standar dan preferensi pengguna.
+Jangan hanya mencari kesalahan yang terlihat secara langsung. Pahami tujuan, konteks, alur kerja, dan konsekuensi dari setiap perubahan.
 
-## 2. Ketentuan Utama: Hanya 5 Commit Terakhir
+Lakukan evaluasi berdasarkan aspek berikut.
 
-**WAJIB mengevaluasi tepat 5 commit terakhir dari HEAD pada branch yang sedang aktif.**
-
-Gunakan:
-
-```bash
-git log -5 --date=short --pretty=format:'%H%x09%ad%x09%s' HEAD
-```
-
-Ketentuan:
-
-1. Ambil tepat 5 commit terakhir.
-2. Jangan mengambil lebih dari 5 commit.
-3. Jangan mengambil kurang dari 5 commit.
-4. Jangan mengambil commit dari branch lain.
-5. Jangan memperluas pemeriksaan ke seluruh riwayat proyek.
-6. Jangan mengganti commit yang tidak dapat diperiksa dengan commit dari branch lain.
-
-Setelah mengambil hasilnya, hitung dan pastikan terdapat tepat 5 commit berbeda.
-
-**Jika repository hanya memiliki kurang dari 5 commit, hentikan evaluasi. Jangan melanjutkan menggunakan jumlah yang lebih sedikit. Laporkan jumlah commit yang tersedia.**
-
-Jangan membuat kesimpulan aturan berdasarkan evaluasi yang tidak memenuhi ketentuan ini.
-
-## 3. Larangan Membaca Git yang Belum Di-commit
-
-**AI hanya boleh membaca riwayat dan isi commit yang sudah tersimpan di repository.**
-
-Jangan membaca, memeriksa, menganalisis, atau membandingkan perubahan Git yang belum di-commit.
-
-Hal yang dilarang untuk diperiksa:
-
-1. Perubahan staged.
-2. Perubahan unstaged.
-3. File untracked.
-4. Perbedaan working tree dengan staging area.
-5. Perbedaan working tree dengan HEAD.
-6. Perubahan yang belum masuk riwayat commit.
-
-Dilarang menjalankan perintah berikut:
-
-```bash
-git status
-git diff
-git diff --cached
-git diff HEAD
-git ls-files --others
-```
-
-Jangan menggunakan perintah lain yang bertujuan memeriksa perubahan Git yang belum di-commit.
-
-### 3.1. Jangan mengubah kondisi Git
-
-Dilarang menjalankan operasi yang dapat mengubah:
-
-- Working tree.
-- Staging area.
-- Branch.
-- Riwayat commit.
-
-Contoh perintah yang dilarang:
-
-```bash
-git checkout
-git reset
-git restore
-git clean
-git stash
-git add
-git commit
-git amend
-git rebase
-git merge
-git cherry-pick
-git revert
-git pull
-git push
-```
-
-Larangan berlaku untuk seluruh operasi Git lain yang mempunyai efek serupa.
-
-### 3.2. Sumber evaluasi hanya dari commit
-
-Perintah Git yang diperbolehkan hanya perintah baca yang mengakses objek commit yang sudah tersimpan.
-
-Contohnya:
-
-```bash
-git log -5 HEAD
-```
-
-```bash
-git show <HASH_COMMIT>
-```
-
-```bash
-git show <HASH_COMMIT>:<PATH_FILE>
-```
-
-```bash
-git diff <HASH_COMMIT_LAMA> <HASH_COMMIT_BARU> --
-```
-
-Ketentuan:
-
-- Jika menggunakan `git diff`, kedua referensi harus berupa hash commit yang sudah tersimpan.
-- Jangan menggunakan `git diff` untuk membandingkan working tree atau staging area.
-- Jangan menggunakan sintaks referensi staging seperti `:path/file.dart`.
-- Jangan menggunakan isi working tree sebagai pengganti isi file pada commit.
-- Jangan membaca perubahan yang belum di-commit untuk melengkapi informasi commit.
-
-**Jika kode dalam commit perlu dibaca lebih lengkap, ambil isinya menggunakan hash commit, bukan dari file proyek yang sedang aktif.**
-
-### 3.3. Pengecualian pembacaan file dokumentasi
-
-Untuk memperbarui dokumentasi, Anda tetap diperbolehkan membaca isi terkini dari:
-
-- `AGENTS.md`
-- `.agents/rules/proyek/aturan_khusus.md`
-- `.agents/rules/global/aturan_bersama.md`
-- `script/build_rules_context.sh`
-
-Pembacaan tersebut diperlukan untuk mempertahankan dokumentasi lama dan memahami proses pembaruan.
-
-Namun, jangan menggunakan Git untuk mengetahui atau memeriksa apakah file tersebut mempunyai perubahan staged maupun unstaged.
-
-Jangan membaca Git diff dari file-file tersebut.
-
-**Pembedaan penting:**
-
-- Kode sumber untuk bahan evaluasi harus berasal dari commit yang sudah tersimpan.
-- Isi dokumentasi boleh dibaca langsung sebagai referensi pembaruan.
-- Perubahan Git yang belum di-commit tidak boleh dijadikan bahan audit.
-
-## 4. Persiapan Sebelum Evaluasi
-
-### 4.1. Baca seluruh dokumentasi aturan
-
-Sebelum mengevaluasi commit, baca seluruh isi:
-
-1. `AGENTS.md`
-2. `.agents/rules/proyek/aturan_khusus.md`
-3. `.agents/rules/global/aturan_bersama.md`
-
-Tujuannya:
-
-- Memahami standar yang sudah berlaku.
-- Mengetahui aturan yang telah ditetapkan.
-- Menghindari penambahan aturan duplikat.
-- Memahami hubungan aturan khusus dan global.
-- Mengetahui preferensi pengembangan pengguna.
-- Mengetahui kemungkinan konflik antaraturan.
-
-Jangan hanya membaca sebagian isi file.
-
-Jika salah satu file belum tersedia, pastikan kondisinya sebelum membuat file baru.
-
-### 4.2. Periksa script pembaruan AGENTS.md
-
-Baca seluruh isi:
-
-`script/build_rules_context.sh`
-
-Pahami:
-
-- Cara kerja script.
-- File aturan yang dibaca.
-- Bagaimana konteks aturan dibangun.
-- File yang dihasilkan.
-- Apakah script menimpa atau menggabungkan isi `AGENTS.md`.
-- Apakah terdapat operasi penghapusan.
-- Apakah terdapat efek samping lain.
-- Apakah terdapat perintah Git.
-
-**Jangan mengubah isi script.**
-
-Jika script menggunakan operasi untuk membaca atau mengubah Git yang belum di-commit, jangan menjalankan operasi tersebut.
-
-Jika script berpotensi mengubah file yang tidak berkaitan dengan pembaruan `AGENTS.md`, periksa dampaknya terlebih dahulu.
-
-Jangan mengambil risiko menghilangkan pekerjaan pengguna.
-
-## 5. Identifikasi Tepat 5 Commit
-
-Ambil lima commit terakhir menggunakan:
-
-```bash
-git log -5 --date=short --pretty=format:'%H%x09%ad%x09%s' HEAD
-```
-
-Catat:
-
-- Hash commit lengkap.
-- Tanggal commit.
-- Pesan commit.
-
-Pastikan terdapat tepat 5 commit.
-
-Urutkan pemeriksaan dari commit paling lama menuju commit terbaru.
-
-**Pengambilan commit dimulai dari yang terbaru, tetapi evaluasi dilakukan dari yang paling lama menuju yang terbaru.**
-
-Jangan menganggap pesan commit sebagai penjelasan lengkap perubahan kode.
-
-Pesan commit hanya digunakan sebagai informasi awal.
-
-## 6. Baca Setiap Commit Satu per Satu
-
-Ini merupakan ketentuan wajib.
-
-**Setiap commit harus dibaca dan dievaluasi secara individual sebelum melanjutkan ke commit berikutnya.**
-
-Jangan hanya membaca ringkasan seluruh commit sekaligus.
-
-### 6.1. Baca metadata commit
-
-Gunakan:
-
-```bash
-git show -s --format=fuller <HASH_COMMIT>
-```
-
-Pahami:
-
-- Tanggal commit.
-- Pesan commit.
-- Pembuat commit.
-- Konteks perubahan berdasarkan informasi yang tersedia.
-
-### 6.2. Identifikasi seluruh file yang berubah
-
-Gunakan:
-
-```bash
-git show --format= --name-status --find-renames <HASH_COMMIT>
-```
-
-Periksa semua file yang mengalami perubahan.
-
-Jangan hanya memilih file Dart atau file yang terlihat penting.
-
-Perubahan konfigurasi, testing, platform, dan dokumentasi teknis juga dapat memberikan informasi tentang keputusan implementasi.
-
-### 6.3. Baca seluruh perubahan commit
-
-Untuk commit biasa, gunakan:
-
-```bash
-git show --format=fuller --no-ext-diff --find-renames --stat --patch <HASH_COMMIT>
-```
-
-Baca seluruh perubahan dalam commit tersebut.
-
-Untuk commit merge, evaluasi terhadap parent pertama menggunakan dua referensi commit yang eksplisit:
-
-```bash
-git diff <HASH_COMMIT>^1 <HASH_COMMIT> --
-```
-
-Untuk commit pertama yang tidak memiliki parent:
-
-```bash
-git show --root --format=fuller --no-ext-diff --find-renames --stat --patch <HASH_COMMIT>
-```
-
-Ketentuan:
-
-1. Periksa seluruh perubahan.
-2. Jangan hanya membaca ringkasan statistik.
-3. Jangan hanya membaca nama file.
-4. Jangan melewatkan perubahan kecil.
-5. Jangan melewatkan file yang terlihat sederhana.
-6. Jika hasil terlalu panjang, pecah pembacaan berdasarkan file.
-7. Pastikan seluruh bagian perubahan sudah dibaca.
-
-Jika satu commit mengubah banyak file, periksa setiap file secara individual.
-
-### 6.4. Baca isi file pada snapshot commit
-
-Jika patch belum memberikan konteks yang cukup, baca isi file langsung dari commit yang sedang diperiksa.
-
-Gunakan:
-
-```bash
-git show <HASH_COMMIT>:<PATH_FILE>
-```
-
-Hal ini bertujuan agar AI memahami implementasi lengkap pada saat commit dibuat.
-
-Ketentuan:
-
-- Gunakan hash commit yang sedang dievaluasi.
-- Jangan menggunakan versi file dari working tree.
-- Jangan menggunakan isi staging area.
-- Jangan menggunakan file untracked.
-- Jangan mengambil isi dari commit lain tanpa alasan yang jelas.
-
-**Versi kode yang menjadi bahan evaluasi harus berasal dari snapshot commit yang sedang diperiksa.**
-
-### 6.5. Evaluasi isi perubahan
-
-Evaluasi seluruh aspek perubahan yang relevan.
-
-#### A. Gaya dan standar penulisan kode
-
-- Penamaan class, function, variable, dan file.
-- Struktur class dan function.
-- Susunan kode.
-- Konsistensi penulisan.
-- Pemisahan tanggung jawab.
-- Penggunaan abstraksi.
-- Penggunaan komentar.
-- Keterbacaan kode.
-- Maintainability.
-
-#### B. Bug dan keamanan runtime
-
-- Penanganan null.
-- Penanganan exception.
-- Penggunaan `!`, `as`, dan `dynamic`.
-- Penanganan asynchronous.
-- Penggunaan `await`.
-- Pemeriksaan `mounted`.
-- Pengelolaan lifecycle.
-- Pengelolaan resource.
-- Pemanggilan `dispose`.
-- Potensi memory leak.
-- Potensi race condition.
-- Penanganan database dan transaksi.
-- Validasi data.
-
-#### C. Arsitektur dan state management
-
-- Penggunaan Provider dan Notifier.
-- Penggunaan `ref.watch` dan `ref.read`.
-- Pengelolaan state.
-- Penggunaan Freezed.
-- Pemisahan UI dan business logic.
-- Pengelolaan cache.
-- Aliran data.
-- Penggunaan repository.
-- Dependency injection.
-- Pemisahan tanggung jawab.
-
-#### D. Performa
-
-- Rebuild widget.
-- Efisiensi pemrosesan data.
-- Efisiensi query database.
-- Penggunaan cache.
-- Penggunaan resource.
-- Operasi berat pada UI thread.
-- Penggunaan Future dan Stream.
-- Penggunaan memori.
-
-#### E. UX/UI
-
-- Konsistensi desain.
-- Keterbacaan.
-- Jarak dan ukuran komponen.
-- Kejelasan fungsi tombol.
-- Loading dan feedback.
-- Penanganan error.
-- Pencegahan interaksi ganda.
-- Pengelolaan data kosong.
-- Kemudahan penggunaan.
-- Responsivitas.
-
-#### F. Testing
-
-- Kualitas pengujian.
-- Unit test.
-- Penggunaan mock dan fake.
-- Pengujian kondisi normal dan ekstrem.
-- Pengujian business logic.
-- Pengujian terhadap kemungkinan kesalahan.
-
-#### G. Aspek teknis lainnya
-
-Jangan membatasi evaluasi hanya pada daftar tersebut.
-
-Jika perubahan mengandung keputusan teknis lain yang dapat menjadi standar pengembangan, evaluasi juga.
-
-### 6.6. Catat hasil evaluasi setiap commit
-
-Setelah satu commit selesai diperiksa, catat:
-
-- Apa yang berubah?
-- Apa tujuan perubahan berdasarkan konteks yang tersedia?
-- Pola implementasi apa yang digunakan?
-- Gaya penulisan apa yang terlihat?
-- Preferensi pengguna apa yang dapat disimpulkan?
-- Keputusan teknis apa yang perlu dipertahankan?
-- Kesalahan apa yang berhasil diperbaiki?
-- Prinsip apa yang bisa digeneralisasi?
-- Hal apa yang belum cukup jelas untuk dijadikan aturan?
-
-Jangan melanjutkan ke commit berikutnya sebelum seluruh perubahan commit saat ini selesai dievaluasi.
-
-## 7. Perlakukan Commit sebagai Pekerjaan yang Sudah Disimpan
-
-Pengguna menganggap pekerjaan yang sudah di-commit sebagai pekerjaan yang telah disimpan dan diselesaikan.
-
-Karena itu:
-
-1. Gunakan implementasi dalam commit sebagai referensi hasil pekerjaan pengguna.
-2. Pelajari pola implementasi yang dipilih.
-3. Identifikasi preferensi yang terlihat dari perubahan.
-4. Jangan menganggap commit sebagai pekerjaan yang masih harus diperbaiki.
-5. Jangan mengubah kode di dalam commit.
-6. Jangan membuat ulang commit.
-7. Jangan mengubah riwayat commit.
-
-Namun, tetap evaluasi kualitas implementasinya sebelum menjadikannya aturan.
-
-Jika suatu implementasi terlihat berisiko:
-
-- Catat sebagai temuan.
-- Periksa apakah commit berikutnya memperbaikinya.
-- Jangan mengubah commit.
-- Jangan menjadikan pola yang bermasalah sebagai aturan.
-- Jangan menyimpulkan preferensi pengguna hanya dari satu implementasi yang belum jelas.
-
-**Tujuannya adalah mengambil standar dan pelajaran dari pekerjaan yang sudah disimpan, bukan menyalin setiap implementasi tanpa penilaian.**
-
-## 8. Evaluasi Perkembangan Antar-Commit
-
-Setelah setiap commit dibaca secara individual, periksa hubungan antara kelima commit.
-
-Perhatikan:
-
-- Apakah ada implementasi yang disempurnakan?
-- Apakah ada pendekatan yang diganti?
-- Apakah ada bug yang diperbaiki?
-- Apakah ada pola lama yang tidak lagi digunakan?
-- Apakah ada standar yang konsisten?
-- Apakah preferensi pengguna semakin jelas?
-- Apakah ada keputusan teknis yang diperkuat oleh commit berikutnya?
-
-Jika commit terbaru menggantikan pendekatan lama, gunakan pendekatan terbaru sebagai referensi utama.
-
-Jangan menggabungkan dua pendekatan yang saling bertentangan menjadi satu aturan.
-
-### 8.1. Jangan mengabaikan commit kecil
-
-Pengguna menyukai commit perubahan kecil agar setiap pekerjaan lebih mudah dipisahkan dan dievaluasi.
-
-Karena itu:
-
-- Setiap commit tetap wajib diperiksa.
-- Jangan melewati commit kecil.
-- Jangan menyarankan penggabungan commit.
-- Jangan mengubah strategi commit pengguna.
-- Jangan menganggap perubahan kecil tidak mengandung pelajaran penting.
-- Perhatikan perkembangan standar melalui rangkaian commit kecil.
-
-## 9. Identifikasi Preferensi Pengguna
-
-Jangan hanya mengevaluasi kebenaran teknis kode.
-
-Pelajari juga bagaimana pengguna ingin kode dikembangkan.
-
-Identifikasi preferensi yang terlihat dari perubahan, seperti:
-
-- Cara menyusun function.
-- Cara memisahkan business logic.
-- Cara menggunakan Provider dan Notifier.
-- Cara mengelola state.
-- Cara menangani error.
-- Cara mengelola cache.
-- Cara menghindari abstraksi yang tidak diperlukan.
-- Cara menyusun widget.
-- Cara mengelola asynchronous.
-- Cara menulis unit test.
-- Cara memperbaiki bug.
-- Cara mempertahankan konsistensi implementasi.
-
-Utamakan pola yang berulang atau didukung oleh bukti kuat dari beberapa commit.
-
-Jangan menganggap satu contoh implementasi sebagai preferensi wajib tanpa bukti yang cukup.
-
-## 10. Tentukan Aturan yang Layak Ditambahkan
-
-Setelah kelima commit selesai dievaluasi, rangkum seluruh temuan.
-
-Jangan langsung memasukkan setiap perubahan kode menjadi aturan.
-
-Suatu perubahan layak menjadi aturan apabila:
-
-1. Penting untuk dipertahankan.
-2. Mencerminkan preferensi pengguna.
-3. Dapat mencegah kesalahan berulang.
-4. Memiliki alasan teknis yang jelas.
-5. Dapat diterapkan secara konsisten.
-6. Belum diatur atau belum dijelaskan secara memadai.
-7. Relevan untuk pengembangan berikutnya.
-
-Perhatikan:
-
-- Satu commit dapat menghasilkan beberapa aturan.
-- Beberapa commit dapat mendukung satu aturan yang sama.
-- Satu aturan dapat berasal dari perkembangan implementasi antar-commit.
-- Satu aturan dapat berisi prinsip umum dan contoh implementasi khusus.
-
-Jangan membuat aturan hanya untuk memperbanyak dokumentasi.
-
-**Utamakan aturan yang konkret, tegas, dan memiliki manfaat nyata.**
-
-## 11. Pisahkan Aturan Khusus dan Aturan Bersama
-
-Setiap temuan yang layak menjadi aturan harus diperiksa cakupan penerapannya.
-
-### 11.1. Aturan khusus proyek
-
-Path:
-
-`.agents/rules/proyek/aturan_khusus.md`
-
-Masukkan aturan apabila hanya relevan untuk proyek saat ini.
-
-Contohnya:
-
-- Struktur folder khusus proyek.
-- Arsitektur khusus aplikasi.
-- Pola implementasi modul tertentu.
-- Penggunaan paket khusus proyek.
-- Integrasi database atau backend tertentu.
-- Business logic khusus aplikasi.
-- Ketentuan implementasi fitur tertentu.
-- Keputusan teknis khusus proyek.
-
-Jangan memasukkan detail yang hanya berlaku pada satu proyek ke aturan global.
-
-### 11.2. Aturan bersama seluruh proyek Flutter
-
-Path:
-
-`.agents/rules/global/aturan_bersama.md`
-
-Masukkan prinsip yang bisa diterapkan pada seluruh proyek Flutter.
-
-Contohnya:
-
-- Standar penulisan Dart.
-- Penanganan asynchronous.
-- Pencegahan bug runtime.
-- Pengelolaan lifecycle widget.
-- Pengelolaan resource.
-- Prinsip state management.
-- Pencegahan rebuild yang tidak diperlukan.
-- Maintainability.
-- Pengujian.
-- Prinsip UX/UI lintas proyek.
-- Penggunaan Flutter dan Dart SDK.
-
-Pastikan aturan tersebut benar-benar dapat diterapkan pada proyek Flutter lainnya tanpa menimbulkan konflik dengan arsitektur masing-masing.
-
-### 11.3. Wajib mengambil prinsip umum dari aturan khusus
-
-Ini merupakan ketentuan penting.
-
-Walaupun suatu implementasi hanya dapat diterapkan secara langsung pada proyek tertentu, tetap evaluasi apakah terdapat prinsip dasar yang bisa dijadikan referensi untuk aturan bersama.
-
-Contohnya:
-
-- Detail implementasi repository tertentu hanya berlaku untuk satu aplikasi.
-- Namun, prinsip pemisahan business logic dari UI dapat berlaku untuk proyek Flutter lainnya.
-
-Lakukan pemisahan berikut:
-
-1. Detail implementasi khusus tetap ditulis dalam `aturan_khusus.md`.
-2. Prinsip umum yang dapat diterapkan lintas proyek ditulis dalam `aturan_bersama.md`.
-3. Jangan menyalin seluruh aturan khusus ke aturan global.
-4. Jangan menghilangkan prinsip umum yang dapat digeneralisasi.
-5. Jangan memaksakan generalisasi yang tidak tepat.
-
-**Setiap aturan khusus wajib diperiksa peluang generalisasinya sebelum diputuskan hanya berlaku untuk proyek saat ini.**
-
-Jika sebuah aturan khusus tidak bisa digeneralisasi, jelaskan alasannya dalam laporan akhir.
-
-Jika hanya sebagian prinsip yang dapat digunakan secara global, masukkan hanya bagian prinsip tersebut.
-
-Jangan membawa detail teknis khusus proyek ke aturan bersama.
-
-## 12. Penulisan Aturan dan Contoh Kode
-
-Gunakan bahasa Indonesia yang baik dan benar.
-
-Ketentuan:
-
-1. Gunakan kalimat tegas.
-2. Hindari kalimat ambigu.
-3. Jelaskan tindakan yang diwajibkan.
-4. Jelaskan tindakan yang dilarang.
-5. Jelaskan alasan aturan.
-6. Hindari aturan terlalu umum.
-7. Jangan membuat aturan duplikat.
-8. Pertahankan aturan lama yang masih relevan.
-9. Perjelas aturan lama jika diperlukan.
-10. Jangan mengubah aturan yang tidak berkaitan dengan evaluasi.
-
-### 12.1. Wajib menyertakan contoh benar dan salah
-
-Setiap aturan kode yang baru ditambahkan atau diperbarui wajib mempunyai contoh kode benar dan salah.
-
-Gunakan struktur berikut:
-
-### Judul Aturan
-
-**Aturan:**
-
-Jelaskan ketentuan yang harus diikuti.
-
-**Alasan:**
-
-Jelaskan mengapa aturan diperlukan.
-
-**Contoh benar:**
-
-```dart
-// Implementasi yang sesuai dengan aturan.
-```
-
-**Contoh salah:**
-
-```dart
-// Implementasi yang tidak sesuai dengan aturan.
-```
-
-**Sumber evaluasi:**
-
-- Commit: `<HASH_COMMIT>`
-- File: `lib/path/file.dart`
-
-Ketentuan contoh:
-
-- Contoh harus relevan dengan aturan.
-- Contoh benar menunjukkan implementasi yang direkomendasikan.
-- Contoh salah menunjukkan pola yang harus dihindari.
-- Kode harus valid secara sintaksis.
-- API harus benar-benar tersedia.
-- Contoh harus sesuai dengan Flutter dan Dart.
-- Jangan membuat nama API atau method fiktif.
-- Jangan memasukkan kesalahan lain yang tidak berkaitan dengan aturan.
-
-Jika satu aturan didukung beberapa commit, cantumkan seluruh commit yang relevan.
-
-Untuk aturan non-kode, gunakan contoh penerapan benar dan salah yang sesuai dengan konteksnya.
-
-### 12.2. Sumber aturan wajib dicantumkan
-
-Setiap aturan baru harus mempunyai sumber evaluasi yang jelas.
-
-Cantumkan:
-
-- Hash commit.
-- Path file sumber.
-- Alasan perubahan tersebut menghasilkan aturan.
-
-Jangan mengklaim aturan berasal dari commit tertentu apabila tidak terdapat bukti di dalamnya.
-
-## 13. Evaluasi Konflik dan Duplikasi
-
-Sebelum menyimpan perubahan, bandingkan hasil evaluasi dengan:
-
-- `AGENTS.md`
-- `.agents/rules/proyek/aturan_khusus.md`
-- `.agents/rules/global/aturan_bersama.md`
+### A. Kebenaran logika dan fungsionalitas
 
 Periksa:
 
-1. Aturan duplikat.
-2. Aturan yang saling bertentangan.
-3. Aturan global yang terlalu spesifik.
-4. Aturan khusus yang sebenarnya dapat digeneralisasi.
-5. Aturan yang tidak konsisten dengan preferensi pengguna.
-6. Contoh benar yang bertentangan dengan aturan lain.
-7. Contoh salah yang sebenarnya diperbolehkan.
-8. Aturan lama yang sudah tidak relevan.
+- Apakah logika kode sudah sesuai dengan tujuan fitur?
+- Apakah hasil pengolahan data sudah benar?
+- Apakah kondisi percabangan sudah tepat?
+- Apakah terdapat kesalahan perhitungan?
+- Apakah terdapat kondisi yang tidak tertangani?
+- Apakah terdapat potensi data tidak konsisten?
+- Apakah kode menghasilkan keluaran yang diharapkan?
+- Apakah perubahan menyebabkan fitur lain terganggu?
 
-Jika menemukan konflik:
+### B. Bug dan runtime
 
-1. Periksa prioritas aturan yang berlaku.
-2. Jangan menebak penyelesaian.
-3. Jangan menghapus aturan lama secara sembarangan.
-4. Jangan memasukkan aturan baru yang bertentangan.
-5. Laporkan konflik yang belum dapat dipastikan.
+Periksa:
 
-Utamakan memperjelas aturan lama daripada membuat aturan baru dengan maksud yang sama.
+- Potensi exception.
+- Null safety.
+- Kesalahan asynchronous.
+- Penggunaan Future dan Stream.
+- Lifecycle widget.
+- Pengelolaan state.
+- Pengelolaan resource dan dispose.
+- Penanganan error.
+- Potensi race condition.
+- Potensi memory leak.
+- Risiko kehilangan atau kerusakan data.
 
-## 14. Perbarui File Aturan
+### C. Gaya dan kualitas penulisan kode
 
-Setelah seluruh evaluasi selesai, lakukan pembaruan.
+Periksa:
 
-### 14.1. Perbarui aturan khusus
+- Konsistensi penamaan variabel, fungsi, class, dan file.
+- Struktur kode.
+- Keterbacaan.
+- Konsistensi format.
+- Pemisahan tanggung jawab.
+- Penggunaan abstraksi.
+- Duplikasi kode.
+- Kompleksitas logika.
+- Kesesuaian dengan pola yang sudah digunakan proyek.
+- Kepatuhan terhadap aturan penulisan kode yang berlaku.
 
-Path:
+Jangan menganggap kode sudah benar hanya karena berhasil dikompilasi.
+
+### D. Arsitektur dan pengelolaan state
+
+Periksa:
+
+- Kesesuaian tanggung jawab setiap lapisan.
+- Pemisahan UI, state, dan business logic.
+- Alur komunikasi antarkomponen.
+- Pengelolaan data.
+- Penggunaan cache.
+- Penggunaan repository dan service.
+- Konsistensi pengelolaan state.
+- Potensi ketergantungan yang tidak diperlukan.
+
+### E. Performa dan efisiensi
+
+Periksa:
+
+- Proses yang tidak diperlukan.
+- Rebuild widget yang berlebihan.
+- Operasi database.
+- Pemrosesan data.
+- Penggunaan memori.
+- Pemanggilan fungsi berulang.
+- Pengelolaan cache.
+- Operasi asynchronous.
+- Potensi pekerjaan berat pada UI thread.
+
+### F. Keamanan dan keandalan
+
+Periksa:
+
+- Validasi input.
+- Penanganan data sensitif.
+- Pengelolaan autentikasi dan otorisasi.
+- Potensi kebocoran data.
+- Penanganan kegagalan operasi.
+- Konsistensi transaksi database.
+- Keamanan operasi yang mengubah atau menghapus data.
+
+### G. Pengalaman pengguna
+
+Periksa perubahan yang berkaitan dengan UI dan UX:
+
+- Kejelasan fungsi tombol.
+- Kejelasan status operasi.
+- Penanganan loading.
+- Penanganan error.
+- Konfirmasi tindakan penting.
+- Konsistensi desain.
+- Kemudahan penggunaan.
+- Potensi kebingungan pengguna.
+- Responsivitas tampilan.
+
+Jangan menganggap aspek UI dan UX tidak perlu dievaluasi hanya karena perubahan utamanya berada pada business logic.
+
+## 5. Periksa aturan yang sudah tersedia
+
+Sebelum menambahkan aturan baru, baca dan pahami isi:
+
+- `AGENTS.md`
+- `.agents/rules/proyek/aturan_khusus.md`
+- `.agents/rules/global/aturan_bersama.md`
+
+Jika diperlukan untuk memahami suatu aturan, baca juga file aturan lain yang relevan dengan perubahan staged.
+
+Tujuannya:
+
+1. Memahami standar yang sudah berlaku.
+2. Mengetahui apakah kesalahan yang ditemukan sebenarnya sudah diatur.
+3. Menghindari aturan duplikat.
+4. Mengetahui apakah aturan yang sudah ada perlu diperjelas.
+5. Menemukan kemungkinan konflik antaraturan.
+6. Memastikan aturan baru tidak bertentangan dengan pedoman yang sudah ditetapkan.
+
+Jangan menambahkan aturan baru hanya dengan mengganti kata-kata dari aturan lama.
+
+Apabila terdapat aturan yang bertentangan, evaluasi konteks dan prioritasnya. Jangan menghapus atau mengganti aturan yang masih digunakan tanpa dasar yang jelas.
+
+## 6. Memperbarui aturan khusus proyek
+
+File tujuan:
 
 `.agents/rules/proyek/aturan_khusus.md`
 
-Lakukan:
+Masukkan aturan yang:
 
-- Tambahkan aturan khusus yang diperlukan.
-- Perbarui aturan lama yang perlu diperjelas.
-- Pertahankan aturan lama yang masih relevan.
-- Hindari duplikasi.
-- Sertakan contoh benar dan salah.
-- Sertakan sumber commit.
+- Berlaku khusus untuk proyek yang sedang dikerjakan.
+- Bergantung pada arsitektur proyek.
+- Bergantung pada struktur folder proyek.
+- Bergantung pada business logic proyek.
+- Bergantung pada ketentuan atau keputusan teknis proyek.
+- Mengatur pola implementasi yang memang hanya berlaku pada proyek tersebut.
+- Menjelaskan kesalahan spesifik yang ditemukan dalam perubahan staged.
 
-### 14.2. Perbarui aturan bersama
+### Ketentuan penulisan
 
-Path:
+Setiap aturan baru harus menjelaskan:
+
+1. Judul aturan.
+2. Kondisi atau konteks penerapannya.
+3. Ketentuan yang wajib dipatuhi.
+4. Alasan aturan tersebut diperlukan.
+5. Contoh kode yang benar.
+6. Contoh kode yang salah.
+7. Penjelasan mengapa contoh benar harus digunakan dan contoh salah harus dihindari.
+
+Contoh kode wajib relevan dengan masalah yang ditemukan. Jangan memberikan contoh yang tidak berkaitan hanya untuk memenuhi format.
+
+Gunakan contoh Dart atau Flutter yang sesuai dengan implementasi proyek.
+
+### Contoh format aturan
+
+#### Aturan: Jangan menggunakan nilai yang belum divalidasi
+
+**Ketentuan:**
+
+Pastikan nilai sudah divalidasi sebelum digunakan agar tidak menimbulkan kesalahan runtime.
+
+**Contoh yang benar:**
+
+```dart
+final id = int.tryParse(value);
+
+if (id == null) {
+  return;
+}
+
+processData(id);
+```
+
+**Contoh yang salah:**
+
+```dart
+final id = int.parse(value);
+
+processData(id);
+```
+
+**Alasan:**
+
+Penggunaan `tryParse` memungkinkan penanganan nilai yang tidak valid tanpa langsung menghasilkan exception.
+
+Contoh di atas hanya ilustrasi format. Aturan yang dimasukkan harus berasal dari hasil evaluasi perubahan nyata dan harus sesuai dengan standar proyek.
+
+### Ketentuan tambahan
+
+- Pertahankan aturan lama yang masih berlaku.
+- Perbarui aturan lama apabila ditemukan kekurangan.
+- Gabungkan aturan yang memiliki tujuan sama.
+- Hapus duplikasi jika memang tidak lagi diperlukan.
+- Jangan membuat aturan yang terlalu umum sehingga kehilangan konteks proyek.
+- Jangan menulis aturan berdasarkan asumsi.
+- Jangan menambahkan ketentuan teknis yang tidak memiliki dasar dari hasil evaluasi, dokumentasi, atau standar proyek yang sudah ditetapkan.
+
+## 7. Mengidentifikasi aturan untuk seluruh proyek Flutter
+
+File tujuan:
 
 `.agents/rules/global/aturan_bersama.md`
 
-Lakukan:
+Semua proyek pengguna menggunakan Flutter. Oleh karena itu, setiap temuan perlu diperiksa apakah dapat menghasilkan prinsip yang berlaku lintas proyek Flutter.
 
-- Tambahkan prinsip umum Flutter dan Dart.
-- Perjelas aturan global yang sudah ada.
-- Ambil prinsip umum dari temuan aturan khusus.
-- Hindari memasukkan detail implementasi khusus proyek.
-- Sertakan contoh benar dan salah.
-- Sertakan sumber evaluasi.
+Identifikasi prinsip yang dapat diterapkan pada:
 
-### 14.3. Pertahankan isi dokumentasi sebelumnya
+- Dart.
+- Flutter.
+- Widget dan lifecycle.
+- State management.
+- Asynchronous programming.
+- Database.
+- Pengelolaan data.
+- Penanganan error.
+- Performa aplikasi.
+- Pengelolaan resource.
+- Struktur kode.
+- UI dan UX.
+- Pengujian.
+- Keamanan aplikasi.
+- Pemeliharaan kode.
 
-Jangan mengganti seluruh isi file tanpa alasan.
+### Kriteria aturan global
 
-Jangan menghapus aturan lama hanya karena ditemukan pendekatan baru.
+Aturan hanya boleh dimasukkan ke `aturan_bersama.md` apabila:
 
-Jika sebuah aturan lama perlu diperbarui:
+1. Dapat diterapkan pada berbagai proyek Flutter.
+2. Tidak bergantung pada business logic satu proyek.
+3. Tidak mengharuskan penggunaan package tertentu yang hanya dipakai satu proyek.
+4. Tidak bertentangan dengan aturan global yang sudah ada.
+5. Memiliki dasar teknis yang dapat dipertanggungjawabkan.
+6. Dapat dijadikan pedoman implementasi bagi AI pada proyek Flutter lainnya.
 
-1. Pastikan terdapat bukti dari commit.
-2. Pastikan aturan baru lebih sesuai.
-3. Pastikan tidak menimbulkan konflik.
-4. Pertahankan bagian lama yang masih relevan.
+### Hubungan aturan khusus dan aturan global
 
-Lakukan perubahan secara terarah.
+Aturan khusus tetap menjadi sumber utama untuk ketentuan spesifik proyek.
 
-Jangan mengubah file selain dua file aturan tersebut, kecuali `AGENTS.md` melalui script yang telah ditentukan.
+Namun, jangan membatasi evaluasi hanya pada aturan khusus.
 
-## 15. Perbarui AGENTS.md Menggunakan Script
+Setiap aturan khusus yang baru ditambahkan atau diperbarui harus diperiksa kembali untuk menemukan prinsip umum yang bisa dijadikan referensi aturan bersama.
 
-Setelah kedua file aturan selesai diperbarui, jalankan:
+Contoh:
 
-```bash
-bash script/build_rules_context.sh
-```
+Aturan khusus mungkin menjelaskan kesalahan pengelolaan asynchronous pada fitur tertentu.
 
-Tujuannya memperbarui isi:
+Dari kesalahan tersebut, evaluasi apakah terdapat prinsip umum Flutter/Dart yang dapat diterapkan pada seluruh proyek.
 
-`AGENTS.md`
+Jika ada, tambahkan prinsip umumnya ke `aturan_bersama.md` dengan redaksi yang tidak bergantung pada fitur tersebut.
 
-**Path yang wajib digunakan adalah `script/build_rules_context.sh`, menggunakan direktori `script` dalam bentuk tunggal.**
+Jangan menyalin seluruh aturan khusus ke aturan bersama.
 
-Jangan diam-diam menggantinya menjadi `scripts/build_rules_context.sh`.
+**Tujuan aturan bersama adalah mengambil prinsip yang dapat digunakan lintas proyek, bukan memindahkan semua ketentuan proyek ke file global.**
 
-### 15.1. Pastikan script tersedia
+### Contoh kode
 
-Sebelum menjalankan, periksa keberadaan file:
+Setiap aturan global yang baru ditambahkan atau diperbarui juga harus memiliki:
+
+- Contoh implementasi yang benar.
+- Contoh implementasi yang salah.
+- Penjelasan perbedaan keduanya.
+
+Pastikan contoh benar dan salah menunjukkan prinsip Flutter/Dart yang memang sedang diatur.
+
+## 8. Standar kualitas penulisan aturan
+
+Untuk kedua file aturan, terapkan ketentuan berikut:
+
+1. Gunakan bahasa Indonesia yang baik dan benar.
+2. Gunakan istilah teknis secara konsisten.
+3. Hindari kalimat yang memiliki banyak penafsiran.
+4. Gunakan instruksi yang tegas dan operasional.
+5. Jelaskan kondisi kapan aturan harus diterapkan.
+6. Hindari aturan yang terlalu panjang tanpa manfaat.
+7. Jangan mengulang aturan yang sudah dijelaskan dengan baik.
+8. Pisahkan aturan wajib, larangan, dan rekomendasi apabila diperlukan.
+9. Jangan mengubah maksud aturan lama yang masih benar.
+10. Pastikan AI dapat memahami kapan aturan berlaku dan bagaimana menerapkannya.
+
+**Jangan membuat aturan hanya untuk memperbanyak isi file. Utamakan aturan yang benar-benar dapat mencegah kesalahan berulang.**
+
+## 9. Memperbarui file aturan
+
+Lakukan perubahan pada:
+
+`.agents/rules/proyek/aturan_khusus.md`
+
+`.agents/rules/global/aturan_bersama.md`
+
+Ketentuan:
+
+1. Baca seluruh isi kedua file sebelum mengedit.
+2. Identifikasi bagian yang perlu ditambahkan atau diperbarui.
+3. Hindari membuat aturan duplikat.
+4. Pertahankan isi lain yang tidak berkaitan.
+5. Jangan menghapus aturan lama hanya karena ditemukan pendekatan lain yang lebih disukai.
+6. Pastikan setiap perubahan memiliki alasan yang jelas berdasarkan hasil evaluasi.
+7. Pastikan contoh kode benar dan salah tersedia untuk setiap aturan baru atau yang diperbarui.
+8. Periksa kembali seluruh isi kedua file setelah perubahan selesai.
+
+Jika tidak ditemukan aturan baru yang layak, jangan memaksakan penambahan aturan.
+
+Laporkan apabila tidak ada aturan yang perlu ditambahkan atau diperbarui.
+
+## 10. Regenerasi AGENTS.md
+
+Setelah proses evaluasi dan pembaruan kedua file aturan selesai, jalankan script berikut:
 
 `script/build_rules_context.sh`
 
-Jika tidak ditemukan:
+Sebelum menjalankan:
 
-1. Jangan membuat script pengganti.
-2. Jangan otomatis mencari dan menjalankan script dengan nama berbeda.
-3. Jangan mengubah path tujuan berdasarkan asumsi.
-4. Laporkan bahwa script tidak ditemukan.
-5. Sampaikan path yang diperiksa kepada pengguna.
+1. Pastikan file script tersebut benar-benar tersedia.
+2. Baca isi script untuk memahami operasinya.
+3. Pastikan script tidak menjalankan operasi Git yang mengubah Staging Area, melakukan commit, atau push.
+4. Pastikan penggunaan tools untuk membaca dan menjalankan script diizinkan oleh `.kilo/commands/izin_kilo.md`.
+5. Jangan mengganti nama atau lokasi script berdasarkan asumsi.
 
-### 15.2. Periksa isi script
+Jika script tidak ditemukan atau tidak aman untuk dijalankan, hentikan tahap ini dan laporkan kendalanya.
 
-Baca seluruh isi script dan pahami dampaknya.
+Setelah berhasil dijalankan:
 
-Pastikan script:
+1. Periksa hasil eksekusinya.
+2. Pastikan tidak ada pesan error.
+3. Pastikan `AGENTS.md` berhasil diperbarui sesuai mekanisme script.
+4. Jangan mengedit `AGENTS.md` secara langsung apabila file tersebut memang dihasilkan oleh script.
+5. Jangan mengubah Staging Area.
 
-- Membaca aturan dari lokasi yang benar.
-- Menghasilkan pembaruan `AGENTS.md`.
-- Tidak membaca perubahan Git yang belum di-commit.
-- Tidak menggunakan Git diff untuk memeriksa working tree.
-- Tidak mengubah staging area.
-- Tidak membuat commit.
-- Tidak mengubah branch atau riwayat commit.
-- Tidak menghapus pekerjaan pengguna.
-- Tidak mengubah file lain di luar tujuan yang diperlukan.
+## 11. Pemeriksaan sebelum commit
 
-Jangan mengubah isi script.
+Setelah pembaruan aturan dan regenerasi `AGENTS.md` selesai:
 
-Jika script melakukan operasi yang bertentangan dengan ketentuan ini, jangan jalankan. Laporkan masalahnya.
+1. Periksa kembali kedua file aturan.
+2. Pastikan tidak ada aturan duplikat yang baru dibuat.
+3. Pastikan tidak ada konflik baru.
+4. Pastikan setiap aturan baru atau diperbarui memiliki contoh kode benar dan salah.
+5. Pastikan script berhasil dijalankan.
+6. Periksa kembali daftar perubahan staged.
+7. Pastikan daftar dan isi perubahan staged masih sama dengan kondisi awal saat evaluasi dimulai.
+8. Pastikan tidak ada file baru yang dimasukkan ke staging selama proses ini.
 
-### 15.3. Jalankan script
+Jika ditemukan perubahan staged yang tidak sesuai dengan kondisi awal, jangan melakukan commit. Laporkan perubahan tersebut.
 
-Jika script tersedia dan dampaknya sudah dipastikan aman, jalankan:
+Jika ditemukan bug kritis, risiko kehilangan atau kerusakan data, kelemahan keamanan serius, atau kegagalan pengujian yang menunjukkan perubahan tidak layak digunakan, hentikan commit dan laporkan temuan tersebut. Jangan memperbaiki kode secara diam-diam dalam command ini.
 
-```bash
-bash script/build_rules_context.sh
-```
+## 12. Git Commit
 
-Jalankan hanya setelah pembaruan kedua file aturan selesai.
+Setelah seluruh tahapan pemeriksaan selesai dan tidak terdapat penghalang, lakukan commit.
 
-Jangan mengganti proses script dengan pembaruan manual.
+**Commit hanya boleh menggunakan perubahan yang sudah berada di Git Staging Area sebelum evaluasi dimulai.**
 
-### 15.4. Verifikasi AGENTS.md
+Gunakan:
 
-Setelah script berhasil:
+`git commit -m "Pesan commit dalam bahasa Indonesia"`
 
-1. Baca kembali `AGENTS.md`.
-2. Pastikan aturan terbaru sudah masuk.
-3. Pastikan tidak ada aturan penting yang hilang.
-4. Pastikan isi aturan sesuai dengan kedua file sumber.
-5. Pastikan tidak ada kode sumber yang berubah akibat script.
-6. Jangan menggunakan `git status` atau `git diff` untuk verifikasi.
-7. Jangan memeriksa perubahan staged dan unstaged.
+### Ketentuan commit
 
-Jika script gagal, laporkan penyebabnya. Jangan melakukan tindakan Git untuk memaksakan keberhasilan.
+1. Jangan menjalankan `git add` dalam kondisi apa pun.
+2. Jangan menggunakan `git add .` atau `git add -A`.
+3. Jangan memasukkan file aturan yang baru dibuat atau diperbarui ke staging secara otomatis.
+4. Jangan memasukkan hasil regenerasi `AGENTS.md` ke staging secara otomatis.
+5. Jangan melakukan commit terhadap perubahan unstaged.
+6. Jangan melakukan commit terhadap file untracked.
+7. Jangan menjalankan `git commit -a`.
+8. Jangan menggunakan `git commit --amend`.
+9. Jangan melakukan push ke remote repository.
+10. Jangan melewati pemeriksaan Git hooks menggunakan `--no-verify`.
+11. Jangan melakukan perubahan pada Staging Area untuk menyesuaikan isi commit.
 
-## 16. Format Laporan Akhir
+Gunakan pesan commit berdasarkan perubahan kode yang benar-benar sudah staged.
 
-Setelah seluruh pekerjaan selesai, berikan laporan dengan struktur berikut.
+Pesan commit wajib menggunakan bahasa Indonesia yang jelas, ringkas, dan menggambarkan perubahan utama.
 
-### A. Ringkasan Evaluasi
+Contoh:
 
-Cantumkan bahwa tepat 5 commit telah dievaluasi.
+- `Perbaiki validasi data transaksi`
+- `Tambahkan pengelolaan error pada repository`
+- `Perbaiki perhitungan total persediaan`
+- `Sesuaikan tampilan halaman laporan`
+- `Tambahkan pengujian untuk proses autentikasi`
 
-### B. Daftar Commit yang Diperiksa
+Jangan menggunakan pesan commit yang terlalu umum seperti:
 
-| No. | Hash Commit | Tanggal | Pesan Commit | Hasil Evaluasi |
-| --- | ----------- | ------- | ------------ | -------------- |
-| 1   | Hash        | Tanggal | Pesan        | Ringkasan      |
-| 2   | Hash        | Tanggal | Pesan        | Ringkasan      |
-| 3   | Hash        | Tanggal | Pesan        | Ringkasan      |
-| 4   | Hash        | Tanggal | Pesan        | Ringkasan      |
-| 5   | Hash        | Tanggal | Pesan        | Ringkasan      |
+- `update`
+- `fix`
+- `perbaikan kode`
+- `perubahan terbaru`
 
-Urutkan berdasarkan evaluasi, yaitu dari commit paling lama menuju commit terbaru.
+Jika Git commit gagal, jangan mengulangi perintah secara membabi buta, jangan melewati hooks, dan jangan mengubah staging untuk memaksakan commit. Laporkan penyebab kegagalannya.
 
-### C. Pembaruan Aturan Khusus
+## 13. Laporan hasil pekerjaan
 
-Path:
+Setelah selesai, berikan laporan dengan struktur berikut:
 
-`.agents/rules/proyek/aturan_khusus.md`
+### A. Ringkasan evaluasi Git
 
-Jelaskan:
+- Jumlah file staged.
+- Daftar file yang diperiksa.
+- Ringkasan perubahan yang dievaluasi.
 
-- Aturan baru yang ditambahkan.
-- Aturan lama yang diperbarui.
+### B. Hasil evaluasi kode
+
+Kelompokkan temuan berdasarkan:
+
+- Bug dan runtime.
+- Logika dan fungsionalitas.
+- Gaya dan kualitas kode.
+- Arsitektur.
+- Performa.
+- Keamanan.
+- UI dan UX.
+- Aspek lainnya jika ditemukan.
+
+Jelaskan temuan secara konkret. Jangan menyatakan sebuah bug tanpa menunjukkan dasar atau bagian kode yang menjadi penyebabnya.
+
+Apabila tidak ditemukan masalah pada suatu kategori, nyatakan secara jelas bahwa tidak ditemukan masalah berdasarkan evaluasi yang dilakukan.
+
+### C. Perubahan aturan khusus
+
+- File: `.agents/rules/proyek/aturan_khusus.md`
+- Aturan yang ditambahkan.
+- Aturan yang diperbarui.
 - Alasan perubahan.
-- Commit sumber.
-- File sumber.
 
-Jika tidak ada perubahan, jelaskan alasannya.
+### D. Perubahan aturan bersama
 
-### D. Pembaruan Aturan Bersama
+- File: `.agents/rules/global/aturan_bersama.md`
+- Prinsip umum yang berhasil diambil dari evaluasi.
+- Aturan yang ditambahkan.
+- Aturan yang diperbarui.
+- Alasan mengapa aturan dapat diterapkan lintas proyek Flutter.
 
-Path:
+Jika tidak ada aturan global baru, jelaskan alasannya.
 
-`.agents/rules/global/aturan_bersama.md`
+### E. Hasil regenerasi AGENTS.md
 
-Jelaskan:
+- Script yang dijalankan.
+- Status eksekusi.
+- Hasil pembaruan.
 
-- Prinsip Flutter/Dart yang ditambahkan.
-- Aturan lama yang diperjelas.
-- Prinsip yang berhasil digeneralisasi dari aturan khusus.
-- Alasan aturan dapat diterapkan pada proyek Flutter lainnya.
-- Commit sumber.
+### F. Hasil Git Commit
 
-Jika tidak ada perubahan, jelaskan alasannya.
+- Pesan commit.
+- Status commit.
+- Pastikan commit hanya menggunakan perubahan yang sebelumnya sudah staged.
+- Sebutkan perubahan aturan dan regenerasi `AGENTS.md` yang masih belum staged apabila ada.
 
-### E. Hasil Generalisasi
+## 14. Larangan umum
 
-Jelaskan:
+- Jangan mengabaikan file staged.
+- Jangan hanya mengevaluasi sebagian perubahan.
+- Jangan menyimpulkan kode benar hanya karena tidak ada error saat kompilasi.
+- Jangan membuat aturan berdasarkan asumsi.
+- Jangan menyalin aturan khusus secara mentah ke aturan global.
+- Jangan mengubah kode sumber dalam command evaluasi ini.
+- Jangan melakukan refactor yang tidak diminta.
+- Jangan menghapus aturan lama tanpa alasan.
+- Jangan menjalankan tools yang tidak diizinkan.
+- Jangan mengubah Git Staging Area.
+- Jangan memasukkan perubahan unstaged ke commit.
+- Jangan melakukan push.
+- Jangan mengabaikan kegagalan script atau Git.
+- Jangan menyatakan pekerjaan berhasil apabila belum diverifikasi.
 
-- Temuan khusus yang berhasil digeneralisasi.
-- Prinsip yang dimasukkan ke aturan bersama.
-- Bagian aturan khusus yang tetap berlaku untuk proyek saat ini.
-- Alasan apabila suatu temuan tidak bisa digeneralisasi.
-
-### F. Temuan yang Tidak Dijadikan Aturan
-
-Cantumkan temuan yang tidak dimasukkan ke dokumentasi beserta alasannya.
-
-Contohnya:
-
-- Hanya berlaku untuk kondisi sementara.
-- Sudah diatur dalam dokumentasi lain.
-- Tidak dapat digeneralisasi.
-- Belum cukup bukti.
-- Merupakan implementasi lama yang sudah digantikan.
-- Tidak layak menjadi standar.
-
-### G. Hasil Pembaruan AGENTS.md
-
-Jelaskan:
-
-- Apakah `script/build_rules_context.sh` ditemukan.
-- Apakah script berhasil dijalankan.
-- Apakah `AGENTS.md` berhasil diperbarui.
-- Apakah aturan terbaru sudah masuk.
-- Apakah terdapat kendala.
-
-### H. Konfirmasi Keamanan Git
-
-Nyatakan bahwa:
-
-- Tepat 5 commit yang sudah tersimpan menjadi bahan evaluasi.
-- Tidak ada commit di luar batas tersebut yang dievaluasi.
-- Tidak ada perubahan staged yang dibaca.
-- Tidak ada perubahan unstaged yang dibaca.
-- Tidak ada file untracked yang diperiksa.
-- Tidak ada kode sumber yang diubah.
-- Tidak ada staging area yang diubah.
-- Tidak ada branch yang diubah.
-- Tidak ada riwayat commit yang diubah.
-- Tidak ada checkout, reset, restore, atau stash.
-- Tidak ada commit baru yang dibuat.
-
-### I. Kesimpulan
-
-Jelaskan hasil akhir dan manfaat aturan yang telah diperbarui.
-
-Jika ada tahapan yang gagal, sampaikan secara jujur.
-
-Jangan menyatakan seluruh proses berhasil apabila masih ada tahapan yang belum selesai.
-
-## 17. Checklist Pemeriksaan Akhir
-
-### Riwayat commit
-
-- [ ] Tepat 5 commit terakhir sudah dipilih.
-- [ ] Tidak ada commit tambahan yang dievaluasi.
-- [ ] Tidak ada commit yang terlewat.
-- [ ] Setiap commit dibaca satu per satu.
-- [ ] Evaluasi dilakukan dari commit paling lama ke terbaru.
-- [ ] Seluruh perubahan dalam setiap commit sudah diperiksa.
-- [ ] Versi kode yang dibaca berasal dari snapshot commit.
-
-### Perlindungan Git
-
-- [ ] Tidak membaca staged changes.
-- [ ] Tidak membaca unstaged changes.
-- [ ] Tidak membaca file untracked melalui Git.
-- [ ] Tidak menjalankan `git status`.
-- [ ] Tidak menjalankan `git diff` terhadap working tree atau staging area.
-- [ ] Tidak mengubah file kode.
-- [ ] Tidak mengubah staging area.
-- [ ] Tidak mengubah branch.
-- [ ] Tidak mengubah riwayat commit.
-
-### Evaluasi dan dokumentasi
-
-- [ ] Gaya penulisan kode sudah dievaluasi.
-- [ ] Bug dan keamanan runtime sudah dievaluasi.
-- [ ] Arsitektur dan state management sudah dievaluasi.
-- [ ] Performa sudah dievaluasi.
-- [ ] UX/UI sudah dievaluasi.
-- [ ] Testing sudah dievaluasi.
-- [ ] Preferensi pengguna sudah dipertimbangkan.
-- [ ] Aturan khusus sudah diperbarui jika diperlukan.
-- [ ] Aturan global sudah diperbarui jika diperlukan.
-- [ ] Setiap aturan khusus sudah diperiksa peluang generalisasinya.
-- [ ] Contoh kode benar dan salah sudah disertakan.
-- [ ] Sumber commit setiap aturan baru sudah dicantumkan.
-- [ ] Tidak ada aturan duplikat atau konflik yang dibiarkan tanpa laporan.
-
-### Pembaruan AGENTS.md
-
-- [ ] `script/build_rules_context.sh` sudah diperiksa.
-- [ ] Script berhasil dijalankan atau kegagalannya dilaporkan.
-- [ ] `AGENTS.md` sudah dibaca kembali.
-- [ ] Konteks aturan terbaru sudah masuk.
-
-Jika ada ketentuan yang belum terpenuhi, laporkan dengan jujur.
-
----
-
-# PRINSIP UTAMA
-
-Tujuan command ini bukan sekadar memperbanyak aturan.
-
-Tujuannya adalah mempelajari standar, keputusan teknis, dan preferensi pengguna dari pekerjaan yang sudah tersimpan dalam riwayat commit.
-
-**Hanya 5 commit terakhir yang sudah di-commit yang boleh menjadi bahan evaluasi.**
-
-Jangan membaca perubahan staged, unstaged, atau untracked.
-
-Aturan khusus menjaga standar implementasi dan keputusan teknis setiap proyek.
-
-Aturan bersama menjaga konsistensi seluruh proyek Flutter.
-
-Setiap temuan khusus wajib diperiksa apakah memiliki prinsip yang dapat digeneralisasi menjadi aturan bersama.
-
-Jangan menganggap semua implementasi otomatis benar. Evaluasi terlebih dahulu sebelum menjadikannya standar.
-
-Jangan mengubah pekerjaan lama, kode sumber, staging area, atau riwayat commit.
-
-**Lindungi seluruh pekerjaan pengguna yang belum di-commit. Pelajari hanya lima commit yang sudah tersimpan dan gunakan hasil evaluasinya untuk meningkatkan kualitas aturan AI.**
+**Prinsip akhir: Setiap perubahan kode harus menjadi bahan evaluasi untuk meningkatkan kualitas aturan AI. Kesalahan yang pernah ditemukan harus diubah menjadi pedoman konkret agar AI tidak mengulanginya ketika mengembangkan atau memperbaiki kode pada kesempatan berikutnya.**
