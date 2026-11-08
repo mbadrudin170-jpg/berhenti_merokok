@@ -63,15 +63,6 @@ Tidak ada temuan.
 
 ## Sedang
 
-#### Task 1
-
-- Status: Selesai
-- Masalah: Pada `form_biodata.dart`, parsing `penurunanPerMinggu` menggunakan `int.parse(...replaceAll(RegExp(r'[^0-9]'), ''))` yang dapat melempar `FormatException` jika input kosong/tidak valid, dan pembersihan karakter non-digit dapat menyembunyikan input yang tidak valid. Selain itu, field `jumlahRokokPerHari` dan `batangPerBungkus` tidak memiliki validator khusus dan parsingnya menggunakan `tryParse(...) ?? 0`/`?? 20.0`, yang dapat menyembunyikan input tidak valid menjadi nilai default. Hal ini bertentangan dengan aturan validasi form yang mewajibkan validasi aturan bisnis (nilai positif) sebelum penyimpanan dan larangan mengganti input tidak valid dengan nilai default.
-- Solusi: Gunakan `int.tryParse` dengan penanganan null yang eksplisit (tanpa penggantian senyap), tambahkan validator pada field `jumlahRokokPerHari` dan `batangPerBungkus` (mis. nilai > 0), dan pastikan validasi `Form` dijalankan sebelum parsing/penyimpanan. Jika parsing gagal, tampilkan pesan error dan hentikan penyimpanan.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L492); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L937)
-- File bermasalah: [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L199)
-- Prompt:
-
 ## Rendah
 
 #### Task 1
@@ -84,16 +75,6 @@ Tidak ada temuan.
 - Prompt:
 
 
-#### Task 2
-
-- Status: Selesai
-- Masalah: Pada `sqflite.dart`, import `package:flutter/foundation.dart` ditempatkan sebelum import `package:berhenti_merokok/...`, sehingga urutan import tidak mengikuti urutan alfabetis berdasarkan path package. Aturan proyek mewajibkan import diurutkan secara alfabetis berdasarkan path package lengkap.
-- Solusi: Pindahkan import `package:flutter/foundation.dart` ke posisi yang sesuai secara alfabetis (setelah import `package:berhenti_merokok/...` dan sebelum/sesuai urutan `package:path` dan `package:sqflite`), tanpa mengubah logika.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
-- File bermasalah: [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L1)
-- Prompt:
-
-
 # Kelompok 5
 
 ## File terdampak
@@ -101,15 +82,6 @@ Tidak ada temuan.
 - [app.dart](lib/app.dart)
 
 ## Rendah
-
-#### Task 1
-
-- Status: Selesai
-- Masalah: Pada `app.dart`, import tidak diurutkan secara alfabetis berdasarkan path package. Import `package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart` dan `package:berhenti_merokok/fitur/tema/...` muncul sebelum `package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart`, sehingga urutan import tidak sesuai aturan.
-- Solusi: Urutkan import pada `app.dart` secara alfabetis berdasarkan path package lengkap, misalnya `fitur/biodata/notifier/...` sebelum `fitur/biodata/screens/...` dan `fitur/tema/...`, tanpa mengubah logika.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
-- File bermasalah: [app.dart](lib/app.dart#L2)
-- Prompt:
 
 # Kelompok 6
 
@@ -120,15 +92,6 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 1
-
-- Status: Selesai
-- Masalah: Pada `badge_helper.dart` (fungsi `hitungBadge`) dan `badge_screen.dart` (method `build`), pemanggilan `L.i(...)` berada pada jalur yang dapat dipanggil berulang saat build, sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
-- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam build/getter yang dipanggil berulang.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
-- File bermasalah: [badge_helper.dart](lib/fitur/badge/helper/badge_helper.dart#L29); [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart#L33)
-- Prompt:
-
 # Kelompok 7
 
 ## File terdampak
@@ -136,15 +99,6 @@ Tidak ada temuan.
 - [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart)
 
 ## Sedang
-
-#### Task 1
-
-- Status: Selesai
-- Masalah: Pada `biodata_notifier.dart`, `BiodataNotifier` menggunakan anotasi `@riverpod` (auto-dispose) padahal notifier ini mengakses database; aturan proyek mewajibkan notifier database menggunakan `@Riverpod(keepAlive: true)`. Selain itu, `build()` memanggil `_ambilData()` bukan `_ambilSemua()` sesuai pola notifier CRUD, dan log pada `simpan()` mencatat properti model (`biodata.id`, `biodata.nama`) secara terurai alih-alih menampilkan objek model langsung.
-- Solusi: Ubah anotasi menjadi `@Riverpod(keepAlive: true)`, sesuaikan method pengambilan data awal dengan pola `_ambilSemua()`, dan ganti log properti model dengan `L.i('biodata=$biodata')` (atau logging objek secara langsung). Regenerasi file `.g.dart` sesuai sumber.
-- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L348); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1)
-- File bermasalah: [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L11); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L14); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L34)
-- Prompt:
 
 # Kelompok 8
 
