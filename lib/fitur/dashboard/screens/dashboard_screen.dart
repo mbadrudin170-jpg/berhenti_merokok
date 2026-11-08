@@ -113,6 +113,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           padding: const EdgeInsets.all(16),
           child: ListView(
             children: [
+              _CounterSmokeFreeBesar(biodata: biodata),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -751,4 +753,65 @@ String _formatLamaBerhenti(DateTime? tanggalBerhenti) {
   }
   bagian.add('$detik detik');
   return bagian.join(' ');
+}
+
+/// Widget terisolasi yang menampilkan counter smoke-free besar (hari + jam)
+/// di bagian atas Dashboard. Timer per detik hanya membangun ulang widget
+/// ini, bukan seluruh halaman.
+class _CounterSmokeFreeBesar extends StatefulWidget {
+  const _CounterSmokeFreeBesar({required this.biodata});
+
+  final BiodataModel biodata;
+
+  @override
+  State<_CounterSmokeFreeBesar> createState() => _CounterSmokeFreeBesarState();
+}
+
+class _CounterSmokeFreeBesarState extends State<_CounterSmokeFreeBesar> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final teks = _formatCounterSmokeFreeBesar(widget.biodata);
+    return Text(
+      teks,
+      style: Theme.of(context).textTheme.displayMedium
+          ?.copyWith(fontWeight: FontWeight.bold),
+    );
+  }
+}
+
+/// Menghitung teks counter smoke-free besar "X hari Y jam" dari [biodata].
+/// Menggunakan [BiodataModel.hariBerhenti] dari ekstensi perhitungan dan
+/// menghitung sisa jam dari selisih waktu dengan normalisasi dan klamping.
+String _formatCounterSmokeFreeBesar(BiodataModel biodata) {
+  final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+  final hariBerhenti = biodata.hariBerhenti;
+
+  int jamSisa = 0;
+  if (tanggalBerhenti != null) {
+    final selisih = DateTime.now().difference(tanggalBerhenti);
+    final totalJam = selisih.inHours;
+    jamSisa = totalJam < 0 ? 0 : totalJam % 24;
+  }
+
+  L.i('hariBerhenti=$hariBerhenti, jamSisa=$jamSisa');
+
+  return '$hariBerhenti hari $jamSisa jam';
 }

@@ -2,16 +2,24 @@
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT START -->
 
-Commit terakhir dievaluasi penuh: adc85b57da72eb4c000a29c324db7cdb15d388bc
+Commit terakhir dievaluasi penuh: 18cc24e7b55e580d8c55f3f833a622ba55792f1b
 Tanggal evaluasi: 2026-11-08
-Rentang evaluasi: 27edc9c30d97c3c58170685c307136e33dadff54 sampai adc85b57da72eb4c000a29c324db7cdb15d388bc
-Jumlah commit yang dievaluasi: 2
+Rentang evaluasi: adc85b57da72eb4c000a29c324db7cdb15d388bc sampai 18cc24e7b55e580d8c55f3f833a622ba55792f1b
+Jumlah commit yang dievaluasi: 1
 Status evaluasi: Selesai (dengan temuan)
-Ringkasan: 2 commit. 27edc9c = dokumen/rules/PRD saja (aturan_khusus.md +aturan cadangan, PRD analisis-pemicu final, PRD pelacakan-toxin draft, hapus PRD akses-cepat-sos, refrensi/catatan/task). adc85b5 = feat(biodata): tambah `targetSmokeFreeHari` (nullable) pada model/fromSqflite/toSqflite, form biodata (validasi opsional >0, simpan), tampilan biodata (progres target), dashboard (kartu target smoke-free), konstanta kolom, migrasi DB v7→v8 (onCreate+onUpgrade ADD COLUMN), update rules/task/catatan/PRD; generated `.freezed.dart` diperbarui. Temuan: (1) **Tinggi** `NamaKolom.tanggalMulaiTapering` diubah ke `'Tanggal_mulai_tapering'` (kapital T, typo) di adc85b5 — inkonsisten dengan snake_case/kolom DB dan berisiko merusak baca/tulis tanggal mulai tapering; (2) **Tinggi** `BiodataModel.fromSqflite` memakai `ParserUtil.parseInt` (default 0) untuk `targetSmokeFreeHari` nullable — nilai null DB menjadi 0 sehingga UI menganggap target terset, seharusnya `ParserUtil.parseIntOrNull`; (3) **Rendah** logging `L.i` di `build()`/helper yang dipanggil dari `build()` pada biodata_screen (`targetSmokeFreeHari=` di build, `_buildItem`) dan dashboard (`_buildCardTargetSmokeFree`) menambah noise (aturan_bersama #11/aturan_khusus logging build). Tidak ada `.bak` ter-commit. SDK (Flutter 3.47.9/Dart 3.13.7): API yang dipakai standar/tidak deprecated (`int.tryParse`, Material widgets, Riverpod watch/refresh, Freezed generated). `ParserUtil.parseIntOrNull` tersedia di share_global_saya.
+Ringkasan: 1 commit. 18cc24e = chore(dashboard,prd): tambahkan kartu ringkasan impian (`_buildCardRingkasanImpian`) di dashboard_screen.dart dengan watch `impianProvider`, hitung tercapai via `ImpianProgresHelper.tercapai(uangDihemat, item.jumlah)` berbasis `biodata.uangDihemat` (bukan `totalJumlah` dari ImpianState), navigasi `unawaited(Nav.to(...).catchError(...))`, hapus 2 PRD final + tambah PRD draf optimasi-notifikasi-pengingat-harian, perbarui refrensi_apk.md/apk_serupa.md, tambah 2 aturan khusus (snake_case kolom, parseIntOrNull untuk int?), mutakhirkan catatan.md/task.md. Temuan: (1) **Rendah** `AsyncValue<dynamic>` digunakan secara eksplisit di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian` (baris 203-L206) — seharusnya type inference menghasilkan `AsyncValue<ImpianState>` (melanggar optimasi_bug_runtime.md #51); (2) **Rendah** logging `L.i` di jalur `build()` (`impianAsync.isLoading/hasError` baris 83-L86, dan `ringkasan impian: ...` di `_buildCardRingkasanImpian` baris 211/215/226) menambah noise (aturan_bersama #11/aturan_khusus #13); (3) **Rendah** variabel `total` (baris 220) dihitung tapi tidak digunakan (dead code), dan field `totalTercapai` (baris 84-L85) diinisialisasi tapi tidak dipakai. SDK (Flutter 3.47.9/Dart 3.13.7): semua widget/API standar dan tidak deprecated (`Card`, `ListTile`, `Icon`, `IconButton`, `CupertinoIcons.star_fill`/`chevron_right`/`heart_fill`/`rosette`/`money_dollar`/`smoke`/`sort_up` — semua terverifikasi ada di `/google/flutter/packages/flutter/lib/src/cupertino/icons.dart`, Riverpod `watch`, `Nav.to`, `unawaited`+`catchError`, `ImpianProgresHelper` static). `impianProvider` terdaftar sebagai `@Riverpod(keepAlive: true)` → `ImpianNotifierProvider._()` (`isAutoDispose: false`) di `.g.dart`, state `AsyncValue<ImpianState>`. Tidak ada `.bak` ter-commit.
 
 <!-- CEK_PERUBAHAN_SEKARANG: CHECKPOINT END -->
 
 ## Riwayat Evaluasi Commit
+
+### Commit: 18cc24e7b55e580d8c55f3f833a622ba55792f1b
+
+- Tanggal: 2026-11-08 23:38:26 +0000
+- Judul: chore(dashboard,prd): tampilkan ringkasan impian di dasbor dan rapikan dokumen fitur
+- Status evaluasi: Selesai (dengan temuan)
+- Ringkasan: Tambah kartu ringkasan impian (`_buildCardRingkasanImpian`) di dashboard_screen.dart: `ref.watch(impianProvider)` (keepAlive true), hitung tercapai via `ImpianProgresHelper.tercapai(biodata.uangDihemat, item.jumlah)` — mengikuti aturan proyek "Penggunaan Biodata untuk Menghitung Saldo Terkumpul pada Impian" (saldo dari biodata, bukan `totalJumlah` dari ImpianState). Navigasi `unawaited(Nav.to(...).catchError(...))`. Hapus 2 PRD final + tambah PRD draf optimasi-notifikasi-pengingat-harian, perbarui refrensi_apk.md/apk_serupa.md, tambah 2 aturan khusus (snake_case kolom DB, parseIntOrNull untuk int?), mutakhirkan catatan.md/task.md.
+- Temuan: (1) **Rendah** `AsyncValue<dynamic>` digunakan secara eksplisit di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian` (baris 203-L206) — type inference sudah menghasilkan `AsyncValue<ImpianState>`, tidak perlu penandaan `dynamic` (melanggar optimasi_bug_runtime.md #51); (2) **Rendah** logging `L.i` di jalur `build()` (`impianAsync.isLoading/hasError` baris 83-L86, dan `ringkasan impian: ...` di `_buildCardRingkasanImpian` baris 211/215/226) menambah noise (aturan_bersama #11/aturan_khusus #13); (3) **Rendah** variabel `total` (baris 220) dihitung tapi tidak digunakan (dead code), dan field `totalTercapai` (baris 84-L85) diinisialisasi tapi tidak dipakai. Semua widget/API standar dan tidak deprecated; `impianProvider` terdaftar `@Riverpod(keepAlive: true)` → `ImpianNotifierProvider._()` (`isAutoDispose: false`) di `.g.dart`, state `AsyncValue<ImpianState>`. Tidak ada `.bak` ter-commit.
 
 ### Commit: 338a0216257bb9f75617f144fd2fae0d7faf63d2
 
@@ -186,8 +194,8 @@ Ringkasan: 2 commit. 27edc9c = dokumen/rules/PRD saja (aturan_khusus.md +aturan 
 <!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
 
 - Branch evaluasi: master
-- Commit terakhir yang dievaluasi: adc85b57da72eb4c000a29c324db7cdb15d388bc
-- SHA lengkap: adc85b57da72eb4c000a29c324db7cdb15d388bc
+- Commit terakhir yang dievaluasi: 18cc24e7b55e580d8c55f3f833a622ba55792f1b
+- SHA lengkap: 18cc24e7b55e580d8c55f3f833a622ba55792f1b
 - Tanggal evaluasi: 2026-11-08
 - Status: Selesai
 

@@ -260,21 +260,6 @@ Proyek sudah memiliki cakupan fitur yang cukup lengkap untuk pelacakan berhenti 
 
 ### Prioritas Sedang
 
-#### 2. Counter Smoke-Free Besar pada Dashboard
-✅ PRD dibuat: prd/counter-smoke-free-besar-dashboard.md
-
-- **Fitur/halaman yang dibandingkan:** Dashboard.
-- **Aplikasi referensi:** QuitNow (Fewlaps); LastCig (VictorExplore); Quit Tracker (despDev).
-- **Pola UI:** Angka besar untuk hari/jam smoke-free di bagian atas layar.
-- **Pola UX:** Informasi utama terlihat segera saat membuka aplikasi.
-- **Pola layout:** Counter besar di atas kartu ringkasan.
-- **Tujuan pola:** Meningkatkan motivasi melalui visibilitas progres.
-- **Kondisi pada proyek:** Dashboard menampilkan metrik dalam kartu; counter besar belum menonjol.
-- **Saran untuk proyek:** Tampilkan counter smoke-free (hari, jam) dengan ukuran besar di bagian atas Dashboard.
-- **Link aplikasi:** https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa ; https://play.google.com/store/apps/details?id=com.lastcig.app ; https://quittracker.app/
-- **Link screenshot atau sumber visual:** Deskripsi resmi Google Play Store.
-- **Alasan prioritas:** Relevan dan bermanfaat.
-
 #### 4. Grafik dan Insight Pemicu
 
 - **Fitur/halaman yang dibandingkan:** Diary Craving.

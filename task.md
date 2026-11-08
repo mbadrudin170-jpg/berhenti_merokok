@@ -22,6 +22,42 @@ Tidak ada temuan.
 - File bermasalah: [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L328)
 - Prompt:
 
+#### Task 2
+
+- Status: Belum dikerjakan
+- Masalah: Logging `L.i` ditambahkan di `_buildCardTargetSmokeFree(...)` (dipanggil dari `build()`) yang mencatat `targetSmokeFreeHari/tanggalBerhenti/hariBerhenti/teksProgres` (baris ~166-168). Log di jalur `build()` dapat terpanggil berulang dan menambah noise.
+- Solusi: Pindahkan/hapus log dari method yang dipanggil `build()`; log pada titik tidak berfrekuensi tinggi bila diperlukan.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L166-L168)
+- Prompt:
+
+#### Task 3
+
+- Status: Belum dikerjakan
+- Masalah: Commit `18cc24e` menambahkan `ref.watch(impianProvider)` di `build()` (baris 83) dengan logging `L.i('impianAsync.isLoading=..., hasError=...')` (baris 83-L86), serta logging `L.i` di dalam `_buildCardRingkasanImpian` (baris 211/215/226). Kedua berada di jalur `build()` yang dapat dipanggil berulang, menambah noise.
+- Solusi: Hapus log `impianAsync.isLoading/hasError` dari `build()`; pindahkan log `ringkasan impian: ...` ke titik tidak berfrekuensi tinggi (initState/dispose/aksi) atau hapus sama sekali.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83-L86), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L211-L226)
+- Prompt:
+
+#### Task 4
+
+- Status: Belum dikerjakan
+- Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
+- Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
+- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L203-L206)
+- Prompt:
+
+#### Task 5
+
+- Status: Belum dikerjakan
+- Masalah: Commit `18cc24e` menghasilkan dua potong dead code: (1) variabel `total` dihitung dari `impianState.jumlahImpian` (baris 220) tetapi tidak pernah digunakan — `subtitle` menggunakan `total` hanya untuk pengecekan `total == 0`, kemudian mencetak `$tercapai dari $total`; (2) field `totalTercapai` diinisialisasi di `build()` (baris 84-L85) dengan nilai `listImpian.where(...).length` tetapi tidak pernah dibaca di mana pun. Keduanya tidak memberikan informasi dan dapat mengacaukan pembacaan code.
+- Solusi: Hapus variabel `total` (ganti `total == 0` dengan `listImpian.isEmpty` dan `$total` dengan `listImpian.length`), serta hapus field `totalTercapai` beserta inisialisasinya.
+- Aturan dilanggar: [optimasi_boilerplate.md](.agents/rules/global/optimasi_boilerplate.md#L45-L50) (hindari penulisan ulang/komputasi tidak perlu), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L47-L50] (fokus pada kode yang diperlukan)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L84-L85), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L218-L233)
+- Prompt:
+
 # Kelompok 2
 
 ## File terdampak
@@ -141,6 +177,33 @@ Tidak ada temuan.
 - Solusi: Pindahkan/hapus log dari method yang dipanggil `build()`; log pada titik tidak berfrekuensi tinggi bila diperlukan.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
 - File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L166-L168)
+- Prompt:
+
+#### Task 2
+
+- Status: Belum dikerjakan
+- Masalah: Commit `18cc24e` menambahkan `ref.watch(impianProvider)` di `build()` (baris 83) dengan logging `L.i('impianAsync.isLoading=..., hasError=...')` (baris 83-L86), serta logging `L.i` di dalam `_buildCardRingkasanImpian` (baris 211/215/226). Kedua berada di jalur `build()` yang dapat dipanggil berulang, menambah noise.
+- Solusi: Hapus log `impianAsync.isLoading/hasError` dari `build()`; pindahkan log `ringkasan impian: ...` ke titik tidak berfrekuensi tinggi (initState/dispose/aksi) atau hapus sama sekali.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83-L86), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L211-L226)
+- Prompt:
+
+#### Task 3
+
+- Status: Belum dikerjakan
+- Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
+- Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
+- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L203-L206)
+- Prompt:
+
+#### Task 4
+
+- Status: Belum dikerjakan
+- Masalah: Commit `18cc24e` menghasilkan dua potong dead code: (1) variabel `total` dihitung dari `impianState.jumlahImpian` (baris 220) tetapi tidak pernah digunakan — `subtitle` menggunakan `total` hanya untuk pengecekan `total == 0`, kemudian mencetak `$tercapai dari $total`; (2) field `totalTercapai` diinisialisasi di `build()` (baris 84-L85) dengan nilai `listImpian.where(...).length` tetapi tidak pernah dibaca di mana pun. Keduanya tidak memberikan informasi dan dapat mengacaukan pembacaan code.
+- Solusi: Hapus variabel `total` (ganti `total == 0` dengan `listImpian.isEmpty` dan `$total` dengan `listImpian.length`), serta hapus field `totalTercapai` beserta inisialisasinya.
+- Aturan dilanggar: [optimasi_boilerplate.md](.agents/rules/global/optimasi_boilerplate.md#L45-L50) (hindari penulisan ulang/komputasi tidak perlu), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L47-L50) (fokus pada kode yang diperlukan)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L84-L85), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L218-L233)
 - Prompt:
 
 # Kelompok 9
