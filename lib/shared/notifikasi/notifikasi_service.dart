@@ -38,7 +38,16 @@ class NotifikasiService {
   /// Inisialisasi plugin notifikasi dan zona waktu.
   static Future<void> inisialisasi() async {
     L.i('NotifikasiService inisialisasi');
-    tz.initializeTimeZones();
+    // Bungkus inisialisasi database zona waktu dalam try/catch agar
+    // kegagalan (termasuk Error/ArgumentError) tercatat dan tidak
+    // menjadi unhandled error.
+    try {
+      tz.initializeTimeZones();
+    } on Error catch (e, s) {
+      L.e('Gagal inisialisasi zona waktu: $e $s');
+    } on Exception catch (e, s) {
+      L.e('Gagal inisialisasi zona waktu: $e $s');
+    }
     // Deteksi zona waktu perangkat (WIB/WITA/WIT/dll.) agar pengingat
     // mengikuti waktu lokal pengguna. Package timezone tidak otomatis
     // mendeteksi zona waktu perangkat, sehingga gunakan flutter_timezone.
@@ -46,13 +55,45 @@ class NotifikasiService {
       final info = await FlutterTimezone.getLocalTimezone();
       final identifier = info.identifier;
       L.i('zonaWaktuPerangkat=$identifier');
+      // Validasi hasil sebelum penggunaan: identifier tidak boleh kosong.
+      if (identifier.isEmpty) {
+        throw ArgumentError('Identifier zona waktu kosong');
+      }
       try {
         tz.setLocalLocation(tz.getLocation(identifier));
+      } on Error catch (e, s) {
+        L.w(
+          'Identifier zona waktu tidak ditemukan di database tz, fallback Asia/Jakarta: $e $s',
+        );
+        try {
+          tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+        } on Error catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        } on Exception catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        }
       } on Exception catch (e, s) {
         L.w(
           'Identifier zona waktu tidak ditemukan di database tz, fallback Asia/Jakarta: $e $s',
         );
+        try {
+          tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+        } on Error catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        } on Exception catch (e2, s2) {
+          L.w('Gagal set lokasi zona waktu fallback: $e2 $s2');
+        }
+      }
+    } on Error catch (e, s) {
+      L.w(
+        'Gagal mendeteksi zona waktu perangkat, fallback Asia/Jakarta: $e $s',
+      );
+      try {
         tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      } on Error catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
+      } on Exception catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
       }
     } on Exception catch (e, s) {
       L.w(
@@ -60,6 +101,8 @@ class NotifikasiService {
       );
       try {
         tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
+      } on Error catch (e2, s2) {
+        L.w('Gagal set lokasi zona waktu: $e2 $s2');
       } on Exception catch (e2, s2) {
         L.w('Gagal set lokasi zona waktu: $e2 $s2');
       }

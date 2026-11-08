@@ -11,6 +11,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+/// Exception khusus ketika izin notifikasi tidak diberikan oleh sistem.
+class IzinNotifikasiTidakDiberikanException implements Exception {
+  const IzinNotifikasiTidakDiberikanException();
+  @override
+  String toString() => 'Izin notifikasi tidak diberikan';
+}
+
 /// Layanan notifikasi lokal untuk pengingat harian aplikasi.
 class NotifikasiService {
   NotifikasiService._();
@@ -76,6 +83,8 @@ class NotifikasiService {
         onDidReceiveNotificationResponse: _onTapNotifikasi,
       );
       L.s('Plugin notifikasi berhasil diinisialisasi');
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung inisialisasi notifikasi: $e $s');
     } on Exception catch (e, s) {
       L.e('Gagal inisialisasi plugin notifikasi: $e $s');
       rethrow;
@@ -137,8 +146,7 @@ class NotifikasiService {
     // Platform yang tidak mendukung notifikasi terjadwal/launch details.
     if (kIsWeb ||
         defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
+        defaultTargetPlatform == TargetPlatform.windows) {
       L.w('platform tidak mendukung cek notifikasi saat buka');
       return;
     }
@@ -189,6 +197,13 @@ class NotifikasiService {
           >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
       return granted ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.macOS) {
+      final granted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      return granted ?? false;
     }
     return true;
   }
@@ -199,11 +214,11 @@ class NotifikasiService {
     required int menit,
   }) async {
     L.i('jam=$jam, menit=$menit');
-    // Platform yang tidak mendukung notifikasi terjadwal.
+    // Platform yang tidak mendukung notifikasi terjadwal (Web, Linux, Windows).
+    // macOS didukung plugin flutter_local_notifications v22.3.3 via zonedSchedule.
     if (kIsWeb ||
         defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
+        defaultTargetPlatform == TargetPlatform.windows) {
       L.w('platform tidak mendukung penjadwalan terjadwal');
       throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
     }
@@ -249,7 +264,7 @@ class NotifikasiService {
         L.w('izin notifikasi tidak diberikan, batalkan penjadwalan');
         await _plugin.cancel(id: _idPengingatHarian);
         await setAktif(false);
-        throw Exception('Izin notifikasi tidak diberikan');
+        throw const IzinNotifikasiTidakDiberikanException();
       }
       // Simpan nilai lama untuk rollback bila penyimpanan gagal.
       final aktifLama = await aktif();

@@ -84,24 +84,19 @@ class _HomeState extends ConsumerState<Home> {
       // SafeArea dan Padding tepi layar pada lapisan container halaman
       // agar konten tidak tertutup notch/status bar/navigation bar
       // dan tidak menempel pada tepi layar.
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: IndexedStack(
-            index: _selectedIndex,
-            children: List<Widget>.generate(4, (i) {
-              if (!_tabTerbuka.contains(i)) {
-                return const SizedBox.shrink();
-              }
-              return switch (i) {
-                0 => DashboardScreen(key: _kunciDashboard),
-                1 => BiodataScreen(key: _kunciBiodata),
-                2 => ImpianScreen(key: _kunciImpian),
-                _ => LainnyaScreen(key: _kunciLainnya),
-              };
-            }),
-          ),
-        ),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: List<Widget>.generate(4, (i) {
+          if (!_tabTerbuka.contains(i)) {
+            return const SizedBox.shrink();
+          }
+          return switch (i) {
+            0 => DashboardScreen(key: _kunciDashboard),
+            1 => BiodataScreen(key: _kunciBiodata),
+            2 => ImpianScreen(key: _kunciImpian),
+            _ => LainnyaScreen(key: _kunciLainnya),
+          };
+        }),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,

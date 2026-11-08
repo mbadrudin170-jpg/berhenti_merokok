@@ -49,7 +49,7 @@ Tidak ada temuan.
 
 #### Task 5
 
-- Status: Belum
+- Status: Selesai
 - Kategori: Bug Runtime
 - Masalah: Pada `lib/shared/notifikasi/notifikasi_service.dart` (baris 34), `tz.initializeTimeZones()` dipanggil di luar `try`. Fallback `tz.getLocation('Asia/Jakarta')` pada baris 48 tidak dibungkus `try` secara langsung, dan `catch (e, s)` pada baris 50 hanya menangkap `Exception`, bukan `Error` seperti `ArgumentError` yang mungkin dilempar `FlutterTimezone.getLocalTimezone()`.
 - Solusi: Bungkus `tz.initializeTimeZones()` dan fallback `tz.getLocation('Asia/Jakarta')` dalam `try/catch`, serta tangkap `UnsupportedError`/`Error` yang relevan atau validasi hasil sebelum penggunaan.
@@ -72,12 +72,13 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum
+- Status: Selesai
 - Kategori: UI
 - Masalah: `lib/home.dart` membungkus `IndexedStack` (yang berisi layar lengkap dengan `Scaffold`, `SafeArea`, dan `Padding`) dengan `SafeArea` dan `Padding(const EdgeInsets.all(16))`. Hal ini menyebabkan `SafeArea` dan padding tepi layar diterapkan dua kali (di Home dan di tiap layar tab), sehingga konten (termasuk AppBar) mendapat inset ganda dan jarak tepi layar berlebih.
 - Solusi: Pilih satu lapisan yang bertanggung jawab atas `SafeArea` dan padding tepi layar. Jika layar tab tetap mengelola `SafeArea` dan padding sendiri, hapus pembungkus `SafeArea` + `Padding` pada Home; atau sebaliknya konsolidasikan. Pastikan tidak ada padding ganda dan AppBar tetap edge-to-edge.
 - Aturan Dilanggar: [optimasi_ux.md](.agents/rules/global/optimasi_ux.md) bagian 10 (Padding tepi layar) dan bagian 14 (SafeArea).
 - File Bermasalah: [home.dart](lib/home.dart)
+- prompt : hapus di home
 
 ## Rendah
 
