@@ -5,6 +5,10 @@ import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
 
 part 'tema_notifier.g.dart';
 
+// Pengecualian aturan Freezed untuk state sederhana berbasis enum:
+// state tema hanya menyimpan satu nilai TemaEnum, sehingga tidak
+// memerlukan state Freezed tersendiri, konsisten dengan BiodataNotifier
+// yang juga menggunakan model nullable langsung sebagai state.
 @Riverpod(keepAlive: true)
 class TemaNotifier extends _$TemaNotifier {
   @override
