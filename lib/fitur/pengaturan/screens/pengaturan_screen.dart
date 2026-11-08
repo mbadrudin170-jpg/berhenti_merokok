@@ -113,10 +113,19 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     } on Exception catch (e, s) {
       L.e('Gagal mengubah notifikasi: $e $s');
       if (mounted) {
+        final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
+        final aktifSekarang = await NotifikasiService.aktif();
+        if (!mounted) return;
         setState(() {
-          _notifikasiAktif = !value;
+          _notifikasiAktif = aktifSekarang;
         });
-        AppToast.gagal(context, 'Gagal mengubah pengingat harian');
+        if (isIzin) {
+          AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
+          await _muatPreferensiNotifikasi();
+          if (!mounted) return;
+        } else {
+          AppToast.gagal(context, 'Gagal mengubah pengingat harian');
+        }
       }
     } on UnsupportedError catch (e, s) {
       L.e('Platform tidak mendukung notifikasi: $e $s');

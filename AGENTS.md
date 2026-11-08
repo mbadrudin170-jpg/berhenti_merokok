@@ -3163,7 +3163,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 11. Validasi payload notifikasi: parse `kategori` dan `id`; hanya proses kategori yang dikenal; jika payload null, tidak valid, atau kategori tidak dikenal, catat peringatan dan jangan lakukan navigasi yang tidak sesuai. ID yang tidak ditemukan atau tidak diperlukan oleh tujuan navigasi tidak boleh menyebabkan crash.
 12. Ketika izin sistem dicabut, batalkan jadwal yang tersimpan di sistem operasi (`_plugin.cancel`), perbarui preferensi (`setAktif(false)`), dan pastikan tidak ada jadwal lama tertinggal. Saat pengguna mengaktifkan kembali, minta izin terlebih dahulu dan buat jadwal baru. Jangan hanya mengubah SharedPreferences tanpa memeriksa kondisi jadwal pada sistem operasi.
 13. Konsistensi perubahan waktu pengingat: simpan nilai waktu lama sebelum perubahan; terapkan nilai baru hanya setelah penjadwalan atau penyimpanan berhasil; jika gagal, pulihkan nilai lama dan tampilkan pesan kegagalan; pastikan jadwal sistem operasi, preferensi, dan tampilan tetap konsisten. Jangan membiarkan kegagalan pada salah satu tahap meninggalkan kondisi data yang berbeda.
-14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus dengan `try/catch` atau `catchError` sesuai aturan global penanganan error Future yang dilepas.
+14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus `Nav.pushAndRemoveUntil(...)` serta `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan global penanganan error Future yang dilepas.
 **Larangan:**
 - Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
 - Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
@@ -3172,6 +3172,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 - Jangan mengandalkan callback tap biasa untuk menangani notifikasi yang meluncurkan aplikasi dari kondisi terminated.
 - Jangan memproses kategori notifikasi yang tidak dikenal tanpa pencatatan peringatan.
 - Jangan mengubah preferensi tanpa memastikan jadwal sistem operasi konsisten.
+- Jangan memanggil `EasyLoading.show()` atau `EasyLoading.dismiss()` tanpa `.catchError(...)` ketika dilepas dengan `unawaited()`.
 **Alasan:**
 Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
 **Contoh benar:**
@@ -3202,6 +3203,21 @@ if (kategori == 'pengingat_harian') {
 } else {
   L.w('kategori notifikasi tidak dikenal: $kategori');
 }
+// Menampilkan loading dengan penanganan error (unawaited).
+unawaited(
+  EasyLoading.show(
+    status: 'Memproses...',
+    maskType: EasyLoadingMaskType.black,
+  ).catchError((Object e, StackTrace s) {
+    L.e('Gagal menampilkan loading: $e $s');
+  }),
+);
+// Menutup loading dengan penanganan error (unawaited).
+unawaited(
+  EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+    L.e('Gagal menutup loading: $e $s');
+  }),
+);
 ```
 **Contoh salah:**
 ```dart
@@ -3213,9 +3229,12 @@ static void _onTapNotifikasi(NotificationResponse response) {
 if (kategori != null) {
   Nav.pushAndRemoveUntil(context, const HalamanLain()); // kategori tidak divalidasi
 }
+// Melepas EasyLoading tanpa penanganan error.
+unawaited(EasyLoading.show(status: 'Memproses...'));
+unawaited(EasyLoading.dismiss());
 ```
 **Sumber evaluasi:**
-- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`, `9dff35ade58c73784ce27927efad98b429ee97cb`, `a30b6b6e4377b55eadecb6b83b0e4c05faa985b5`
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`, `9dff35ade58c73784ce27927efad98b429ee97cb`, `a30b6b6e4377b55eadecb6b83b0e4c05faa985b5`, `2a5a357429d44d7302ce54d46b378fe2ce6a0cb6`, `9f3e88936232b3b837218db3ae22d9d835a1aa99`
 - File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/main.dart`, `lib/app.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `android/app/src/main/AndroidManifest.xml`, `saran.md`
 
 

@@ -105,9 +105,59 @@ Tanggal evaluasi: 2026-11-08
 - Ringkasan: Memperbarui `saran.md` (menghapus 61 baris entri perbaikan notifikasi yang sudah selesai).
 - Temuan penting: Tidak ada perubahan kode sumber.
 
-# commit terakhir yang di baca oleh commands [evaluasi_aturan_khusus.md](.kilo/commands/evaluasi_aturan_khusus.md)
+# Commit terakhir yang dievaluasi oleh commands [evaluasi_aturan_khusus.md](.kilo/commands/evaluasi_aturan_khusus.md)
 
-1. commit message:
-2. commit hash :
-   " filePath">
-   /home/mbadrudin170/berhenti_merokok/catatan.md
+<!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_START -->
+- Branch evaluasi: master
+- Commit terakhir yang dievaluasi: 9f3e88936232b3b837218db3ae22d9d835a1aa99
+- SHA lengkap: 9f3e88936232b3b837218db3ae22d9d835a1aa99
+- Tanggal evaluasi: 2026-11-08
+- Status: Selesai
+<!-- EVALUASI_ATURAN_KHUSUS_CHECKPOINT_END -->
+
+## Riwayat Evaluasi
+
+### Commit: 73ecb2d17ae95a5a798e2b57ef96940ea287623b
+- Tanggal: 2026-11-08
+- Pesan commit: docs(catatan): rapikan indentasi path file dan tambahkan newline akhir
+- File yang berubah: catatan.md
+- Ringkasan evaluasi: Perubahan dokumentasi (indentasi path dan newline akhir). Tidak ada perubahan kode sumber.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: 24a8659261bbf8406852adf60564b794066341c3
+- Tanggal: 2026-11-08
+- Pesan commit: chore(commands): perbarui batasan, tujuan, dan instruksi evaluasi commit
+- File yang berubah: .kilo/commands/cek_perubahan_sekarang.md
+- Ringkasan evaluasi: Penyederhanaan command cek_perubahan_sekarang.md dari sekitar 850 baris menjadi sekitar 345 baris. Tahapan pemeriksaan source SDK, rekomendasi, pembaruan catatan, saran, dan laporan akhir tampak hilang. Temuan terpisah di luar ruang lingkup perbaikan command ini.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: 2a5a357429d44d7302ce54d46b378fe2ce6a0cb6
+- Tanggal: 2026-11-08
+- Pesan commit: feat(notifikasi): tangani navigasi dari tap notifikasi termasuk kondisi terminated
+- File yang berubah: lib/main.dart, lib/shared/notifikasi/notifikasi_service.dart, saran.md
+- Ringkasan evaluasi: Menambahkan addPostFrameCallback di main.dart untuk memanggil cekNotifikasiSaatBuka(). Memfaktorkan _onTapNotifikasi menjadi _navigasiDariPayload() dengan catchError. Menambah cekNotifikasiSaatBuka() menggunakan getNotificationAppLaunchDetails() untuk kondisi terminated. Payload divalidasi; kategori tidak dikenal dicatat peringatan. Sumber SDK flutter_local_notifications 22.3.3 diverifikasi: getNotificationAppLaunchDetails() menangani platform secara internal.
+- Aturan khusus yang diperbarui: Tidak ada (prinsip sudah tercakup aturan notifikasi #10 dan #14).
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai (dengan temuan minor)
+
+### Commit: 992a624711948b58124483b57acea3520e3a1930
+- Tanggal: 2026-11-08
+- Pesan commit: chore(docs): bersihkan entri perbaikan notifikasi yang sudah selesai dari saran.md
+- File yang berubah: saran.md
+- Ringkasan evaluasi: Menghapus 61 baris entri perbaikan notifikasi yang sudah selesai. Tidak ada perubahan kode sumber.
+- Aturan khusus yang diperbarui: Tidak ada.
+- Aturan bersama yang diperbarui: Tidak ada.
+- Status evaluasi: Selesai
+
+### Commit: 9f3e88936232b3b837218db3ae22d9d835a1aa99
+- Tanggal: 2026-11-08
+- Pesan commit: fix(pengaturan): tambahkan penanganan error pada pemanggilan EasyLoading show dan dismiss
+- File yang berubah: catatan.md, lib/fitur/pengaturan/screens/pengaturan_screen.dart, saran.md
+- Ringkasan evaluasi: Menambahkan .catchError pada EasyLoading.show() dan EasyLoading.dismiss() yang dilepas dengan unawaited(). Sumber aturan notifikasi #14 disempurnakan dengan contoh EasyLoading.
+- Aturan khusus yang diperbarui: Aturan notifikasi #14 (contoh benar/salah dan larangan diperbarui).
+- Aturan bersama yang diperbarui: Tidak ada (sudah tercakup optimasi_bug_runtime.md bagian 6 dan 10).
+- Status evaluasi: Selesai

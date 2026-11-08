@@ -55,7 +55,7 @@ State UI, SharedPreferences, dan jadwal sistem operasi dapat tidak sinkron setel
 
 Setelah `jadwalkanPengingatHarian` gagal karena izin, sinkronkan `_notifikasiAktif` dengan `NotifikasiService.aktif()` (atau set false) dan tampilkan pesan yang menjelaskan izin tidak tersedia; pertimbangkan memanggil `_muatPreferensiNotifikasi()` untuk menyegarkan tampilan.
 
-**Status:** Belum diperbaiki.
+**Status:** Sudah diperbaiki (perubahan lokal, belum di-commit). `_ubahNotifikasi()` kini menyinkronkan `_notifikasiAktif` dengan `NotifikasiService.aktif()` pada jalur exception, menampilkan pesan izin tidak tersedia ketika kegagalan disebabkan izin, dan memanggil `_muatPreferensiNotifikasi()` untuk menyegarkan tampilan. `flutter analyze` bersih.
 
 ---
 
