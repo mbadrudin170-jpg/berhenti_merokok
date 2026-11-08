@@ -197,15 +197,6 @@ Tidak ada temuan.
 - File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L203-L206)
 - Prompt:
 
-#### Task 4
-
-- Status: Belum dikerjakan
-- Masalah: Commit `18cc24e` menghasilkan dua potong dead code: (1) variabel `total` dihitung dari `impianState.jumlahImpian` (baris 220) tetapi tidak pernah digunakan — `subtitle` menggunakan `total` hanya untuk pengecekan `total == 0`, kemudian mencetak `$tercapai dari $total`; (2) field `totalTercapai` diinisialisasi di `build()` (baris 84-L85) dengan nilai `listImpian.where(...).length` tetapi tidak pernah dibaca di mana pun. Keduanya tidak memberikan informasi dan dapat mengacaukan pembacaan code.
-- Solusi: Hapus variabel `total` (ganti `total == 0` dengan `listImpian.isEmpty` dan `$total` dengan `listImpian.length`), serta hapus field `totalTercapai` beserta inisialisasinya.
-- Aturan dilanggar: [optimasi_boilerplate.md](.agents/rules/global/optimasi_boilerplate.md#L45-L50) (hindari penulisan ulang/komputasi tidak perlu), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L47-L50) (fokus pada kode yang diperlukan)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L84-L85), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L218-L233)
-- Prompt:
-
 # Kelompok 9
 
 ## File terdampak
