@@ -115,6 +115,7 @@ Pengguna aplikasi yang telah mencatat data (biodata, impian, diary craving, alas
 8. Izin penyimpanan berkas ditangani sesuai platform (Android).
 9. Setelah restore, state in-memory disinkronkan (refresh provider terkait) agar tampilan konsisten; restart aplikasi (via paket `restart_app`) merupakan opsi alternatif. Referensi kompetitor tidak menyebutkan restart eksplisit.
 10. Jika restart gagal (`RestartResult.success == false`), catat `code`/`message` melalui `L.e`, tampilkan feedback kegagalan, dan lakukan fallback dengan refresh provider terkait. Data tetap aman di database; hanya state in-memory yang mungkin perlu dimuat ulang secara manual atau saat peluncuran berikutnya.
+11. Ekspor dan restore wajib atomik: ekspor yang gagal di tengah jalan wajib menghapus berkas parsial dan tidak menyisakan berkas korup; restore wajib berjalan dalam transaksi sehingga kegagalan pada salah satu tahap melakukan rollback dan tidak meninggalkan data setengah pulih. Validasi berkas (format/versi) wajib dilakukan sebelum menulis ke database. Kegagalan dicatat melalui `L.e` dan ditampilkan ke pengguna.
 
 ## 12. Persyaratan Nonfungsional
 
