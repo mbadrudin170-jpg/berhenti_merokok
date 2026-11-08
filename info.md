@@ -18,17 +18,6 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 1
-
-- Status: Belum dikerjakan
-- Masalah: `lib/fitur/dashboard/screens/dashboard_screen.dart` (method `_buildCardBadge`) menggunakan `Colors.amber` untuk ikon, bukan warna dari tema.
-- Solusi: Pertimbangkan `Theme.of(context).colorScheme` (mis. `secondary`/`tertiary`) agar menyesuaikan tema, kecuali amber memang diinginkan tetap.
-- Aturan dilanggar: [optimasi_ui.md:2](.agents/rules/global/optimasi_ui.md#L2)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
-- Prompt:
-
----
-
 # Kelompok 2
 
 ## File terdampak
@@ -36,19 +25,11 @@ Tidak ada temuan.
 - [pengaturan_screen.dart](lib/fitur/pengaturan/screens/pengaturan_screen.dart)
 - [main.dart](lib/main.dart)
 - [notifikasi_service.dart](lib/shared/notifikasi/notifikasi_service.dart)
+- [notifikasi_service_test.dart](test/notifikasi_service_test.dart)
 
 ## Tinggi
 
 ## Sedang
-
-#### Task 1
-
-- Status: kerjakan
-- Masalah: Commit menambahkan layanan notifikasi dan interaksi pengaturan, tetapi tidak terlihat file pengujian baru dalam perubahan commit tersebut. `test/` hanya berisi `widget_test.dart`; tidak ada pengujian untuk notifikasi. Implementasi pengujian ditangguhkan karena `NotifikasiService` menggunakan anggota statis dan bergantung pada plugin platform (`FlutterLocalNotificationsPlugin`) serta `SharedPreferences`, sehingga memerlukan refactor dependency injection dan mock/fake pada batas plugin/penyimpanan sebelum dapat diuji secara bermakna.
-- Solusi: Evaluasi pengujian untuk izin diberikan/ditolak, mengaktifkan/menonaktifkan pengingat, mengubah waktu, kegagalan penjadwalan dan penyimpanan preferensi, penjadwalan ulang saat aplikasi dibuka, platform yang tidak mendukung notifikasi terjadwal, dan pemulihan jadwal setelah perangkat restart. Gunakan mock atau fake pada batas plugin dan penyimpanan. Jangan menyimpulkan seluruh proyek belum memiliki pengujian hanya karena commit ini tidak menyertakan file pengujian.
-- Aturan dilanggar: [aturan_testing.md](.agents/rules/global/aturan_testing.md)
-- File bermasalah: [notifikasi_service.dart](lib/shared/notifikasi/notifikasi_service.dart), [pengaturan_screen.dart](lib/fitur/pengaturan/screens/pengaturan_screen.dart)
-- Prompt: buatkan file test nya
 
 ## Rendah
 
@@ -69,6 +50,125 @@ Tidak ada temuan.
 ## Rendah
 
 Tidak ada temuan.
+
+# Kelompok 4
+
+## File terdampak
+
+- [mode_berhenti.dart](lib/fitur/biodata/enum/mode_berhenti.dart)
+- [biodata_model.dart](lib/fitur/biodata/model/biodata_model.dart)
+- [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart)
+- [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart)
+- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
+- [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Log debug yang ditambahkan pada fitur tapering dicatat pada getter dan `build()` yang dapat dipanggil berulang. `ModeBerhentiExtension.label` memanggil `L.i('mode=$this')` pada setiap akses (termasuk saat `biodata.modeBerhenti.label` dibaca di `build()`), `BiodataModelPerhitungan.targetRokokHariIni` memanggil `L.i` pada setiap akses (termasuk saat dibaca di `build()`), dan `biodata_screen.dart` memanggil `L.i` dengan field tanggal di dalam `build()`. Hal ini menyebabkan pencatatan berulang pada setiap rebuild meskipun nilai tidak berubah, menambah noise log.
+- Solusi: Pindahkan logging ke titik perubahan data atau proses yang tidak berfrekuensi tinggi (mis. `initState`, method helper, perhitungan yang dipicu aksi), dan hindari log di dalam getter/`build()` yang dipanggil berulang.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
+- File bermasalah: [mode_berhenti.dart](lib/fitur/biodata/enum/mode_berhenti.dart#L9); [biodata_model.dart](lib/fitur/biodata/model/biodata_model.dart#L124); [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L69)
+- Prompt:
+
+
+
+# Kelompok 5
+
+## File terdampak
+
+- [app.dart](lib/app.dart)
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `app.dart`, import tidak diurutkan secara alfabetis berdasarkan path package. Import `package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart` dan `package:berhenti_merokok/fitur/tema/...` muncul sebelum `package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart`, sehingga urutan import tidak sesuai aturan.
+- Solusi: Urutkan import pada `app.dart` secara alfabetis berdasarkan path package lengkap, misalnya `fitur/biodata/notifier/...` sebelum `fitur/biodata/screens/...` dan `fitur/tema/...`, tanpa mengubah logika.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
+- File bermasalah: [app.dart](lib/app.dart#L2)
+- Prompt:
+
+# Kelompok 6
+
+## File terdampak
+
+- [badge_helper.dart](lib/fitur/badge/helper/badge_helper.dart)
+- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `badge_helper.dart` (fungsi `hitungBadge`) dan `badge_screen.dart` (method `build`), pemanggilan `L.i(...)` berada pada jalur yang dapat dipanggil berulang saat build, sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam build/getter yang dipanggil berulang.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
+- File bermasalah: [badge_helper.dart](lib/fitur/badge/helper/badge_helper.dart#L29); [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart#L33)
+- Prompt:
+
+# Kelompok 7
+
+## File terdampak
+
+- [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart)
+
+## Sedang
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `biodata_notifier.dart`, `BiodataNotifier` menggunakan anotasi `@riverpod` (auto-dispose) padahal notifier ini mengakses database; aturan proyek mewajibkan notifier database menggunakan `@Riverpod(keepAlive: true)`. Selain itu, `build()` memanggil `_ambilData()` bukan `_ambilSemua()` sesuai pola notifier CRUD, dan log pada `simpan()` mencatat properti model (`biodata.id`, `biodata.nama`) secara terurai alih-alih menampilkan objek model langsung.
+- Solusi: Ubah anotasi menjadi `@Riverpod(keepAlive: true)`, sesuaikan method pengambilan data awal dengan pola `_ambilSemua()`, dan ganti log properti model dengan `L.i('biodata=$biodata')` (atau logging objek secara langsung). Regenerasi file `.g.dart` sesuai sumber.
+- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L348); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1)
+- File bermasalah: [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L11); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L14); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L34)
+- Prompt:
+
+# Kelompok 8
+
+## File terdampak
+
+- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
+
+## Sedang
+
+#### Task 3
+
+- Status: Belum dikerjakan
+- Masalah: Pada `dashboard_screen.dart` sekitar baris 313-318, perhitungan `totalHariMerokok` menggunakan `tanggalBerhenti.difference(tanggalMulaiMerokok).inDays` tanpa normalisasi tanggal ke komponen tanggal saja. Hasil perhitungan hari dapat bergeser akibat komponen waktu pada nilai `DateTime`.
+- Solusi: Normalisasi kedua tanggal dengan `DateTime(tanggal.year, tanggal.month, tanggal.day)` sebelum menghitung selisih hari, agar hasil perhitungan berbasis hari akurat.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L303); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L620)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L313)
+- Prompt:
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `dashboard_screen.dart`, pemanggilan `L.i(...)` berada langsung di dalam `build()` (baris 39, 75, dan 81), sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam `build()`.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L11); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L39); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L75); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L81)
+- Prompt:
+
+# Kelompok 9
+
+## File terdampak
+
+- [diary_craving_notifier.dart](lib/fitur/diary_craving/notifier/diary_craving_notifier.dart)
+
+## Rendah
+
 
 
 
@@ -316,6 +416,7 @@ class LainnyaScreen extends StatelessWidget {
 // FILE: lib/shared/db/sqflite/sqflite.dart
 // ============================================================
 ```dart
+import 'package:flutter/foundation.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
 import 'package:path/path.dart';
@@ -333,7 +434,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 5;
+  static const int _versiDatabase = 6;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -366,7 +467,10 @@ class AppDatabase {
         ${NamaKolom.hargaRokokPerBungkus} REAL,
         ${NamaKolom.batangPerBungkus} REAL,
         ${NamaKolom.tanggalMulaiMerokok} TEXT,
-        ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT
+        ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT,
+        ${NamaKolom.modeBerhenti} TEXT,
+        ${NamaKolom.penurunanPerMinggu} INTEGER,
+        ${NamaKolom.tanggalMulaiTapering} TEXT
       )
     ''');
 
@@ -398,6 +502,9 @@ class AppDatabase {
     int oldVersion,
     int newVersion,
   ) async {
+    if (kDebugMode) {
+      debugPrint('oldVersion=$oldVersion, newVersion=$newVersion');
+    }
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
@@ -432,6 +539,20 @@ class AppDatabase {
           ${NamaKolom.dibuat} TEXT
         )
       ''');
+    }
+    if (oldVersion < 6) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.modeBerhenti} TEXT',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.penurunanPerMinggu} INTEGER',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.tanggalMulaiTapering} TEXT',
+      );
     }
   }
 
@@ -1336,6 +1457,15 @@ class NamaKolom {
   /// Kolom tanggal mulai berhenti merokok biodata.
   static const String tanggalMulaiBerhentiMerokok =
       'tanggal_mulai_berhenti_merokok';
+
+  /// Kolom mode berhenti biodata (seketika/bertahap).
+  static const String modeBerhenti = 'mode_berhenti';
+
+  /// Kolom penurunan rokok per minggu untuk mode bertahap.
+  static const String penurunanPerMinggu = 'penurunan_per_minggu';
+
+  /// Kolom tanggal mulai rencana penurunan (tapering).
+  static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
 
   // Kolom tabel impian.
   /// Kolom target tanggal impian.
@@ -4837,7 +4967,7 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
   }
 
   Future<void> tambah(DiaryCravingModel craving) async {
-    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    L.i('craving=$craving');
     try {
       final dataLama = await future;
       final op = const SqfliteOp();
@@ -4860,7 +4990,7 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
   }
 
   Future<void> ubah(DiaryCravingModel craving) async {
-    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    L.i('craving=$craving');
     try {
       final dataLama = await future;
       final op = const SqfliteOp();
@@ -6046,8 +6176,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           IconButton(
             tooltip: 'SOS Craving',
             icon: const Icon(Icons.sos),
-            onPressed: () =>
-                unawaited(Nav.to(context, const SosCravingScreen())),
+            onPressed: () => unawaited(
+              Nav.to(context, const SosCravingScreen()).catchError((
+                Object e,
+                StackTrace s,
+              ) {
+                L.e('Gagal navigasi ke SOS Craving: $e $s');
+                return null;
+              }),
+            ),
           ),
         ],
       ),
@@ -6152,8 +6289,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Card(
       child: InkWell(
-        onTap: () =>
-            unawaited(Nav.to(context, const PemulihanKesehatanScreen())),
+        onTap: () => unawaited(
+          Nav.to(context, const PemulihanKesehatanScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
+            return null;
+          }),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -6229,7 +6373,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildCardBadge() {
     return Card(
       child: InkWell(
-        onTap: () => unawaited(Nav.to(context, const BadgeScreen())),
+        onTap: () => unawaited(
+          Nav.to(context, const BadgeScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Badge: $e $s');
+            return null;
+          }),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -6276,8 +6428,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final rokokDihisap = jumlahRokokPerHari * totalHariMerokok;
-    final uangTerbuang =
-        (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
+    final uangTerbuang = biodata.batangPerBungkus == 0
+        ? 0.0
+        : (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
     final menitHilang = (rokokDihisap * 11).round();
     final hariHilang = menitHilang / (24 * 60);
     L.i(
@@ -6345,7 +6498,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 const Text('Belum ada data biodata'),
                 OutlinedButton(
                   onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                    Nav.to(
+                      context,
+                      const FormBiodata(buatPertama: false),
+                    ).catchError((Object e, StackTrace s) {
+                      L.e('Gagal navigasi ke Form Biodata: $e $s');
+                      return null;
+                    }),
                   ),
                   child: const Text('Isi Biodata'),
                 ),
@@ -7608,7 +7767,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BiodataModel {
 
- String get id; String get nama; DateTime? get tanggalLahir; int get jumlahRokokPerHari; double get hargaRokokPerBungkus; double get batangPerBungkus; DateTime? get tanggalMulaiMerokok; DateTime? get tanggalMulaiBerhentiMerokok;
+ String get id; String get nama; DateTime? get tanggalLahir; int get jumlahRokokPerHari; double get hargaRokokPerBungkus; double get batangPerBungkus; DateTime? get tanggalMulaiMerokok; DateTime? get tanggalMulaiBerhentiMerokok; ModeBerhenti get modeBerhenti; int get penurunanPerMinggu; DateTime? get tanggalMulaiTapering;
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -7620,20 +7779,20 @@ $BiodataModelCopyWith<BiodataModel> get copyWith => _$BiodataModelCopyWithImpl<B
 @override
 bool operator ==(Object other) {
   final _this = this as BiodataModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BiodataModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.nama, _this.nama) || other.nama == _this.nama)&&(identical(other.tanggalLahir, _this.tanggalLahir) || other.tanggalLahir == _this.tanggalLahir)&&(identical(other.jumlahRokokPerHari, _this.jumlahRokokPerHari) || other.jumlahRokokPerHari == _this.jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, _this.hargaRokokPerBungkus) || other.hargaRokokPerBungkus == _this.hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, _this.batangPerBungkus) || other.batangPerBungkus == _this.batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, _this.tanggalMulaiMerokok) || other.tanggalMulaiMerokok == _this.tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, _this.tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == _this.tanggalMulaiBerhentiMerokok));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BiodataModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.nama, _this.nama) || other.nama == _this.nama)&&(identical(other.tanggalLahir, _this.tanggalLahir) || other.tanggalLahir == _this.tanggalLahir)&&(identical(other.jumlahRokokPerHari, _this.jumlahRokokPerHari) || other.jumlahRokokPerHari == _this.jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, _this.hargaRokokPerBungkus) || other.hargaRokokPerBungkus == _this.hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, _this.batangPerBungkus) || other.batangPerBungkus == _this.batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, _this.tanggalMulaiMerokok) || other.tanggalMulaiMerokok == _this.tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, _this.tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == _this.tanggalMulaiBerhentiMerokok)&&(identical(other.modeBerhenti, _this.modeBerhenti) || other.modeBerhenti == _this.modeBerhenti)&&(identical(other.penurunanPerMinggu, _this.penurunanPerMinggu) || other.penurunanPerMinggu == _this.penurunanPerMinggu)&&(identical(other.tanggalMulaiTapering, _this.tanggalMulaiTapering) || other.tanggalMulaiTapering == _this.tanggalMulaiTapering));
 }
 
 
 @override
 int get hashCode {
   final _this = this as BiodataModel;
-  return Object.hash(runtimeType,_this.id,_this.nama,_this.tanggalLahir,_this.jumlahRokokPerHari,_this.hargaRokokPerBungkus,_this.batangPerBungkus,_this.tanggalMulaiMerokok,_this.tanggalMulaiBerhentiMerokok);
+  return Object.hash(runtimeType,_this.id,_this.nama,_this.tanggalLahir,_this.jumlahRokokPerHari,_this.hargaRokokPerBungkus,_this.batangPerBungkus,_this.tanggalMulaiMerokok,_this.tanggalMulaiBerhentiMerokok,_this.modeBerhenti,_this.penurunanPerMinggu,_this.tanggalMulaiTapering);
 }
 
 @override
 String toString() {
   final _this = this as BiodataModel;
-  return 'BiodataModel(id: ${_this.id}, nama: ${_this.nama}, tanggalLahir: ${_this.tanggalLahir}, jumlahRokokPerHari: ${_this.jumlahRokokPerHari}, hargaRokokPerBungkus: ${_this.hargaRokokPerBungkus}, batangPerBungkus: ${_this.batangPerBungkus}, tanggalMulaiMerokok: ${_this.tanggalMulaiMerokok}, tanggalMulaiBerhentiMerokok: ${_this.tanggalMulaiBerhentiMerokok})';
+  return 'BiodataModel(id: ${_this.id}, nama: ${_this.nama}, tanggalLahir: ${_this.tanggalLahir}, jumlahRokokPerHari: ${_this.jumlahRokokPerHari}, hargaRokokPerBungkus: ${_this.hargaRokokPerBungkus}, batangPerBungkus: ${_this.batangPerBungkus}, tanggalMulaiMerokok: ${_this.tanggalMulaiMerokok}, tanggalMulaiBerhentiMerokok: ${_this.tanggalMulaiBerhentiMerokok}, modeBerhenti: ${_this.modeBerhenti}, penurunanPerMinggu: ${_this.penurunanPerMinggu}, tanggalMulaiTapering: ${_this.tanggalMulaiTapering})';
 }
 
 
@@ -7644,7 +7803,7 @@ abstract mixin class $BiodataModelCopyWith<$Res>  {
   factory $BiodataModelCopyWith(BiodataModel value, $Res Function(BiodataModel) _then) = _$BiodataModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok
+ String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok, ModeBerhenti modeBerhenti, int penurunanPerMinggu, DateTime? tanggalMulaiTapering
 });
 
 
@@ -7661,7 +7820,7 @@ class _$BiodataModelCopyWithImpl<$Res>
 
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,Object? modeBerhenti = null,Object? penurunanPerMinggu = null,Object? tanggalMulaiTapering = freezed,}) {
   return _then(BiodataModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
@@ -7671,6 +7830,9 @@ as int,hargaRokokPerBungkus: null == hargaRokokPerBungkus ? _self.hargaRokokPerB
 as double,batangPerBungkus: null == batangPerBungkus ? _self.batangPerBungkus : batangPerBungkus // ignore: cast_nullable_to_non_nullable
 as double,tanggalMulaiMerokok: freezed == tanggalMulaiMerokok ? _self.tanggalMulaiMerokok : tanggalMulaiMerokok // ignore: cast_nullable_to_non_nullable
 as DateTime?,tanggalMulaiBerhentiMerokok: freezed == tanggalMulaiBerhentiMerokok ? _self.tanggalMulaiBerhentiMerokok : tanggalMulaiBerhentiMerokok // ignore: cast_nullable_to_non_nullable
+as DateTime?,modeBerhenti: null == modeBerhenti ? _self.modeBerhenti : modeBerhenti // ignore: cast_nullable_to_non_nullable
+as ModeBerhenti,penurunanPerMinggu: null == penurunanPerMinggu ? _self.penurunanPerMinggu : penurunanPerMinggu // ignore: cast_nullable_to_non_nullable
+as int,tanggalMulaiTapering: freezed == tanggalMulaiTapering ? _self.tanggalMulaiTapering : tanggalMulaiTapering // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -7756,10 +7918,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BiodataModel() when $default != null:
-return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok);case _:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering);case _:
   return orElse();
 
 }
@@ -7777,10 +7939,10 @@ return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering)  $default,) {final _that = this;
 switch (_that) {
 case _BiodataModel():
-return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok);case _:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -7797,10 +7959,10 @@ return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering)?  $default,) {final _that = this;
 switch (_that) {
 case _BiodataModel() when $default != null:
-return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok);case _:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering);case _:
   return null;
 
 }
@@ -7812,7 +7974,7 @@ return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,
 
 
 class _BiodataModel extends BiodataModel {
-  const _BiodataModel({required this.id, required this.nama, this.tanggalLahir, this.jumlahRokokPerHari = 10, this.hargaRokokPerBungkus = 0.0, this.batangPerBungkus = 20.0, this.tanggalMulaiMerokok, this.tanggalMulaiBerhentiMerokok}): super._();
+  const _BiodataModel({required this.id, required this.nama, this.tanggalLahir, this.jumlahRokokPerHari = 10, this.hargaRokokPerBungkus = 0.0, this.batangPerBungkus = 20.0, this.tanggalMulaiMerokok, this.tanggalMulaiBerhentiMerokok, this.modeBerhenti = ModeBerhenti.seketika, this.penurunanPerMinggu = 0, this.tanggalMulaiTapering}): super._();
   
 
 @override final  String id;
@@ -7823,6 +7985,9 @@ class _BiodataModel extends BiodataModel {
 @override@JsonKey() final  double batangPerBungkus;
 @override final  DateTime? tanggalMulaiMerokok;
 @override final  DateTime? tanggalMulaiBerhentiMerokok;
+@override@JsonKey() final  ModeBerhenti modeBerhenti;
+@override@JsonKey() final  int penurunanPerMinggu;
+@override final  DateTime? tanggalMulaiTapering;
 
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
@@ -7834,18 +7999,18 @@ _$BiodataModelCopyWith<_BiodataModel> get copyWith => __$BiodataModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BiodataModel&&(identical(other.id, id) || other.id == id)&&(identical(other.nama, nama) || other.nama == nama)&&(identical(other.tanggalLahir, tanggalLahir) || other.tanggalLahir == tanggalLahir)&&(identical(other.jumlahRokokPerHari, jumlahRokokPerHari) || other.jumlahRokokPerHari == jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, hargaRokokPerBungkus) || other.hargaRokokPerBungkus == hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, batangPerBungkus) || other.batangPerBungkus == batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, tanggalMulaiMerokok) || other.tanggalMulaiMerokok == tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == tanggalMulaiBerhentiMerokok));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BiodataModel&&(identical(other.id, id) || other.id == id)&&(identical(other.nama, nama) || other.nama == nama)&&(identical(other.tanggalLahir, tanggalLahir) || other.tanggalLahir == tanggalLahir)&&(identical(other.jumlahRokokPerHari, jumlahRokokPerHari) || other.jumlahRokokPerHari == jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, hargaRokokPerBungkus) || other.hargaRokokPerBungkus == hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, batangPerBungkus) || other.batangPerBungkus == batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, tanggalMulaiMerokok) || other.tanggalMulaiMerokok == tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == tanggalMulaiBerhentiMerokok)&&(identical(other.modeBerhenti, modeBerhenti) || other.modeBerhenti == modeBerhenti)&&(identical(other.penurunanPerMinggu, penurunanPerMinggu) || other.penurunanPerMinggu == penurunanPerMinggu)&&(identical(other.tanggalMulaiTapering, tanggalMulaiTapering) || other.tanggalMulaiTapering == tanggalMulaiTapering));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,nama,tanggalLahir,jumlahRokokPerHari,hargaRokokPerBungkus,batangPerBungkus,tanggalMulaiMerokok,tanggalMulaiBerhentiMerokok);
+    return Object.hash(runtimeType,id,nama,tanggalLahir,jumlahRokokPerHari,hargaRokokPerBungkus,batangPerBungkus,tanggalMulaiMerokok,tanggalMulaiBerhentiMerokok,modeBerhenti,penurunanPerMinggu,tanggalMulaiTapering);
 }
 
 @override
 String toString() {
-    return 'BiodataModel(id: $id, nama: $nama, tanggalLahir: $tanggalLahir, jumlahRokokPerHari: $jumlahRokokPerHari, hargaRokokPerBungkus: $hargaRokokPerBungkus, batangPerBungkus: $batangPerBungkus, tanggalMulaiMerokok: $tanggalMulaiMerokok, tanggalMulaiBerhentiMerokok: $tanggalMulaiBerhentiMerokok)';
+    return 'BiodataModel(id: $id, nama: $nama, tanggalLahir: $tanggalLahir, jumlahRokokPerHari: $jumlahRokokPerHari, hargaRokokPerBungkus: $hargaRokokPerBungkus, batangPerBungkus: $batangPerBungkus, tanggalMulaiMerokok: $tanggalMulaiMerokok, tanggalMulaiBerhentiMerokok: $tanggalMulaiBerhentiMerokok, modeBerhenti: $modeBerhenti, penurunanPerMinggu: $penurunanPerMinggu, tanggalMulaiTapering: $tanggalMulaiTapering)';
 }
 
 
@@ -7856,7 +8021,7 @@ abstract mixin class _$BiodataModelCopyWith<$Res> implements $BiodataModelCopyWi
   factory _$BiodataModelCopyWith(_BiodataModel value, $Res Function(_BiodataModel) _then) = __$BiodataModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok
+ String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok, ModeBerhenti modeBerhenti, int penurunanPerMinggu, DateTime? tanggalMulaiTapering
 });
 
 
@@ -7873,7 +8038,7 @@ class __$BiodataModelCopyWithImpl<$Res>
 
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,Object? modeBerhenti = null,Object? penurunanPerMinggu = null,Object? tanggalMulaiTapering = freezed,}) {
   return _then(_BiodataModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
@@ -7883,6 +8048,9 @@ as int,hargaRokokPerBungkus: null == hargaRokokPerBungkus ? _self.hargaRokokPerB
 as double,batangPerBungkus: null == batangPerBungkus ? _self.batangPerBungkus : batangPerBungkus // ignore: cast_nullable_to_non_nullable
 as double,tanggalMulaiMerokok: freezed == tanggalMulaiMerokok ? _self.tanggalMulaiMerokok : tanggalMulaiMerokok // ignore: cast_nullable_to_non_nullable
 as DateTime?,tanggalMulaiBerhentiMerokok: freezed == tanggalMulaiBerhentiMerokok ? _self.tanggalMulaiBerhentiMerokok : tanggalMulaiBerhentiMerokok // ignore: cast_nullable_to_non_nullable
+as DateTime?,modeBerhenti: null == modeBerhenti ? _self.modeBerhenti : modeBerhenti // ignore: cast_nullable_to_non_nullable
+as ModeBerhenti,penurunanPerMinggu: null == penurunanPerMinggu ? _self.penurunanPerMinggu : penurunanPerMinggu // ignore: cast_nullable_to_non_nullable
+as int,tanggalMulaiTapering: freezed == tanggalMulaiTapering ? _self.tanggalMulaiTapering : tanggalMulaiTapering // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -7899,6 +8067,7 @@ as DateTime?,
 // FILE: lib/fitur/biodata/model/biodata_model.dart
 // ============================================================
 ```dart
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -7918,10 +8087,14 @@ abstract class BiodataModel with _$BiodataModel {
     @Default(20.0) double batangPerBungkus,
     DateTime? tanggalMulaiMerokok,
     DateTime? tanggalMulaiBerhentiMerokok,
+    @Default(ModeBerhenti.seketika) ModeBerhenti modeBerhenti,
+    @Default(0) int penurunanPerMinggu,
+    DateTime? tanggalMulaiTapering,
   }) = _BiodataModel;
 
   /// Membuat [BiodataModel] dari baris database SQLite.
   factory BiodataModel.fromSqflite(Map<String, Object?> row) {
+    L.i('row=$row');
     return BiodataModel(
       id: ParserUtil.parseString(row[NamaKolom.id]),
       nama: ParserUtil.parseString(row[NamaKolom.nama]),
@@ -7944,6 +8117,18 @@ abstract class BiodataModel with _$BiodataModel {
       tanggalMulaiBerhentiMerokok: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiBerhentiMerokok],
       )?.toLocal(),
+      modeBerhenti:
+          ParserUtil.safeParseEnum(
+            ModeBerhenti.values,
+            ParserUtil.parseString(row[NamaKolom.modeBerhenti]),
+          ) ??
+          ModeBerhenti.seketika,
+      penurunanPerMinggu: ParserUtil.parseInt(
+        row[NamaKolom.penurunanPerMinggu],
+      ),
+      tanggalMulaiTapering: ParserUtil.parseDateTime(
+        row[NamaKolom.tanggalMulaiTapering],
+      )?.toLocal(),
     );
   }
 
@@ -7960,6 +8145,11 @@ abstract class BiodataModel with _$BiodataModel {
           ?.toUtc()
           .toIso8601String(),
       NamaKolom.tanggalMulaiBerhentiMerokok: tanggalMulaiBerhentiMerokok
+          ?.toUtc()
+          .toIso8601String(),
+      NamaKolom.modeBerhenti: modeBerhenti.name,
+      NamaKolom.penurunanPerMinggu: penurunanPerMinggu,
+      NamaKolom.tanggalMulaiTapering: tanggalMulaiTapering
           ?.toUtc()
           .toIso8601String(),
     };
@@ -7991,6 +8181,58 @@ extension BiodataModelPerhitungan on BiodataModel {
     if (batangPerBungkus == 0) return 0;
     return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
   }
+
+  /// Apakah pengguna menggunakan mode berhenti bertahap (tapering).
+  bool get sedangTapering => modeBerhenti == ModeBerhenti.bertahap;
+
+  /// Target jumlah rokok per hari saat ini untuk mode tapering.
+  ///
+  /// Dihitung dari [jumlahRokokPerHari] dikurangi penurunan kumulatif
+  /// berdasarkan minggu yang telah berlalu sejak [tanggalMulaiTapering].
+  int get targetRokokHariIni {
+    L.i('sedangTapering=$sedangTapering');
+    if (!sedangTapering) return jumlahRokokPerHari;
+    final mulai = tanggalMulaiTapering ?? DateTime.now();
+    final sekarang = DateTime.now();
+    final mulaiDate = DateTime(mulai.year, mulai.month, mulai.day);
+    final sekarangDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final hariBerlalu = sekarangDate.difference(mulaiDate).inDays;
+    final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
+    final penurunan = penurunanPerMinggu * mingguBerlalu;
+    final target = jumlahRokokPerHari - penurunan;
+    L.i(
+      'mulai=$mulai, hariBerlalu=$hariBerlalu, mingguBerlalu=$mingguBerlalu, '
+      'penurunan=$penurunan, target=$target',
+    );
+    if (target < 0) return 0;
+    if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
+    return target;
+  }
+}
+```
+
+
+
+// ============================================================
+// FILE: lib/fitur/biodata/enum/mode_berhenti.dart
+// ============================================================
+```dart
+import 'package:share_global_saya/core_shared.dart';
+
+/// Mode berhenti merokok: seketika atau bertahap (tapering).
+enum ModeBerhenti { seketika, bertahap }
+
+/// Extension yang menyediakan label untuk [ModeBerhenti].
+extension ModeBerhentiExtension on ModeBerhenti {
+  String get label {
+    L.i('mode=$this');
+    switch (this) {
+      case ModeBerhenti.seketika:
+        return 'Seketika';
+      case ModeBerhenti.bertahap:
+        return 'Bertahap (tapering)';
+    }
+  }
 }
 ```
 
@@ -8002,6 +8244,8 @@ extension BiodataModelPerhitungan on BiodataModel {
 ```dart
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:flutter/material.dart';
@@ -8069,6 +8313,12 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     final tanggalLahir = biodata?.tanggalLahir;
     final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
     final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+    final tanggalMulaiTapering = biodata?.tanggalMulaiTapering;
+    L.i(
+      'tanggalLahir=$tanggalLahir, tanggalMulaiMerokok=$tanggalMulaiMerokok, '
+      'tanggalMulaiBerhentiMerokok=$tanggalMulaiBerhentiMerokok, '
+      'tanggalMulaiTapering=$tanggalMulaiTapering',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
@@ -8087,7 +8337,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                           Nav.to(
                             context,
                             const FormBiodata(buatPertama: false),
-                          ),
+                          ).catchError((Object e, StackTrace s) {
+                            L.e('Gagal navigasi ke Form Biodata: $e $s');
+                            return null;
+                          }),
                         ),
                         child: const Text('Isi Biodata'),
                       ),
@@ -8132,6 +8385,21 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                                 tanggalMulaiBerhentiMerokok,
                               ),
                       ),
+                      _buildItem('Mode berhenti', biodata.modeBerhenti.label),
+                      _buildItem(
+                        'Penurunan per minggu',
+                        biodata.penurunanPerMinggu.toString(),
+                      ),
+                      _buildItem(
+                        'Target rokok per hari (saat ini)',
+                        biodata.targetRokokHariIni.toString(),
+                      ),
+                      _buildItem(
+                        'Tanggal mulai penurunan',
+                        tanggalMulaiTapering == null
+                            ? 'Belum dipilih'
+                            : FormatTanggal.formatDasar(tanggalMulaiTapering),
+                      ),
                       const SizedBox(height: 8),
                       OutlinedButton(
                         onPressed: () => unawaited(
@@ -8141,7 +8409,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                               buatPertama: false,
                               biodataModel: biodata,
                             ),
-                          ),
+                          ).catchError((Object e, StackTrace s) {
+                            L.e('Gagal navigasi ke Form Biodata: $e $s');
+                            return null;
+                          }),
                         ),
                         child: const Text('Ubah Biodata'),
                       ),
@@ -8180,6 +8451,7 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/home.dart';
@@ -8202,16 +8474,22 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _jumlahRokokController = TextEditingController();
   final _hargaRokokController = TextEditingController();
   final _batangPerBungkusController = TextEditingController();
+  final _penurunanPerMingguController = TextEditingController();
 
   final _namaFocusNode = FocusNode();
   final _jumlahRokokFocusNode = FocusNode();
   final _hargaRokokFocusNode = FocusNode();
   final _batangPerBungkusFocusNode = FocusNode();
+  final _penurunanPerMingguFocusNode = FocusNode();
 
   DateTime? _tanggalLahir;
   DateTime? _tanggalMulaiMerokok;
   DateTime? _tanggalMulaiBerhentiMerokok;
+  DateTime? _tanggalMulaiTapering;
 
+  ModeBerhenti _modeBerhenti = ModeBerhenti.seketika;
+
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _sudahDiisi = false;
 
@@ -8220,6 +8498,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   @override
   void initState() {
     super.initState();
+    L.i('FormBiodata initState, buatPertama=${widget.buatPertama}');
     final modelAwal = widget.biodataModel;
     if (modelAwal != null) {
       _isiDariModel(modelAwal);
@@ -8242,6 +8521,14 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _tanggalLahir = model.tanggalLahir;
     _tanggalMulaiMerokok = model.tanggalMulaiMerokok;
     _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
+    _modeBerhenti = model.modeBerhenti;
+    _penurunanPerMingguController.text = model.penurunanPerMinggu.toString();
+    _tanggalMulaiTapering = model.tanggalMulaiTapering;
+    L.i(
+      'modeBerhenti=$_modeBerhenti, '
+      'penurunanPerMinggu=${_penurunanPerMingguController.text}, '
+      'tanggalMulaiTapering=$_tanggalMulaiTapering',
+    );
   }
 
   @override
@@ -8251,10 +8538,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _jumlahRokokController.dispose();
     _hargaRokokController.dispose();
     _batangPerBungkusController.dispose();
+    _penurunanPerMingguController.dispose();
     _namaFocusNode.dispose();
     _jumlahRokokFocusNode.dispose();
     _hargaRokokFocusNode.dispose();
     _batangPerBungkusFocusNode.dispose();
+    _penurunanPerMingguFocusNode.dispose();
     super.dispose();
   }
 
@@ -8297,6 +8586,20 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     }
   }
 
+  Future<void> _pilihTanggalMulaiTapering() async {
+    final awal = _tanggalMulaiTapering ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && mounted) {
+      L.i('tanggalMulaiTapering=$picked');
+      setState(() => _tanggalMulaiTapering = picked);
+    }
+  }
+
   Future<void> _simpan() async {
     if (_isLoading) {
       L.w('Form biodata masih loading, simpan diabaikan');
@@ -8313,12 +8616,23 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       return;
     }
     if (!mounted) return;
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    if (_modeBerhenti == ModeBerhenti.bertahap &&
+        _tanggalMulaiTapering == null) {
+      AppToast.gagal(context, 'Tanggal mulai penurunan wajib dipilih');
+      return;
+    }
     setState(() => _isLoading = true);
     unawaited(
       EasyLoading.show(
         status: 'Menyimpan...',
         maskType: EasyLoadingMaskType.black,
-      ),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+        return null;
+      }),
     );
     try {
       final model = BiodataModel(
@@ -8334,11 +8648,28 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
+        modeBerhenti: _modeBerhenti,
+        penurunanPerMinggu: int.parse(
+          _penurunanPerMingguController.text.trim().replaceAll(
+            RegExp(r'[^0-9]'),
+            '',
+          ),
+        ),
+        tanggalMulaiTapering: _tanggalMulaiTapering,
       );
+      L.i('model=$model');
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
       if (widget.buatPertama) {
-        unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+        unawaited(
+          Nav.pushAndRemoveUntil(context, const Home()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Home: $e $s');
+            return null;
+          }),
+        );
       } else if (Navigator.of(context).canPop()) {
         Nav.pop(context);
       }
@@ -8349,7 +8680,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       }
     } finally {
       if (mounted) {
-        unawaited(EasyLoading.dismiss());
+        unawaited(
+          EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+            L.e('Gagal menutup loading: $e $s');
+            return null;
+          }),
+        );
         setState(() => _isLoading = false);
       }
     }
@@ -8388,89 +8724,144 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [
-              InputTeks(
-                controller: _namaController,
-                label: 'Nama',
-                hintText: 'Masukkan nama',
-                focusNode: _namaFocusNode,
-                nextFocusNode: _jumlahRokokFocusNode,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Nama wajib diisi';
-                  }
-                  return null;
-                },
-              ),
-              InputAngka(
-                controller: _jumlahRokokController,
-                label: 'Jumlah rokok per hari',
-                hintText: 'Masukkan jumlah rokok per hari',
-                focusNode: _jumlahRokokFocusNode,
-                nextFocusNode: _hargaRokokFocusNode,
-              ),
-              InputRupiah(
-                controller: _hargaRokokController,
-                label: 'Harga rokok per bungkus',
-                hintText: 'Masukkan harga rokok per bungkus',
-                focusNode: _hargaRokokFocusNode,
-              ),
-              InputAngka(
-                controller: _batangPerBungkusController,
-                label: 'Batang per bungkus',
-                hintText: 'Masukkan jumlah batang per bungkus',
-                focusNode: _batangPerBungkusFocusNode,
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.cake_outlined),
-                title: const Text('Tanggal lahir'),
-                subtitle: Text(
-                  _tanggalLahir == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(_tanggalLahir!),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                InputTeks(
+                  controller: _namaController,
+                  label: 'Nama',
+                  hintText: 'Masukkan nama',
+                  focusNode: _namaFocusNode,
+                  nextFocusNode: _jumlahRokokFocusNode,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama wajib diisi';
+                    }
+                    return null;
+                  },
                 ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalLahir,
-                  child: const Text('Pilih'),
+                InputAngka(
+                  controller: _jumlahRokokController,
+                  label: 'Jumlah rokok per hari',
+                  hintText: 'Masukkan jumlah rokok per hari',
+                  focusNode: _jumlahRokokFocusNode,
+                  nextFocusNode: _hargaRokokFocusNode,
                 ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.smoking_rooms_outlined),
-                title: const Text('Tanggal mulai merokok'),
-                subtitle: Text(
-                  _tanggalMulaiMerokok == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
+                InputRupiah(
+                  controller: _hargaRokokController,
+                  label: 'Harga rokok per bungkus',
+                  hintText: 'Masukkan harga rokok per bungkus',
+                  focusNode: _hargaRokokFocusNode,
                 ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalMulaiMerokok,
-                  child: const Text('Pilih'),
+                InputAngka(
+                  controller: _batangPerBungkusController,
+                  label: 'Batang per bungkus',
+                  hintText: 'Masukkan jumlah batang per bungkus',
+                  focusNode: _batangPerBungkusFocusNode,
                 ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.event_available_outlined),
-                title: const Text('Tanggal mulai berhenti merokok'),
-                subtitle: Text(
-                  _tanggalMulaiBerhentiMerokok == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(
-                          _tanggalMulaiBerhentiMerokok!,
-                        ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.cake_outlined),
+                  title: const Text('Tanggal lahir'),
+                  subtitle: Text(
+                    _tanggalLahir == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(_tanggalLahir!),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalLahir,
+                    child: const Text('Pilih'),
+                  ),
                 ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalMulaiBerhentiMerokok,
-                  child: const Text('Pilih'),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.smoking_rooms_outlined),
+                  title: const Text('Tanggal mulai merokok'),
+                  subtitle: Text(
+                    _tanggalMulaiMerokok == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalMulaiMerokok,
+                    child: const Text('Pilih'),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
-            ],
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_available_outlined),
+                  title: const Text('Tanggal mulai berhenti merokok'),
+                  subtitle: Text(
+                    _tanggalMulaiBerhentiMerokok == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(
+                            _tanggalMulaiBerhentiMerokok!,
+                          ),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalMulaiBerhentiMerokok,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+                // Mode berhenti: seketika atau bertahap (tapering).
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Berhenti bertahap (tapering)'),
+                  subtitle: const Text(
+                    'Kurangi jumlah rokok per hari secara bertahap.',
+                  ),
+                  value: _modeBerhenti == ModeBerhenti.bertahap,
+                  onChanged: (value) {
+                    setState(() {
+                      _modeBerhenti = value
+                          ? ModeBerhenti.bertahap
+                          : ModeBerhenti.seketika;
+                      if (value && _tanggalMulaiTapering == null) {
+                        _tanggalMulaiTapering = DateTime.now();
+                      }
+                    });
+                  },
+                ),
+                if (_modeBerhenti == ModeBerhenti.bertahap) ...[
+                  InputAngka(
+                    controller: _penurunanPerMingguController,
+                    label: 'Penurunan per minggu (batang)',
+                    hintText: 'Masukkan jumlah penurunan per minggu',
+                    focusNode: _penurunanPerMingguFocusNode,
+                    validator: (value) {
+                      final cleaned = (value ?? '').replaceAll(
+                        RegExp(r'[^0-9]'),
+                        '',
+                      );
+                      final n = int.tryParse(cleaned);
+                      if (n == null || n <= 0) {
+                        return 'Wajib bilangan bulat positif';
+                      }
+                      return null;
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.calendar_today_outlined),
+                    title: const Text('Tanggal mulai penurunan'),
+                    subtitle: Text(
+                      _tanggalMulaiTapering == null
+                          ? 'Belum dipilih'
+                          : FormatTanggal.formatDasar(_tanggalMulaiTapering!),
+                    ),
+                    trailing: TextButton(
+                      onPressed: _pilihTanggalMulaiTapering,
+                      child: const Text('Pilih'),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
+              ],
+            ),
           ),
         ),
       ),
@@ -9685,6 +10076,39 @@ await setAktif(true);
 **Sumber evaluasi:**
 - Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
 - File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `saran.md`
+## Penggunaan Tipe Exception Khusus untuk Deteksi Error
+**Aturan:**
+1. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception` atau `Error`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`.
+2. Pemanggil wajib mendeteksi error melalui `is` (type check), bukan pencocokan string.
+3. Tipe exception khusus wajib dideklarasikan sebagai class terpisah dengan dokumentasi singkat, agar mudah diidentifikasi dan diuji.
+4. Jangan bergantung pada teks pesan exception untuk menentukan alur program, karena teks dapat berubah dan menyebabkan deteksi gagal.
+**Alasan:**
+Pencocokan string pada pesan exception (mis. `e.toString().contains('Izin notifikasi tidak diberikan')`) bergantung pada teks yang sama persis. Jika pesan berubah, deteksi gagal dan alur program salah. Commit `07fc8df` mengganti pola ini dengan `IzinNotifikasiTidakDiberikanException` yang diimplementasikan sebagai class khusus, sehingga deteksi dilakukan melalui `e is IzinNotifikasiTidakDiberikanException`. Pola ini dapat diterapkan pada proyek Flutter lain yang membutuhkan deteksi error berdasarkan jenis, bukan teks.
+**Contoh benar:**
+```dart
+class IzinNotifikasiTidakDiberikanException implements Exception {
+  const IzinNotifikasiTidakDiberikanException();
+  @override
+  String toString() => 'Izin notifikasi tidak diberikan';
+}
+// Melempar.
+throw const IzinNotifikasiTidakDiberikanException();
+// Mendeteksi.
+} on Exception catch (e, s) {
+  if (e is IzinNotifikasiTidakDiberikanException) {
+    // tangani kegagalan izin
+  }
+}
+```
+**Contoh salah:**
+```dart
+throw Exception('Izin notifikasi tidak diberikan');
+// Mendeteksi melalui pencocokan string (rentan).
+final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
+```
+**Sumber evaluasi:**
+- Commit: `07fc8df6cf5ea28fe7133b1aee5dae7b05b96590`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`
 ## Prinsip Umum Penanganan Beberapa `AsyncValue` pada Satu Layar
 **Aturan:**
 1. Ketika satu layar menggunakan beberapa provider asynchronous, tangani status loading secara gabungan apabila salah satu data yang dibutuhkan masih loading.
@@ -9718,6 +10142,58 @@ final b = bAsync.requireValue;
 **Sumber evaluasi:**
 - Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
 - File: `lib/fitur/badge/screens/badge_screen.dart`
+## Validasi Form Sebelum Penyimpanan
+**Cakupan:**
+- Seluruh layar/form yang menggunakan `TextFormField` atau widget yang menyediakan `validator`.
+- Proses penyimpanan ke database atau repository yang bergantung pada validasi input.
+**Aturan wajib:**
+1. Apabila field menggunakan `TextFormField` atau widget yang menyediakan `validator`, pastikan mekanisme validasinya benar-benar dijalankan sebelum penyimpanan.
+2. Jika menggunakan mekanisme `Form`, bungkus field terkait dengan `Form` dan sediakan `GlobalKey<FormState>` atau mekanisme akses form yang sesuai.
+3. Panggil `validate()` sebelum menjalankan penyimpanan ke database atau repository.
+4. Apabila validasi gagal, hentikan proses penyimpanan.
+5. Validasi format angka tidak sama dengan validasi aturan bisnis.
+6. Validasi harus mencakup batas nilai sesuai kebutuhan, misalnya nilai wajib lebih besar dari nol.
+7. Jangan menganggap `TextInputType.number` atau input formatter sudah menjamin nilai memenuhi aturan bisnis.
+8. Jangan menggunakan nilai pengganti `0` ketika parsing gagal apabila hal tersebut menyembunyikan input yang tidak valid.
+9. Jangan mewajibkan penggunaan `Form` apabila proyek menggunakan mekanisme validasi lain yang memang dapat memastikan seluruh aturan validasi dijalankan sebelum penyimpanan.
+**Larangan:**
+- Jangan menyimpan data sebelum memastikan validasi dijalankan dan lulus.
+- Jangan mengganti input yang tidak valid dengan nilai default (`0`) tanpa memberi tahu pengguna.
+- Jangan mengandalkan tipe keyboard (`TextInputType.number`) sebagai satu-satunya validasi.
+- Jangan memaksa struktur `Form` tertentu apabila mekanisme validasi lain sudah dapat menjamin validasi berjalan sebelum penyimpanan.
+**Alasan:**
+Commit `ceacc6a` menambahkan input penurunan mingguan pada form biodata (`_penurunanPerMingguController`) tanpa `Form` yang membungkus field, tanpa pemanggilan `validate()`, dan dengan parsing `int.tryParse(...) ?? 0` yang mengganti input tidak valid dengan `0`. Akibatnya, mode tapering dapat tersimpan tanpa benar-benar melakukan penurunan rokok. Validasi format angka (parsing) tidak menjamin nilai memenuhi aturan bisnis (mis. nilai positif). Prinsip ini berlaku pada proyek Flutter lain yang menggunakan `TextFormField` atau widget dengan `validator`.
+**Contoh benar:**
+```dart
+final _formKey = GlobalKey<FormState>();
+Form(
+  key: _formKey,
+  child: TextFormField(
+    controller: _penurunanController,
+    keyboardType: TextInputType.number,
+    validator: (value) {
+      final n = int.tryParse(value ?? '');
+      if (n == null || n <= 0) return 'Wajib bilangan bulat positif';
+      return null;
+    },
+  ),
+)
+Future<void> _simpan() async {
+  if (!(_formKey.currentState?.validate() ?? false)) return;
+  // lanjutkan penyimpanan
+}
+```
+**Contoh salah:**
+```dart
+// Tidak ada Form/validate; parsing gagal diganti 0.
+penurunanPerMinggu:
+    int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+// Menyimpan langsung tanpa validasi.
+await ref.read(biodataProvider.notifier).simpan(model);
+```
+**Sumber evaluasi:**
+- Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
+- File: `lib/fitur/biodata/screens/form_biodata.dart`.
 
 
 // ============================================================
@@ -12778,7 +13254,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 **Catatan versi:** Aturan ini ditulis untuk `flutter_local_notifications` versi `22.3.3`. Jika versi package berubah, AI wajib memeriksa dokumentasi versi baru sebelum menerapkan konfigurasi lama.
 **Aturan wajib:**
 1. Periksa dukungan fitur berdasarkan platform dan versi plugin sebelum menggunakan API penjadwalan. Jangan mengasumsikan API yang sama tersedia di semua platform.
-2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web atau Linux dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini.
+2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web, Linux, atau Windows dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini. macOS didukung untuk penjadwalan terjadwal melalui `zonedSchedule` (hapus macOS dari daftar platform yang melempar `UnsupportedError`).
 3. Lengkapi receiver dan izin Android untuk penjadwalan serta pemulihan setelah restart: tambahkan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver` sesuai dokumentasi plugin. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
 4. Aktifkan core library desugaring sesuai persyaratan plugin bila diperlukan: `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. AGP minimal 8.11.1.
 5. Jangan meminta izin notifikasi secara otomatis saat aplikasi baru dibuka (termasuk iOS `DarwinInitializationSettings` dengan `requestAlertPermission`/`requestSoundPermission`/`requestBadgePermission` default `true`). Minta izin ketika pengguna secara sadar mengaktifkan pengingat.
@@ -12791,6 +13267,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 12. Ketika izin sistem dicabut, batalkan jadwal yang tersimpan di sistem operasi (`_plugin.cancel`), perbarui preferensi (`setAktif(false)`), dan pastikan tidak ada jadwal lama tertinggal. Saat pengguna mengaktifkan kembali, minta izin terlebih dahulu dan buat jadwal baru. Jangan hanya mengubah SharedPreferences tanpa memeriksa kondisi jadwal pada sistem operasi.
 13. Konsistensi perubahan waktu pengingat: simpan nilai waktu lama sebelum perubahan; terapkan nilai baru hanya setelah penjadwalan atau penyimpanan berhasil; jika gagal, pulihkan nilai lama dan tampilkan pesan kegagalan; pastikan jadwal sistem operasi, preferensi, dan tampilan tetap konsisten. Jangan membiarkan kegagalan pada salah satu tahap meninggalkan kondisi data yang berbeda.
 14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus `Nav.pushAndRemoveUntil(...)` serta `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan global penanganan error Future yang dilepas.
+15. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`. Pemanggil wajib mendeteksi melalui `is` (type check). Contoh: `IzinNotifikasiTidakDiberikanException` menggantikan `Exception('Izin notifikasi tidak diberikan')` dan `e.toString().contains('Izin notifikasi tidak diberikan')`.
 **Larangan:**
 - Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
 - Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
@@ -12800,6 +13277,7 @@ double _hitungUangDihemat(BiodataModel? biodata) {
 - Jangan memproses kategori notifikasi yang tidak dikenal tanpa pencatatan peringatan.
 - Jangan mengubah preferensi tanpa memastikan jadwal sistem operasi konsisten.
 - Jangan memanggil `EasyLoading.show()` atau `EasyLoading.dismiss()` tanpa `.catchError(...)` ketika dilepas dengan `unawaited()`.
+- Jangan mendeteksi error melalui `e.toString().contains(...)`; gunakan tipe exception khusus dan `is`.
 **Alasan:**
 Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
 **Contoh benar:**
@@ -12902,6 +13380,77 @@ Commit `19eece7` menambahkan dependensi `flutter_timezone` dan commit `d42422b` 
 **Sumber evaluasi:**
 - Commit: `19eece75351cd8deee5a2a01cf65464a8e2a1bc1`, `d42422ba65a0f3c90b46a0736a197af572b62c33`.
 - File: `pubspec.yaml`, `pubspec.lock`, `lib/shared/notifikasi/notifikasi_service.dart`, `saran.md`.
+## Validasi dan Perhitungan Mode Berhenti Bertahap (Tapering)
+**Cakupan:**
+- `lib/fitur/biodata/enum/mode_berhenti.dart` — `ModeBerhenti`, `ModeBerhentiExtension`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan` (`sedangTapering`, `targetRokokHariIni`).
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState._simpan`, input mode tapering, penurunan per minggu, tanggal mulai penurunan.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — tampilan mode berhenti, penurunan per minggu, target rokok per hari, tanggal mulai penurunan.
+- `lib/shared/db/sqflite/sqflite.dart` — migrasi skema v5 ke v6 (kolom baru pada tabel biodata).
+- `lib/shared/konstanta/nama_kolom.dart` — konstanta `modeBerhenti`, `penurunanPerMinggu`, `tanggalMulaiTapering`.
+**Aturan wajib:**
+1. `ModeBerhenti.seketika` menggunakan jumlah rokok per hari sebagai target, tanpa menerapkan penurunan bertahap.
+2. `ModeBerhenti.bertahap` wajib memiliki nilai `penurunanPerMinggu` berupa bilangan bulat positif.
+3. Input penurunan mingguan tidak boleh kosong, nol, atau negatif ketika mode bertahap aktif.
+4. Tanggal mulai tapering harus diinisialisasi ketika pengguna mengaktifkan mode bertahap dan dipastikan valid sebelum data disimpan.
+5. Jika tanggal mulai berada di masa depan, jumlah minggu yang telah berlalu dianggap nol sampai tanggal tersebut tercapai.
+6. Perhitungan jumlah minggu wajib memakai tanggal yang telah dinormalisasi, sesuai aturan normalisasi tanggal yang sudah tersedia.
+7. Target rokok dihitung dengan prinsip:
+   `target = jumlahRokokPerHari - (penurunanPerMinggu * mingguBerlalu)`
+8. Hasil target tidak boleh kurang dari nol.
+9. Nilai target pada mode seketika harus tetap sama dengan jumlah rokok per hari.
+10. Jangan menghitung ulang formula yang sama di setiap layar. Gunakan ekstensi `BiodataModelPerhitungan` pada `biodata_model.dart`.
+11. Setiap perubahan logika tapering wajib mempertahankan kompatibilitas pembacaan data lama (nilai fallback pada `fromSqflite`).
+12. Uji perhitungan pada batas tanggal dan kondisi penting, termasuk:
+    - Sebelum tanggal mulai.
+    - Hari pertama.
+    - Enam hari setelah tanggal mulai.
+    - Tujuh hari setelah tanggal mulai.
+    - Empat belas hari setelah tanggal mulai.
+    - Target mencapai nol.
+    - Mode seketika.
+**Larangan:**
+- Jangan menduplikasi formula target rokok di layar; gunakan getter `targetRokokHariIni` dari ekstensi.
+- Jangan menyimpan mode bertahap tanpa `penurunanPerMinggu` positif dan tanggal mulai yang valid.
+- Jangan membiarkan target bernilai negatif (klamping ke nol).
+- Jangan menghitung minggu berlalu dari tanggal yang belum dinormalisasi.
+- Jangan membuat aturan migrasi database baru yang menduplikasi aturan migrasi yang sudah tersedia (versi dinaikkan, tabel/kolom lengkap di `onCreate` dan `onUpgrade`, konstanta untuk nama kolom).
+**Alasan:**
+Commit `ceacc6a` menambahkan mode berhenti bertahap (tapering) pada biodata: enum `ModeBerhenti`, perluasan `BiodataModel` dengan `modeBerhenti`, `penurunanPerMinggu`, `tanggalMulaiTapering`, getter `sedangTapering` dan `targetRokokHariIni`, migrasi skema v5 ke v6, serta input dan tampilan pada form dan layar biodata. Perhitungan target menggunakan penurunan kumulatif per minggu sejak tanggal mulai, dengan klamping target ke rentang 0–`jumlahRokokPerHari`. Normalisasi tanggal mencegah hasil bergeser akibat komponen waktu. Kompatibilitas data lama dijaga melalui nilai fallback pada `fromSqflite` (`safeParseEnum` dengan default `seketika`, `parseInt` dengan default 0, `parseDateTime` yang mengembalikan null).
+**Contoh benar:**
+```dart
+// Ekstensi pada model (didefinisikan sekali).
+int get targetRokokHariIni {
+  if (!sedangTapering) return jumlahRokokPerHari;
+  final mulai = tanggalMulaiTapering ?? DateTime.now();
+  final sekarang = DateTime.now();
+  final mulaiDate = DateTime(mulai.year, mulai.month, mulai.day);
+  final sekarangDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+  final hariBerlalu = sekarangDate.difference(mulaiDate).inDays;
+  final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
+  final penurunan = penurunanPerMinggu * mingguBerlalu;
+  final target = jumlahRokokPerHari - penurunan;
+  if (target < 0) return 0;
+  if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
+  return target;
+}
+// Konsumsi di layar.
+final target = biodata.targetRokokHariIni;
+```
+**Contoh salah:**
+```dart
+// Menghitung ulang formula di layar (duplikasi).
+final target = biodata.jumlahRokokPerHari - biodata.penurunanPerMinggu * minggu;
+// Menggunakan tanggal tanpa normalisasi.
+final hariBerlalu = DateTime.now().difference(tanggalMulaiTapering!).inDays;
+// Menggunakan tanggalMulaiTapering! tanpa penyalinan ke variabel lokal (melanggar type promotion).
+FormatTanggal.formatDasar(biodata.tanggalMulaiTapering!);
+// Mengganti nilai parsing yang tidak valid dengan 0 tanpa validasi (menyembunyikan input tidak valid).
+penurunanPerMinggu: int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+```
+**Sumber evaluasi:**
+- Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
+- File: `lib/fitur/biodata/enum/mode_berhenti.dart`, `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_kolom.dart`, `refrensi_apk.md`.
 
 
 // ============================================================
@@ -14016,5 +14565,5 @@ sdks:
 // ============================================================
 // STATISTIK
 // ============================================================
-// Total file yang diproses : 58
-// Total baris kode        : 13555
+// Total file yang diproses : 59
+// Total baris kode        : 14096

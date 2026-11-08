@@ -3,6 +3,7 @@
 - `lib/app.dart`
 - `lib/fitur/badge/helper/badge_helper.dart`
 - `lib/fitur/badge/screens/badge_screen.dart`
+- `lib/fitur/biodata/enum/mode_berhenti.dart`
 - `lib/fitur/biodata/model/biodata_model.dart`
 - `lib/fitur/biodata/notifier/biodata_notifier.dart`
 - `lib/fitur/biodata/screens/biodata_screen.dart`

@@ -554,10 +554,36 @@ class _BadgeCard extends StatelessWidget {
 
 
 // ============================================================
+// FILE: lib/fitur/biodata/enum/mode_berhenti.dart
+// ============================================================
+
+```dart
+import 'package:share_global_saya/core_shared.dart';
+
+/// Mode berhenti merokok: seketika atau bertahap (tapering).
+enum ModeBerhenti { seketika, bertahap }
+
+/// Extension yang menyediakan label untuk [ModeBerhenti].
+extension ModeBerhentiExtension on ModeBerhenti {
+  String get label {
+    L.i('mode=$this');
+    switch (this) {
+      case ModeBerhenti.seketika:
+        return 'Seketika';
+      case ModeBerhenti.bertahap:
+        return 'Bertahap (tapering)';
+    }
+  }
+}
+```
+
+
+// ============================================================
 // FILE: lib/fitur/biodata/model/biodata_model.dart
 // ============================================================
 
 ```dart
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -577,10 +603,14 @@ abstract class BiodataModel with _$BiodataModel {
     @Default(20.0) double batangPerBungkus,
     DateTime? tanggalMulaiMerokok,
     DateTime? tanggalMulaiBerhentiMerokok,
+    @Default(ModeBerhenti.seketika) ModeBerhenti modeBerhenti,
+    @Default(0) int penurunanPerMinggu,
+    DateTime? tanggalMulaiTapering,
   }) = _BiodataModel;
 
   /// Membuat [BiodataModel] dari baris database SQLite.
   factory BiodataModel.fromSqflite(Map<String, Object?> row) {
+    L.i('row=$row');
     return BiodataModel(
       id: ParserUtil.parseString(row[NamaKolom.id]),
       nama: ParserUtil.parseString(row[NamaKolom.nama]),
@@ -603,6 +633,18 @@ abstract class BiodataModel with _$BiodataModel {
       tanggalMulaiBerhentiMerokok: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiBerhentiMerokok],
       )?.toLocal(),
+      modeBerhenti:
+          ParserUtil.safeParseEnum(
+            ModeBerhenti.values,
+            ParserUtil.parseString(row[NamaKolom.modeBerhenti]),
+          ) ??
+          ModeBerhenti.seketika,
+      penurunanPerMinggu: ParserUtil.parseInt(
+        row[NamaKolom.penurunanPerMinggu],
+      ),
+      tanggalMulaiTapering: ParserUtil.parseDateTime(
+        row[NamaKolom.tanggalMulaiTapering],
+      )?.toLocal(),
     );
   }
 
@@ -619,6 +661,11 @@ abstract class BiodataModel with _$BiodataModel {
           ?.toUtc()
           .toIso8601String(),
       NamaKolom.tanggalMulaiBerhentiMerokok: tanggalMulaiBerhentiMerokok
+          ?.toUtc()
+          .toIso8601String(),
+      NamaKolom.modeBerhenti: modeBerhenti.name,
+      NamaKolom.penurunanPerMinggu: penurunanPerMinggu,
+      NamaKolom.tanggalMulaiTapering: tanggalMulaiTapering
           ?.toUtc()
           .toIso8601String(),
     };
@@ -649,6 +696,33 @@ extension BiodataModelPerhitungan on BiodataModel {
   double get uangDihemat {
     if (batangPerBungkus == 0) return 0;
     return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+
+  /// Apakah pengguna menggunakan mode berhenti bertahap (tapering).
+  bool get sedangTapering => modeBerhenti == ModeBerhenti.bertahap;
+
+  /// Target jumlah rokok per hari saat ini untuk mode tapering.
+  ///
+  /// Dihitung dari [jumlahRokokPerHari] dikurangi penurunan kumulatif
+  /// berdasarkan minggu yang telah berlalu sejak [tanggalMulaiTapering].
+  int get targetRokokHariIni {
+    L.i('sedangTapering=$sedangTapering');
+    if (!sedangTapering) return jumlahRokokPerHari;
+    final mulai = tanggalMulaiTapering ?? DateTime.now();
+    final sekarang = DateTime.now();
+    final mulaiDate = DateTime(mulai.year, mulai.month, mulai.day);
+    final sekarangDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final hariBerlalu = sekarangDate.difference(mulaiDate).inDays;
+    final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
+    final penurunan = penurunanPerMinggu * mingguBerlalu;
+    final target = jumlahRokokPerHari - penurunan;
+    L.i(
+      'mulai=$mulai, hariBerlalu=$hariBerlalu, mingguBerlalu=$mingguBerlalu, '
+      'penurunan=$penurunan, target=$target',
+    );
+    if (target < 0) return 0;
+    if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
+    return target;
   }
 }
 ```
@@ -724,6 +798,8 @@ class BiodataNotifier extends _$BiodataNotifier {
 ```dart
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
+import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:flutter/material.dart';
@@ -791,6 +867,12 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     final tanggalLahir = biodata?.tanggalLahir;
     final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
     final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+    final tanggalMulaiTapering = biodata?.tanggalMulaiTapering;
+    L.i(
+      'tanggalLahir=$tanggalLahir, tanggalMulaiMerokok=$tanggalMulaiMerokok, '
+      'tanggalMulaiBerhentiMerokok=$tanggalMulaiBerhentiMerokok, '
+      'tanggalMulaiTapering=$tanggalMulaiTapering',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
@@ -809,7 +891,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                           Nav.to(
                             context,
                             const FormBiodata(buatPertama: false),
-                          ),
+                          ).catchError((Object e, StackTrace s) {
+                            L.e('Gagal navigasi ke Form Biodata: $e $s');
+                            return null;
+                          }),
                         ),
                         child: const Text('Isi Biodata'),
                       ),
@@ -854,6 +939,21 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                                 tanggalMulaiBerhentiMerokok,
                               ),
                       ),
+                      _buildItem('Mode berhenti', biodata.modeBerhenti.label),
+                      _buildItem(
+                        'Penurunan per minggu',
+                        biodata.penurunanPerMinggu.toString(),
+                      ),
+                      _buildItem(
+                        'Target rokok per hari (saat ini)',
+                        biodata.targetRokokHariIni.toString(),
+                      ),
+                      _buildItem(
+                        'Tanggal mulai penurunan',
+                        tanggalMulaiTapering == null
+                            ? 'Belum dipilih'
+                            : FormatTanggal.formatDasar(tanggalMulaiTapering),
+                      ),
                       const SizedBox(height: 8),
                       OutlinedButton(
                         onPressed: () => unawaited(
@@ -863,7 +963,10 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                               buatPertama: false,
                               biodataModel: biodata,
                             ),
-                          ),
+                          ).catchError((Object e, StackTrace s) {
+                            L.e('Gagal navigasi ke Form Biodata: $e $s');
+                            return null;
+                          }),
                         ),
                         child: const Text('Ubah Biodata'),
                       ),
@@ -902,6 +1005,7 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/biodata/enum/mode_berhenti.dart';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/home.dart';
@@ -924,16 +1028,22 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _jumlahRokokController = TextEditingController();
   final _hargaRokokController = TextEditingController();
   final _batangPerBungkusController = TextEditingController();
+  final _penurunanPerMingguController = TextEditingController();
 
   final _namaFocusNode = FocusNode();
   final _jumlahRokokFocusNode = FocusNode();
   final _hargaRokokFocusNode = FocusNode();
   final _batangPerBungkusFocusNode = FocusNode();
+  final _penurunanPerMingguFocusNode = FocusNode();
 
   DateTime? _tanggalLahir;
   DateTime? _tanggalMulaiMerokok;
   DateTime? _tanggalMulaiBerhentiMerokok;
+  DateTime? _tanggalMulaiTapering;
 
+  ModeBerhenti _modeBerhenti = ModeBerhenti.seketika;
+
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _sudahDiisi = false;
 
@@ -942,6 +1052,7 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   @override
   void initState() {
     super.initState();
+    L.i('FormBiodata initState, buatPertama=${widget.buatPertama}');
     final modelAwal = widget.biodataModel;
     if (modelAwal != null) {
       _isiDariModel(modelAwal);
@@ -964,6 +1075,14 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _tanggalLahir = model.tanggalLahir;
     _tanggalMulaiMerokok = model.tanggalMulaiMerokok;
     _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
+    _modeBerhenti = model.modeBerhenti;
+    _penurunanPerMingguController.text = model.penurunanPerMinggu.toString();
+    _tanggalMulaiTapering = model.tanggalMulaiTapering;
+    L.i(
+      'modeBerhenti=$_modeBerhenti, '
+      'penurunanPerMinggu=${_penurunanPerMingguController.text}, '
+      'tanggalMulaiTapering=$_tanggalMulaiTapering',
+    );
   }
 
   @override
@@ -973,10 +1092,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _jumlahRokokController.dispose();
     _hargaRokokController.dispose();
     _batangPerBungkusController.dispose();
+    _penurunanPerMingguController.dispose();
     _namaFocusNode.dispose();
     _jumlahRokokFocusNode.dispose();
     _hargaRokokFocusNode.dispose();
     _batangPerBungkusFocusNode.dispose();
+    _penurunanPerMingguFocusNode.dispose();
     super.dispose();
   }
 
@@ -1019,6 +1140,20 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     }
   }
 
+  Future<void> _pilihTanggalMulaiTapering() async {
+    final awal = _tanggalMulaiTapering ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: awal,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && mounted) {
+      L.i('tanggalMulaiTapering=$picked');
+      setState(() => _tanggalMulaiTapering = picked);
+    }
+  }
+
   Future<void> _simpan() async {
     if (_isLoading) {
       L.w('Form biodata masih loading, simpan diabaikan');
@@ -1035,12 +1170,23 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       return;
     }
     if (!mounted) return;
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    if (_modeBerhenti == ModeBerhenti.bertahap &&
+        _tanggalMulaiTapering == null) {
+      AppToast.gagal(context, 'Tanggal mulai penurunan wajib dipilih');
+      return;
+    }
     setState(() => _isLoading = true);
     unawaited(
       EasyLoading.show(
         status: 'Menyimpan...',
         maskType: EasyLoadingMaskType.black,
-      ),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+        return null;
+      }),
     );
     try {
       final model = BiodataModel(
@@ -1056,11 +1202,28 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
             double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
+        modeBerhenti: _modeBerhenti,
+        penurunanPerMinggu: int.parse(
+          _penurunanPerMingguController.text.trim().replaceAll(
+            RegExp(r'[^0-9]'),
+            '',
+          ),
+        ),
+        tanggalMulaiTapering: _tanggalMulaiTapering,
       );
+      L.i('model=$model');
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
       if (widget.buatPertama) {
-        unawaited(Nav.pushAndRemoveUntil(context, const Home()));
+        unawaited(
+          Nav.pushAndRemoveUntil(context, const Home()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Home: $e $s');
+            return null;
+          }),
+        );
       } else if (Navigator.of(context).canPop()) {
         Nav.pop(context);
       }
@@ -1071,7 +1234,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       }
     } finally {
       if (mounted) {
-        unawaited(EasyLoading.dismiss());
+        unawaited(
+          EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+            L.e('Gagal menutup loading: $e $s');
+            return null;
+          }),
+        );
         setState(() => _isLoading = false);
       }
     }
@@ -1110,89 +1278,144 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [
-              InputTeks(
-                controller: _namaController,
-                label: 'Nama',
-                hintText: 'Masukkan nama',
-                focusNode: _namaFocusNode,
-                nextFocusNode: _jumlahRokokFocusNode,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Nama wajib diisi';
-                  }
-                  return null;
-                },
-              ),
-              InputAngka(
-                controller: _jumlahRokokController,
-                label: 'Jumlah rokok per hari',
-                hintText: 'Masukkan jumlah rokok per hari',
-                focusNode: _jumlahRokokFocusNode,
-                nextFocusNode: _hargaRokokFocusNode,
-              ),
-              InputRupiah(
-                controller: _hargaRokokController,
-                label: 'Harga rokok per bungkus',
-                hintText: 'Masukkan harga rokok per bungkus',
-                focusNode: _hargaRokokFocusNode,
-              ),
-              InputAngka(
-                controller: _batangPerBungkusController,
-                label: 'Batang per bungkus',
-                hintText: 'Masukkan jumlah batang per bungkus',
-                focusNode: _batangPerBungkusFocusNode,
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.cake_outlined),
-                title: const Text('Tanggal lahir'),
-                subtitle: Text(
-                  _tanggalLahir == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(_tanggalLahir!),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                InputTeks(
+                  controller: _namaController,
+                  label: 'Nama',
+                  hintText: 'Masukkan nama',
+                  focusNode: _namaFocusNode,
+                  nextFocusNode: _jumlahRokokFocusNode,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama wajib diisi';
+                    }
+                    return null;
+                  },
                 ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalLahir,
-                  child: const Text('Pilih'),
+                InputAngka(
+                  controller: _jumlahRokokController,
+                  label: 'Jumlah rokok per hari',
+                  hintText: 'Masukkan jumlah rokok per hari',
+                  focusNode: _jumlahRokokFocusNode,
+                  nextFocusNode: _hargaRokokFocusNode,
                 ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.smoking_rooms_outlined),
-                title: const Text('Tanggal mulai merokok'),
-                subtitle: Text(
-                  _tanggalMulaiMerokok == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
+                InputRupiah(
+                  controller: _hargaRokokController,
+                  label: 'Harga rokok per bungkus',
+                  hintText: 'Masukkan harga rokok per bungkus',
+                  focusNode: _hargaRokokFocusNode,
                 ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalMulaiMerokok,
-                  child: const Text('Pilih'),
+                InputAngka(
+                  controller: _batangPerBungkusController,
+                  label: 'Batang per bungkus',
+                  hintText: 'Masukkan jumlah batang per bungkus',
+                  focusNode: _batangPerBungkusFocusNode,
                 ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.event_available_outlined),
-                title: const Text('Tanggal mulai berhenti merokok'),
-                subtitle: Text(
-                  _tanggalMulaiBerhentiMerokok == null
-                      ? 'Belum dipilih'
-                      : FormatTanggal.formatDasar(
-                          _tanggalMulaiBerhentiMerokok!,
-                        ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.cake_outlined),
+                  title: const Text('Tanggal lahir'),
+                  subtitle: Text(
+                    _tanggalLahir == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(_tanggalLahir!),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalLahir,
+                    child: const Text('Pilih'),
+                  ),
                 ),
-                trailing: TextButton(
-                  onPressed: _pilihTanggalMulaiBerhentiMerokok,
-                  child: const Text('Pilih'),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.smoking_rooms_outlined),
+                  title: const Text('Tanggal mulai merokok'),
+                  subtitle: Text(
+                    _tanggalMulaiMerokok == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(_tanggalMulaiMerokok!),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalMulaiMerokok,
+                    child: const Text('Pilih'),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
-            ],
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_available_outlined),
+                  title: const Text('Tanggal mulai berhenti merokok'),
+                  subtitle: Text(
+                    _tanggalMulaiBerhentiMerokok == null
+                        ? 'Belum dipilih'
+                        : FormatTanggal.formatDasar(
+                            _tanggalMulaiBerhentiMerokok!,
+                          ),
+                  ),
+                  trailing: TextButton(
+                    onPressed: _pilihTanggalMulaiBerhentiMerokok,
+                    child: const Text('Pilih'),
+                  ),
+                ),
+                // Mode berhenti: seketika atau bertahap (tapering).
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Berhenti bertahap (tapering)'),
+                  subtitle: const Text(
+                    'Kurangi jumlah rokok per hari secara bertahap.',
+                  ),
+                  value: _modeBerhenti == ModeBerhenti.bertahap,
+                  onChanged: (value) {
+                    setState(() {
+                      _modeBerhenti = value
+                          ? ModeBerhenti.bertahap
+                          : ModeBerhenti.seketika;
+                      if (value && _tanggalMulaiTapering == null) {
+                        _tanggalMulaiTapering = DateTime.now();
+                      }
+                    });
+                  },
+                ),
+                if (_modeBerhenti == ModeBerhenti.bertahap) ...[
+                  InputAngka(
+                    controller: _penurunanPerMingguController,
+                    label: 'Penurunan per minggu (batang)',
+                    hintText: 'Masukkan jumlah penurunan per minggu',
+                    focusNode: _penurunanPerMingguFocusNode,
+                    validator: (value) {
+                      final cleaned = (value ?? '').replaceAll(
+                        RegExp(r'[^0-9]'),
+                        '',
+                      );
+                      final n = int.tryParse(cleaned);
+                      if (n == null || n <= 0) {
+                        return 'Wajib bilangan bulat positif';
+                      }
+                      return null;
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.calendar_today_outlined),
+                    title: const Text('Tanggal mulai penurunan'),
+                    subtitle: Text(
+                      _tanggalMulaiTapering == null
+                          ? 'Belum dipilih'
+                          : FormatTanggal.formatDasar(_tanggalMulaiTapering!),
+                    ),
+                    trailing: TextButton(
+                      onPressed: _pilihTanggalMulaiTapering,
+                      child: const Text('Pilih'),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
+              ],
+            ),
           ),
         ),
       ),
@@ -1325,8 +1548,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           IconButton(
             tooltip: 'SOS Craving',
             icon: const Icon(Icons.sos),
-            onPressed: () =>
-                unawaited(Nav.to(context, const SosCravingScreen())),
+            onPressed: () => unawaited(
+              Nav.to(context, const SosCravingScreen()).catchError((
+                Object e,
+                StackTrace s,
+              ) {
+                L.e('Gagal navigasi ke SOS Craving: $e $s');
+                return null;
+              }),
+            ),
           ),
         ],
       ),
@@ -1431,8 +1661,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Card(
       child: InkWell(
-        onTap: () =>
-            unawaited(Nav.to(context, const PemulihanKesehatanScreen())),
+        onTap: () => unawaited(
+          Nav.to(context, const PemulihanKesehatanScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
+            return null;
+          }),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -1508,7 +1745,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildCardBadge() {
     return Card(
       child: InkWell(
-        onTap: () => unawaited(Nav.to(context, const BadgeScreen())),
+        onTap: () => unawaited(
+          Nav.to(context, const BadgeScreen()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Badge: $e $s');
+            return null;
+          }),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -1555,8 +1800,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final rokokDihisap = jumlahRokokPerHari * totalHariMerokok;
-    final uangTerbuang =
-        (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
+    final uangTerbuang = biodata.batangPerBungkus == 0
+        ? 0.0
+        : (rokokDihisap / biodata.batangPerBungkus) * hargaPerBungkus;
     final menitHilang = (rokokDihisap * 11).round();
     final hariHilang = menitHilang / (24 * 60);
     L.i(
@@ -1624,7 +1870,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 const Text('Belum ada data biodata'),
                 OutlinedButton(
                   onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                    Nav.to(
+                      context,
+                      const FormBiodata(buatPertama: false),
+                    ).catchError((Object e, StackTrace s) {
+                      L.e('Gagal navigasi ke Form Biodata: $e $s');
+                      return null;
+                    }),
                   ),
                   child: const Text('Isi Biodata'),
                 ),
@@ -1907,7 +2159,7 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
   }
 
   Future<void> tambah(DiaryCravingModel craving) async {
-    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    L.i('craving=$craving');
     try {
       final dataLama = await future;
       final op = const SqfliteOp();
@@ -1930,7 +2182,7 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
   }
 
   Future<void> ubah(DiaryCravingModel craving) async {
-    L.i('craving.id=${craving.id}, craving.pemicu=${craving.pemicu}');
+    L.i('craving=$craving');
     try {
       final dataLama = await future;
       final op = const SqfliteOp();
@@ -6049,6 +6301,7 @@ Future<void> main() async {
 // ============================================================
 
 ```dart
+import 'package:flutter/foundation.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
 import 'package:path/path.dart';
@@ -6066,7 +6319,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 5;
+  static const int _versiDatabase = 6;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -6099,7 +6352,10 @@ class AppDatabase {
         ${NamaKolom.hargaRokokPerBungkus} REAL,
         ${NamaKolom.batangPerBungkus} REAL,
         ${NamaKolom.tanggalMulaiMerokok} TEXT,
-        ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT
+        ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT,
+        ${NamaKolom.modeBerhenti} TEXT,
+        ${NamaKolom.penurunanPerMinggu} INTEGER,
+        ${NamaKolom.tanggalMulaiTapering} TEXT
       )
     ''');
 
@@ -6131,6 +6387,9 @@ class AppDatabase {
     int oldVersion,
     int newVersion,
   ) async {
+    if (kDebugMode) {
+      debugPrint('oldVersion=$oldVersion, newVersion=$newVersion');
+    }
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
@@ -6165,6 +6424,20 @@ class AppDatabase {
           ${NamaKolom.dibuat} TEXT
         )
       ''');
+    }
+    if (oldVersion < 6) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.modeBerhenti} TEXT',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.penurunanPerMinggu} INTEGER',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.tanggalMulaiTapering} TEXT',
+      );
     }
   }
 
@@ -6603,6 +6876,15 @@ class NamaKolom {
   /// Kolom tanggal mulai berhenti merokok biodata.
   static const String tanggalMulaiBerhentiMerokok =
       'tanggal_mulai_berhenti_merokok';
+
+  /// Kolom mode berhenti biodata (seketika/bertahap).
+  static const String modeBerhenti = 'mode_berhenti';
+
+  /// Kolom penurunan rokok per minggu untuk mode bertahap.
+  static const String penurunanPerMinggu = 'penurunan_per_minggu';
+
+  /// Kolom tanggal mulai rencana penurunan (tapering).
+  static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
 
   // Kolom tabel impian.
   /// Kolom target tanggal impian.

@@ -3,6 +3,7 @@
 // ============================================================
 
 ```dart
+import 'package:flutter/foundation.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
 import 'package:path/path.dart';
@@ -20,7 +21,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 5;
+  static const int _versiDatabase = 6;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -53,7 +54,10 @@ class AppDatabase {
         ${NamaKolom.hargaRokokPerBungkus} REAL,
         ${NamaKolom.batangPerBungkus} REAL,
         ${NamaKolom.tanggalMulaiMerokok} TEXT,
-        ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT
+        ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT,
+        ${NamaKolom.modeBerhenti} TEXT,
+        ${NamaKolom.penurunanPerMinggu} INTEGER,
+        ${NamaKolom.tanggalMulaiTapering} TEXT
       )
     ''');
 
@@ -85,6 +89,9 @@ class AppDatabase {
     int oldVersion,
     int newVersion,
   ) async {
+    if (kDebugMode) {
+      debugPrint('oldVersion=$oldVersion, newVersion=$newVersion');
+    }
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS ${NamaTabel.impian}(
@@ -119,6 +126,20 @@ class AppDatabase {
           ${NamaKolom.dibuat} TEXT
         )
       ''');
+    }
+    if (oldVersion < 6) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.modeBerhenti} TEXT',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.penurunanPerMinggu} INTEGER',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.tanggalMulaiTapering} TEXT',
+      );
     }
   }
 
@@ -557,6 +578,15 @@ class NamaKolom {
   /// Kolom tanggal mulai berhenti merokok biodata.
   static const String tanggalMulaiBerhentiMerokok =
       'tanggal_mulai_berhenti_merokok';
+
+  /// Kolom mode berhenti biodata (seketika/bertahap).
+  static const String modeBerhenti = 'mode_berhenti';
+
+  /// Kolom penurunan rokok per minggu untuk mode bertahap.
+  static const String penurunanPerMinggu = 'penurunan_per_minggu';
+
+  /// Kolom tanggal mulai rencana penurunan (tapering).
+  static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
 
   // Kolom tabel impian.
   /// Kolom target tanggal impian.
