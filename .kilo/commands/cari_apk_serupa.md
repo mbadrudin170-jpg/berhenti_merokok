@@ -1,241 +1,294 @@
 ---
-description: Cari aplikasi mobile serupa di GitHub, Google Play, F-Droid, Apple App Store, dan toko aplikasi lainnya, kemudian catat hasilnya di apk_serupa.md.
+description: Cari sebanyak mungkin aplikasi mobile sejenis dari GitHub, F-Droid, Google Play Store, App Store, dan berbagai toko aplikasi lainnya, lalu perbarui apk_serupa.md
 agent: code
 ---
 
-# Cari Aplikasi Mobile Serupa
+# PENCARIAN APK SEJENIS
 
 **Lokasi command:** `.kilo/commands/cari_apk_serupa.md`
 
-**File hasil:** `apk_serupa.md` (direktori root proyek).
+## 1. TUJUAN
 
-## Tujuan
+Cari sebanyak mungkin aplikasi mobile yang memiliki fungsi, tujuan, kategori, atau kebutuhan pengguna yang serupa dengan proyek yang sedang dikerjakan.
 
-Cari aplikasi mobile yang memiliki fungsi, tujuan, atau fitur serupa dengan aplikasi yang sedang dikembangkan dalam repositori ini.
+Seluruh hasil pencarian wajib dimasukkan ke dalam:
 
-Lakukan pencarian melalui GitHub, F-Droid, Google Play Store, Apple App Store, dan berbagai toko aplikasi mobile lainnya.
+`[ROOT_PROYEK]/apk_serupa.md`
 
-Seluruh hasil pencarian wajib dicatat ke dalam file `apk_serupa.md` di direktori root proyek.
+Tugas ini hanya untuk mencari, memverifikasi, dan mendokumentasikan aplikasi sejenis. Jangan mengimplementasikan fitur atau mengubah kode proyek.
 
-## 1. Pahami Aplikasi yang Sedang Dikembangkan
+## 2. MEMAHAMI PROYEK
 
-Sebelum melakukan pencarian, pelajari terlebih dahulu aplikasi yang ada di repositori agar hasil pencarian benar-benar relevan.
+Sebelum melakukan pencarian:
 
-1. Baca `AGENTS.md` dan seluruh aturan proyek yang relevan dengan tugas ini.
-2. Baca `README.md` apabila tersedia.
-3. Periksa dokumentasi proyek yang menjelaskan tujuan, fungsi, dan fitur aplikasi.
-4. Identifikasi:
-   - Tujuan utama aplikasi.
-   - Permasalahan yang ingin diselesaikan.
-   - Target pengguna.
-   - Kategori aplikasi.
-   - Fitur-fitur utama.
-   - Platform mobile yang didukung.
-5. Apabila dokumentasi belum cukup menjelaskan fungsi aplikasi, periksa bagian kode dan halaman UI yang relevan untuk memahami fitur sebenarnya.
+1. Baca `AGENTS.md` dan aturan proyek yang relevan.
+2. Periksa dokumentasi proyek untuk memahami tujuan dan fungsi aplikasi.
+3. Periksa implementasi fitur yang sudah tersedia agar tidak salah menentukan kategori aplikasi.
+4. Identifikasi jenis pengguna dan kebutuhan utama yang diselesaikan proyek.
+5. Identifikasi platform mobile yang menjadi sasaran proyek.
 
-Jangan mengubah kode, konfigurasi, atau file proyek lainnya selama proses pencarian.
+Gunakan informasi aktual proyek sebagai dasar pencarian.
 
-## 2. Batasan Aplikasi yang Dicari
+Jangan hanya mengandalkan nama proyek atau deskripsi singkatnya.
 
-**Hanya cari aplikasi untuk perangkat mobile.**
+## 3. SUMBER PENCARIAN
 
-Dalam command ini, istilah APK serupa mencakup aplikasi mobile Android dan iOS karena sumber pencarian juga mencakup Apple App Store.
+Lakukan pencarian secara luas melalui berbagai sumber distribusi aplikasi mobile.
 
-Aplikasi yang boleh dicari:
+### 3.1. GitHub
 
-- Aplikasi Android.
-- Aplikasi iOS.
-- Aplikasi mobile lintas platform seperti Flutter dan React Native.
-- Aplikasi mobile yang tersedia melalui toko aplikasi resmi maupun alternatif.
-- Aplikasi mobile open-source yang tersedia di GitHub.
+Cari aplikasi mobile melalui:
 
-Aplikasi yang tidak boleh dimasukkan:
+- GitHub Repository Search.
+- Repository dengan topik Android dan iOS.
+- Repository Flutter, React Native, Kotlin, Java, Swift, dan teknologi mobile lainnya.
+- Repository dengan dokumentasi dan bukti bahwa proyek tersebut merupakan aplikasi mobile.
+- Bagian Releases apabila aplikasi menyediakan file instalasi.
 
-- Website biasa.
-- Aplikasi desktop.
-- Aplikasi web yang tidak memiliki versi mobile.
-- Backend atau layanan API.
-- Library, framework, SDK, dan package yang bukan aplikasi mobile.
-- Template UI atau komponen yang bukan aplikasi mobile.
-- Proyek yang hanya memiliki kesamaan teknologi, tetapi tidak memiliki kesamaan fungsi dengan aplikasi yang sedang dikembangkan.
+Link yang dicantumkan harus mengarah ke repository aplikasi atau halaman release yang relevan.
 
-Jangan memasukkan suatu proyek hanya karena memiliki kata kunci atau teknologi yang sama.
+Jangan memasukkan library, package, template, atau framework yang bukan aplikasi mobile siap digunakan sebagai referensi aplikasi.
 
-## 3. Sumber Pencarian
+### 3.2. F-Droid
 
-Lakukan pencarian secara sistematis melalui sumber-sumber berikut.
+Cari aplikasi Android melalui:
 
-### A. GitHub
+- Katalog F-Droid.
+- Repository dan katalog tambahan F-Droid yang relevan.
+- Halaman detail aplikasi.
+- Sumber resmi pengembang apabila tersedia.
 
-Cari repositori aplikasi mobile yang memiliki fungsi serupa.
+### 3.3. Google Play Store
 
-Periksa apakah repositori tersebut benar-benar merupakan proyek aplikasi mobile, bukan sekadar library atau backend.
+Cari seluruh aplikasi Android yang memiliki kesamaan dengan tujuan atau fungsi proyek.
 
-Utamakan repositori yang:
+Gunakan variasi kata kunci berdasarkan:
 
-- Memiliki README atau dokumentasi fungsi aplikasi.
-- Memiliki struktur proyek Android atau iOS.
-- Menyediakan screenshot atau demonstrasi aplikasi.
-- Menyediakan APK atau hasil build melalui GitHub Releases apabila tersedia.
+- Nama kategori aplikasi.
+- Fungsi utama.
+- Kebutuhan pengguna.
+- Nama fitur.
+- Sinonim dan istilah pencarian terkait.
 
-Gunakan tautan repositori atau halaman Releases yang sesuai.
+### 3.4. Apple App Store
 
-### B. F-Droid
+Cari aplikasi iOS yang memiliki kesamaan fungsi dan tujuan dengan proyek.
 
-Cari aplikasi Android open-source yang memiliki fungsi serupa.
+Walaupun bukan berformat APK, aplikasi iOS tetap boleh dimasukkan sebagai referensi aplikasi mobile.
 
-Utamakan tautan halaman aplikasi di F-Droid.
+### 3.5. Toko aplikasi lainnya
 
-### C. Google Play Store
+Periksa juga toko aplikasi alternatif yang relevan, termasuk tetapi tidak terbatas pada:
 
-Cari aplikasi Android yang memiliki fungsi dan tujuan serupa.
-
-Utamakan tautan langsung ke halaman aplikasi di Google Play Store.
-
-### D. Apple App Store
-
-Cari aplikasi iOS dengan fungsi dan tujuan serupa.
-
-Utamakan tautan langsung ke halaman aplikasi di Apple App Store.
-
-### E. Toko Aplikasi Lainnya
-
-Jangan membatasi pencarian hanya pada empat sumber di atas.
-
-Cari juga melalui toko aplikasi mobile lainnya yang relevan, antara lain:
-
-- Samsung Galaxy Store.
 - Huawei AppGallery.
+- Samsung Galaxy Store.
 - Amazon Appstore.
 - Xiaomi GetApps.
+- OPPO App Market.
+- vivo App Store.
 - APKPure.
-- Aptoide.
+- APKCombo.
 - Uptodown.
-- Toko aplikasi mobile lainnya yang dapat ditemukan.
+- Aptoide.
+- Toko aplikasi resmi lainnya yang ditemukan selama pencarian.
 
-Daftar tersebut bukan batas maksimal sumber pencarian. Gunakan sumber tambahan apabila ditemukan toko aplikasi lain yang relevan.
+Jangan membatasi pencarian hanya pada daftar toko di atas.
 
-## 4. Strategi Pencarian
+## 4. KETENTUAN APLIKASI YANG BOLEH DITEMUKAN
 
-Agar hasil pencarian tidak terlalu sempit, lakukan pencarian dengan beberapa variasi kata kunci.
+Hanya masukkan aplikasi yang memang ditujukan untuk perangkat mobile.
 
-Gunakan informasi dari aplikasi proyek untuk menyusun kata kunci berdasarkan:
+Kriteria:
 
-- Nama atau kategori aplikasi.
-- Tujuan utama aplikasi.
-- Masalah yang diselesaikan.
-- Fitur utama.
-- Kebutuhan target pengguna.
-- Istilah lain atau sinonim yang umum digunakan.
-- Kata kunci dalam bahasa Indonesia dan bahasa Inggris.
+1. Aplikasi tersedia untuk Android atau iOS.
+2. Memiliki fungsi, tujuan, kategori, atau kebutuhan pengguna yang relevan dengan proyek.
+3. Dapat dijalankan melalui perangkat mobile.
+4. Identitas aplikasi dapat diverifikasi.
+5. Memiliki halaman aplikasi, repository, atau sumber distribusi yang bisa diakses.
 
-Cari berdasarkan fungsi aplikasi secara keseluruhan maupun fitur-fitur utamanya.
+Aplikasi yang membutuhkan internet, server, API, atau layanan backend tetap boleh dimasukkan selama pengguna mengoperasikannya melalui aplikasi mobile.
 
-Jangan hanya menggunakan nama aplikasi proyek sebagai kata kunci pencarian.
+**Jangan memasukkan:**
 
-Gunakan fasilitas pencarian web yang tersedia untuk menemukan halaman aplikasi secara langsung. Periksa hasil pencarian melalui halaman sumbernya sebelum memasukkannya ke daftar.
+- Website biasa.
+- Aplikasi web yang hanya berjalan melalui browser.
+- Software desktop Windows, Linux, atau macOS.
+- Dashboard khusus komputer.
+- Library dan package pemrograman.
+- Framework pengembangan aplikasi.
+- Repository yang hanya berisi contoh kode dan bukan aplikasi.
+- Aplikasi yang tidak relevan dengan tujuan proyek.
 
-Lakukan pencarian pada setiap sumber yang relevan. Jangan langsung berhenti setelah menemukan beberapa aplikasi.
+Jangan memasukkan aplikasi hanya karena memiliki nama atau kategori yang mirip. Pastikan ada kesamaan fungsi atau kebutuhan pengguna.
 
-## 5. Kriteria Pemilihan Hasil
+## 5. STRATEGI PENCARIAN
 
-Masukkan aplikasi apabila memenuhi kriteria berikut:
+Lakukan pencarian sebanyak mungkin dengan strategi berikut:
 
-1. Benar-benar merupakan aplikasi mobile.
-2. Memiliki fungsi atau tujuan yang serupa dengan aplikasi proyek.
-3. Memiliki setidaknya satu kesamaan fungsi atau fitur utama yang relevan.
-4. Informasi keberadaan aplikasi dapat diverifikasi melalui halaman toko atau repositori sumbernya.
-5. Memiliki tautan langsung yang sesuai dengan aplikasi tersebut.
+1. Gunakan berbagai variasi kata kunci untuk menemukan aplikasi yang memiliki fungsi serupa.
+2. Cari menggunakan istilah bahasa Indonesia dan bahasa Inggris.
+3. Telusuri setiap sumber distribusi yang relevan.
+4. Cari aplikasi populer maupun aplikasi yang kurang dikenal.
+5. Periksa aplikasi alternatif dengan fungsi serupa.
+6. Telusuri aplikasi dari pengembang yang memiliki produk relevan lainnya.
+7. Gunakan hasil pencarian sebelumnya untuk menemukan variasi aplikasi lain.
+8. Lakukan pencarian lanjutan apabila masih ditemukan sumber atau kata kunci yang belum diperiksa.
 
-Prioritaskan aplikasi dengan tingkat kesamaan fungsi paling tinggi.
+Jangan berhenti setelah menemukan beberapa aplikasi pertama.
 
-Jangan mengarang nama aplikasi, deskripsi, toko aplikasi, maupun tautan.
+Teruskan pencarian selama masih ada peluang menemukan aplikasi relevan yang belum tercatat dan selama sumber pencarian masih dapat diakses.
 
-Apabila informasi suatu aplikasi tidak dapat diverifikasi, jangan memasukkannya ke dalam hasil.
+Tidak perlu menetapkan batas jumlah aplikasi secara sembarangan.
 
-Untuk aplikasi yang tersedia di beberapa toko, setiap tautan toko yang berbeda boleh dicatat sebagai entri tersendiri.
+Utamakan kelengkapan hasil pencarian daripada sekadar memperoleh daftar singkat.
 
-Untuk GitHub, pastikan repositorinya memang berisi aplikasi mobile. Jangan menganggap setiap repositori yang berkaitan dengan kategori aplikasi sebagai aplikasi mobile.
+## 6. VERIFIKASI HASIL
 
-## 6. Format Hasil
+Sebelum memasukkan aplikasi ke dalam `apk_serupa.md`, lakukan pemeriksaan:
 
-Semua hasil pencarian harus dimasukkan ke dalam file:
+1. Pastikan aplikasi benar-benar merupakan aplikasi mobile.
+2. Pastikan nama aplikasi sesuai dengan sumber aslinya.
+3. Pastikan ringkasan sesuai dengan fungsi aplikasi.
+4. Pastikan nama toko atau sumber distribusi benar.
+5. Pastikan tautan mengarah ke aplikasi yang dimaksud.
+6. Pastikan aplikasi relevan dengan proyek.
+7. Periksa apakah aplikasi sudah tercatat sebelumnya.
 
-`apk_serupa.md`
+Jangan mengarang informasi.
 
-Lokasi file wajib berada di direktori root proyek, bukan di dalam `lib/`, `docs/`, atau folder lainnya.
+Apabila informasi aplikasi terbatas, tuliskan ringkasan berdasarkan informasi yang benar-benar tersedia.
 
-Gunakan format Markdown berupa tabel dengan empat kolom berikut:
+Utamakan tautan resmi. Apabila menggunakan toko pihak ketiga, pastikan identitas aplikasi dan pengembang dapat diverifikasi.
 
-| Nama Aplikasi | Ringkasan Singkat                                                              | Store             | Link                    |
-| ------------- | ------------------------------------------------------------------------------ | ----------------- | ----------------------- |
-| Nama aplikasi | Penjelasan singkat mengenai fungsi aplikasi dan kesamaannya dengan proyek ini. | Google Play Store | [Buka Aplikasi](LINK)   |
-| Nama aplikasi | Penjelasan singkat mengenai fungsi aplikasi dan kesamaannya dengan proyek ini. | GitHub            | [Buka Repositori](LINK) |
+Jangan mengunduh atau menjalankan APK yang tidak diperlukan untuk proses pencarian.
 
-Ketentuan pengisian:
+## 7. PENCEGAHAN DUPLIKASI
 
-- **Nama Aplikasi:** Gunakan nama asli yang tercantum pada halaman aplikasi atau repositori.
-- **Ringkasan Singkat:** Jelaskan fungsi utama aplikasi dan alasan aplikasi tersebut relevan dengan proyek ini. Gunakan bahasa Indonesia yang jelas dan ringkas.
-- **Store:** Cantumkan nama toko aplikasi atau sumber tempat aplikasi tersebut ditemukan, misalnya GitHub, F-Droid, Google Play Store, atau Apple App Store.
-- **Link:** Cantumkan tautan langsung menuju halaman aplikasi atau repositorinya.
+Sebelum menambahkan hasil:
 
-Jangan menambahkan kolom lain.
+1. Baca seluruh isi `apk_serupa.md` apabila file sudah tersedia.
+2. Bandingkan nama aplikasi.
+3. Periksa identitas pengembang, package name, bundle ID, repository, atau identitas lain apabila tersedia.
+4. Jangan memasukkan aplikasi yang sama lebih dari satu kali hanya karena ditemukan di toko berbeda.
+5. Apabila aplikasi yang sama tersedia di beberapa toko, gabungkan dalam satu entri dan cantumkan seluruh nama toko beserta tautannya.
+6. Jangan menganggap dua aplikasi berbeda sebagai duplikat hanya karena namanya mirip.
 
-Jangan memasukkan informasi seperti rating, jumlah unduhan, harga, ulasan, teknologi, atau riwayat pengembangan karena tidak termasuk informasi yang diminta.
+Pertahankan seluruh aplikasi lama yang masih valid.
 
-## 7. Aturan Pengelolaan File
+Jangan menghapus aplikasi lama hanya karena tidak populer atau ditemukan aplikasi alternatif lainnya.
 
-Sebelum menulis hasil, periksa apakah `apk_serupa.md` sudah tersedia di root proyek.
+## 8. FORMAT PENULISAN APK_SERUPA.MD
 
-Apabila file belum tersedia:
+Perbarui file:
 
-- Buat `apk_serupa.md`.
-- Tambahkan judul `# Daftar Aplikasi Mobile Serupa`.
-- Buat tabel sesuai format yang ditentukan.
+`[ROOT_PROYEK]/apk_serupa.md`
 
-Apabila file sudah tersedia:
+Apabila belum tersedia, buat file tersebut.
 
-- Baca seluruh isinya terlebih dahulu.
-- Pertahankan hasil pencarian dan informasi yang sudah ada.
-- Jangan menghapus isi yang dibuat atau ditambahkan sebelumnya.
-- Tambahkan hasil baru yang belum tercatat.
-- Periksa duplikasi berdasarkan nama aplikasi, store, dan tautan.
-- Apabila entri yang sama sudah tersedia, jangan menambahkannya kembali.
-- Perbarui informasi yang sudah ada hanya apabila ditemukan informasi yang lebih akurat atau tautan yang lebih tepat.
-- Pertahankan format tabel empat kolom.
+Gunakan bahasa Indonesia yang baik dan benar.
 
-Jangan mengubah file lain.
+Susun hasil secara terstruktur berdasarkan kategori aplikasi yang relevan. Apabila kategori sulit ditentukan, gunakan satu kelompok yang paling sesuai.
 
-## 8. Batasan Perubahan
+Setiap aplikasi hanya boleh memiliki informasi berikut:
 
-Tugas ini hanya mencakup:
+1. **Nama APK:** Nama resmi aplikasi.
+2. **Ringkasan:** Penjelasan singkat mengenai tujuan dan fungsi utama aplikasi.
+3. **Store:** Nama toko aplikasi atau sumber distribusinya.
+4. **Link:** Tautan langsung menuju halaman aplikasi, repository, atau halaman release yang relevan.
 
-1. Membaca informasi proyek yang diperlukan.
-2. Melakukan pencarian aplikasi mobile serupa.
-3. Memverifikasi hasil pencarian.
-4. Membuat atau memperbarui `apk_serupa.md` di root proyek.
+Gunakan format Markdown berikut:
 
-**Dilarang:**
+# DAFTAR APK SEJENIS
 
-- Mengubah kode sumber aplikasi.
-- Mengubah tampilan atau fitur aplikasi.
-- Memasang package atau dependency.
-- Mengubah konfigurasi proyek.
-- Membuat file dokumentasi lain.
-- Mengubah aturan proyek.
-- Melakukan refactoring atau perubahan lain yang tidak berkaitan dengan tugas ini.
+## 1. [Nama Kategori Aplikasi]
 
-## 9. Laporan Hasil
+### 1. [Nama Aplikasi]
 
-Setelah pencarian selesai dan file berhasil diperbarui, berikan laporan singkat yang mencakup:
+- **Nama APK:** Nama resmi aplikasi.
+- **Ringkasan:** Penjelasan singkat mengenai fungsi utama aplikasi.
+- **Store:** Google Play Store.
+- **Link:** [Buka Aplikasi](https://contoh.com)
 
-1. Lokasi file hasil: `apk_serupa.md`.
-2. Jumlah aplikasi mobile yang berhasil ditemukan dan dicatat.
-3. Sumber atau toko aplikasi tempat hasil ditemukan.
-4. Kendala pencarian apabila ada.
+### 2. [Nama Aplikasi]
 
-Jangan menyatakan tugas selesai apabila file belum berhasil dibuat atau diperbarui.
+- **Nama APK:** Nama resmi aplikasi.
+- **Ringkasan:** Penjelasan singkat mengenai fungsi utama aplikasi.
+- **Store:** F-Droid.
+- **Link:** [Buka Aplikasi](https://contoh.com)
 
-Apabila suatu sumber tidak dapat diakses, jelaskan keterbatasannya. Jangan mengganti hasil yang tidak ditemukan dengan informasi yang dibuat-buat.
+## 2. [Kategori Aplikasi Lainnya]
 
-**Fokus utama: temukan sebanyak mungkin aplikasi mobile yang benar-benar relevan dengan proyek ini, verifikasi hasilnya, dan catat hanya empat informasi yang diminta ke dalam `apk_serupa.md`.**
+Gunakan struktur yang sama untuk seluruh aplikasi yang ditemukan.
+
+Ketentuan tambahan:
+
+- Ringkasan harus singkat, jelas, dan langsung menjelaskan fungsi utama aplikasi.
+- Jangan menambahkan analisis UI, UX, desain, atau rekomendasi fitur.
+- Jangan menambahkan penilaian pribadi.
+- Jangan menambahkan rating atau peringkat.
+- Jangan menambahkan informasi yang tidak diminta.
+- Pastikan setiap aplikasi memiliki tautan yang dapat diklik.
+- Jika satu aplikasi tersedia di beberapa toko, cantumkan semua toko dan tautannya dalam satu entri.
+
+**Format ini harus dipertahankan. Jangan memperluas isi setiap entri dengan informasi tambahan.**
+
+## 9. PEMBARUAN FILE
+
+Ketentuan perubahan:
+
+1. Jika `apk_serupa.md` belum tersedia, buat file di root proyek.
+2. Jika sudah tersedia, baca dan pertahankan seluruh data lama yang masih valid.
+3. Tambahkan aplikasi baru yang berhasil diverifikasi.
+4. Perbaiki tautan lama hanya apabila ditemukan tautan yang lebih tepat atau tautan sebelumnya sudah tidak valid.
+5. Hapus duplikasi tanpa menghilangkan informasi sumber yang masih relevan.
+6. Susun ulang kategori apabila diperlukan.
+7. Jangan mengubah file lain.
+
+## 10. BATASAN PEKERJAAN
+
+Tugas ini hanya memperbolehkan perubahan pada:
+
+`[ROOT_PROYEK]/apk_serupa.md`
+
+Dilarang mengubah:
+
+- Kode aplikasi.
+- File konfigurasi.
+- Dokumentasi lainnya.
+- File desain.
+- File perencanaan fitur.
+- File aturan AI.
+- File pengujian.
+- File lainnya di dalam proyek.
+
+Jangan mengimplementasikan fitur dari aplikasi yang ditemukan.
+
+## 11. VERIFIKASI AKHIR
+
+Sebelum menyelesaikan pekerjaan:
+
+1. Pastikan semua sumber pencarian yang relevan telah ditelusuri.
+2. Pastikan pencarian mencakup GitHub, F-Droid, Google Play Store, App Store, dan toko aplikasi alternatif.
+3. Pastikan hanya aplikasi mobile yang dimasukkan.
+4. Pastikan aplikasi relevan dengan tujuan proyek.
+5. Pastikan tidak ada aplikasi duplikat.
+6. Pastikan ringkasan sesuai dengan fungsi aslinya.
+7. Pastikan nama store sesuai dengan sumber.
+8. Pastikan seluruh tautan mengarah ke tujuan yang benar.
+9. Pastikan aplikasi lama yang valid tetap dipertahankan.
+10. Pastikan hanya `apk_serupa.md` yang mengalami perubahan.
+
+## 12. LAPORAN PENYELESAIAN
+
+Setelah selesai, laporkan:
+
+1. Lokasi file yang diperbarui.
+2. Jumlah aplikasi lama.
+3. Jumlah aplikasi baru yang berhasil ditambahkan.
+4. Jumlah total aplikasi setelah pembaruan.
+5. Jumlah sumber atau toko aplikasi yang berhasil ditelusuri.
+6. Ringkasan sumber distribusi yang berhasil digunakan.
+7. Kendala pencarian apabila ada.
+8. Daftar file yang mengalami perubahan.
+
+**KRITERIA SELESAI:** Pencarian aplikasi mobile telah dilakukan seluas mungkin melalui berbagai sumber, hasil yang relevan dan terverifikasi sudah ditambahkan ke `apk_serupa.md`, data lama yang masih valid dipertahankan, dan tidak ada file proyek lain yang diubah.
