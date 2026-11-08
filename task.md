@@ -72,6 +72,15 @@ Tidak ada temuan.
 - File bermasalah: [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L151); [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L189)
 - Prompt:
 
+#### Task 2
+
+- Status: Belum dikerjakan
+- Masalah: Pada `biodata_screen.dart` dan `form_biodata.dart`, beberapa `Future` dilepas menggunakan `unawaited(...)` tanpa penanganan error: `Nav.to(...)` pada `biodata_screen.dart` (sekitar baris 92-97 dan 160-168), serta `EasyLoading.show(...)`, `Nav.pushAndRemoveUntil(...)`, dan `EasyLoading.dismiss()` pada `form_biodata.dart` (sekitar baris 168-173, 197, dan 208). Kegagalan pada Future tersebut tidak dicatat, sehingga error dapat menjadi unhandled dan sulit ditelusuri.
+- Solusi: Bungkus setiap Future yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan penanganan error Future yang dilepas. Untuk `Nav.pushAndRemoveUntil(...)` dan `EasyLoading.show(...)`/`EasyLoading.dismiss()` gunakan pola `.catchError((Object e, StackTrace s) { L.e(...); })`.
+- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L226); [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L375)
+- File bermasalah: [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L92); [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L168)
+- Prompt:
+
 ## Rendah
 
 #### Task 1
@@ -100,3 +109,56 @@ Tidak ada temuan.
 - Aturan dilanggar: [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L191)
 - File bermasalah: [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L80)
 - Prompt:
+
+# Kelompok 5
+
+## File terdampak
+
+- [app.dart](lib/app.dart)
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `app.dart`, import tidak diurutkan secara alfabetis berdasarkan path package. Import `package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart` dan `package:berhenti_merokok/fitur/tema/...` muncul sebelum `package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart`, sehingga urutan import tidak sesuai aturan.
+- Solusi: Urutkan import pada `app.dart` secara alfabetis berdasarkan path package lengkap, misalnya `fitur/biodata/notifier/...` sebelum `fitur/biodata/screens/...` dan `fitur/tema/...`, tanpa mengubah logika.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
+- File bermasalah: [app.dart](lib/app.dart#L2)
+- Prompt:
+
+# Kelompok 6
+
+## File terdampak
+
+- [badge_helper.dart](lib/fitur/badge/helper/badge_helper.dart)
+- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
+
+## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `badge_helper.dart` (fungsi `hitungBadge`) dan `badge_screen.dart` (method `build`), pemanggilan `L.i(...)` berada pada jalur yang dapat dipanggil berulang saat build, sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam build/getter yang dipanggil berulang.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
+- File bermasalah: [badge_helper.dart](lib/fitur/badge/helper/badge_helper.dart#L29); [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart#L33)
+- Prompt:
+
+# Kelompok 7
+
+## File terdampak
+
+- [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart)
+
+## Sedang
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `biodata_notifier.dart`, `BiodataNotifier` menggunakan anotasi `@riverpod` (auto-dispose) padahal notifier ini mengakses database; aturan proyek mewajibkan notifier database menggunakan `@Riverpod(keepAlive: true)`. Selain itu, `build()` memanggil `_ambilData()` bukan `_ambilSemua()` sesuai pola notifier CRUD, dan log pada `simpan()` mencatat properti model (`biodata.id`, `biodata.nama`) secara terurai alih-alih menampilkan objek model langsung.
+- Solusi: Ubah anotasi menjadi `@Riverpod(keepAlive: true)`, sesuaikan method pengambilan data awal dengan pola `_ambilSemua()`, dan ganti log properti model dengan `L.i('biodata=$biodata')` (atau logging objek secara langsung). Regenerasi file `.g.dart` sesuai sumber.
+- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L348); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1)
+- File bermasalah: [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L11); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L14); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L34)
+- Prompt:
+
