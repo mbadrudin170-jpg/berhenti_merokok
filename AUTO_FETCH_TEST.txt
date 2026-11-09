@@ -1,2 +1,0 @@
-AUTO FETCH TEST
-Created on branch master to verify Cloud Shell Git Auto Fetch.
