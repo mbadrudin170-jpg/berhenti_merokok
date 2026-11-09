@@ -17,13 +17,13 @@ Semua skill yang dibuat sebisa mungkin harus dapat digunakan oleh berbagai proye
 └── SKILL.md
 ```
 
-## 3. Topik Wajib
+## 3. Topik Wajib (Referensi Format)
 
-Setiap kategori skill harus menyesuaikan standar dan contoh dari skill referensi yang ada.
+Setiap skill harus mengikuti standar format dan penulisan dari skill referensi yang sudah ada. Skill referensi ini digunakan sebagai acuan tata letak section, gaya bahasa, dan penggunaan backtick, bukan harus meniru isi secara harfiah.
 
-### 3.1 Topik UI
+### 3.1 Referensi Skill Topik UI
 
-Berikut adalah daftar skill referensi yang isinya harus digunakan sebagai acuan saat membuat skill topik UI:
+Berikut adalah daftar skill referensi UI yang formatnya harus diikuti sebagai acuan:
 
 - `pola-ux/SKILL.md`
 - `pola-ui/SKILL.md`
@@ -32,10 +32,9 @@ Berikut adalah daftar skill referensi yang isinya harus digunakan sebagai acuan 
 - `spacing/SKILL.md`
 - `widget-custom/SKILL.md`
 
-### 3.2 Topik Non-UI
+### 3.2 Referensi Skill Topik Non-UI
 
 - `bug-runtime/SKILL.md`
-- `boilerplate/SKILL.md`
 
 ## 4. Nama Folder Skill
 
@@ -78,7 +77,7 @@ AI hanya boleh membaca dari commit yang sudah ada menggunakan perintah git seper
 
 - Jika ada commit yang berkaitan: isi `SKILL.md` disusun dari commit tersebut.
 - Jika ada beberapa commit yang berkaitan dan polanya berbeda: AI memilih pola dari **commit terbaru yang relevan**, kecuali pengguna menentukan lain.
-- Jika **tidak ada** commit yang berkaitan: di luar kondisi ini, AI **dilarang mengarang** pola, gaya, atau contoh yang tidak pernah muncul di riwayat commit.
+- Jika **tidak ada** commit yang berkaitan: AI **dilarang mengarang** pola, gaya, atau contoh. AI wajib berhenti dan menanyakan kepada pengguna bagaimana ingin melanjutkan (contoh: memberikan contoh dari SDK resmi, atau menunda pembuatan skill sampai ada commit yang relevan).
 
 ### 5.4 Referensi Commit
 
@@ -86,8 +85,8 @@ AI hanya boleh membaca dari commit yang sudah ada menggunakan perintah git seper
 
 ## 6. Pelanggaran Aturan
 
-- Jika menemukan skill lama yang melanggar aturan ini, AI wajib **melapor dan mengusulkan perbaikan** sebelum melakukan rename atau restructure.
-- AI dilarang menyimpan diam-diam jika terdapat aturan yang tidak terpenuhi.
+- Jika menemukan skill lama yang melanggar aturan ini, AI wajib **melaporkan kepada pengguna dan mengusulkan perbaikan** melalui komentar/pesan sebelum melakukan rename atau restructure.
+- AI dilarang membiarkan pelanggaran tetap tanpa ditindaklanjuti. Jika pelanggaran ditemukan, AI harus memberitahu pengguna dan menunggu arahan sebelum melanjutkan perubahan apapun pada skill tersebut.
 
 ## 7. Front Matter (YAML)
 
@@ -131,7 +130,7 @@ Deskripsi skill (bagian `description` dan paragasan pengantar) wajib mencakup po
 2. **Apa yang di-cover** — cakupan fungsi, class, package, atau versi yang relevan (contoh: `flutter_local_notifications` v22.3.3).
 3. **Apa yang harus dihindari** — jangan digunakan untuk UI web, jangan diedit manual file generated, dll.
 4. **Langkah kerja (workflow)** — urutan tindakan yang wajib diikuti, misal `pub get` → `build_runner` → verifikasi `dart analyze`.
-5. **Referensi ke file terkait** — path file atau folder yang akan diubah.
+5. **Referensi ke file terkait** — path file atau folder yang relevan dengan topik skill dan digunakan sebagai acuan saat menerapkan skill tersebut.
 
 ## 9. Format Lengkap `SKILL.md`
 
@@ -242,9 +241,10 @@ Daftar file sumber dan class terkait untuk verifikasi.
 ```markdown
 ## Sumber Evaluasi
 
-- File: `/google/flutter/packages/flutter/lib/src/widgets/material/app.dart`, `/google/flutter/packages/flutter/lib/src/widgets/app.dart`
-- Class terkait: `MaterialApp`, `WidgetsApp`, `ThemeMode`, `ThemeData`, `MaterialScrollBehavior`
-````
+- File: `lib/path/to/file.dart`
+- Class terkait: `NamaClass1`, `NamaClass2`
+- Commit rujukan: `<hash-commit>`
+```
 
 ## 10. Contoh Lengkap `SKILL.md` (Template Siap Salin)
 
@@ -292,7 +292,6 @@ NamaClass(
   propertiSatu: nilai,
 );
 ```
-````
 
 ## Contoh Salah
 
@@ -307,7 +306,6 @@ NamaClass(
 
 - File: `path/to/file.dart`
 - Class terkait: `NamaClass1`, `NamaClass2`
-
 ```
 
 ## 11. Checklist Sebelum Menyelesaikan SKILL.md
