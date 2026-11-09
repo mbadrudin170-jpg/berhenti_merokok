@@ -180,22 +180,30 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         .length;
     L.i('jumlahTercapai=$jumlahTercapai/${listImpian.length}');
 
-    // Cek impian yang baru tercapai dan tampilkan toast perayaan.
-    for (final item in listImpian) {
-      final sudahTercapai = ImpianProgresHelper.tercapai(
-        uangDihemat,
-        item.jumlah,
-      );
-      if (sudahTercapai && !_sudahDiraikan.contains(item.id)) {
-        if (mounted) {
+    // Cek impian yang baru tercapai. Toast dan penandaan dijadwalkan
+    // setelah build selesai agar AppToast (FToast.showToast) tidak memanggil
+    // setState/insert Overlay selama fase build, dan agar _sudahDiraikan
+    // terupdate sehingga toast tidak muncul berulang pada setiap rebuild.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      for (final item in listImpian) {
+        final sudahTercapai = ImpianProgresHelper.tercapai(
+          uangDihemat,
+          item.jumlah,
+        );
+        if (sudahTercapai && !_sudahDiraikan.contains(item.id)) {
+          L.i('impianTercapai=${item.nama}, id=${item.id}');
           AppToast.sukses(
             context,
             'Selamat! Impian "${item.nama}" telah tercapai!',
           );
+          unawaited(_tandaiSudahDiraikan(item.id));
+          setState(() {
+            _sudahDiraikan.add(item.id);
+          });
         }
-        unawaited(_tandaiSudahDiraikan(item.id));
       }
-    }
+    });
 
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
