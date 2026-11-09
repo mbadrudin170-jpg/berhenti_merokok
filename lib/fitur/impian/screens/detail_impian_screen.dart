@@ -4,8 +4,9 @@ import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
-import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
+// Urutan paket alfabetis: notifier diurutkan sebelum screens, sesuai aturan import ordering.
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
