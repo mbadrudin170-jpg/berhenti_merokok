@@ -106,7 +106,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Commit `adc85b5` mengubah nilai konstanta `NamaKolom.tanggalMulaiTapering` dari `'tanggal_mulai_tapering'` (snake_case) menjadi `'Tanggal_mulai_tapering'` (kapital `T`). Nilai ini tidak konsisten dengan konvensi snake_case kolom lain dan dengan nama kolom yang sudah dibuat di skema/migrasi (`tanggal_mulai_tapering`). Perbedaan kapitalisasi berisiko merusak baca/tulis tanggal mulai tapering (pemetaan ke kolom DB berbeda). Perubahan ini tampak tidak disengaja dan di luar tujuan commit (menambah target smoke-free).
 - Solusi: Kembalikan nilai konstanta menjadi `static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';`. Verifikasi tidak ada referensi lain yang bergantung pada kapitalisasi salah; bila skema/migrasi sudah memakai nilai lama (lowercase), pastikan konsisten.
 - Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L95-L100), [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L139-L140), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L310-L311)
@@ -128,7 +128,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum dikerjakan
+- Status: batal
 - Masalah: Logging `L.i` ditambahkan di jalur yang dipanggil dari `build()` pada biodata: (1) `BiodataScreen.build()` mencatat `targetSmokeFreeHari=$targetSmokeFreeHari` (baris ~75), (2) `_buildItem(...)` dipanggil berulang dari `build()` dan mencatat `label=$label, nilai=$nilai` (baris ~195). Ini berpotensi menambah noise karena `build()`/helper-nya dapat dipanggil berulang.
 - Solusi: Pindahkan/hapus log yang dipicu dari `build()` dan helper per-item; cukup log pada titik tidak berfrekuensi tinggi (initState/dispose/aksi/perhitungan). Jika log tetap diperlukan, batasi pada perubahan nilai yang relevan di luar `build()`.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
@@ -190,7 +190,8 @@ Tidak ada temuan.
 
 #### Task 3
 
-- Status: kerjakan
+- Status: Dilewati
+- Alasan: File `dashboard_screen.dart` sedang terbuka di editor (Open tabs), sehingga tidak dapat diedit sesuai aturan #5 kerjakan_task.md.
 - Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
 - Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
 - Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
@@ -232,7 +233,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: Selesai
 - Masalah: Urutan import pada `detail_impian_screen.dart` masih tidak sepenuhnya alfabetis berdasarkan path package. Commit 0b0b564 telah menukar `widget/visual_tabungan_impian.dart` dan `notifier/impian_notifier.dart` (notifier sekarang sebelum widget ✓), tetapi baris 7 `screens/form_impian.dart` masih berada di atas baris 8 `notifier/impian_notifier.dart`, padahal `notifier` secara alfabetis mendahului `screens`.
 - Solusi: Pindahkan `screens/form_impian.dart` ke bawah `notifier/impian_notifier.dart`, sehingga urutan menjadi: `notifier/impian_notifier.dart`, `screens/form_impian.dart`, `widget/visual_tabungan_impian.dart`.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99-L104), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L31)
