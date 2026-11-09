@@ -2,6 +2,10 @@
 
 Flutter app (Android-first, offline-first) for smoking-cessation tracking: biodata, smoke-free progress, reason-to-quit notes, dreams/goals, craving diary, health recovery milestones, badges, SOS craving, kalender smoke-free, daily local notifications.
 
+
+
+
+
 ## Commands
 
 - Install: `flutter pub get`
