@@ -3,7 +3,7 @@ name: parsing-nullable-int
 description: Panduan parsing field nullable integer dari database memakai parseIntOrNull agar null tetap null dan tidak berubah menjadi nol.
 metadata:
   kategori: "custom"
-  versi: "1.0.1"
+  versi: "1.0.2"
   commit-terakhir: "c9f96b2debb9e678513229c5a4a68a062e3a8afc"
   model: "GPT-6"
 ---
