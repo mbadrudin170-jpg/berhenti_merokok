@@ -1,625 +1,510 @@
 ---
-description: Baca seluruh aturan repositori, evaluasi semua skill custom, lalu perbarui skill yang belum sesuai atau tambahkan skill baru berdasarkan aturan dan riwayat commit.
+description: Sinkronkan seluruh aturan proyek dengan skill custom, perbarui skill yang relevan, buat skill baru jika diperlukan, dan audit kepatuhan seluruh subfolder skill.
 agent: code
 ---
 
-# Command: Sinkronkan Skill dengan Seluruh Aturan
+# Sinkronisasi Skill dengan Aturan Proyek
 
-## 1. Tujuan
+## TUJUAN UTAMA
 
-Lakukan audit dan sinkronisasi seluruh skill yang berada di:
+Tugas Anda adalah menyelaraskan seluruh skill di dalam folder `.agents/skills/custom/` dengan aturan proyek yang tersimpan di `.agents/rules/`.
 
-`.agents/skills/custom/`
+Lakukan pemeriksaan menyeluruh terhadap aturan dan skill yang tersedia. Identifikasi aturan yang belum tercakup, skill yang perlu diperbarui, kebutuhan skill baru, serta subfolder skill yang belum sesuai dengan standar skill proyek.
 
-dengan seluruh aturan yang berada di:
+Anda harus mengutamakan penggunaan dan penyempurnaan skill yang sudah tersedia. Jangan membuat skill baru apabila tujuan dan tanggung jawabnya sebenarnya sudah tercakup oleh skill yang ada.
 
-`.agents/rules/`
+Hasil akhir harus berupa kumpulan skill custom yang:
 
-Tugas utama:
-
-1. Membaca seluruh isi `.agents/rules/global/aturan_skill.md` sebelum melakukan pekerjaan lainnya.
-2. Membaca seluruh isi setiap file yang ada di dalam `.agents/rules/`, termasuk file di subfolder.
-3. Membaca seluruh skill yang sudah tersedia di `.agents/skills/custom/`.
-4. Membandingkan aturan dengan isi skill yang sudah tersedia.
-5. Memperbarui skill yang sudah ada apabila isinya belum sesuai dengan aturan.
-6. Membuat skill baru apabila ditemukan kebutuhan yang belum dicakup oleh skill yang tersedia.
-7. Memastikan seluruh perubahan tetap mengikuti aturan pembuatan dan pembaruan skill.
-
-**Hasil akhir:** skill di `.agents/skills/custom/` menjadi panduan yang konsisten, tidak saling bertentangan, relevan dengan seluruh aturan proyek, dan dapat digunakan kembali pada proyek Flutter lainnya.
+1. Sesuai dengan aturan proyek.
+2. Tidak memiliki instruksi yang saling bertentangan.
+3. Tidak memiliki duplikasi tujuan dan tanggung jawab.
+4. Memiliki struktur dan metadata yang benar.
+5. Memiliki instruksi yang jelas, terperinci, dan dapat dilaksanakan AI.
+6. Mudah ditemukan dan digunakan berdasarkan konteks tugasnya.
 
 ---
 
-## 2. Batasan Pekerjaan
+# 1. BATASAN PERUBAHAN FILE (WAJIB)
 
-### 2.1. Lokasi yang boleh diperiksa
+Batasan ini bersifat mutlak dan harus dipatuhi sepanjang pengerjaan.
 
-AI wajib memeriksa:
+### 1.1 File yang boleh dibaca
 
-- `.agents/rules/` beserta seluruh subfolder dan file di dalamnya.
-- `.agents/skills/custom/` beserta seluruh subfolder dan file di dalamnya.
-- Riwayat commit kode proyek yang relevan dengan topik skill yang sedang diperiksa.
+Anda diperbolehkan membaca:
 
-### 2.2. Lokasi yang boleh diubah
+- Seluruh file di `.agents/rules/`, termasuk semua subfoldernya.
+- Seluruh file dan subfolder di `.agents/skills/custom/`.
+- File pendukung lain di dalam sebuah skill custom apabila diperlukan untuk memahami struktur, referensi, dan keterkaitan instruksinya.
 
-AI hanya boleh membuat atau memperbarui file di:
+### 1.2 File yang boleh dibuat atau diubah
+
+Anda hanya diperbolehkan membuat dan mengubah file di dalam:
 
 `.agents/skills/custom/`
 
-AI dilarang mengubah:
+Semua perubahan harus tetap berada di dalam direktori tersebut, termasuk:
+
+- Memperbarui `SKILL.md`.
+- Memperbarui file referensi milik skill.
+- Memperbaiki file pendukung milik skill.
+- Membuat direktori skill baru.
+- Membuat `SKILL.md` untuk skill baru.
+- Menambahkan file pendukung yang memang diperlukan oleh skill.
+
+### 1.3 File yang dilarang diubah
+
+Jangan mengubah, menghapus, memindahkan, atau membuat file di luar `.agents/skills/custom/`.
+
+Termasuk tetapi tidak terbatas pada:
 
 - `.agents/rules/`
-- Kode aplikasi di `lib/`, `test/`, dan folder kode lainnya.
-- Skill di kategori selain `custom`.
-- File konfigurasi proyek yang tidak berkaitan langsung dengan pembuatan skill.
+- `.agents/rules/global/`
+- `.agents/skills/` di luar subfolder `custom/`
+- `.kilo/commands/`
+- `AGENTS.md`
+- File konfigurasi proyek.
+- File kode aplikasi.
+- File dokumentasi proyek lainnya.
 
-Jangan mengubah ruang lingkup pekerjaan menjadi refactoring kode aplikasi.
+**Penting:**
+Folder `.agents/rules/` adalah sumber aturan yang harus dibaca, bukan sasaran perubahan.
 
-### 2.3. Larangan
+Jangan mengubah file command yang sedang dijalankan.
 
-- Jangan membuat skill duplikat.
-- Jangan menghapus skill.
-- Jangan memindahkan atau mengganti nama folder skill yang sudah ada tanpa persetujuan pengguna.
-- Jangan mengubah aturan sumber untuk menyesuaikan isi skill.
-- Jangan mengabaikan aturan yang sulit diterapkan.
-- Jangan mengarang pola implementasi yang tidak didukung sumber yang diizinkan.
-- Jangan menyatakan suatu skill sudah sesuai sebelum seluruh file yang berkaitan selesai diperiksa.
+Jangan melakukan refactoring, perapian, atau perubahan lain di luar ruang lingkup sinkronisasi skill.
+
+Jika menemukan aturan yang mengharuskan perubahan terhadap file di luar direktori yang diizinkan, jangan melaksanakannya. Catat sebagai kendala dalam laporan akhir.
 
 ---
 
-# 3. Tahap Pertama — Baca Aturan Skill Terlebih Dahulu
+# 2. BACA ATURAN UTAMA SKILL TERLEBIH DAHULU
 
-**Tahap ini wajib dikerjakan sebelum tahap lainnya.**
-
-Baca seluruh isi file:
+Sebelum melakukan pemeriksaan atau perubahan apa pun, wajib membaca seluruh isi file:
 
 `.agents/rules/global/aturan_skill.md`
 
-Ketentuan:
+Aturan ini merupakan acuan utama untuk memahami bagaimana skill harus dibuat, disusun, diperbarui, dan dipelihara.
 
-1. Baca dari baris pertama sampai baris terakhir.
-2. Jangan hanya membaca judul, daftar isi, atau ringkasan.
-3. Jangan melewati subbagian, contoh, catatan, maupun ketentuan di dalamnya.
-4. Apabila file terlalu panjang untuk dibaca sekaligus, baca secara bertahap berdasarkan rentang baris sampai seluruh isi selesai dibaca.
-5. Catat bahwa file tersebut sudah selesai dibaca.
-6. Pahami seluruh ketentuan mengenai lokasi skill, struktur folder, penamaan, examples, references, sumber commit, frontmatter, versi, dan sinkronisasi.
-7. Jadikan file ini sebagai pedoman utama untuk seluruh pekerjaan pembuatan dan pembaruan skill.
+Baca seluruh isinya, bukan hanya judul atau bagian tertentu.
 
-**Larangan:** Jangan membaca skill untuk menentukan perubahan, membuat skill, atau mengedit skill sebelum tahap ini selesai.
+Anda wajib memahami dan mengikuti seluruh ketentuan di dalam file tersebut selama pengerjaan.
 
-### Pemeriksaan kelengkapan aturan
+Jadikan file tersebut sebagai standar utama ketika:
 
-Setelah membaca file, periksa apakah terdapat:
+- Menilai struktur skill.
+- Menentukan format penulisan skill.
+- Menentukan metadata skill.
+- Menyusun instruksi skill.
+- Memperbarui skill yang sudah ada.
+- Membuat skill baru.
+- Melakukan audit kepatuhan skill.
 
-- Kalimat yang terpotong.
-- Bagian yang belum selesai.
-- Ketentuan yang tidak memiliki penjelasan memadai.
-- Instruksi yang saling bertentangan.
-- Contoh yang berbeda dari ketentuan tertulis.
+Jangan membuat standar sendiri apabila ketentuannya sudah tersedia di file tersebut.
 
-Jangan melengkapi sendiri aturan yang tidak lengkap dengan asumsi.
+### Kondisi jika file tidak ditemukan
 
-Apabila ketidaklengkapan tersebut memengaruhi keputusan perubahan skill, catat masalahnya dan jangan mengerjakan bagian yang keputusannya belum jelas.
+Jika `.agents/rules/global/aturan_skill.md` tidak ditemukan atau tidak dapat dibaca secara lengkap:
+
+1. Hentikan proses perubahan.
+2. Jangan membuat atau memperbarui skill.
+3. Laporkan masalah yang ditemukan.
+4. Jangan mengganti aturan tersebut dengan asumsi atau standar buatan sendiri.
 
 ---
 
-# 4. Tahap Kedua — Baca Seluruh Isi Folder `.agents/rules/`
+# 3. BACA SELURUH FILE ATURAN PROYEK
 
-Setelah Tahap 3 selesai, baca seluruh file yang berada di:
+Setelah membaca dan memahami `aturan_skill.md`, lanjutkan dengan membaca seluruh file di:
 
 `.agents/rules/`
 
-### 4.1. Inventarisasi file
+### Ketentuan pemeriksaan
 
-Lakukan pencarian secara rekursif, termasuk seluruh subfolder.
+1. Telusuri semua subfolder secara rekursif.
+2. Inventarisasi seluruh file yang ditemukan.
+3. Baca seluruh isi setiap file, bukan hanya nama file atau ringkasannya.
+4. Jangan melewatkan file hanya karena ekstensi atau nama filenya tidak dikenal.
+5. Jika file terlalu panjang, baca secara bertahap sampai seluruh isinya selesai dibaca.
+6. Jika file tidak dapat dibaca, catat nama dan alasannya.
+7. Jangan menganggap file yang belum dibaca sebagai file yang tidak relevan.
 
-Gunakan inventarisasi seperti:
+File yang diperiksa harus mencakup seluruh struktur, misalnya:
 
-```bash
-find .agents/rules -type f -print | sort
-```
+- `.agents/rules/global/`
+- `.agents/rules/` beserta seluruh subfolder lainnya.
 
-Tujuannya agar tidak ada file aturan yang terlewat hanya karena berada di subfolder yang berbeda.
+### Setelah selesai membaca
 
-### 4.2. Baca semua file
+Kelompokkan aturan berdasarkan:
 
-Untuk setiap file yang ditemukan:
+- Tujuan aturan.
+- Tanggung jawab atau fungsi yang diatur.
+- Jenis pekerjaan yang berkaitan.
+- Prosedur yang harus dilakukan AI.
+- Larangan dan batasan.
+- Standar kualitas.
+- Ketentuan teknis.
+- Aturan yang berhubungan langsung dengan skill tertentu.
 
-1. Baca seluruh isi file.
-2. Jangan hanya membaca sebagian.
-3. Jangan menganggap nama file sudah cukup untuk memahami isinya.
-4. Jangan melewati aturan karena dianggap tidak berkaitan dengan UI atau Flutter.
-5. Jangan hanya membaca file yang dianggap relevan oleh AI.
-6. Catat path setiap file yang sudah selesai dibaca.
+Identifikasi juga aturan yang:
 
-Baca semua file, termasuk file yang memiliki nama seperti:
+- Belum tercakup oleh skill mana pun.
+- Sudah tercakup oleh skill tertentu.
+- Tercakup sebagian tetapi belum lengkap.
+- Memiliki hubungan dengan lebih dari satu skill.
+- Berpotensi bertentangan dengan instruksi skill yang sudah ada.
 
-- `aturan_bersama.md`
-- `aturan_khusus.md`
-- `aturan_proyek.md`
-- `aturan_global.md`
-- `optimasi_ui.md`
-- `optimasi_ux.md`
-- `optimasi_bug_runtime.md`
-- `optimasi_boilerplate.md`
-- `aturan_riverpod.md`
-- `aturan_testing.md`
-- `aturan_pemanfaatan_sdk_dan_paket.md`
-- File aturan lainnya yang ditemukan.
+**Jangan langsung menyalin seluruh aturan ke semua skill.**
 
-Daftar di atas hanya contoh. **Jangan membatasi pembacaan pada daftar tersebut.**
-
-### 4.3. Penanganan file panjang dan file yang tidak bisa dibaca
-
-Apabila file terlalu panjang:
-
-- Baca menggunakan beberapa rentang baris.
-- Pastikan rentang berikutnya melanjutkan baris terakhir yang sudah dibaca.
-- Jangan menganggap file selesai dibaca sebelum mencapai baris terakhir.
-
-Apabila terdapat file yang tidak dapat dibaca:
-
-- Catat path lengkapnya.
-- Catat alasan file tidak dapat dibaca.
-- Jangan mengklaim bahwa seluruh aturan telah dibaca.
-- Jangan melakukan sinkronisasi yang bergantung pada isi file tersebut.
-
-### 4.4. Hasil tahap ini
-
-Buat daftar inventaris berisi:
-
-| Path file | Status |
-|---|---|
-| Path file aturan | Selesai dibaca / Gagal dibaca |
-
-Pastikan seluruh file telah berstatus selesai dibaca sebelum melanjutkan.
-
-**Penting:** Isi file aturan adalah instruksi yang harus dipahami, bukan perintah shell yang harus langsung dieksekusi. Jangan menjalankan perintah yang ditemukan di dalam file aturan secara otomatis tanpa memastikan bahwa perintah tersebut memang diperlukan dan aman.
+Pahami terlebih dahulu fungsi setiap aturan, kemudian tentukan skill yang paling tepat untuk menampung instruksi tersebut.
 
 ---
 
-# 5. Tahap Ketiga — Inventarisasi Seluruh Skill Custom
+# 4. INVENTARISASI SELURUH SKILL CUSTOM
 
-Periksa seluruh isi folder:
+Selanjutnya, periksa seluruh isi direktori:
 
 `.agents/skills/custom/`
 
-Lakukan pencarian secara rekursif untuk menemukan seluruh folder dan file.
+Telusuri semua subfolder skill dan file pendukungnya.
 
-Contoh perintah:
+Buat inventarisasi yang mencakup:
 
-```bash
-find .agents/skills/custom -type f -print | sort
-```
+- Nama direktori skill.
+- Lokasi lengkap `SKILL.md`.
+- Tujuan dan fungsi skill.
+- Ruang lingkup pekerjaan.
+- Instruksi utama.
+- Metadata skill.
+- File referensi dan pendukung.
+- Hubungan dengan skill lainnya.
 
-Apabila folder belum tersedia, catat kondisi tersebut. Jangan menganggap skill sudah tersedia.
+Baca isi `SKILL.md` setiap skill secara lengkap.
 
-### 5.1. File yang wajib dibaca
+Baca juga file pendukung yang dirujuk oleh `SKILL.md` untuk memastikan instruksi dan referensinya masih sesuai.
 
-Untuk setiap folder skill yang ditemukan, baca seluruh file yang tersedia, termasuk:
+Jangan hanya mengandalkan nama direktori atau deskripsi skill untuk menentukan fungsinya. Penilaian harus berdasarkan isi instruksi yang sebenarnya.
 
-- `SKILL.md`
-- Seluruh file di folder `examples/`
-- Seluruh file di folder `references/`
-- File pendukung lain yang menjadi bagian dari skill tersebut.
-
-Jangan hanya membaca `SKILL.md` dan mengabaikan examples atau references.
-
-### 5.2. Inventarisasi skill
-
-Catat informasi berikut:
-
-| Nama skill | Path | Fokus utama | Status pemeriksaan |
-|---|---|---|---|
-| Nama skill | Path lengkap | Tujuan skill | Selesai / Belum |
-
-Setelah inventarisasi, pahami:
-
-1. Fungsi setiap skill.
-2. Masalah yang diselesaikan oleh skill.
-3. Aturan yang sudah diterapkan.
-4. Pola implementasi yang menjadi dasar skill.
-5. Hubungan antara `SKILL.md`, `examples/`, dan `references/`.
-6. Kemungkinan tumpang tindih dengan skill lainnya.
-
-Jangan membuat skill baru sebelum seluruh skill yang tersedia selesai diperiksa.
+Jangan menganggap direktori `references/`, `scripts/`, atau `assets/` sebagai skill terpisah apabila direktori tersebut hanya berfungsi sebagai sumber pendukung skill.
 
 ---
 
-# 6. Tahap Keempat — Analisis dan Pemetaan Aturan terhadap Skill
+# 5. COCOKKAN ATURAN DENGAN SKILL YANG SUDAH ADA
 
-Setelah seluruh aturan dan skill selesai dibaca, lakukan analisis menyeluruh.
+Ini merupakan tahap utama sinkronisasi.
 
-Tujuannya adalah mengetahui apakah setiap aturan sudah diterapkan dengan benar pada skill yang relevan.
+Bandingkan setiap kelompok aturan yang sudah dibaca dengan seluruh skill di `.agents/skills/custom/`.
 
-### 6.1. Kelompokkan aturan berdasarkan topik
+Gunakan prinsip berikut.
 
-Identifikasi kelompok aturan yang berkaitan dengan:
+### A. Tujuan sama: perbarui skill yang sudah ada
 
-- UX dan pengalaman pengguna.
-- UI dan implementasi tampilan.
-- Gaya desain.
-- Tipografi.
-- Spacing dan layout.
-- Widget custom.
-- Bug dan runtime.
-- Boilerplate dan struktur kode.
-- State management.
-- Database dan transaksi.
-- Logging dan debugging.
-- Testing.
-- Pemanfaatan SDK dan package.
-- Keamanan.
-- Performa.
-- Notifikasi.
-- Fitur atau kebutuhan teknis lainnya.
+Apabila terdapat skill yang memiliki tujuan dan tanggung jawab sama dengan aturan yang belum tercakup secara lengkap:
 
-Daftar ini bukan pembatas. AI wajib menyesuaikannya dengan seluruh isi aturan yang ditemukan.
+1. Gunakan skill tersebut sebagai tempat pembaruan.
+2. Masukkan aturan yang relevan ke bagian yang tepat.
+3. Perbaiki instruksi yang belum lengkap.
+4. Perjelas prosedur yang ambigu.
+5. Pastikan tidak terjadi pengulangan instruksi yang tidak diperlukan.
+6. Pertahankan seluruh fungsi skill yang sudah benar.
 
-### 6.2. Cocokkan aturan dengan skill
+Jangan membuat skill baru hanya karena ditemukan aturan tambahan.
 
-Untuk setiap kelompok aturan, tentukan:
+### B. Tujuan berbeda: buat skill baru
 
-1. Apakah sudah terdapat skill yang membahas topik tersebut?
-2. Apakah skill sudah mencakup semua ketentuan yang relevan?
-3. Apakah isi skill masih sesuai dengan aturan terbaru?
-4. Apakah terdapat ketentuan yang belum dimasukkan?
-5. Apakah examples masih menggambarkan implementasi yang dijelaskan?
-6. Apakah references masih relevan?
-7. Apakah ada instruksi yang bertentangan dengan aturan lain?
-8. Apakah terdapat beberapa skill yang membahas hal sama?
+Buat skill baru hanya apabila:
 
-### 6.3. Buat matriks pemetaan
+1. Aturan memiliki tujuan yang berbeda secara substantif.
+2. Tidak ada skill yang sudah memiliki tanggung jawab tersebut.
+3. Menggabungkannya dengan skill yang ada akan membuat ruang lingkup tidak jelas atau terlalu luas.
+4. Skill baru memang diperlukan untuk menjalankan pekerjaan secara terstruktur.
 
-Gunakan format berikut:
+Buat skill di dalam:
 
-| Aturan | Topik | Skill terkait | Temuan | Tindakan |
-|---|---|---|---|---|
-| Path aturan | Topik | Nama skill | Sudah sesuai / Kurang / Bertentangan / Belum tersedia | Pertahankan / Perbarui / Skill baru |
+`.agents/skills/custom/<nama-skill>/SKILL.md`
 
-Jangan langsung mengedit sebelum pemetaan selesai.
+Gunakan nama direktori yang jelas dan sesuai dengan ketentuan dalam `aturan_skill.md`.
 
-### 6.4. Prinsip penilaian
+### C. Tujuan berhubungan tetapi tanggung jawab berbeda
 
-- Skill dianggap sesuai apabila seluruh aturan yang relevan sudah tercermin secara benar.
-- Skill dianggap kurang apabila sebagian aturan belum tercakup.
-- Skill dianggap usang apabila isinya tidak lagi sesuai dengan aturan terbaru.
-- Skill dianggap bertentangan apabila instruksinya berbeda atau melanggar aturan yang berlaku.
-- Skill dianggap belum tersedia apabila tidak ada skill yang membahas kebutuhan tersebut.
-- Skill dianggap tumpang tindih apabila beberapa skill memiliki cakupan dan tujuan yang terlalu mirip.
+Apabila dua skill memiliki hubungan, tetapi mempunyai fungsi dan tanggung jawab yang berbeda:
 
-Jangan membuat satu skill untuk setiap file aturan secara otomatis. Kelompokkan aturan yang saling berkaitan ke dalam skill yang memiliki tujuan dan batas tanggung jawab jelas.
+- Jangan menggabungkannya secara otomatis.
+- Pertahankan batas tanggung jawab masing-masing.
+- Tambahkan referensi atau hubungan antar-skill apabila memang diperlukan.
+- Hindari instruksi yang saling menduplikasi.
+
+### D. Aturan berlaku untuk beberapa skill
+
+Apabila sebuah aturan memang berlaku untuk beberapa jenis pekerjaan:
+
+- Terapkan aturan tersebut hanya pada skill yang relevan.
+- Sesuaikan redaksinya dengan konteks masing-masing skill.
+- Jangan menyalin seluruh isi aturan apabila hanya sebagian yang diperlukan.
+- Jangan mengubah makna atau tingkat kewajiban aturan aslinya.
+
+### Prinsip utama
+
+**Sempurnakan skill yang sudah ada sebelum mempertimbangkan pembuatan skill baru.**
+
+Jangan membuat skill hanya untuk menampung satu aturan kecil apabila aturan tersebut lebih tepat menjadi bagian dari skill yang sudah tersedia.
 
 ---
 
-# 7. Tahap Kelima — Tentukan Skill yang Diperbarui atau Skill Baru
+# 6. AUDIT SELURUH SUBFOLDER SKILL CUSTOM
 
-Gunakan keputusan berikut.
+Selain melakukan sinkronisasi, lakukan audit menyeluruh terhadap semua subfolder skill di:
 
-### A. Perbarui skill yang sudah ada
+`.agents/skills/custom/`
 
-Apabila topik aturan sudah memiliki skill yang sesuai:
+Tujuannya adalah menemukan skill yang belum sesuai dengan ketentuan dalam:
 
-1. Gunakan skill tersebut sebagai lokasi pembaruan.
-2. Perbarui isi `SKILL.md` agar sesuai dengan seluruh aturan terkait.
-3. Pertahankan bagian yang masih benar dan relevan.
-4. Perbaiki bagian yang kurang lengkap, usang, atau bertentangan.
-5. Periksa kembali seluruh examples.
-6. Periksa references apabila tersedia.
-7. Jangan membuat skill baru hanya untuk menambahkan ketentuan kecil yang masih termasuk tanggung jawab skill tersebut.
+`.agents/rules/global/aturan_skill.md`
 
-### B. Tambahkan skill baru
+Jangan hanya memeriksa skill yang kebetulan berkaitan dengan aturan baru. Semua skill custom yang sudah ada harus diperiksa.
 
-Apabila ditemukan topik yang belum memiliki skill:
+### Aspek pemeriksaan
 
-1. Pastikan kebutuhan tersebut merupakan topik yang jelas dan memiliki tujuan tersendiri.
-2. Pastikan tidak ada skill yang sudah mencakup kebutuhan yang sama.
-3. Pastikan topik tersebut layak menjadi panduan yang dapat digunakan kembali.
-4. Buat skill baru di `.agents/skills/custom/`.
-5. Gunakan nama folder bahasa Indonesia yang deskriptif dan kebab-case.
-6. Buat seluruh struktur file berdasarkan `aturan_skill.md`.
+Periksa setiap skill berdasarkan seluruh ketentuan dalam `aturan_skill.md`, termasuk aspek berikut apabila diatur di dalamnya.
 
-### C. Hindari duplikasi dan tumpang tindih
+**A. Struktur direktori**
 
-Apabila ditemukan beberapa skill yang cakupannya mirip:
+- Apakah struktur folder sudah benar?
+- Apakah `SKILL.md` berada di lokasi yang benar?
+- Apakah file pendukung berada di lokasi yang sesuai?
+- Apakah terdapat struktur atau file yang tidak diperlukan?
 
-- Jangan langsung membuat skill tambahan.
-- Tentukan skill yang paling tepat untuk diperbarui.
-- Pertahankan batas tanggung jawab setiap skill.
-- Jangan menggabungkan, menghapus, memindahkan, atau mengganti nama skill lama tanpa persetujuan pengguna.
-- Laporkan apabila memang diperlukan penataan ulang struktur.
+**B. Metadata dan front matter**
 
-### D. Apabila tidak ditemukan commit terkait
+- Apakah format YAML valid?
+- Apakah metadata wajib tersedia?
+- Apakah nama skill sesuai dengan nama direktori?
+- Apakah deskripsi menjelaskan fungsi dan konteks penggunaan skill?
+- Apakah metadata mengikuti standar yang berlaku?
 
-Ikuti ketentuan sumber commit dalam `aturan_skill.md`.
+Sebagai acuan interoperabilitas Agent Skills, periksa juga ketentuan format `SKILL.md` dari spesifikasi resmi apabila tidak bertentangan dengan aturan proyek:
 
-Namun, terdapat kondisi yang harus ditangani secara khusus:
+- `name` dan `description` merupakan metadata wajib.
+- Nama skill harus sesuai dengan nama direktori.
+- Nama menggunakan format yang diperbolehkan spesifikasi.
+- Deskripsi harus menjelaskan fungsi serta kapan skill digunakan.
 
-Apabila tidak ditemukan commit terkait tetapi sudah ada skill yang membahas topik yang sama, jangan langsung membuat skill baru dan jangan membuat duplikat.
+Jangan menerapkan metadata yang bertentangan dengan ketentuan `aturan_skill.md`.
 
-Laporkan kondisi tersebut sebagai potensi konflik antara ketentuan penambahan skill tanpa commit dan prinsip menghindari skill duplikat. Jangan menebak keputusan yang harus diambil.
+**C. Isi instruksi**
 
----
+- Apakah tujuan skill jelas?
+- Apakah ruang lingkup tugasnya jelas?
+- Apakah langkah pengerjaannya runtut?
+- Apakah setiap instruksi dapat dipahami AI?
+- Apakah terdapat kalimat ambigu?
+- Apakah terdapat instruksi yang bertentangan?
+- Apakah terdapat pengulangan yang tidak diperlukan?
+- Apakah terdapat aturan yang belum diterapkan?
 
-# 8. Tahap Keenam — Periksa Riwayat Commit sebagai Sumber Skill
+**D. Konsistensi**
 
-**Tahap ini wajib mengikuti seluruh ketentuan sumber isi pada `aturan_skill.md`.**
+- Apakah instruksi sesuai dengan aturan proyek?
+- Apakah ada ketentuan yang saling bertentangan?
+- Apakah terdapat tanggung jawab yang tumpang tindih dengan skill lain?
+- Apakah deskripsi dan isi skill memiliki tujuan yang sama?
+- Apakah terdapat instruksi yang sudah tidak relevan?
 
-Sebelum menyusun atau mengubah pola implementasi dalam `SKILL.md` dan `examples/`, periksa riwayat commit yang berkaitan dengan topik tersebut.
+**E. Referensi dan file pendukung**
 
-### 8.1. Cari commit terkait
+- Apakah semua referensi yang disebutkan benar-benar tersedia?
+- Apakah alamat file menggunakan path yang tepat?
+- Apakah referensi relatif mengarah ke lokasi yang benar dari direktori skill?
+- Apakah file pendukung benar-benar digunakan oleh instruksi skill?
+- Apakah terdapat referensi yang sudah tidak berlaku?
 
-Gunakan riwayat Git, misalnya:
+### Tindakan setelah audit
 
-```bash
-git log --all --oneline -- <path-file-terkait>
-```
+Kelompokkan hasil pemeriksaan menjadi:
 
-Periksa perubahan commit:
+1. **Sesuai:** Tidak membutuhkan perubahan.
+2. **Perlu perbaikan:** Terdapat pelanggaran aturan yang dapat diperbaiki.
+3. **Belum lengkap:** Ada bagian atau file yang diperlukan tetapi belum tersedia.
+4. **Berpotensi bermasalah:** Terdapat konflik atau ketidakjelasan yang membutuhkan pertimbangan.
+5. **Duplikasi:** Tujuan atau tanggung jawabnya tumpang tindih dengan skill lain.
 
-```bash
-git show <hash-commit> -- <path-file-terkait>
-```
+Perbaiki temuan yang dapat diselesaikan dengan aman sesuai aturan proyek dan batas perubahan direktori.
 
-Untuk membandingkan dua commit:
+Jangan menghapus skill, menggabungkan direktori, atau membuang instruksi yang masih memiliki fungsi tanpa dasar yang jelas.
 
-```bash
-git diff <hash-commit-lama> <hash-commit-baru> -- <path-file-terkait>
-```
-
-Gunakan hanya commit yang benar-benar berkaitan dengan topik skill.
-
-### 8.2. Jika commit terkait ditemukan
-
-- Gunakan implementasi dari commit yang relevan sebagai sumber.
-- Pilih pola dari commit terbaru yang relevan apabila terdapat beberapa pola berbeda.
-- Jangan menggunakan pola yang tidak pernah muncul pada riwayat commit.
-- Cantumkan hash commit yang benar pada setiap file contoh.
-- Sesuaikan isi `SKILL.md` dengan pola yang benar-benar ditemukan.
-
-### 8.3. Jika tidak ada commit terkait
-
-Ikuti ketentuan `aturan_skill.md` mengenai pembuatan skill tanpa commit rujukan.
-
-Gunakan:
-
-```dart
-// commit: belum-ada-commit
-```
-
-Jangan membuat hash commit palsu atau mencantumkan commit yang tidak berkaitan.
-
-### 8.4. Larangan sumber
-
-Jangan menggunakan:
-
-- Perubahan yang belum di-commit.
-- Isi working directory sebagai sumber pola implementasi.
-- Perubahan staging.
-- File untracked.
-
-File skill yang sudah ada boleh dibaca sebagai kondisi awal dan target pembaruan, tetapi bukan sebagai pengganti sumber riwayat commit untuk membuktikan pola implementasi.
+Apabila terdapat konflik yang tidak dapat diselesaikan tanpa mengambil keputusan yang tidak memiliki dasar, jangan menebak. Pertahankan isi terkait dan laporkan konflik tersebut.
 
 ---
 
-# 9. Tahap Ketujuh — Terapkan Pembaruan Skill
+# 7. STANDAR SAAT MEMPERBARUI SKILL
 
-Setelah analisis selesai dan keputusan perubahan sudah jelas, lakukan pembaruan.
+Ketika mengubah `SKILL.md` atau file pendukung skill, ikuti ketentuan berikut:
 
-### 9.1. Lokasi skill
+1. Pertahankan tujuan asli skill.
+2. Pertahankan instruksi yang masih benar dan relevan.
+3. Jangan menghilangkan persyaratan yang masih berlaku.
+4. Jangan mengubah makna aturan sumber.
+5. Jangan menambahkan aturan baru yang tidak memiliki dasar dari aturan proyek atau kebutuhan nyata skill.
+6. Gunakan bahasa Indonesia yang baik dan benar apabila bahasa Indonesia digunakan oleh skill tersebut.
+7. Gunakan istilah teknis secara konsisten.
+8. Gunakan kalimat perintah yang jelas dan tidak ambigu.
+9. Bedakan kewajiban, larangan, kondisi, dan rekomendasi.
+10. Susun instruksi dalam urutan kerja yang logis.
+11. Hindari duplikasi instruksi.
+12. Hindari penjelasan yang tidak berkaitan dengan tanggung jawab skill.
+13. Jangan memindahkan tanggung jawab skill lain ke dalam skill yang sedang diperbarui.
+14. Jangan mengubah file di luar direktori custom.
 
-Semua skill baru wajib berada di:
+Apabila satu skill memiliki banyak instruksi, susun berdasarkan kelompok pekerjaan agar AI mudah menemukan informasi yang diperlukan.
 
-`.agents/skills/custom/<nama-skill>/`
+Jangan mempersingkat isi hanya untuk membuat file terlihat lebih ringkas apabila pemangkasan tersebut menghilangkan ketelitian instruksi.
 
-Struktur wajib:
+---
 
-```text
-.agents/skills/custom/<nama-skill>/
-├── SKILL.md
-├── examples/
-│   ├── input-<varian>.dart
-│   └── output-<varian>.dart
-└── references/          (opsional)
-    └── <topik>.md
-```
+# 8. PENANGANAN KONFLIK ATURAN
 
-### 9.2. Pembaruan SKILL.md
+Selama pemeriksaan, Anda mungkin menemukan aturan yang bertentangan dengan isi skill.
+
+Lakukan pemeriksaan berikut:
+
+1. Identifikasi kedua instruksi yang bertentangan.
+2. Catat lokasi file masing-masing.
+3. Jelaskan letak pertentangannya.
+4. Periksa apakah `aturan_skill.md` sudah menentukan cara penyelesaiannya.
+5. Terapkan ketentuan yang secara jelas memiliki kewenangan berdasarkan aturan proyek.
+
+Jangan membuat keputusan berdasarkan preferensi pribadi.
+
+Jangan mengubah aturan sumber untuk menyelesaikan konflik.
+
+Jangan mengubah aturan proyek menjadi lebih longgar atau lebih ketat tanpa dasar.
+
+Jika konflik tidak memiliki penyelesaian yang jelas, jangan mengubah bagian yang terdampak. Laporkan agar dapat diputuskan secara terpisah.
+
+---
+
+# 9. VERIFIKASI SETELAH PERUBAHAN
+
+Setelah seluruh sinkronisasi dan perbaikan selesai, lakukan pemeriksaan ulang.
+
+### 9.1 Periksa perubahan file
+
+Pastikan seluruh file yang dibuat atau diubah hanya berada di:
+
+`.agents/skills/custom/`
+
+Gunakan `git status` dan `git diff` apabila repositori menggunakan Git.
+
+Perhatikan perubahan yang sudah ada sebelum pengerjaan. Jangan menganggap perubahan sebelumnya sebagai hasil pekerjaan Anda.
+
+Jangan melakukan reset, checkout, restore, atau membuang perubahan pengguna.
+
+Jangan melakukan commit atau push.
+
+### 9.2 Periksa setiap skill
 
 Pastikan:
 
-- Frontmatter mengikuti `aturan_skill.md`.
-- `name` sesuai nama folder.
-- `description` menjelaskan fungsi dan kondisi penggunaan skill secara spesifik.
-- `metadata.kategori` sesuai dengan kategori folder.
-- `metadata.versi` menggunakan SemVer dan meningkat setiap kali skill diubah.
-- `metadata.commit-terakhir` sesuai sumber commit atau `belum-ada-commit`.
-- `metadata.model` diperbarui apabila field tersebut digunakan, berdasarkan identitas model yang benar-benar sedang mengedit.
-- Instruksi dapat dipahami tanpa bergantung pada percakapan sebelumnya.
-- Isi skill tidak bertentangan dengan aturan proyek.
-- Isi skill sebisa mungkin dapat digunakan kembali pada proyek Flutter lainnya.
+- Semua skill yang baru dibuat memiliki struktur yang benar.
+- Metadata mengikuti aturan proyek.
+- Instruksi konsisten dengan aturan sumber.
+- Tidak ada referensi file yang rusak akibat perubahan.
+- Tidak ada instruksi yang bertentangan.
+- Tidak ada duplikasi tujuan yang baru.
+- Seluruh file yang diubah berada di direktori yang diizinkan.
 
-Jangan menebak identitas model. Apabila model aktual tidak dapat dipastikan, laporkan dan jangan mengisi nilai palsu.
+### 9.3 Periksa kembali kelengkapan aturan
 
-### 9.3. Pembaruan examples
+Pastikan semua file di `.agents/rules/` sudah diperiksa.
 
-Setiap skill wajib mempunyai folder `examples/`.
+Pastikan semua aturan yang relevan sudah:
 
-Minimal terdapat satu pasangan:
+- Tercakup oleh skill yang sesuai.
+- Diperbarui ke skill yang tepat.
+- Atau dicatat sebagai belum dapat diterapkan beserta alasannya.
 
-```text
-examples/
-├── input-<varian>.dart
-└── output-<varian>.dart
-```
-
-Ketentuan:
-
-- Isi folder `examples/` hanya file `.dart`.
-- Setiap file `input` wajib memiliki pasangan `output` dengan nama varian sama.
-- Nama varian menggunakan bahasa Indonesia dan kebab-case.
-- File `input` menunjukkan kasus atau kode awal.
-- File `output` menunjukkan hasil implementasi sesuai skill.
-- Baris pertama setiap contoh harus mencantumkan komentar commit yang sesuai.
-- Contoh harus menggambarkan instruksi dalam `SKILL.md`.
-- File contoh tidak wajib dapat dikompilasi secara mandiri.
-- File contoh tidak boleh di-import oleh `lib/` maupun `test/`.
-
-Jangan hanya memperbarui `SKILL.md` tanpa memeriksa apakah examples masih sesuai.
-
-### 9.4. Pembaruan references
-
-Folder `references/` bersifat opsional.
-
-Apabila references tersedia:
-
-- Periksa relevansinya dengan isi skill terbaru.
-- Perbarui apabila materi sudah usang atau tidak konsisten.
-- Gunakan nama file `.md` dengan kebab-case.
-- Jangan membuat references yang hanya mengulang isi `SKILL.md` tanpa memberikan manfaat tambahan.
-
-### 9.5. Sinkronisasi antarfile
-
-Setiap perubahan harus menjaga konsistensi:
-
-- `SKILL.md` harus sesuai dengan examples.
-- Examples harus menggambarkan langkah yang dijelaskan di `SKILL.md`.
-- References harus mendukung instruksi skill.
-- Frontmatter harus sesuai dengan lokasi dan identitas skill.
-- Satu skill tidak boleh memberikan instruksi yang bertentangan dengan skill lain untuk masalah yang sama.
+Jangan menyatakan sinkronisasi selesai apabila masih ada file aturan yang belum diperiksa.
 
 ---
 
-# 10. Tahap Kedelapan — Verifikasi Hasil
+# 10. FORMAT LAPORAN AKHIR
 
-Setelah pembaruan selesai, lakukan pemeriksaan ulang.
+Setelah selesai, berikan laporan dalam bahasa Indonesia.
 
-### 10.1. Pemeriksaan struktur
+Gunakan format berikut.
 
-Periksa seluruh file pada skill yang diubah atau dibuat.
+## A. Ringkasan pekerjaan
 
-Pastikan:
+Jelaskan:
 
-- Lokasi folder benar.
-- Nama folder sesuai aturan.
-- `SKILL.md` tersedia.
-- Folder `examples/` tersedia dan tidak kosong.
-- Minimal satu pasangan input-output tersedia.
-- Tidak ada file selain `.dart` di `examples/`.
-- Folder `references/`, apabila ada, memiliki file `.md` yang sesuai.
-- Tidak ada file yang tertinggal atau tidak memiliki pasangan.
+- Jumlah file aturan yang diperiksa.
+- Jumlah subfolder skill yang diaudit.
+- Jumlah skill yang diperbarui.
+- Jumlah skill baru yang dibuat.
+- Jumlah skill yang sudah sesuai tanpa perubahan.
+- Jumlah masalah yang belum terselesaikan.
 
-### 10.2. Pemeriksaan isi
+## B. Hasil pemetaan aturan ke skill
 
-Pastikan:
+Buat tabel:
 
-- Isi `SKILL.md` mengikuti seluruh aturan yang relevan.
-- Tidak ada instruksi yang saling bertentangan.
-- Tidak ada instruksi ambigu.
-- Tidak ada pola implementasi yang dibuat tanpa dasar yang diizinkan.
-- Setiap examples memiliki komentar commit yang benar.
-- Versi meningkat apabila skill berubah.
-- Model diperbarui apabila metadata model digunakan.
-- Hash commit sesuai sumber yang digunakan.
-- Tidak ada duplikasi fungsi dengan skill lain.
+| Aturan sumber | Skill tujuan | Tindakan                                                  |
+| ------------- | ------------ | --------------------------------------------------------- |
+| Path aturan   | Path skill   | Diperbarui / Sudah sesuai / Skill baru / Belum diterapkan |
 
-### 10.3. Pemeriksaan konsistensi seluruh skill
+Pastikan path ditulis secara lengkap dan benar.
 
-Periksa kembali hubungan antara skill yang diperbarui, skill baru, dan skill lain yang sudah ada.
+## C. Hasil audit skill custom
 
-Pastikan:
+Buat tabel:
 
-1. Tidak terdapat instruksi yang saling bertentangan.
-2. Tidak terdapat dua skill dengan tujuan yang sama tanpa alasan yang jelas.
-3. Tidak ada aturan penting yang hilang dari skill terkait.
-4. Tidak ada perubahan yang keluar dari ruang lingkup.
-5. Skill yang tidak perlu diubah tetap dipertahankan.
+| Subfolder skill | Status awal     | Tindakan   | Status akhir |
+| --------------- | --------------- | ---------- | ------------ |
+| Nama skill      | Perlu perbaikan | Diperbaiki | Sesuai       |
 
-### 10.4. Pemeriksaan perubahan
+Masukkan seluruh skill yang diperiksa, bukan hanya skill yang diubah.
 
-Gunakan:
+## D. Daftar perubahan
 
-```bash
-git diff --check -- .agents/skills/custom/
-```
+Tuliskan seluruh file yang dibuat atau diperbarui beserta:
 
-Periksa daftar perubahan untuk memastikan tidak ada file di luar lokasi yang diizinkan.
+- Path lengkap.
+- Alasan perubahan.
+- Ringkasan bagian yang diperbaiki.
 
-Jangan mengubah file aturan atau kode aplikasi hanya untuk membuat hasil pemeriksaan terlihat bersih.
+## E. Masalah yang belum terselesaikan
 
----
+Cantumkan:
 
-# 11. Laporan Hasil
+- Aturan yang belum tercakup.
+- Konflik yang belum memiliki penyelesaian.
+- File yang tidak dapat dibaca.
+- Skill yang membutuhkan keputusan lebih lanjut.
 
-Setelah seluruh pekerjaan selesai, berikan laporan terstruktur.
+Jangan menyembunyikan masalah atau menyatakan semuanya sesuai apabila masih terdapat pelanggaran.
 
-## A. Ringkasan pembacaan
+## F. Verifikasi batas perubahan
 
-Tampilkan:
+Nyatakan apakah seluruh perubahan yang dilakukan sudah berada di dalam:
 
-- Jumlah file di `.agents/rules/`.
-- Jumlah file aturan yang berhasil dibaca.
-- Jumlah file aturan yang gagal dibaca, jika ada.
-- Jumlah skill yang diperiksa.
-- Daftar path yang belum dapat diperiksa, jika ada.
+`.agents/skills/custom/`
 
-Jangan menyatakan seluruh file sudah dibaca apabila masih ada file yang terlewat atau gagal dibaca.
-
-## B. Skill diperbarui
-
-| Nama skill | Path | Perubahan |
-|---|---|---|
-| Nama skill | Path lengkap | Ringkasan perubahan |
-
-## C. Skill baru
-
-| Nama skill | Path | Tujuan |
-|---|---|---|
-| Nama skill | Path lengkap | Alasan penambahan |
-
-## D. Skill tidak berubah
-
-Tampilkan nama skill yang sudah sesuai dengan aturan sehingga tidak memerlukan perubahan.
-
-## E. Temuan aturan
-
-Tampilkan:
-
-- Aturan yang belum tercakup oleh skill.
-- Aturan yang saling bertentangan.
-- Skill yang memiliki cakupan tumpang tindih.
-- Aturan yang belum lengkap atau ambigu.
-- Kondisi yang membutuhkan keputusan pengguna.
-
-Cantumkan path file dan bagian aturan yang berkaitan agar mudah diperiksa.
-
-## F. Verifikasi
-
-Laporkan hasil pemeriksaan:
-
-- Struktur folder.
-- Frontmatter.
-- Examples.
-- References.
-- Versi dan metadata.
-- Sumber commit.
-- Konsistensi antar-skill.
-- Pemeriksaan `git diff --check`.
-
-Gunakan status yang jelas: **Lulus**, **Gagal**, atau **Belum dapat diverifikasi**.
+Apabila terdapat perubahan di luar direktori tersebut, jelaskan penyebabnya. Jangan melakukan pemulihan otomatis terhadap perubahan yang tidak Anda buat.
 
 ---
 
-# 12. Ketentuan Akhir
+# 11. KETENTUAN PENUTUP
 
-1. Prioritaskan kesesuaian dengan seluruh aturan, bukan banyaknya skill yang berhasil dibuat.
-2. Perbarui skill yang sudah ada apabila topiknya memang sudah tercakup.
-3. Tambahkan skill baru hanya apabila terdapat kebutuhan yang belum memiliki cakupan memadai.
-4. Jangan membuat duplikasi hanya untuk memisahkan aturan yang sebenarnya masih satu tanggung jawab.
-5. Jangan mengubah file aturan.
-6. Jangan mengubah kode aplikasi.
-7. Jangan menghapus atau memindahkan skill tanpa persetujuan.
-8. Jangan mengarang keputusan apabila aturan tidak lengkap atau saling bertentangan.
-9. Seluruh perubahan harus dapat ditelusuri berdasarkan path file dan sumber commit yang digunakan.
-10. Pastikan laporan akhir mencerminkan kondisi repositori yang benar-benar sudah diperiksa dan dikerjakan.
+- Utamakan ketepatan daripada kecepatan.
+- Baca seluruh sumber sebelum mengambil keputusan.
+- Jangan membuat asumsi tentang isi file yang belum dibaca.
+- Jangan membuat skill baru apabila skill lama masih dapat dikembangkan.
+- Jangan mengubah aturan sumber.
+- Jangan mengerjakan tugas lain di luar sinkronisasi dan audit skill.
+- Jangan menghapus isi yang masih memiliki fungsi.
+- Jangan mengubah file di luar direktori custom.
+- Jangan menyatakan berhasil tanpa melakukan verifikasi.
 
-**Mulai dari Tahap 3 dan kerjakan secara berurutan. Jangan melewati tahapan.**
+**PRIORITAS UTAMA:**
+
+Mewujudkan sinkronisasi yang akurat antara seluruh aturan proyek di `.agents/rules/` dan seluruh skill di `.agents/skills/custom/`, dengan menjadikan `.agents/rules/global/aturan_skill.md` sebagai pedoman wajib dalam seluruh proses pengembangan dan audit skill.

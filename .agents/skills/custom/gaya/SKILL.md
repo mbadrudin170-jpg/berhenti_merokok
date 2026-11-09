@@ -1,9 +1,11 @@
 ---
 name: gaya
 description: Panduan styling: penggunaan withValues untuk opacity warna, konsistensi warna tema, dan aturan warna hardcode vs ColorScheme.
-kategori: custom
-versi: 1.0.0
-commit-terakhir: 3b67d3095dacc4e5c7ea78d7eb251809e3e9d981
+metadata:
+  kategori: "custom"
+  versi: "1.0.0"
+  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
+  model: "kilo-auto/free"
 ---
 
 # Panduan Styling (Gaya)
