@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 21:44:50 GMT
 ---
-
 # Serializing JSON Manually in Flutter
 
 ## Contents
-
 - [Core Guidelines](#core-guidelines)
 - [Workflow: Implementing a Serializable Model](#workflow-implementing-a-serializable-model)
 - [Workflow: Fetching and Parsing JSON](#workflow-fetching-and-parsing-json)
@@ -28,7 +26,6 @@ metadata:
 Use this checklist to implement manual JSON serialization for a data model.
 
 **Task Progress:**
-
 - [ ] Define the plain model class with `final` properties.
 - [ ] Implement the `factory Model.fromJson(Map<String, dynamic> json)` constructor.
 - [ ] Implement the `Map<String, dynamic> toJson()` method.
@@ -45,14 +42,13 @@ Use this checklist to implement manual JSON serialization for a data model.
 Use this conditional workflow when retrieving and parsing JSON from a network request.
 
 **Task Progress:**
-
 - [ ] Execute the HTTP request.
 - [ ] Validate the response status code.
 - [ ] Determine parsing strategy (Synchronous vs. Isolate).
 - [ ] Decode and map the JSON to the model.
 
 1. **Execute Request**: Use the `http` package to perform the network call.
-2. **Validate Response**:
+2. **Validate Response**: 
    - If `response.statusCode == 200` (or 201 for POST), proceed to parsing.
    - If the status code indicates failure, throw an `Exception`.
 3. **Determine Parsing Strategy**:
@@ -85,7 +81,7 @@ class User {
         'id': int id,
         'name': String name,
         'email': String email,
-      } =>
+      } => 
         User(
           id: id,
           name: name,

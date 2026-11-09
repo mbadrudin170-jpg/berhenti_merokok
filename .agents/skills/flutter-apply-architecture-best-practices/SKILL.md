@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 20:11:20 GMT
 ---
-
 # Architecting Flutter Applications
 
 ## Contents
-
 - [Architectural Layers](#architectural-layers)
 - [Project Structure](#project-structure)
 - [Workflow: Implementing a New Feature](#workflow-implementing-a-new-feature)
@@ -20,22 +18,17 @@ metadata:
 Enforce strict Separation of Concerns by dividing the application into distinct layers. Never mix UI rendering with business logic or data fetching.
 
 ### UI Layer (Presentation)
-
 Implement the MVVM (Model-View-ViewModel) pattern to manage UI state and logic.
-
-- **Views:** Write reusable, lean widgets. Restrict logic in Views to UI-specific operations (e.g., animations, layout constraints, simple routing). Pass all required data from the ViewModel.
-- **ViewModels:** Manage UI state and handle user interactions. Extend `ChangeNotifier` (or use `Listenable`) to expose state. Expose immutable state snapshots to the View. Inject Repositories into ViewModels via the constructor.
+*   **Views:** Write reusable, lean widgets. Restrict logic in Views to UI-specific operations (e.g., animations, layout constraints, simple routing). Pass all required data from the ViewModel.
+*   **ViewModels:** Manage UI state and handle user interactions. Extend `ChangeNotifier` (or use `Listenable`) to expose state. Expose immutable state snapshots to the View. Inject Repositories into ViewModels via the constructor.
 
 ### Data Layer
-
 Implement the Repository pattern to isolate data access logic and create a single source of truth.
-
-- **Services:** Create stateless classes to wrap external APIs (HTTP clients, local databases, platform plugins). Return raw API models or `Result` wrappers.
-- **Repositories:** Consume one or more Services. Transform raw API models into clean Domain Models. Handle caching, offline synchronization, and retry logic. Expose Domain Models to ViewModels.
+*   **Services:** Create stateless classes to wrap external APIs (HTTP clients, local databases, platform plugins). Return raw API models or `Result` wrappers.
+*   **Repositories:** Consume one or more Services. Transform raw API models into clean Domain Models. Handle caching, offline synchronization, and retry logic. Expose Domain Models to ViewModels.
 
 ### Logic Layer (Domain - Optional)
-
-- **Use Cases:** Implement this layer only if the application contains complex business logic that clutters the ViewModel, or if logic must be reused across multiple ViewModels. Extract this logic into dedicated Use Case (interactor) classes that sit between ViewModels and Repositories.
+*   **Use Cases:** Implement this layer only if the application contains complex business logic that clutters the ViewModel, or if logic must be reused across multiple ViewModels. Extract this logic into dedicated Use Case (interactor) classes that sit between ViewModels and Repositories.
 
 ## Project Structure
 
@@ -63,18 +56,17 @@ lib/
 Follow this sequential workflow when adding a new feature to the application. Copy the checklist to track progress.
 
 ### Task Progress
-
 - [ ] **Step 1: Define Domain Models.** Create immutable data classes for the feature using `freezed` or `built_value`.
 - [ ] **Step 2: Implement Services.** Create or update Service classes to handle external API communication.
 - [ ] **Step 3: Implement Repositories.** Create the Repository to consume Services and return Domain Models.
 - [ ] **Step 4: Apply Conditional Logic (Domain Layer).**
-  - _If the feature requires complex data transformation or cross-repository logic:_ Create a Use Case class.
-  - _If the feature is a simple CRUD operation:_ Skip to Step 5.
+  - *If the feature requires complex data transformation or cross-repository logic:* Create a Use Case class.
+  - *If the feature is a simple CRUD operation:* Skip to Step 5.
 - [ ] **Step 5: Implement the ViewModel.** Create the ViewModel extending `ChangeNotifier`. Inject required Repositories/Use Cases. Expose immutable state and command methods.
 - [ ] **Step 6: Implement the View.** Create the UI widget. Use `ListenableBuilder` or `AnimatedBuilder` to listen to ViewModel changes.
 - [ ] **Step 7: Inject Dependencies.** Register the new Service, Repository, and ViewModel in the dependency injection container (e.g., `provider` or `get_it`).
 - [ ] **Step 8: Run Validator.** Execute unit tests for the ViewModel and Repository.
-  - _Feedback Loop:_ Run tests -> Review failures -> Fix logic -> Re-run until passing.
+  - *Feedback Loop:* Run tests -> Review failures -> Fix logic -> Re-run until passing.
 
 ## Examples
 
@@ -91,13 +83,13 @@ class ApiClient {
 // 2. Repository (Single source of truth, returns Domain Model)
 class UserRepository {
   UserRepository({required ApiClient apiClient}) : _apiClient = apiClient;
-
+  
   final ApiClient _apiClient;
   User? _cachedUser;
 
   Future<User> getUser(String id) async {
     if (_cachedUser != null) return _cachedUser!;
-
+    
     final apiModel = await _apiClient.fetchUser(id);
     _cachedUser = User(id: apiModel.id, name: apiModel.fullName); // Transform to Domain Model
     return _cachedUser!;
@@ -110,7 +102,7 @@ class UserRepository {
 ```dart
 // 3. ViewModel (State management and presentation logic)
 class ProfileViewModel extends ChangeNotifier {
-  ProfileViewModel({required UserRepository userRepository})
+  ProfileViewModel({required UserRepository userRepository}) 
       : _userRepository = userRepository;
 
   final UserRepository _userRepository;
@@ -148,7 +140,7 @@ class ProfileView extends StatelessWidget {
         if (viewModel.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-
+        
         final user = viewModel.user;
         if (user == null) {
           return const Center(child: Text('User not found'));

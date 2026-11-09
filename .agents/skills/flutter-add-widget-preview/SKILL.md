@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 20:05:23 GMT
 ---
-
 # Previewing Flutter Widgets
 
 ## Contents
-
 - [Preview Guidelines](#preview-guidelines)
 - [Preview Parameters](#preview-parameters)
 - [Handling Limitations](#handling-limitations)
@@ -52,7 +50,6 @@ Adhere to the following constraints when authoring previewable widgets, as the W
 ## Workflows
 
 ### Creating a Widget Preview
-
 Copy and track this checklist when implementing a new widget preview:
 
 - [ ] Import `package:flutter/widget_previews.dart`.
@@ -62,23 +59,19 @@ Copy and track this checklist when implementing a new widget preview:
 - [ ] If applying the same configuration to multiple widgets, extract the configuration into a custom class extending `Preview` or `MultiPreview`.
 
 ### Interacting with Previews
-
 Follow the appropriate conditional workflow to launch and interact with the Widget Previewer:
 
 **If using a supported IDE (Android Studio, IntelliJ, VS Code with Flutter 3.47+):**
-
 1. Launch the IDE. The Widget Previewer starts automatically.
 2. Open the "Flutter Widget Preview" tab in the sidebar.
 3. Toggle "Filter previews by selected file" at the bottom left if you want to view previews outside the currently active file.
 
 **If using the Command Line:**
-
 1. Navigate to the Flutter project's root directory.
 2. Run `flutter widget-preview start`.
 3. View the automatically opened Chrome environment.
 
 **Feedback Loop: Preview Iteration**
-
 1. Modify the widget code or preview configuration.
 2. Observe the automatic update in the Widget Previewer.
 3. If global state (e.g., static initializers) was modified: Click the global hot restart button at the bottom right.
@@ -88,7 +81,6 @@ Follow the appropriate conditional workflow to launch and interact with the Widg
 ## Examples
 
 ### Basic Preview
-
 ```dart
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +93,6 @@ Widget submitButtonPreview() => const ElevatedButton(
 ```
 
 ### Custom Preview with PreviewThemeData and Transformation
-
 ```dart
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +154,6 @@ Widget themedButtonPreview() => const ElevatedButton(
 ```
 
 ### MultiPreview Implementation
-
 ```dart
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter/material.dart';

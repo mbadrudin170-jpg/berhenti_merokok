@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 21:36:42 GMT
 ---
-
 # Implementing Flutter Networking
 
 ## Contents
-
 - [Configuration & Permissions](#configuration--permissions)
 - [Request Execution & Response Handling](#request-execution--response-handling)
 - [Background Parsing](#background-parsing)
@@ -42,27 +40,26 @@ Configure the environment and platform-specific permissions required for network
 
 Execute HTTP operations and map responses to strongly typed Dart objects.
 
-- **URIs:** Always parse URL strings using `Uri.parse('your_url')`.
-- **Headers:** Inject authorization and content-type headers via the `headers` parameter map. Use `HttpHeaders.authorizationHeader` for auth tokens.
-- **Payloads:** For POST and PUT requests, encode the body using `jsonEncode()` from `dart:convert`.
-- **Status Validation:** Evaluate `response.statusCode`. Treat `200 OK` (GET/PUT/DELETE) and `201 CREATED` (POST) as success.
-- **Error Handling:** Throw explicit exceptions for non-success status codes. Never return `null` on failure, as this prevents `FutureBuilder` from triggering its error state and causes infinite loading indicators.
-- **Deserialization:** Parse the raw string using `jsonDecode(response.body)` and map it to a custom Dart object using a factory constructor (e.g., `fromJson`).
+*   **URIs:** Always parse URL strings using `Uri.parse('your_url')`.
+*   **Headers:** Inject authorization and content-type headers via the `headers` parameter map. Use `HttpHeaders.authorizationHeader` for auth tokens.
+*   **Payloads:** For POST and PUT requests, encode the body using `jsonEncode()` from `dart:convert`.
+*   **Status Validation:** Evaluate `response.statusCode`. Treat `200 OK` (GET/PUT/DELETE) and `201 CREATED` (POST) as success. 
+*   **Error Handling:** Throw explicit exceptions for non-success status codes. Never return `null` on failure, as this prevents `FutureBuilder` from triggering its error state and causes infinite loading indicators.
+*   **Deserialization:** Parse the raw string using `jsonDecode(response.body)` and map it to a custom Dart object using a factory constructor (e.g., `fromJson`).
 
 ## Background Parsing
 
 Offload expensive JSON parsing to a separate Isolate to prevent UI jank (frame drops).
 
-- Import `package:flutter/foundation.dart`.
-- Use the `compute()` function to run the parsing logic in a background isolate.
-- Ensure the parsing function passed to `compute()` is a top-level function or a static method, as closures or instance methods cannot be passed across isolates.
+*   Import `package:flutter/foundation.dart`.
+*   Use the `compute()` function to run the parsing logic in a background isolate.
+*   Ensure the parsing function passed to `compute()` is a top-level function or a static method, as closures or instance methods cannot be passed across isolates.
 
 ## Workflow: Executing Network Operations
 
 Use the following checklist to implement and validate network operations.
 
 **Task Progress:**
-
 - [ ] 1. Define the strongly typed Dart model with a `fromJson` factory constructor.
 - [ ] 2. Implement the network request method returning a `Future<Model>`.
 - [ ] 3. Apply conditional logic based on the operation type:
@@ -167,7 +164,7 @@ class _PhotoGalleryState extends State<PhotoGallery> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
-
+        
         // Default loading state
         return const Center(child: CircularProgressIndicator());
       },

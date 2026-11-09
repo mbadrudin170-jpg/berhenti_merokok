@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:09:34 GMT
 ---
-
 # Analyzing and Fixing Dart Code
 
 ## Contents
-
 - [Analysis Configuration](#analysis-configuration)
 - [Diagnostic Suppression](#diagnostic-suppression)
 - [Workflow: Executing Static Analysis](#workflow-executing-static-analysis)
@@ -41,7 +39,6 @@ When a diagnostic (lint or warning) yields a false positive or applies to genera
 Use this workflow to identify type-related bugs, style violations, and potential runtime errors.
 
 **Task Progress:**
-
 - [ ] 1. Verify `analysis_options.yaml` exists at the project root.
 - [ ] 2. Run the analyzer using the `analyze_files` MCP tool (if available) or the CLI command `dart analyze <target_directory>`.
 - [ ] 3. Review the diagnostic output.
@@ -53,7 +50,6 @@ Use this workflow to identify type-related bugs, style violations, and potential
 Use this workflow to resolve outdated API usages, apply quick fixes, and migrate code (e.g., Dart 3 migrations).
 
 **Task Progress:**
-
 - [ ] 1. Execute a dry run to preview proposed changes using the `dart_fix` MCP tool or CLI command `dart fix --dry-run`.
 - [ ] 2. Review the proposed fixes to ensure they align with the intended architecture.
 - [ ] 3. If additional fixes are required, verify that the corresponding linter rules are enabled in `analysis_options.yaml`.
@@ -102,7 +98,7 @@ void processData() {
   // Suppress for a specific line
   // ignore: invalid_assignment
   int x = '';
-
+  
   const y = 10; // ignore: constant_identifier_names
 }
 ```

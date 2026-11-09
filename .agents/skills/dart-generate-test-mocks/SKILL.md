@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:13:58 GMT
 ---
-
 # Testing and Mocking Dart Applications
 
 ## Contents
-
 - [Structuring Code for Testability](#structuring-code-for-testability)
 - [Managing Dependencies](#managing-dependencies)
 - [Generating Mocks](#generating-mocks)
@@ -18,7 +16,6 @@ metadata:
 - [Examples](#examples)
 
 ## Structuring Code for Testability
-
 Design Dart classes to support dependency injection. Isolate complex external dependencies (like API clients or databases) so they can be replaced with mock objects during testing.
 
 - Inject external services (e.g., `http.Client`) through class constructors.
@@ -26,7 +23,6 @@ Design Dart classes to support dependency injection. Isolate complex external de
 - Utilize Dart's object-oriented features (classes, mixins) to define clear interfaces for external interactions.
 
 ## Managing Dependencies
-
 Configure the `pubspec.yaml` file with the necessary testing and code generation packages.
 
 - Add runtime dependencies (e.g., `package:http`) using `dart pub add http`.
@@ -34,7 +30,6 @@ Configure the `pubspec.yaml` file with the necessary testing and code generation
 - Import HTTP libraries with a prefix to avoid namespace collisions: `import 'package:http/http.dart' as http;`.
 
 ## Generating Mocks
-
 Use `package:mockito` and `build_runner` to automatically generate mock classes for fixed scenarios and behavior verification.
 
 - Always use the `@GenerateNiceMocks` annotation (preferable to `@GenerateMocks` to avoid missing stub exceptions).
@@ -43,7 +38,6 @@ Use `package:mockito` and `build_runner` to automatically generate mock classes 
 - Execute `build_runner` to generate the mock files: `dart run build_runner build`.
 
 ## Implementing Unit Tests
-
 Isolate the system under test using the generated mock objects. Use `package:test` to structure the test suite.
 
 - **Stubbing:** Configure mock behavior before interacting with the system under test.
@@ -58,7 +52,6 @@ Isolate the system under test using the generated mock objects. Use `package:tes
 Use the following checklist to implement and verify mocked unit tests.
 
 ### Task Progress
-
 - [ ] 1. Identify the external dependency to mock (e.g., `http.Client`).
 - [ ] 2. Inject the dependency into the target class constructor.
 - [ ] 3. Create a test file (e.g., `target_test.dart`) and add `@GenerateNiceMocks([MockSpec<Dependency>()])`.
@@ -71,9 +64,7 @@ Use the following checklist to implement and verify mocked unit tests.
 - [ ] 10. Run the test suite using `dart test`.
 
 ### Feedback Loop: Test Failures
-
 If tests fail or `build_runner` encounters errors:
-
 1. **Run validator:** Execute `dart test` or `dart run build_runner build`.
 2. **Review errors:** Check for missing stubs, mismatched argument matchers, or syntax errors in the generated files.
 3. **Fix:**
@@ -87,7 +78,6 @@ If tests fail or `build_runner` encounters errors:
 ### High-Fidelity Mocking and Testing Example
 
 **1. System Under Test (`lib/api_service.dart`)**
-
 ```dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -111,7 +101,6 @@ class ApiService {
 ```
 
 **2. Test Implementation (`test/api_service_test.dart`)**
-
 ```dart
 import 'package:test/test.dart';
 import 'package:mockito/annotations.dart';

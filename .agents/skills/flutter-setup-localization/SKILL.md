@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 21:27:35 GMT
 ---
-
 # Internationalizing Flutter Applications
 
 ## Contents
-
 - [Core Concepts](#core-concepts)
 - [Setup Workflow](#setup-workflow)
 - [Implementation Workflow](#implementation-workflow)
@@ -17,7 +15,6 @@ metadata:
 - [Examples](#examples)
 
 ## Core Concepts
-
 Flutter handles internationalization (i18n) and localization (l10n) via the `flutter_localizations` and `intl` packages. The standard approach uses App Resource Bundle (`.arb`) files to define localized strings, which are then compiled into a generated `AppLocalizations` class for type-safe access within the widget tree.
 
 ## Setup Workflow
@@ -31,16 +28,13 @@ Copy and track this checklist when initializing internationalization in a Flutte
   - [ ] 4. Configure `MaterialApp` or `CupertinoApp`.
 
 ### 1. Add Dependencies
-
 Add the required localization packages to the project. Execute the following commands in the terminal:
-
 ```bash
 flutter pub add flutter_localizations --sdk=flutter
 flutter pub add intl:any
 ```
 
 Verify your `pubspec.yaml` includes the following under `dependencies`:
-
 ```yaml
 dependencies:
   flutter:
@@ -51,18 +45,14 @@ dependencies:
 ```
 
 ### 2. Enable Code Generation
-
 Open `pubspec.yaml` and enable the `generate` flag within the `flutter` section to automate localization tasks:
-
 ```yaml
 flutter:
   generate: true
 ```
 
 ### 3. Create Configuration File
-
 Create a new file named `l10n.yaml` in the root directory of the Flutter project. Define the input directory, template file, and output file:
-
 ```yaml
 arb-dir: lib/l10n
 template-arb-file: app_en.arb
@@ -71,7 +61,6 @@ synthetic-package: true
 ```
 
 ### 4. Configure the App Entry Point
-
 Import the generated localizations and the `flutter_localizations` library in your `main.dart`. Inject the delegates and supported locales into your `MaterialApp` or `CupertinoApp`.
 
 ```dart
@@ -99,9 +88,8 @@ return MaterialApp(
 Follow this workflow when adding or modifying localized content.
 
 ### 1. Define ARB Files
-
-- **If creating NEW content:** Add the base string to the template file (`lib/l10n/app_en.arb`). Include a description for context.
-- **If EDITING existing content:** Locate the key in all supported `.arb` files and update the values.
+*   **If creating NEW content:** Add the base string to the template file (`lib/l10n/app_en.arb`). Include a description for context.
+*   **If EDITING existing content:** Locate the key in all supported `.arb` files and update the values.
 
 ```json
 {
@@ -113,7 +101,6 @@ Follow this workflow when adding or modifying localized content.
 ```
 
 Create corresponding files for other locales (e.g., `app_es.arb`):
-
 ```json
 {
   "helloWorld": "¡Hola Mundo!"
@@ -121,17 +108,13 @@ Create corresponding files for other locales (e.g., `app_es.arb`):
 ```
 
 ### 2. Generate Localization Classes
-
 Run the following command to trigger code generation:
-
 ```bash
 flutter pub get
 ```
-
-_Feedback Loop:_ Run validator -> review terminal output for ARB syntax errors -> fix missing commas or mismatched placeholders -> re-run `flutter pub get`.
+*Feedback Loop:* Run validator -> review terminal output for ARB syntax errors -> fix missing commas or mismatched placeholders -> re-run `flutter pub get`.
 
 ### 3. Consume Localized Strings
-
 Access the localized strings in your widget tree using `AppLocalizations.of(context)`. Ensure the widget calling this is a descendant of `MaterialApp`.
 
 ```dart
@@ -143,9 +126,7 @@ Text(AppLocalizations.of(context)!.helloWorld)
 Use placeholders for dynamic data, plurals, and conditional selects.
 
 ### Placeholders
-
 Define parameters within curly braces and specify their type in the metadata object.
-
 ```json
 "hello": "Hello {userName}",
 "@hello": {
@@ -160,9 +141,7 @@ Define parameters within curly braces and specify their type in the metadata obj
 ```
 
 ### Plurals
-
 Use the `plural` syntax to handle quantity-based string variations. The `other` case is mandatory.
-
 ```json
 "nWombats": "{count, plural, =0{no wombats} =1{1 wombat} other{{count} wombats}}",
 "@nWombats": {
@@ -177,9 +156,7 @@ Use the `plural` syntax to handle quantity-based string variations. The `other` 
 ```
 
 ### Selects
-
 Use the `select` syntax for conditional strings, such as gendered text.
-
 ```json
 "pronoun": "{gender, select, male{he} female{she} other{they}}",
 "@pronoun": {
@@ -195,7 +172,6 @@ Use the `select` syntax for conditional strings, such as gendered text.
 ## Examples
 
 ### Complete `l10n.yaml`
-
 ```yaml
 arb-dir: lib/l10n
 template-arb-file: app_en.arb
@@ -205,7 +181,6 @@ use-escaping: true
 ```
 
 ### Complete Widget Implementation
-
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -215,8 +190,8 @@ class GreetingWidget extends StatelessWidget {
   final int notificationCount;
 
   const GreetingWidget({
-    super.key,
-    required this.userName,
+    super.key, 
+    required this.userName, 
     required this.notificationCount,
   });
 

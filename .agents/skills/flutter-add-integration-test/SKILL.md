@@ -5,11 +5,9 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 18:29:20 GMT
 ---
-
 # Implementing Flutter Integration Tests
 
 ## Contents
-
 - [Project Setup and Dependencies](#project-setup-and-dependencies)
 - [Interactive Exploration via MCP](#interactive-exploration-via-mcp)
 - [Test Authoring Guidelines](#test-authoring-guidelines)
@@ -43,7 +41,7 @@ Use the Dart/Flutter MCP server tools to interactively explore and manipulate th
 
 ## Test Authoring Guidelines
 
-Structure integration tests using the `flutter_test` API paradigm.
+Structure integration tests using the `flutter_test` API paradigm. 
 
 - Create a dedicated `integration_test/` directory at the project root.
 - Name all test files using the `<name>_test.dart` convention.
@@ -54,7 +52,6 @@ Structure integration tests using the `flutter_test` API paradigm.
 - Scroll to specific off-screen widgets using `await tester.scrollUntilVisible(itemFinder, 500.0, scrollable: listFinder);`.
 
 **Conditional Logic for Legacy `flutter_driver`:**
-
 - If maintaining or migrating legacy `flutter_driver` tests, use `driver.waitFor()`, `driver.waitForAbsent()`, `driver.tap()`, and `driver.scroll()` instead of the `WidgetTester` APIs.
 
 ## Execution and Profiling
@@ -62,12 +59,11 @@ Structure integration tests using the `flutter_test` API paradigm.
 Execute tests using the `flutter drive` command. Require a host driver script located in `test_driver/integration_test.dart` that calls `integrationDriver()`.
 
 **Conditional Execution Targets:**
-
 - **If testing on Chrome:** Launch `chromedriver --port=4444` in a separate terminal, then run:
   `flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d chrome`
 - **If testing headless web:** Run with `-d web-server`.
 - **If testing on Android (Local):** Run `flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart`.
-- **If testing on Firebase Test Lab (Android):**
+- **If testing on Firebase Test Lab (Android):** 
   1. Build debug APK: `flutter build apk --debug`
   2. Build test APK: `./gradlew app:assembleAndroidTest`
   3. Upload both APKs to the Firebase Test Lab console.

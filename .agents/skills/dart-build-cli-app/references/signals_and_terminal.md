@@ -9,7 +9,6 @@ Guidance on cross-platform signal listeners, restoring terminal modes, tearing d
 Standard POSIX signals (`SIGINT`, `SIGTERM`) require platform-specific guards because Windows does not implement POSIX `SIGTERM`.
 
 ### The Windows `SIGTERM` Guard Rule:
-
 Calling `ProcessSignal.sigterm.watch()` on Windows throws an unhandled `UnsupportedError`. Multi-platform signal handlers must always guard `sigterm`:
 
 ```dart
@@ -36,7 +35,6 @@ Stream<ProcessSignal> watchTerminationSignals() {
 If your CLI mutates the terminal state (e.g., interactive menus, password input prompts, progress spinners):
 
 ### A. Raw Mode Teardown (`echoMode` & `lineMode`):
-
 If setting `stdin.echoMode = false` or `stdin.lineMode = false`, install a signal handler to restore them upon user cancellation (`Ctrl+C` / `SIGINT`). Otherwise, the host shell remains in raw mode and user keystrokes become invisible after exit.
 
 ```dart
@@ -73,7 +71,6 @@ void restoreTerminal() {
 ```
 
 ### B. Cursor Visibility (Spinners & Progress Bars):
-
 If emitting ANSI escape code to hide the cursor (`\x1B[?25l`), always restore cursor visibility (`\x1B[?25h`) inside `finally` blocks and signal handlers:
 
 ```dart
@@ -94,8 +91,8 @@ bool get useAnsi =>
 
 ## 3. Server Socket & Child Process Teardown
 
-- **Listening Sockets**: If the CLI starts an `HttpServer` or TCP `ServerSocket`, listen for termination signals to close the socket immediately (`server.close(force: true)`) so the OS releases port bindings without waiting for kernel socket timeouts.
-- **Child Processes**: When spawning long-running child processes, register a termination listener to forward signals (`childProcess.kill(ProcessSignal.sigterm)`) before the parent exits to prevent orphaned background processes.
+* **Listening Sockets**: If the CLI starts an `HttpServer` or TCP `ServerSocket`, listen for termination signals to close the socket immediately (`server.close(force: true)`) so the OS releases port bindings without waiting for kernel socket timeouts.
+* **Child Processes**: When spawning long-running child processes, register a termination listener to forward signals (`childProcess.kill(ProcessSignal.sigterm)`) before the parent exits to prevent orphaned background processes.
 
 ---
 
