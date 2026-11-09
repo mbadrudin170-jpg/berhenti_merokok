@@ -194,3 +194,33 @@ Tidak ada temuan.
 - [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
 
 ## Rendah
+
+# Kelompok 13
+
+## File terdampak
+
+- [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
+
+## Tinggi
+
+## Sedang
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Navigasi `Nav.to(context, FormImpian(impian: impian))` dijalankan melalui `unawaited()` tanpa penanganan error (baris 114). Jika Future navigasi gagal, error tidak ditangani. Pola ini melanggar skill `penanganan-error-unawaited` yang mewajibkan `catchError` atau `try/catch` untuk Future yang dilepas.
+- Solusi: Tambahkan penanganan error pada Future navigasi sesuai pola di skill `.agents/skills/custom/penanganan-error-unawaited/SKILL.md`. Catat kegagalan menggunakan logger proyek dan sesuaikan nilai balik handler dengan tipe Future dari `Nav.to`.
+- Aturan dilanggar: [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)
+- File bermasalah: [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L114)
+- Prompt:
+
+## Rendah
+
+#### Task 2
+
+- Status: Belum dikerjakan
+- Masalah: Dua `Column` pada tampilan error menggunakan `const SizedBox(height: 8)` hanya untuk mengatur jarak antaranak (baris 41 dan 67). Skill spacing mewajibkan properti `spacing` pada `Column` untuk jarak antaranak yang seragam.
+- Solusi: Tambahkan `spacing: 8` pada kedua `Column` tersebut dan hapus `SizedBox(height: 8)` yang hanya berfungsi sebagai jarak.
+- Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
+- File bermasalah: [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L41), [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L67)
+- Prompt:
