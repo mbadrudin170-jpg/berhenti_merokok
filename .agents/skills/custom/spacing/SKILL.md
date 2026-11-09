@@ -1,9 +1,11 @@
 ---
 name: spacing
 description: Panduan spacing: penggunaan properti spacing pada Row/Column, SizedBox hanya untuk kebutuhan khusus, konsistensi jarak berdasarkan optimasi_ui.md.
-kategori: custom
-versi: 1.0.0
-commit-terakhir: 3b67d3095dacc4e5c7ea78d7eb251809e3e9d981
+metadata:
+  kategori: "custom"
+  versi: "1.0.0"
+  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
+  model: "kilo-auto/free"
 ---
 
 # Panduan Spacing (Jarak Antar Elemen)
@@ -13,11 +15,13 @@ Skill ini mendokumentasikan aturan pengaturan jarak antar elemen UI berdasarkan 
 ## 1. Properti `spacing` pada Row/Column (WAJIB)
 
 ### Aturan
+
 - **WAJIB** gunakan properti `spacing` pada `Row` dan `Column` untuk jarak antar anak yang seragam.
 - **DILARANG** menggunakan `SizedBox` berulang hanya untuk jarak standar antar anak.
 - Gunakan `SizedBox` **hanya** untuk kebutuhan jarak khusus yang tidak bisa ditangani `spacing`.
 
 ### Contoh
+
 ```dart
 // BENAR: spacing property
 Column(
@@ -51,6 +55,7 @@ Column(
 ```
 
 ### Referensi Commit
+
 - `3b67d309` — `Column(spacing: 8)` di `_EmptyDiaryCraving`, `VisualTabunganImpian`
 - `c7337d1` — `Column(spacing: 12)` di card impian
 - `e659574` — `Column(spacing: 8)` di kartu motivasi dashboard
@@ -58,6 +63,7 @@ Column(
 ## 2. `SizedBox` Hanya untuk Kebutuhan Khusus
 
 ### Kapan Boleh Pakai `SizedBox`
+
 - Jarak **tidak seragam** antar anak tertentu (mis. jarak besar sebelum tombol aksi).
 - Jarak di dalam widget yang **bukan** `Row`/`Column` (mis. `Container` padding internal).
 - Spacing horizontal di `Wrap` (gunakan `spacing` + `runSpacing` di `Wrap`).
@@ -85,6 +91,7 @@ Wrap(
 ## 3. Padding Tepi Layar (Screen Padding)
 
 ### Aturan (dari `optimasi_ux.md` #10)
+
 - Padding tepi layar = tanggung jawab **container halaman/parent**, bukan widget reusable.
 - Widget reusable **BOLEH** punya padding internal untuk desain komponennya (mis. `Card` padding isi).
 - **DILARANG** widget reusable ambil alih tanggung jawab padding tepi layar.
@@ -92,6 +99,7 @@ Wrap(
 - Nilai padding **WAJIB** mengikuti `optimasi_ui.md`.
 
 ### Struktur Benar
+
 ```dart
 // Halaman (Parent) - bertanggung jawab padding tepi layar
 Scaffold(
@@ -124,26 +132,29 @@ class RingkasanWidget extends StatelessWidget {
 ```
 
 ### Referensi Commit
+
 - `3b67d309` — `_EmptyDiaryCraving` pakai `Padding(16)` di dalam `SafeArea`
 - `e659574` — Dashboard `Padding` di `SafeArea` → `ListView`
 
 ## 4. Konsistensi Jarak (dari `optimasi_ux.md` #11)
 
 ### Aturan
+
 - Jarak antarelemen **WAJIB** serasi, proporsional, konsisten per `optimasi_ui.md`.
 - Bedakan jarak berdasarkan: hubungan antar elemen, kelompok konten, bagian halaman.
 - **DILARANG** jarak terlalu sempit (berhimpitan) atau terlalu lebar (tidak berkaitan).
 - **DILARANG** nilai padding/margin acak tanpa referensi desain.
 
 ### Skala Spacing Standar (contoh)
-| Konteks | Nilai | Penggunaan |
-|---------|-------|------------|
-| `spacing` Row/Column dalam card | 8 | Elemen terkait dekat (label+nilai) |
-| `spacing` Row/Column antar card | 12-16 | Kelompok konten terpisah |
-| `padding` Card/Container internal | 16 | Padding standar komponen |
-| `padding` Halaman (tepi layar) | 16 | Mengikuti `optimasi_ui.md` |
-| `runSpacing` Wrap chips | 8 | Baris baru chip |
-| `SizedBox` khusus sebelum aksi | 24 | Separator visual sebelum FAB/tombol utama |
+
+| Konteks                           | Nilai | Penggunaan                                |
+| --------------------------------- | ----- | ----------------------------------------- |
+| `spacing` Row/Column dalam card   | 8     | Elemen terkait dekat (label+nilai)        |
+| `spacing` Row/Column antar card   | 12-16 | Kelompok konten terpisah                  |
+| `padding` Card/Container internal | 16    | Padding standar komponen                  |
+| `padding` Halaman (tepi layar)    | 16    | Mengikuti `optimasi_ui.md`                |
+| `runSpacing` Wrap chips           | 8     | Baris baru chip                           |
+| `SizedBox` khusus sebelum aksi    | 24    | Separator visual sebelum FAB/tombol utama |
 
 ---
 

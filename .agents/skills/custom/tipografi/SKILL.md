@@ -1,9 +1,11 @@
 ---
 name: tipografi
 description: Panduan tipografi: penggunaan textTheme, copyWith untuk customisasi, hierarki visual label/sub-label/nilai, dan penggunaan bold terarah.
-kategori: custom
-versi: 1.0.0
-commit-terakhir: c7337d1519d495d0ccd022fb18d63f72d443866a
+metadata:
+  kategori: "custom"
+  versi: "1.0.0"
+  commit-terakhir: "c7337d1519d495d0ccd022fb18d63f72d443866a"
+  model: "kilo-auto/free"
 ---
 
 # Panduan Tipografi
