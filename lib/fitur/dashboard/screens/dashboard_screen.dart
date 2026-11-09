@@ -9,6 +9,7 @@ import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/impian_screen.dart';
+import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
@@ -174,10 +175,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       teksProgres = '$hariBerhenti dari $target hari';
     }
 
-    L.i(
-      'targetSmokeFreeHari=$target, tanggalBerhenti=$tanggalBerhenti, hariBerhenti=$hariBerhenti, teksProgres=$teksProgres',
-    );
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -204,7 +201,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   /// Membangun kartu ringkasan impian (jumlah total dan tercapai) untuk dashboard.
   Widget _buildCardRingkasanImpian(
     BiodataModel biodata,
-    AsyncValue<dynamic> impianAsync,
+    AsyncValue<ImpianState> impianAsync,
   ) {
     final uangDihemat = biodata.uangDihemat;
     String subtitle;

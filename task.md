@@ -15,7 +15,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: kerjakan
+- Status: selesai
 - Masalah: Logging `L.i` ditambahkan di `_buildCardTargetSmokeFree(...)` (dipanggil dari `build()`) yang mencatat `targetSmokeFreeHari/tanggalBerhenti/hariBerhenti/teksProgres` (baris ~166-168). Log di jalur `build()` dapat terpanggil berulang dan menambah noise.
 - Solusi: Pindahkan/hapus log dari method yang dipanggil `build()`; log pada titik tidak berfrekuensi tinggi bila diperlukan.
 - Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
@@ -33,7 +33,7 @@ Tidak ada temuan.
 
 #### Task 4
 
-- Status: kerjakan
+- Status: selesai
 - Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
 - Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
 - Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
@@ -89,7 +89,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: kerjakan
+- Status: selesai
 - Masalah: Commit `adc85b5` mengubah nilai konstanta `NamaKolom.tanggalMulaiTapering` dari `'tanggal_mulai_tapering'` (snake_case) menjadi `'Tanggal_mulai_tapering'` (kapital `T`). Nilai ini tidak konsisten dengan konvensi snake_case kolom lain dan dengan nama kolom yang sudah dibuat di skema/migrasi (`tanggal_mulai_tapering`). Perbedaan kapitalisasi berisiko merusak baca/tulis tanggal mulai tapering (pemetaan ke kolom DB berbeda). Perubahan ini tampak tidak disengaja dan di luar tujuan commit (menambah target smoke-free).
 - Solusi: Kembalikan nilai konstanta menjadi `static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';`. Verifikasi tidak ada referensi lain yang bergantung pada kapitalisasi salah; bila skema/migrasi sudah memakai nilai lama (lowercase), pastikan konsisten.
 - Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L95-L100), [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L139-L140), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L310-L311)
@@ -98,7 +98,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: kerjakan
+- Status: selesai
 - Masalah: `BiodataModel.fromSqflite` mem-parsing `targetSmokeFreeHari` (field nullable `int?`) menggunakan `ParserUtil.parseInt(...)` yang mengembalikan `defaultValue 0` ketika nilai DB `null` (terverifikasi: `share_global_saya/lib/src/utils/parser_util.dart` `parseInt` mengembalikan `defaultValue` untuk `null`). Akibatnya target yang tidak diset (`null`) dibaca sebagai `0`, sehingga UI/progres dapat menganggap target terset (bukan `null`) dan menampilkan perilaku yang tidak sesuai (mis. progres/validasi berbasis target).
 - Solusi: Gunakan `ParserUtil.parseIntOrNull(row[NamaKolom.targetSmokeFreeHari])` pada `fromSqflite` agar nilai `null` tetap `null`. Periksa juga apakah nilai `0` dari data lama (jika ada) perlu diperlakukan sebagai tidak diset sesuai kebutuhan bisnis (verifikasi sebelum memutuskan).
 - Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L53-L55), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L305-L315), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L419-L420)
@@ -146,8 +146,8 @@ Tidak ada temuan.
 
 #### Task 3
 
-- Status: kerjakan
-- Alasan: File `dashboard_screen.dart` sedang terbuka di editor (Open tabs), sehingga tidak dapat diedit sesuai aturan #5 kerjakan_task.md.
+- Status: dilewati
+- Alasan: Task ini duplikat dengan Task 4 di Kelompok 1 yang sudah selesai dikerjakan (menghapus penandaan `dynamic` eksplisit pada `impianProvider` dan parameter method). File `dashboard_screen.dart` sudah diperbaiki di Kelompok 1 Task 4.
 - Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
 - Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
 - Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
