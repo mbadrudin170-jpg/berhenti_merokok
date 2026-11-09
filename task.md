@@ -13,15 +13,6 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 1
-
-- Status: Selesai
-- Masalah: Pada `_buildSaldoTerkumpul` di `impian_screen.dart` digunakan `SizedBox(width: 8)` untuk memberi jarak antara ikon `Icons.savings_outlined` dan kolom teks. Jarak seragam antar-anak Row sebaiknya diatur dengan properti `spacing` pada `Row`, bukan `SizedBox` individual, sesuai `optimasi_ui.md` #4.
-- Solusi: Ganti `SizedBox(width: 8)` dengan menambahkan `spacing: 8` pada `Row`, dan hapus `SizedBox` tersebut.
-- Aturan dilanggar: [optimasi_ui.md](.agents/rules/global/optimasi_ui.md#L51-L53)
-- File bermasalah: [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L328)
-- Prompt:
-
 #### Task 2
 
 - Status: Belum dikerjakan
@@ -126,15 +117,6 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 1
-
-- Status: batal
-- Masalah: Logging `L.i` ditambahkan di jalur yang dipanggil dari `build()` pada biodata: (1) `BiodataScreen.build()` mencatat `targetSmokeFreeHari=$targetSmokeFreeHari` (baris ~75), (2) `_buildItem(...)` dipanggil berulang dari `build()` dan mencatat `label=$label, nilai=$nilai` (baris ~195). Ini berpotensi menambah noise karena `build()`/helper-nya dapat dipanggil berulang.
-- Solusi: Pindahkan/hapus log yang dipicu dari `build()` dan helper per-item; cukup log pada titik tidak berfrekuensi tinggi (initState/dispose/aksi/perhitungan). Jika log tetap diperlukan, batasi pada perubahan nilai yang relevan di luar `build()`.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
-- File bermasalah: [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L75), [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L195)
-- Prompt:
-
 # Kelompok 5
 
 ## File terdampak
@@ -169,24 +151,6 @@ Tidak ada temuan.
 ## Sedang
 
 ## Rendah
-
-#### Task 1
-
-- Status: batal
-- Masalah: Logging `L.i` ditambahkan di `_buildCardTargetSmokeFree(...)` (dipanggil dari `build()`) yang mencatat `targetSmokeFreeHari/tanggalBerhenti/hariBerhenti/teksProgres` (baris ~166-168). Log di jalur `build()` dapat terpanggil berulang dan menambah noise.
-- Solusi: Pindahkan/hapus log dari method yang dipanggil `build()`; log pada titik tidak berfrekuensi tinggi bila diperlukan.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L166-L168)
-- Prompt:
-
-#### Task 2
-
-- Status: batal
-- Masalah: Commit `18cc24e` menambahkan `ref.watch(impianProvider)` di `build()` (baris 83) dengan logging `L.i('impianAsync.isLoading=..., hasError=...')` (baris 83-L86), serta logging `L.i` di dalam `_buildCardRingkasanImpian` (baris 211/215/226). Kedua berada di jalur `build()` yang dapat dipanggil berulang, menambah noise.
-- Solusi: Hapus log `impianAsync.isLoading/hasError` dari `build()`; pindahkan log `ringkasan impian: ...` ke titik tidak berfrekuensi tinggi (initState/dispose/aksi) atau hapus sama sekali.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83-L86), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L211-L226)
-- Prompt:
 
 #### Task 3
 
@@ -230,12 +194,3 @@ Tidak ada temuan.
 - [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
 
 ## Rendah
-
-#### Task 1
-
-- Status: Selesai
-- Masalah: Urutan import pada `detail_impian_screen.dart` masih tidak sepenuhnya alfabetis berdasarkan path package. Commit 0b0b564 telah menukar `widget/visual_tabungan_impian.dart` dan `notifier/impian_notifier.dart` (notifier sekarang sebelum widget ✓), tetapi baris 7 `screens/form_impian.dart` masih berada di atas baris 8 `notifier/impian_notifier.dart`, padahal `notifier` secara alfabetis mendahului `screens`.
-- Solusi: Pindahkan `screens/form_impian.dart` ke bawah `notifier/impian_notifier.dart`, sehingga urutan menjadi: `notifier/impian_notifier.dart`, `screens/form_impian.dart`, `widget/visual_tabungan_impian.dart`.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99-L104), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L31)
-- File bermasalah: [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L7-L9)
-- Prompt:
