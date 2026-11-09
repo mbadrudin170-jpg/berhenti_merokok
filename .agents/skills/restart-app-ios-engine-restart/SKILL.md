@@ -48,14 +48,14 @@ lifecycle adoption. Updating only the restart callback does not migrate the host
 
 ## Failure handling
 
-| Result code                         | Action                                                                                                         |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `IOS_ENGINE_RESTART_NOT_CONFIGURED` | Configure AppDelegate, rebuild, and check capability again.                                                    |
-| `IOS_APP_NOT_ACTIVE`                | Wait for foreground activation and an intentional restart action.                                              |
-| `IOS_NO_ACTIVE_WINDOW`              | Check scene/window lifecycle or supply the correct `windowProvider`.                                           |
-| `IOS_UNSAFE_ROOT_REPLACEMENT`       | Supply a host-specific `viewControllerInstaller`; do not overwrite a native shell with a generic Flutter root. |
-| `IOS_RESTART_ALREADY_IN_PROGRESS`   | Prevent duplicate restart requests.                                                                            |
-| `IOS_PROCESS_RESTART_UNSUPPORTED`   | Use configured engine restart if it meets the requested behavior.                                              |
+| Result code | Action |
+| --- | --- |
+| `IOS_ENGINE_RESTART_NOT_CONFIGURED` | Configure AppDelegate, rebuild, and check capability again. |
+| `IOS_APP_NOT_ACTIVE` | Wait for foreground activation and an intentional restart action. |
+| `IOS_NO_ACTIVE_WINDOW` | Check scene/window lifecycle or supply the correct `windowProvider`. |
+| `IOS_UNSAFE_ROOT_REPLACEMENT` | Supply a host-specific `viewControllerInstaller`; do not overwrite a native shell with a generic Flutter root. |
+| `IOS_RESTART_ALREADY_IN_PROGRESS` | Prevent duplicate restart requests. |
+| `IOS_PROCESS_RESTART_UNSUPPORTED` | Use configured engine restart if it meets the requested behavior. |
 
 For a custom shell, select the intended scene explicitly. The default installer
 expects a `FlutterViewController` at the window root. `beforeRestart` runs before

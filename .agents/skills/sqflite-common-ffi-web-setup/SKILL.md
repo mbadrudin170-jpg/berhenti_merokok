@@ -40,10 +40,10 @@ Future<void> main() async {
 
 ### Dependency, binaries and import
 
-- Add `sqflite_common_ffi_web` (currently 1.1.x, Dart 3.12, `platforms: web`
+* Add `sqflite_common_ffi_web` (currently 1.1.x, Dart 3.12, `platforms: web`
   only) to `dependencies`. It depends on `sqflite_common_ffi` and
   `sqflite_common`.
-- Run `dart run sqflite_common_ffi_web:setup` in the project directory after
+* Run `dart run sqflite_common_ffi_web:setup` in the project directory after
   adding the dependency and after every upgrade of the package or of
   `sqlite3`. It builds the shared worker with `webdev` (into
   `.dart_tool/sqflite_common_ffi_web/setup/<version>/`) and writes
@@ -54,11 +54,11 @@ Future<void> main() async {
   download), `--sqlite3-wasm-url <url>`, and an optional project path
   argument. Commit the two files or add them to `.gitignore` and run setup in
   CI; either way they must be present in the deployed site root.
-- The same setup is callable from Dart: `setupSqfliteWebBinaries(options:
-SqfliteWebSetupOptions(...))` from `package:sqflite_common_ffi_web/setup.dart`
+* The same setup is callable from Dart: `setupSqfliteWebBinaries(options:
+  SqfliteWebSetupOptions(...))` from `package:sqflite_common_ffi_web/setup.dart`
   (`path`, `dir`, `force`, `verbose`, `sqlite3WasmUri`, `noSqlite3Wasm`,
   `sqlite3WasmFilename`, `sqfliteWebWorkerFilename`). io only.
-- Import `package:sqflite_common_ffi_web/sqflite_ffi_web.dart`. It exports
+* Import `package:sqflite_common_ffi_web/sqflite_ffi_web.dart`. It exports
   only the web factories and options (`databaseFactoryFfiWeb`,
   `databaseFactoryFfiWebNoWebWorker`, `databaseFactoryFfiWebBasicWebWorker`,
   `createDatabaseFactoryFfiWeb`, `SqfliteFfiWebOptions`,
@@ -68,29 +68,29 @@ SqfliteWebSetupOptions(...))` from `package:sqflite_common_ffi_web/setup.dart`
   `package:sqflite_common/sqlite_api.dart` (Dart web),
   `package:sqflite_common_ffi/sqflite_ffi.dart` or `package:sqflite/sqflite.dart`
   (Flutter), so import one of them too.
-- The file compiles on io too (the getters throw `UnsupportedError` there),
+* The file compiles on io too (the getters throw `UnsupportedError` there),
   so importing it from shared code is fine as long as the factory is only
   touched when `kIsWeb` / `identical(0, 0.0)` is true.
 
 ### Choosing the factory
 
-- `databaseFactoryFfiWeb` (tag `ffi_web`): SQLite runs in a `SharedWorker`
+* `databaseFactoryFfiWeb` (tag `ffi_web`): SQLite runs in a `SharedWorker`
   loaded from `sqflite_sw.js`; all tabs of the origin share one SQLite
   instance, so it is cross-tab safe. When `SharedWorker` is unavailable
   (Android Chrome) it silently falls back to a dedicated `Worker`, which is
   not cross-tab safe. This is the default choice.
-- `databaseFactoryFfiWebNoWebWorker`: loads `sqlite3.wasm` in the main
+* `databaseFactoryFfiWebNoWebWorker`: loads `sqlite3.wasm` in the main
   thread; no worker file needed, but long queries block the UI and several
   tabs writing the same database can corrupt it. Use for tools, demos or
   when workers cannot be served.
-- `databaseFactoryFfiWebBasicWebWorker`: testing only (forces a dedicated
+* `databaseFactoryFfiWebBasicWebWorker`: testing only (forces a dedicated
   `Worker`).
-- The worker and wasm are loaded lazily on the first factory call from
+* The worker and wasm are loaded lazily on the first factory call from
   `sqflite_sw.js` / `sqlite3.wasm` relative to the page URL. With a
   non-root `<base href>` or another location, pass `sharedWorkerUri` /
   `sqlite3WasmUri` through `createDatabaseFactoryFfiWeb(options:
-SqfliteFfiWebOptions(...))` (see `sqflite-common-ffi-web-options`).
-- Flutter app that already uses `sqflite` on mobile: keep the code, set
+  SqfliteFfiWebOptions(...))` (see `sqflite-common-ffi-web-options`).
+* Flutter app that already uses `sqflite` on mobile: keep the code, set
   `databaseFactory = databaseFactoryFfiWeb;` once at startup when `kIsWeb`,
   before the first `openDatabase`. The global `openDatabase()` then works on
   all platforms. Use `sqflite_common_ffi` (`databaseFactoryFfi`) for the
@@ -98,39 +98,39 @@ SqfliteFfiWebOptions(...))` (see `sqflite-common-ffi-web-options`).
 
 ### Paths and persistence
 
-- `getDatabasesPath()` returns `/` and relative paths are used as is: a
+* `getDatabasesPath()` returns `/` and relative paths are used as is: a
   database name such as `my_db.db` is a key in the virtual file system, not
   a file. Do not build paths with `path_provider` on the web.
-- Storage is an IndexedDB database named `sqflite_databases` (override with
+* Storage is an IndexedDB database named `sqflite_databases` (override with
   `SqfliteFfiWebOptions.indexedDbName`) holding every sqflite database of the
   origin. IndexedDB is per origin including the port: `localhost:8080` and
   `localhost:8081` are different stores, so always debug on the same port.
   There is no OPFS backend.
-- `inMemoryDatabasePath` opens a private in-memory SQLite database inside
+* `inMemoryDatabasePath` opens a private in-memory SQLite database inside
   the worker (nothing stored).
-- To import a bundled database (asset or download), write its bytes with
+* To import a bundled database (asset or download), write its bytes with
   `factory.writeDatabaseBytes(path, bytes)` then `openDatabase(path)`;
   `readDatabaseBytes(path)` exports it. `databaseExists`, `deleteDatabase`
   work on the virtual file system.
-- `sqfliteFfiInit()` from `sqflite_common_ffi` is a no-op on the web; calling
+* `sqfliteFfiInit()` from `sqflite_common_ffi` is a no-op on the web; calling
   it in shared code is harmless.
 
 ### Limitations
 
-- Experimental: slower than native, larger message overhead (each call goes
+* Experimental: slower than native, larger message overhead (each call goes
   through `postMessage`), not fully tested.
-- dart2wasm (`flutter build web --wasm`) is supported since 1.2.0 with
+* dart2wasm (`flutter build web --wasm`) is supported since 1.2.0 with
   `sqflite_common` 2.5.13 or later; with older versions `deleteDatabase` and
   `databaseExists` silently fail when the app is compiled with dart2wasm.
-- Basic `Worker` fallback (Android Chrome) is not cross-tab safe.
-- One connection per database: `OpenDatabaseOptions(singleInstance: false)`
+* Basic `Worker` fallback (Android Chrome) is not cross-tab safe.
+* One connection per database: `OpenDatabaseOptions(singleInstance: false)`
   throws an `ArgumentError` for a persistent database. Every connection of a
   factory runs in the same wasm instance on the same virtual file system,
   which has no locking between connections, so a second connection to the
   same file could corrupt it. Keep the default `singleInstance: true` (the
   same `Database` is returned for the same path); only `inMemoryDatabasePath`
   can be opened several times.
-- Only one worker script name per site: the shared worker is keyed by its
+* Only one worker script name per site: the shared worker is keyed by its
   URL, so after upgrading the package all tabs must reload. To force a
   reload change the worker file name (see options skill, `sw_js_file`).
 
@@ -229,22 +229,22 @@ Future<String> sqliteVersion() async {
 
 ## Common mistakes
 
-- Forgetting `dart run sqflite_common_ffi_web:setup`: the first call fails
+* Forgetting `dart run sqflite_common_ffi_web:setup`: the first call fails
   and the console prints "An error occurred while initializing the web
   worker ... failure to find the worker javascript file at sqflite_sw.js".
-- Serving the app from a sub path without adjusting `sharedWorkerUri` /
+* Serving the app from a sub path without adjusting `sharedWorkerUri` /
   `sqlite3WasmUri`, or a server that does not serve `.wasm` as
   `application/wasm`.
-- Upgrading `sqflite_common_ffi_web` or `sqlite3` without re-running setup
+* Upgrading `sqflite_common_ffi_web` or `sqlite3` without re-running setup
   (`--force` if the files look up to date but the wasm version changed).
-- Using `getDatabasesPath()` + `join` or `path_provider` on the web; use a
+* Using `getDatabasesPath()` + `join` or `path_provider` on the web; use a
   plain name.
-- Debugging on changing ports and "losing" the database.
-- Passing `singleInstance: false` in shared code (for example for a
+* Debugging on changing ports and "losing" the database.
+* Passing `singleInstance: false` in shared code (for example for a
   background task or a second controller): it throws on the web; share the
   single instance instead.
-- Setting `databaseFactory = databaseFactoryFfiWeb` on io (throws
+* Setting `databaseFactory = databaseFactoryFfiWeb` on io (throws
   `UnsupportedError`): guard with `kIsWeb`.
-- Importing only `sqflite_ffi_web.dart` and expecting `Database` or
+* Importing only `sqflite_ffi_web.dart` and expecting `Database` or
   `OpenDatabaseOptions` to be defined; add `package:sqflite_common/sqlite_api.dart`
   (or `sqflite`).

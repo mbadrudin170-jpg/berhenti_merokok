@@ -33,44 +33,44 @@ Future<List<Map<String, Object?>>> pendingTodos(Database db) =>
 
 ### Statements and arguments
 
-- `execute(sql, [args])` is for DDL and statements without a result (`CREATE
-TABLE`, `PRAGMA`, `DROP`). One statement per call; `;`-separated strings
+* `execute(sql, [args])` is for DDL and statements without a result (`CREATE
+  TABLE`, `PRAGMA`, `DROP`). One statement per call; `;`-separated strings
   are rejected.
-- `insert(table, values, {nullColumnHack, conflictAlgorithm})` returns the
+* `insert(table, values, {nullColumnHack, conflictAlgorithm})` returns the
   inserted row id (`rawInsert` too). `update(...)` / `delete(...)` and
   `rawUpdate` / `rawDelete` return the number of rows changed. `query(...)`
   / `rawQuery(...)` return `List<Map<String, Object?>>`.
-- Always bind values with `?` and an argument list (`whereArgs` or the raw
+* Always bind values with `?` and an argument list (`whereArgs` or the raw
   `arguments`). Never interpolate user data into the SQL string. `?NNN`
   positional references (`?1`, `?2`) are supported.
-- `IN (?)` does not accept a list argument. Generate one `?` per value:
+* `IN (?)` does not accept a list argument. Generate one `?` per value:
   `'id IN (${List.filled(ids.length, '?').join(',')})'` with `whereArgs: ids`.
-- Test for null with `IS NULL` / `IS NOT NULL` in the SQL, not with `= ?`
+* Test for null with `IS NULL` / `IS NOT NULL` in the SQL, not with `= ?`
   and a `null` argument (`whereArgs` values must be non-null; raw `arguments`
   may contain `null`).
-- `query` clauses (`where`, `orderBy`, `groupBy`, `having`, `columns`,
+* `query` clauses (`where`, `orderBy`, `groupBy`, `having`, `columns`,
   `limit`, `offset`, `distinct`) are raw SQL fragments without the keyword:
   `orderBy: 'name COLLATE NOCASE DESC'`, `where: 'a = ? AND b > ?'`.
   `having` requires `groupBy`.
-- Column values must be `int`, `num` (`REAL`), `String` (`TEXT`),
+* Column values must be `int`, `num` (`REAL`), `String` (`TEXT`),
   `Uint8List` (`BLOB`) or `null`. `bool` is stored as `INTEGER` 0/1;
   `DateTime` as `millisecondsSinceEpoch` (`INTEGER`) or `toIso8601String()`
   (`TEXT`); nested maps/lists as a JSON `TEXT`. Passing another type prints a
   warning in debug mode and will throw in the future.
-- Table and column names that are SQLite keywords (`group`, `order`,
+* Table and column names that are SQLite keywords (`group`, `order`,
   `table`, `values`, ...) are escaped automatically by the helpers
   (`insert`, `query`, `update`, `delete` and the `columns` list) but not
   inside `where`, `orderBy` or raw SQL: write `'"group" = ?'` there, or call
   `escapeName(name)` from `package:sqflite/sql.dart`. Prefer names that are
   not keywords.
-- Query results are read-only: copy with `Map<String, Object?>.from(row)` /
+* Query results are read-only: copy with `Map<String, Object?>.from(row)` /
   `List.of(rows)` before mutating. A row is a `Map<String, Object?>` keyed by
   column name (or alias); a `COUNT(*)` column is keyed `'COUNT(*)'`.
-- `Sqflite.firstIntValue(rows)` (or `firstIntValue` from
+* `Sqflite.firstIntValue(rows)` (or `firstIntValue` from
   `package:sqflite/utils/utils.dart`) reads the first value of the first row
   as an `int?`, the idiom for `SELECT COUNT(*)`. `Sqflite.hex(bytes)` builds
   the argument for `'hex(blob_column) = ?'`.
-- `ConflictAlgorithm` (on `insert` and `update`): `replace` deletes the
+* `ConflictAlgorithm` (on `insert` and `update`): `replace` deletes the
   conflicting row(s) and inserts (upsert by primary/unique key), `ignore`
   skips the row without error (`insert` then returns 0), `abort` (default),
   `fail`, `rollback`. Alternatively catch `DatabaseException` and check
@@ -78,65 +78,65 @@ TABLE`, `PRAGMA`, `DROP`). One statement per call; `;`-separated strings
 
 ### Transactions
 
-- `db.transaction((txn) async {...})` begins `BEGIN IMMEDIATE` (`exclusive:
-true` for `BEGIN EXCLUSIVE`), runs the callback, then `COMMIT`; if the
+* `db.transaction((txn) async {...})` begins `BEGIN IMMEDIATE` (`exclusive:
+  true` for `BEGIN EXCLUSIVE`), runs the callback, then `COMMIT`; if the
   callback throws it runs `ROLLBACK` and rethrows. Return a value from the
   callback to get it from `transaction<T>`.
-- Inside the callback use only `txn`. Any call on `db` (or on another
+* Inside the callback use only `txn`. Any call on `db` (or on another
   `Database` object for the same file) waits for the transaction and
   deadlocks; after 10 s sqflite prints "Warning database has been locked".
-- A caught exception inside the callback does not roll back: the transaction
+* A caught exception inside the callback does not roll back: the transaction
   commits with the successful statements. Rethrow (or throw your own error)
   to cancel.
-- Transactions are exclusive and serialized: no concurrent read while one is
+* Transactions are exclusive and serialized: no concurrent read while one is
   running. Keep them short and never await UI or network inside.
-- `db.readTransaction(...)` is experimental; on sqflite it is a normal
+* `db.readTransaction(...)` is experimental; on sqflite it is a normal
   transaction that is always rolled back. Use `transaction` unless you are on
   an implementation that documents it.
 
 ### Batches
 
-- `final batch = db.batch(); batch.insert(...); batch.update(...);
-final results = await batch.commit();` sends all operations in one native
+* `final batch = db.batch(); batch.insert(...); batch.update(...);
+  final results = await batch.commit();` sends all operations in one native
   call inside a transaction managed by sqflite. `results` holds one entry per
   operation (insert id, change count, query rows) in order.
-- `commit(noResult: true)` skips result collection (faster for large
+* `commit(noResult: true)` skips result collection (faster for large
   imports). `commit(continueOnError: true)` runs every operation and puts a
   `DatabaseException` in the result slot of the failed ones instead of
   stopping.
-- `txn.batch()` inside a transaction is committed with that transaction:
+* `txn.batch()` inside a transaction is committed with that transaction:
   `await batch.commit()` is still required but the data only lands on
   `COMMIT` of the enclosing transaction. Inside `onCreate` / `onUpgrade` the
   same applies.
-- `batch.apply()` runs the statements without a transaction; use `commit()`
+* `batch.apply()` runs the statements without a transaction; use `commit()`
   unless you manage `BEGIN`/`COMMIT` yourself.
-- A batch is a list of statements decided up front; if a later statement
+* A batch is a list of statements decided up front; if a later statement
   depends on a query result, use a `transaction` instead.
 
 ### Large results
 
-- `db.query(...)` loads every row in memory. For big tables use
+* `db.query(...)` loads every row in memory. For big tables use
   `queryCursor` / `rawQueryCursor` (`bufferSize`, default 100 rows) and
   `while (await cursor.moveNext()) { cursor.current }` in a `try/finally`
   that calls `cursor.close()`, or the `queryIterate` / `rawQueryIterate`
   extensions (`SqfliteDatabaseExecutorIterateExt`) whose `onRow` callback
   returns `false` to stop and which close the cursor for you.
-- Rows over roughly 1 MB fail on Android (`CursorWindow`); store big blobs in
+* Rows over roughly 1 MB fail on Android (`CursorWindow`); store big blobs in
   files and keep a reference in the database.
-- `SqfliteSqlCommand.query/insert/update/delete/rawQuery/...` builds a
+* `SqfliteSqlCommand.query/insert/update/delete/rawQuery/...` builds a
   reusable command (`sql` + `arguments`); run it later with
   `cmd.query(executor)`, `cmd.insert(executor)`, `cmd.iterate(executor,
-onRow: ...)`.
+  onRow: ...)`.
 
 ### Errors
 
-- Every native error surfaces as `DatabaseException`. Use its helpers rather
+* Every native error surfaces as `DatabaseException`. Use its helpers rather
   than parsing messages: `isNoSuchTableError([table])`,
   `isDuplicateColumnError([column])`, `isSyntaxError()`,
   `isUniqueConstraintError([field])`, `isNotNullConstraintError([field])`,
   `isOpenFailedError()`, `isDatabaseClosedError()`, `isReadOnlyError()`,
   `getResultCode()` (extended code on Android, primary code on iOS).
-- Errors thrown by `openDatabase` are usually thrown by your own callbacks;
+* Errors thrown by `openDatabase` are usually thrown by your own callbacks;
   read the message, it contains the failing SQL and arguments.
 
 ## Examples
@@ -387,15 +387,15 @@ Future<List<Map<String, Object?>>> safeQuery(Database db) async {
 
 ## Common mistakes
 
-- Using `db` instead of `txn` inside `transaction()`: deadlock, then the
+* Using `db` instead of `txn` inside `transaction()`: deadlock, then the
   10 s "database has been locked" warning.
-- `whereArgs: [list]` for an `IN` clause, or `'col = ?'` with `[null]`.
-- Storing `bool`, `DateTime`, `List` or `Map` values directly.
-- Mutating a row map returned by `query` (read-only) instead of copying it.
-- Expecting `batch.commit()` in a transaction to be visible outside before the
+* `whereArgs: [list]` for an `IN` clause, or `'col = ?'` with `[null]`.
+* Storing `bool`, `DateTime`, `List` or `Map` values directly.
+* Mutating a row map returned by `query` (read-only) instead of copying it.
+* Expecting `batch.commit()` in a transaction to be visible outside before the
   transaction commits, or expecting `apply()` to be atomic.
-- Building `'... WHERE name = "$name"'` by interpolation instead of binding.
-- Assuming UPSERT syntax (`ON CONFLICT DO UPDATE`) or JSON functions exist:
+* Building `'... WHERE name = "$name"'` by interpolation instead of binding.
+* Assuming UPSERT syntax (`ON CONFLICT DO UPDATE`) or JSON functions exist:
   they depend on the OS SQLite version (`SELECT sqlite_version()`);
   `ConflictAlgorithm.replace` or a transaction works everywhere.
 

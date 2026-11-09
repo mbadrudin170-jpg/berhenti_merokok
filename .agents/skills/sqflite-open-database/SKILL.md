@@ -41,98 +41,98 @@ Future<Database> openAppDatabase() async {
 
 ### Imports and platforms
 
-- `import 'package:sqflite/sqflite.dart';` gives the global functions
+* `import 'package:sqflite/sqflite.dart';` gives the global functions
   (`openDatabase`, `openReadOnlyDatabase`, `getDatabasesPath`,
   `deleteDatabase`, `databaseExists`), the global `databaseFactory`, the
   `Sqflite` helper class and every type of `package:sqflite/sqlite_api.dart`
   (`Database`, `Transaction`, `Batch`, `DatabaseFactory`,
   `OpenDatabaseOptions`, `ConflictAlgorithm`, `DatabaseException`,
   `inMemoryDatabasePath`, ...).
-- `sqflite` only works on Android, iOS and macOS. For Linux, Windows, the Dart
+* `sqflite` only works on Android, iOS and macOS. For Linux, Windows, the Dart
   VM and unit tests use `package:sqflite_common_ffi`; for the web use
   `package:sqflite_common_ffi_web`; both plug in through
   `databaseFactory = ...` and the code below stays unchanged. Code that must
   not depend on Flutter should import `package:sqflite_common/sqlite_api.dart`
   and receive a `DatabaseFactory`.
-- Build paths with `join` from `package:path`, never with string
+* Build paths with `join` from `package:path`, never with string
   concatenation. `getDatabasesPath()` is `data/data/<package>/databases` on
   Android and the Documents directory on iOS/macOS; on iOS the Library
   directory from `path_provider` (`getLibraryDirectory()`) is the recommended
   location instead.
-- The plugin creates the parent directory of a read-write database on open.
+* The plugin creates the parent directory of a read-write database on open.
   When you write the file yourself (asset copy) create the directory first
   with `Directory(dirname(path)).create(recursive: true)`.
 
 ### Versioning callbacks
 
-- Pass `version` (an `int` > 0) to enable migrations. Callbacks run in this
+* Pass `version` (an `int` > 0) to enable migrations. Callbacks run in this
   order: `onConfigure`, then exactly one of `onCreate` / `onUpgrade` /
   `onDowngrade`, then `onOpen`. Without `version` only `onConfigure` and
   `onOpen` run.
-- `onCreate(db, version)` runs when the file does not exist. `onUpgrade(db,
-oldVersion, newVersion)` runs when the stored version is lower than
+* `onCreate(db, version)` runs when the file does not exist. `onUpgrade(db,
+  oldVersion, newVersion)` runs when the stored version is lower than
   `version` (and also instead of `onCreate`, with `oldVersion == 0`, when no
   `onCreate` is given). `onDowngrade` runs when the stored version is higher;
   pass `onDatabaseDowngradeDelete` to delete and recreate the database in that
   case, or `onDatabaseVersionChangeError` to fail.
-- `onCreate`, `onUpgrade` and `onDowngrade` already run inside a transaction:
+* `onCreate`, `onUpgrade` and `onDowngrade` already run inside a transaction:
   use the `db` they receive directly (or `db.batch()` + `commit()`), never call
   `db.transaction()` inside them. The version is stored (`PRAGMA
-user_version`) when the callback completes without throwing.
-- Write migrations as a chain: `if (oldVersion < 2) {...} if (oldVersion < 3)
-{...}` so any old version reaches the newest schema. Put schema statements
+  user_version`) when the callback completes without throwing.
+* Write migrations as a chain: `if (oldVersion < 2) {...} if (oldVersion < 3)
+  {...}` so any old version reaches the newest schema. Put schema statements
   in a `Batch`, one statement per `execute` (multi-statement strings separated
   by `;` are not supported).
-- `onConfigure` is the place for `PRAGMA foreign_keys = ON`,
+* `onConfigure` is the place for `PRAGMA foreign_keys = ON`,
   `db.setJournalMode('WAL')` (extension `SqfliteDatabaseExt`, handles the
   Android quirk where `execute` fails), `PRAGMA auto_vacuum` (only when
   `await db.getVersion() == 0`, i.e. a new file) and, on Android,
   `db.androidSetLocale('fr-FR')` (extension `SqfliteDatabaseAndroidExt`).
   They must be re-applied at every open, which is why they belong there.
-- `db.getVersion()` / `db.setVersion()` exist (extension
+* `db.getVersion()` / `db.setVersion()` exist (extension
   `SqfliteDatabaseExecutorExt`) but do not drive migrations with them; use
   `version` and the callbacks.
-- `openDatabase(path, options: OpenDatabaseOptions(...))` is equivalent to
+* `openDatabase(path, options: OpenDatabaseOptions(...))` is equivalent to
   the named parameters; when `options` is given all other parameters are
   ignored. `DatabaseFactory.openDatabase` only takes `options`.
 
 ### Instances, closing, deleting
 
-- Open the database once and keep the `Database`; store the `Future<Database>`
+* Open the database once and keep the `Database`; store the `Future<Database>`
   (not the `Database`) in a field so concurrent callers share the same open
   call. Many apps never close it.
-- `singleInstance: true` (default) returns the same `Database` for the same
+* `singleInstance: true` (default) returns the same `Database` for the same
   path; a second `openDatabase` on that path returns the existing instance and
   ignores its callbacks. It is forced to `false` for `inMemoryDatabasePath`
   (`':memory:'`). Opening the same file twice with `singleInstance: false`
   causes "database is locked" errors on Android.
-- `rollbackActiveTransactionOnOpen` (`OpenDatabaseOptions`, default: true in
+* `rollbackActiveTransactionOnOpen` (`OpenDatabaseOptions`, default: true in
   debug, false in release) rolls back a transaction left open by a previous
   isolate/hot restart when `singleInstance` is true. Keep the default unless
   you deliberately use several isolates.
-- `readOnly: true` (or `openReadOnlyDatabase(path)`) ignores every callback,
+* `readOnly: true` (or `openReadOnlyDatabase(path)`) ignores every callback,
   never starts a transaction and fails on the first write. Use it for shipped
   asset databases.
-- Delete with `deleteDatabase(path)`, never with `File(path).delete()`: it
+* Delete with `deleteDatabase(path)`, never with `File(path).delete()`: it
   closes the open instance, handles the hot-restart state and removes the
   `-wal`, `-shm` and `-journal` side files.
-- `databaseExists(path)` checks the file; `db.isOpen` tells if `close()` was
+* `databaseExists(path)` checks the file; `db.isOpen` tells if `close()` was
   called; `db.path` is the resolved absolute path.
-- `databaseFactory.readDatabaseBytes(path)` / `writeDatabaseBytes(path,
-bytes)` copy a whole database file (backup, restore, asset import) in a way
+* `databaseFactory.readDatabaseBytes(path)` / `writeDatabaseBytes(path,
+  bytes)` copy a whole database file (backup, restore, asset import) in a way
   that also works with the ffi and web factories.
-- `factory.sandbox(path: root)` (extension
+* `factory.sandbox(path: root)` (extension
   `SqfliteDatabaseFactorySandboxExtension`) returns a `DatabaseFactory` whose
   relative paths live under `root` and whose absolute paths must stay inside
   it. Use it to isolate tests or per-user data.
 
 ### Isolates and hot restart
 
-- Use the database from the main isolate: native calls already run on a
+* Use the database from the main isolate: native calls already run on a
   background thread and the transaction lock is not cross-isolate. If a
   background isolate (push notification, work manager) must read the database,
   open it there with `singleInstance: false` and do not close it.
-- After changing the schema during development restart the app; a hot reload
+* After changing the schema during development restart the app; a hot reload
   keeps the native connection open with the old schema.
 
 ## Examples
@@ -279,18 +279,18 @@ Future<Database> openWith(DatabaseFactory factory, String path) {
 
 ## Common mistakes
 
-- Calling `db.transaction()` inside `onCreate` / `onUpgrade`: they are already
+* Calling `db.transaction()` inside `onCreate` / `onUpgrade`: they are already
   in a transaction, use `db` directly or a batch.
-- Creating two tables in one `execute` string. One statement per call.
-- Forgetting to bump `version` after changing `onCreate`; existing installs
+* Creating two tables in one `execute` string. One statement per call.
+* Forgetting to bump `version` after changing `onCreate`; existing installs
   never see the new schema. Handle it in `onUpgrade` too.
-- Deleting the file with `dart:io` instead of `deleteDatabase`, then wondering
+* Deleting the file with `dart:io` instead of `deleteDatabase`, then wondering
   why `onCreate` does not run after a hot restart.
-- Opening the database in every widget/repository call with `singleInstance:
-false`, leading to `database is locked (code 5)`.
-- Putting `PRAGMA foreign_keys` / `setJournalMode` in `onCreate`: they are per
+* Opening the database in every widget/repository call with `singleInstance:
+  false`, leading to `database is locked (code 5)`.
+* Putting `PRAGMA foreign_keys` / `setJournalMode` in `onCreate`: they are per
   connection and must go in `onConfigure`.
-- Calling `openDatabase` on Linux/Windows/web without first setting
+* Calling `openDatabase` on Linux/Windows/web without first setting
   `databaseFactory` from `sqflite_common_ffi` / `sqflite_common_ffi_web`
   (`StateError: databaseFactory not initialized`).
 

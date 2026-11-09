@@ -45,95 +45,95 @@ void main() {
 
 ### Which factory where
 
-- `sqflite` (Android/iOS/macOS): nothing to do, the plugin registers
+* `sqflite` (Android/iOS/macOS): nothing to do, the plugin registers
   `databaseFactory` at startup (`databaseFactorySqflitePlugin`).
-- Linux, Windows, Dart VM, `flutter test`, `dart test`: add
+* Linux, Windows, Dart VM, `flutter test`, `dart test`: add
   `sqflite_common_ffi` (as a `dev_dependency` when only tests need it), call
   `sqfliteFfiInit()` once, then `databaseFactory = databaseFactoryFfi`. It
   uses its own SQLite (`package:sqlite3`), usually newer than the device
   one; run integration tests on a device for version-specific SQL.
-- Widget tests (`testWidgets`): use `databaseFactoryFfiNoIsolate` instead of
+* Widget tests (`testWidgets`): use `databaseFactoryFfiNoIsolate` instead of
   `databaseFactoryFfi`; the isolate-based factory hangs in the test binding.
-- `package:sqflite_common_ffi/sqflite_ffi.dart` re-exports the whole
+* `package:sqflite_common_ffi/sqflite_ffi.dart` re-exports the whole
   `package:sqflite_common/sqflite.dart` API (`openDatabase`,
   `databaseFactory`, `Database`, `inMemoryDatabasePath`, ...), so a test
   that imports it does not need `package:sqflite/sqflite.dart` as well (the
   analyzer flags it as `unnecessary_import`); import `sqflite.dart` only for
   the `Sqflite` helper class or the Android/Darwin extensions.
-- Web: add `sqflite_common_ffi_web`, set `databaseFactory =
-databaseFactoryFfiWeb` (setup of the worker/wasm binaries is described in
+* Web: add `sqflite_common_ffi_web`, set `databaseFactory =
+  databaseFactoryFfiWeb` (setup of the worker/wasm binaries is described in
   that package's own skill/README).
-- One `main()` can select the factory at runtime: `kIsWeb` first, then
+* One `main()` can select the factory at runtime: `kIsWeb` first, then
   `Platform.isWindows || Platform.isLinux`, otherwise leave the sqflite
   default. Set `databaseFactory` once, before any `openDatabase`, and before
   `runApp`. Setting it twice prints a warning.
-- `databaseFactory` throws `StateError('databaseFactory not initialized')`
+* `databaseFactory` throws `StateError('databaseFactory not initialized')`
   when read before an implementation registered; `databaseFactoryOrNull` is
   the nullable getter.
-- Encryption: `sqflite_sqlcipher` on Android/iOS/macOS (same API, shares
+* Encryption: `sqflite_sqlcipher` on Android/iOS/macOS (same API, shares
   `sqflite_common`); on desktop see the `sqflite_common_ffi` documentation.
 
 ### Writing testable code
 
-- Do not call the global `openDatabase` from your repositories. Inject a
+* Do not call the global `openDatabase` from your repositories. Inject a
   `DatabaseFactory` (or an already open `Database`) and open with
   `factory.openDatabase(path, options: OpenDatabaseOptions(...))`. Tests pass
   `databaseFactoryFfi`, the app passes `databaseFactory`.
-- Use `inMemoryDatabasePath` for fast, isolated tests (no file, no
+* Use `inMemoryDatabasePath` for fast, isolated tests (no file, no
   single-instance sharing). To test file behaviour use a temp directory and
   `factory.deleteDatabase(path)` in `setUp`.
-- `factory.sandbox(path: dir)` returns a factory confined to `dir`, handy to
+* `factory.sandbox(path: dir)` returns a factory confined to `dir`, handy to
   keep a test's databases apart from the app's.
-- Run migration tests by opening at `version: 1`, closing, then reopening at
+* Run migration tests by opening at `version: 1`, closing, then reopening at
   `version: 2` on the same path and asserting the schema
   (`PRAGMA table_info(...)` or `sqlite_master`).
-- `package:sqflite/sqflite_dev.dart` exposes `setMockDatabaseFactory(factory)`
+* `package:sqflite/sqflite_dev.dart` exposes `setMockDatabaseFactory(factory)`
   (test only) and `sqfliteDatabaseFactoryDefault`; prefer assigning
   `databaseFactory` directly.
 
 ### Debugging SQL
 
-- Wrap any factory with `SqfliteDatabaseFactoryLogger` (annotated
+* Wrap any factory with `SqfliteDatabaseFactoryLogger` (annotated
   `@experimental`, the analyzer reports `experimental_member_use`) from
   `package:sqflite_common/sqflite_logger.dart` to see every statement, its
   arguments, result and duration: `databaseFactory =
-SqfliteDatabaseFactoryLogger(databaseFactory, options:
-SqfliteLoggerOptions(type: SqfliteDatabaseFactoryLoggerType.all, log:
-(event) {...}))`. Events are `SqfliteLoggerSqlEvent` (`sql`, `arguments`,
+  SqfliteDatabaseFactoryLogger(databaseFactory, options:
+  SqfliteLoggerOptions(type: SqfliteDatabaseFactoryLoggerType.all, log:
+  (event) {...}))`. Events are `SqfliteLoggerSqlEvent` (`sql`, `arguments`,
   `result`, `error`, `sw`), `SqfliteLoggerBatchEvent` (`operations`),
   `SqfliteLoggerDatabaseOpenEvent`, `...CloseEvent`, `...DeleteEvent`,
   `SqfliteLoggerInvokeEvent`. `event.dump()` prints the event (default
   `log`).
-- `databaseFactory = databaseFactory.debugQuickLoggerWrapper()` is the
+* `databaseFactory = databaseFactory.debugQuickLoggerWrapper()` is the
   one-liner form (deprecated on purpose so it is not left in production).
-- Native-side logs: `await databaseFactory.debugSetLogLevel(
-sqfliteLogLevelVerbose)` (extension `SqfliteDatabaseFactoryDebug`,
+* Native-side logs: `await databaseFactory.debugSetLogLevel(
+  sqfliteLogLevelVerbose)` (extension `SqfliteDatabaseFactoryDebug`,
   deprecated on purpose) before opening; levels `sqfliteLogLevelNone`,
   `sqfliteLogLevelSql`, `sqfliteLogLevelVerbose`. `Sqflite.setDebugModeOn()`
   / `Sqflite.devSetDebugModeOn()` are the older deprecated equivalents.
-- `Sqflite.setLockWarningInfo(duration:, callback:)` changes the 10 s
+* `Sqflite.setLockWarningInfo(duration:, callback:)` changes the 10 s
   "Warning database has been locked" watchdog. That warning almost always
   means a call on `db` inside `db.transaction((txn) ...)`.
-- Print `await db.query('sqlite_master')` to dump the schema, and
+* Print `await db.query('sqlite_master')` to dump the schema, and
   `SELECT sqlite_version()` to know which SQL features exist on the device.
 
 ### Platform notes
 
-- `MissingPluginException` on device: stop and rebuild the app (hot
+* `MissingPluginException` on device: stop and rebuild the app (hot
   restart does not register a newly added plugin), `flutter clean`, on iOS
   `pod install`. In an FCM background handler, register plugins early.
-- Android: WAL is off by default. Enable it with `<meta-data
-android:name="com.tekartik.sqflite.wal_enabled" android:value="true"/>` in
+* Android: WAL is off by default. Enable it with `<meta-data
+  android:name="com.tekartik.sqflite.wal_enabled" android:value="true"/>` in
   the `<application>` manifest element, or portably with
   `db.setJournalMode('WAL')` in `onConfigure`. Read-only opens do not
   delete a corrupt file; read-write opens follow Android's default handler
   (the file is removed).
-- iOS background isolate while the device is locked: create the database in
+* iOS background isolate while the device is locked: create the database in
   a folder created by `SqfliteDarwin.createUnprotectedFolder(parent, name)`
   (data protection `NSFileProtectionNone`).
-- Isolates: use the main isolate. A second isolate must open with
+* Isolates: use the main isolate. A second isolate must open with
   `singleInstance: false` and must not close the database.
-- Rows are limited to about 1 MB on Android/iOS cursors; big blobs belong in
+* Rows are limited to about 1 MB on Android/iOS cursors; big blobs belong in
   files.
 
 ## Examples
@@ -324,17 +324,17 @@ void main() {
 
 ## Common mistakes
 
-- Running `flutter test` against the plugin factory and getting
+* Running `flutter test` against the plugin factory and getting
   `MissingPluginException`: set `databaseFactory = databaseFactoryFfi`.
-- Forgetting `sqfliteFfiInit()` before using `databaseFactoryFfi` on Windows
+* Forgetting `sqfliteFfiInit()` before using `databaseFactoryFfi` on Windows
   or Linux.
-- Using `databaseFactoryFfi` (isolate) in `testWidgets`; use
+* Using `databaseFactoryFfi` (isolate) in `testWidgets`; use
   `databaseFactoryFfiNoIsolate`.
-- Setting `databaseFactory` after some code already opened a database, or
+* Setting `databaseFactory` after some code already opened a database, or
   in a library rather than in the app's `main()`.
-- Leaving `debugQuickLoggerWrapper()` / `debugSetLogLevel` in production
+* Leaving `debugQuickLoggerWrapper()` / `debugSetLogLevel` in production
   code; they are deprecated so the analyzer flags them.
-- Reusing an in-memory path between tests and expecting shared state: each
+* Reusing an in-memory path between tests and expecting shared state: each
   `openDatabase(inMemoryDatabasePath)` is a new empty database.
 
 ## More

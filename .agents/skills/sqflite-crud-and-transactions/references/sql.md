@@ -2,12 +2,12 @@
 
 ## Supported value types
 
-| SQLite type | Dart type in values / results | Notes                                       |
-| ----------- | ----------------------------- | ------------------------------------------- |
-| `INTEGER`   | `int`                         | -2^63 to 2^63 - 1                           |
-| `REAL`      | `num` (`double` on read)      |                                             |
-| `TEXT`      | `String`                      | `TIMESTAMP` columns come back as `String`   |
-| `BLOB`      | `Uint8List`                   | keep rows well under 1 MB                   |
+| SQLite type | Dart type in values / results | Notes |
+|-------------|-------------------------------|-------|
+| `INTEGER`   | `int`                         | -2^63 to 2^63 - 1 |
+| `REAL`      | `num` (`double` on read)      | |
+| `TEXT`      | `String`                      | `TIMESTAMP` columns come back as `String` |
+| `BLOB`      | `Uint8List`                   | keep rows well under 1 MB |
 | `NULL`      | `null`                        | in `whereArgs` use `IS NULL` in SQL instead |
 
 Not supported as values: `bool` (store 0/1), `DateTime` (store
@@ -122,17 +122,17 @@ final version = (await db.rawQuery('SELECT sqlite_version()')).first.values.firs
 
 ## DatabaseException helpers
 
-| Method                              | Matches                                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ |
-| `isNoSuchTableError([table])`       | `no such table: <table>`                                                             |
-| `isDuplicateColumnError([column])`  | `duplicate column name: <column>`                                                    |
-| `isSyntaxError()`                   | `syntax error`                                                                       |
-| `isUniqueConstraintError([field])`  | `UNIQUE constraint failed: <table.field>`                                            |
-| `isNotNullConstraintError([field])` | `NOT NULL constraint failed: <table.field>`                                          |
-| `isOpenFailedError()`               | `open_failed`                                                                        |
-| `isDatabaseClosedError()`           | `database_closed`                                                                    |
-| `isReadOnlyError()`                 | `readonly`                                                                           |
-| `getResultCode()`                   | SQLite result code parsed from the message (extended on Android/ffi, primary on iOS) |
-| `result`                            | raw platform error payload                                                           |
+| Method | Matches |
+|--------|---------|
+| `isNoSuchTableError([table])` | `no such table: <table>` |
+| `isDuplicateColumnError([column])` | `duplicate column name: <column>` |
+| `isSyntaxError()` | `syntax error` |
+| `isUniqueConstraintError([field])` | `UNIQUE constraint failed: <table.field>` |
+| `isNotNullConstraintError([field])` | `NOT NULL constraint failed: <table.field>` |
+| `isOpenFailedError()` | `open_failed` |
+| `isDatabaseClosedError()` | `database_closed` |
+| `isReadOnlyError()` | `readonly` |
+| `getResultCode()` | SQLite result code parsed from the message (extended on Android/ffi, primary on iOS) |
+| `result` | raw platform error payload |
 
 `toString()` includes the failing SQL and truncated arguments.

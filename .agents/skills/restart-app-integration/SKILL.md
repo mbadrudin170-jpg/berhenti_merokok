@@ -59,14 +59,14 @@ Future<void> restartFromButton(BuildContext context) async {
 
 ## Platform behavior
 
-| Platform | Modes                                                      | Behavior                                                                                                                                                                                                |
-| -------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Android  | `platformDefault`, `process`                               | Default relaunches the main activity. `process` or `forceKill: true` also ends the old process. Requires an attached activity and launch intent; Android TV and Fire TV launcher entries are supported. |
-| iOS      | `platformDefault`, `flutterEngine`, `notificationFallback` | Default and engine modes require AppDelegate configuration. Use the bundled `restart-app-ios-engine-restart` skill. Automatic full process restart is unavailable.                                      |
-| Web      | `platformDefault`                                          | Reloads the whole Flutter web app at the same browser URL by default. `webOrigin` selects a different destination.                                                                                      |
-| macOS    | `platformDefault`, `process`                               | Opens a new instance through `NSWorkspace`, then asks the old instance to quit. Both modes resolve to `process`.                                                                                        |
-| Linux    | `platformDefault`, `process`                               | Replaces the running program through `execv` while keeping its process ID. Both modes resolve to `process`.                                                                                             |
-| Windows  | `platformDefault`, `process`                               | Opens a new process through `CreateProcessW` and ends the old process. Preserves the command line. Both modes resolve to `process`.                                                                     |
+| Platform | Modes | Behavior |
+| --- | --- | --- |
+| Android | `platformDefault`, `process` | Default relaunches the main activity. `process` or `forceKill: true` also ends the old process. Requires an attached activity and launch intent; Android TV and Fire TV launcher entries are supported. |
+| iOS | `platformDefault`, `flutterEngine`, `notificationFallback` | Default and engine modes require AppDelegate configuration. Use the bundled `restart-app-ios-engine-restart` skill. Automatic full process restart is unavailable. |
+| Web | `platformDefault` | Reloads the whole Flutter web app at the same browser URL by default. `webOrigin` selects a different destination. |
+| macOS | `platformDefault`, `process` | Opens a new instance through `NSWorkspace`, then asks the old instance to quit. Both modes resolve to `process`. |
+| Linux | `platformDefault`, `process` | Replaces the running program through `execv` while keeping its process ID. Both modes resolve to `process`. |
+| Windows | `platformDefault`, `process` | Opens a new process through `CreateProcessW` and ends the old process. Preserves the command line. Both modes resolve to `process`. |
 
 Unsupported modes return a failure. `forceKill` only affects Android.
 Notification title and body only customize the explicit iOS notification mode;
