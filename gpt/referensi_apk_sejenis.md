@@ -1,3 +1,7 @@
+referensi_apk_sejenis.md
+
+- cukup susun menjadi prompt siap copy paste
+
 1. saya ingin agar chat gpt mencarikan referensi dari semua apk yang terdaftar di file \`apk_serupa.md\` di root proyek saja,
 2. cari sebanyak mungkin yang bisa di dapat.
 3. setelah mendapatkan hasil perbarui isi file \`refrensi_apk.md\` di root proyek.
