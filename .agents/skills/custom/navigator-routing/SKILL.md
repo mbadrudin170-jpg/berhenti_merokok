@@ -1,0 +1,93 @@
+---
+name: navigator-routing
+description: Panduan navigasi dan routing Flutter - Navigator, Route, Page, MaterialApp.router, pushNamed, pop, onGenerateRoute, onUnknownRoute, restorablePushNamed.
+metadata:
+  kategori: "custom"
+  versi: "1.0.0"
+  commit-terakhir: "navigator.dart + app.dart"
+  model: "kilo-auto/free"
+---
+
+# Navigasi dan Routing Flutter
+
+Mengelola navigasi antar layar menggunakan `Navigator`, `Route`, `Page`, dan `MaterialApp` baik dengan imperative API maupun declarative (`MaterialApp.router`).
+
+## Cakupan yang Di-Cover
+
+- Package: `package:flutter` (file `lib/src/widgets/navigator.dart`, `lib/src/widgets/app.dart`, `lib/src/widgets/material/app.dart`)
+- Class: `Navigator`, `NavigatorState`, `Route<T>`, `Page<T>`, `RouteSettings`, `MaterialApp`, `WidgetsApp`, `Router`
+- Method: `Navigator.push`, `Navigator.pop`, `Navigator.pushNamed`, `Navigator.pushReplacement`, `Navigator.popUntil`, `Navigator.pushNamedAndRemoveUntil`, `Navigator.restorablePushNamed`, `Navigator.maybePop`, `Navigator.of`, `Navigator.maybeOf`
+- Tipe: `RouteFactory`, `RoutePredicate`, `PageRouteFactory`, `TransitionBuilder`
+- Properti: `Navigator.pages`, `onGenerateRoute`, `onUnknownRoute`, `onGenerateInitialRoutes`, `initialRoute`, `transitionDelegate`, `restorationScopeId`
+
+## Aturan
+
+1. Gunakan `Navigator.of(context)` untuk navigasi imperatif (`push`, `pop`, `pushNamed`).
+2. Pastikan `MaterialApp` atau `WidgetsApp` memiliki `onGenerateRoute` jika menggunakan `pushNamed` atau named routes.
+3. `onGenerateRoute` tidak boleh mengembalikan `null` kecuali `onUnknownRoute` juga disediakan.
+4. `Navigator.pop(context, result)` untuk kembali dan mengirimkan nilai ke route sebelumnya.
+5. `Navigator.popUntil(context, ModalRoute.withName('/'))` untuk kembali ke halaman root.
+6. `Navigator.pushNamedAndRemoveUntil` untuk mengganti seluruh stack (mis. setelah login).
+7. `Navigator.pushReplacement` untuk mengganti route saat ini tanpa menumpuk (mis. splash screen → home).
+8. `MaterialApp.router` digunakan untuk declarative routing dengan `routerDelegate` / `routerConfig` (contoh `go_router`).
+9. Satu `Navigator` hanya boleh memiliki satu `routerConfig` atau satu kombinasi `routerDelegate`/`routeInformationParser`, tidak keduanya sekaligus.
+10. Gunakan `restorablePushNamed` jika route perlu dapat dipulihkan saat state restoration.
+11. `RouteSettings.arguments` untuk melewatkan data ke route yang dipush dengan nama.
+12. `initialRoute` hanya berlaku saat pertama kali widget dibuat; perubahan setelah itu tidak berpengaruh.
+
+## Larangan
+
+- `pushNamed` tanpa `onGenerateRoute` di `MaterialApp`/`WidgetsApp`.
+- `onGenerateRoute` mengembalikan `null` tanpa `onUnknownRoute`.
+- `Navigator.of(context)` dengan `context` yang tidak berada di bawah `Navigator` (akan melempar `FlutterError`).
+- Menggunakan `initialRoute` dan `routes` yang sama-sama berisi entri `'/'`.
+- `Navigator.push` dengan route yang sudah pernah di-install (harus buat `Route` baru).
+
+## Contoh Benar
+
+```dart
+// push ke route bernama
+Navigator.pushNamed(context, '/profil', arguments: <String, dynamic>{'id': 123});
+
+// pop dengan result
+Navigator.pop(context, true);
+
+// kembali ke root
+Navigator.popUntil(context, ModalRoute.withName('/'));
+
+// ganti stack seluruhnya
+Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+
+// MaterialApp dengan named routes
+MaterialApp(
+  initialRoute: '/',
+  routes: {
+    '/': (context) => HomeScreen(),
+    '/profil': (context) => ProfilScreen(),
+  },
+  onGenerateRoute: (settings) {
+    if (settings.name == '/detail') {
+      return MaterialPageRoute(builder: (context) => DetailScreen());
+    }
+    return null;
+  },
+  onUnknownRoute: (settings) => MaterialPageRoute(builder: (context) => NotFoundScreen()),
+);
+```
+
+## Contoh Salah
+
+```dart
+// context bukan di bawah Navigator
+Navigator.of(context).push(...); // melempar FlutterError
+```
+
+```dart
+// routes dengan '/' dan home sekaligus
+MaterialApp(home: HomeScreen(), routes: {'/': (context) => HomeScreen()}); // assert error
+```
+
+## Sumber Evaluasi
+
+- File: `/google/flutter/packages/flutter/lib/src/widgets/navigator.dart`, `/google/flutter/packages/flutter/lib/src/widgets/app.dart`
+- Class terkait: `Navigator`, `NavigatorState`, `Route`, `Page`, `MaterialApp`, `WidgetsApp`
