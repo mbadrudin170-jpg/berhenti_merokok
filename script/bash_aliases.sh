@@ -22,7 +22,7 @@ alias gabung_example_teks="script/gabung_example_teks.sh"
 alias install_rg="sudo apt-get update && sudo apt-get install -y ripgrep"
 
 alias iskills="dart run skills@ get --all"
-
+alias flutterskills="npx skills add flutter/skills --yes"
 alias h='free -h'
 alias k="code_paket"
 alias cts="cp_to_service"
