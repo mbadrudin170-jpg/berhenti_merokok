@@ -1,460 +1,548 @@
-Aturan Umum Pengembangan Flutter dan Dart
-Path file proyek: prompt/aturan/aturan_lainnya.md
-
-Dokumen ini berisi aturan umum yang wajib diterapkan AI saat membaca, menganalisis, memperbaiki, atau mengembangkan kode Flutter dan Dart dalam proyek.
-
-Ketentuan Umum
-Terapkan setiap aturan yang relevan dengan pekerjaan. Jangan mengabaikan aturan secara diam-diam.
-Sebelum melakukan perubahan, periksa kode, konfigurasi, dokumentasi, dan aturan proyek yang berkaitan.
-Jangan membuat asumsi tentang struktur proyek, API, versi SDK, paket, atau maksud pengguna jika hal tersebut dapat diperiksa atau perlu dikonfirmasi.
-Jika suatu aturan tidak dapat diterapkan, alat yang diperlukan tidak tersedia, atau terdapat konflik yang belum dapat diselesaikan, jelaskan kendalanya kepada pengguna. Jangan berpura-pura telah mematuhi aturan tersebut.
-Contoh benar dan salah pada setiap aturan merupakan ilustrasi perilaku. Nama API dalam contoh kode tetap harus dicocokkan dengan implementasi yang benar-benar tersedia di proyek.
+# ATURAN UMUM PENGEMBANGAN FLUTTER DAN DART
 
-1. Referensi Desain Antarmuka
-   Sebelum mengubah, membuat, atau menganalisis tampilan antarmuka pengguna (UI), baca file optimasi_ui.md terlebih dahulu. File tersebut merupakan referensi desain proyek dan menjadi acuan untuk ukuran, jarak, tata letak, tipografi, warna, padding, dan margin.
-
-Ikuti nilai dan pola desain yang sudah ditentukan dalam optimasi_ui.md.
-Jangan membuat nilai desain baru langsung di widget jika nilai tersebut seharusnya menjadi bagian dari referensi desain terpusat.
-Jika kebutuhan desain belum diatur, periksa pola yang sudah digunakan dalam proyek sebelum mengusulkan nilai baru.
-Jika ada ketidaksesuaian antara kebutuhan tugas dan referensi desain, jelaskan ketidaksesuaian tersebut sebelum mengambil keputusan yang mengubah standar desain.
-Contoh benar: Membaca optimasi_ui.md, lalu menggunakan token ukuran dan warna yang telah ditetapkan.
+**Path:** `prompt/aturan/aturan_lainnya.md`
 
-Contoh salah: Langsung menentukan padding, ukuran teks, atau warna baru di widget tanpa memeriksa optimasi_ui.md.
+## 1. Prioritas dan kepatuhan aturan
 
-2. Verifikasi Versi dan Lokasi SDK
-   Sebelum menggunakan API Flutter atau Dart, pastikan versi SDK yang benar-benar digunakan proyek. Jangan mengandalkan ingatan model atau dokumentasi untuk versi yang berbeda.
-
-Periksa versi dengan flutter --version dan dart --version.
-Temukan lokasi Flutter SDK yang benar-benar digunakan melalui command -v flutter, konfigurasi proyek, atau cara lain yang dapat diverifikasi.
-Gunakan lokasi SDK aktual tersebut sebagai dasar pencarian sumber. Jangan menganggap SDK selalu berada di /flutter.
-Bedakan lokasi sumber berikut:
-Sumber framework Flutter umumnya berada di <FLUTTER_ROOT>/packages/flutter/lib/.
-Sumber pustaka Dart berada di <FLUTTER_ROOT>/bin/cache/dart-sdk/lib/.
-Paket SDK Flutter dapat berada di <FLUTTER_ROOT>/packages/<nama_paket>/ atau <FLUTTER_ROOT>/bin/cache/pkg/<nama_paket>/.
-Folder <FLUTTER_ROOT>/bin/cache/ berisi berbagai artefak dan cache SDK. Jangan menganggap seluruh folder tersebut sebagai lokasi sumber kode framework Flutter.
-Untuk paket pihak ketiga, periksa lokasi cache yang benar. Pada Linux, lokasi default biasanya ~/.pub-cache/hosted/pub.dev/, tetapi dapat berubah jika variabel PUB_CACHE digunakan.
-Gunakan pubspec.lock untuk mengetahui versi paket yang benar-benar terselesaikan. Jika lokasi paket belum jelas, periksa .dart_tool/package_config.json dan konfigurasi dependensi proyek.
-Baca hanya file sumber SDK atau paket yang relevan dengan API yang sedang digunakan. Jangan membaca seluruh cache secara rekursif tanpa tujuan.
-Contoh benar: Memastikan versi Flutter, membaca pubspec.lock, menemukan versi paket yang digunakan, lalu memeriksa sumber API pada lokasi SDK atau cache paket yang sesuai.
-
-Contoh salah: Mengasumsikan Flutter selalu berada di /flutter/bin/cache/, membaca cache secara acak, atau memakai API berdasarkan pengetahuan model tanpa memeriksa versi proyek.
+1. Seluruh aturan dalam file ini wajib dipatuhi selama mengerjakan proyek.
+2. Jangan mengabaikan, melewati, atau mengubah ketentuan tanpa alasan yang dapat dipertanggungjawabkan.
+3. Jika terdapat konflik dengan aturan lain di proyek, jangan menentukan sendiri aturan mana yang harus diikuti. Identifikasi konflik, jelaskan dampaknya, dan tanyakan kepada pengguna menggunakan tool `question`.
+4. Jangan membuat asumsi mengenai struktur proyek, implementasi, dependency, versi SDK, atau perilaku aplikasi tanpa memeriksa kondisi aktual.
+5. Jika suatu aturan tidak dapat dilaksanakan karena keterbatasan lingkungan atau tool, jelaskan alasannya dan jangan mengklaim bahwa aturan tersebut sudah dipenuhi.
 
-3. Pemeriksaan Sumber dan Dokumentasi API
-   Setiap kali pekerjaan membutuhkan API Flutter, Dart, atau paket pihak ketiga, periksa implementasi dan dokumentasi yang sesuai dengan versi terpasang sebelum menulis kode.
+## 2. Referensi desain
 
-Urutan pemeriksaan:
+1. Sebelum membuat atau mengubah tampilan Flutter, wajib membaca `optimasi_ui.md`.
+2. Jadikan file tersebut sebagai referensi utama untuk menentukan:
+   - Ukuran komponen.
+   - Spacing, padding, dan margin.
+   - Tipografi dan ukuran font.
+   - Layout dan struktur tampilan.
+   - Konsistensi desain.
+   - Penggunaan warna dan tema.
+3. Jangan membuat standar desain sendiri apabila ketentuannya sudah tersedia dalam `optimasi_ui.md`.
+4. Jika nilai desain yang dibutuhkan belum tersedia, gunakan nilai yang paling konsisten dengan sistem desain proyek. Jangan membuat konstanta desain sembarangan di dalam widget.
+5. Jika diperlukan nilai desain baru, tempatkan pada file referensi desain yang sesuai.
 
-Baca kode proyek yang memanggil atau akan memanggil API tersebut.
-Baca versi dependensi pada pubspec.lock.
-Periksa sumber API pada Flutter SDK, Dart SDK, atau direktori paket yang benar.
-Periksa dokumentasi resmi, README, CHANGELOG, dan dokumentasi API paket jika tersedia.
-Periksa contoh implementasi pada folder example/ paket jika tersedia.
-Periksa tes atau contoh internal paket jika perilaku API belum jelas.
-Pastikan API, konstruktor, parameter, nilai kembalian, serta pola penanganan error yang dipilih memang tersedia pada versi terpasang dan tidak deprecated.
-Jika sumber lokal tidak cukup menjelaskan perilaku API, cari dokumentasi resmi yang sesuai dengan versi paket. Jangan menjadikan artikel tidak resmi sebagai sumber utama jika dokumentasi resmi tersedia.
+## 3. Pembacaan SDK dan dependency
 
-Contoh benar: Memeriksa definisi konstruktor dan parameter pada sumber paket versi terpasang, lalu mencocokkannya dengan dokumentasi resmi.
+### 3.1. Prinsip utama
 
-Contoh salah: Menyalin contoh dari internet untuk versi terbaru padahal proyek menggunakan versi lama, tanpa memeriksa apakah API tersebut tersedia.
+Sebelum mengimplementasikan API Flutter, Dart, atau paket pihak ketiga, wajib memeriksa implementasi dan dokumentasi yang sesuai dengan versi yang benar-benar digunakan proyek.
 
-4. Kedalaman Pemeriksaan File
-   Untuk analisis bug, perubahan fitur, atau pekerjaan yang berpotensi berdampak lintas file, periksa sekurang-kurangnya 10 file yang benar-benar relevan apabila file sebanyak itu tersedia. Pemeriksaan dapat mencakup widget, halaman, provider/notifier, model, repository, database, helper, konfigurasi, tes, serta sumber dependensi.
-
-Jangan hanya membaca file yang disebut pengguna. Telusuri pemanggil, pemanggilan lanjutan, alur data, dan dependensi yang dapat memengaruhi masalah.
-Jika pekerjaan sederhana dan hanya memiliki sedikit file yang relevan, baca seluruh file relevan yang tersedia. Jangan membaca file yang tidak berhubungan hanya untuk memenuhi jumlah 10 file.
-Jika jumlah file relevan kurang dari 10, sebutkan jumlah file yang diperiksa dan alasannya dalam laporan akhir.
-Jangan menyimpulkan bahwa suatu masalah hanya berada pada satu file sebelum memeriksa alur yang berkaitan.
-Contoh benar: Saat memperbaiki data yang tidak tampil, memeriksa halaman, provider, model, repository, query database, helper pemetaan, konfigurasi, serta tes yang berkaitan.
+Jangan hanya mengandalkan pengetahuan hasil pelatihan AI karena API dapat berubah, deprecated, atau memiliki parameter dan konstruktor baru.
 
-Contoh salah: Mengubah satu widget berdasarkan dugaan tanpa memeriksa provider, sumber data, atau file lain yang memasok data ke widget tersebut.
-
-5. Manajemen Dependensi dan Paket
-   Jangan menambah atau menghapus dependensi secara manual dengan mengubah bagian dependencies atau dev_dependencies di pubspec.yaml.
+### 3.2. Sumber referensi
 
-Tambahkan dependensi menggunakan flutter pub add nama_paket.
-Tambahkan dependensi pengembangan menggunakan flutter pub add --dev nama_paket.
-Untuk dependensi Flutter SDK, gunakan opsi SDK yang sesuai, misalnya flutter pub add flutter_localizations --sdk flutter.
-Hapus dependensi menggunakan flutter pub remove nama_paket.
-Setelah perubahan dependensi, periksa hasil perubahan pada pubspec.yaml dan pubspec.lock.
-Jangan menambahkan paket yang sudah tersedia atau mengganti paket tanpa memeriksa dependensi dan pola proyek terlebih dahulu.
-Aturan ini hanya mengatur entri dependensi. Pengaturan aset dan font di bagian flutter: pada pubspec.yaml tetap boleh diperbarui sesuai Aturan 14.
+Gunakan sumber berikut sesuai kebutuhan:
 
-Contoh benar: Menambahkan paket dengan flutter pub add uuid.
+**A. Flutter SDK**
 
-Contoh salah: Menambahkan baris uuid: ^... secara manual ke bagian dependencies di pubspec.yaml.
+Periksa Flutter SDK yang benar-benar digunakan proyek.
 
-6. Baca Kode Sebelum Menganalisis atau Mengubah
-   Baca implementasi yang sudah ada sebelum membuat kesimpulan atau mengubah kode. Pengetahuan model dan cache konteks AI dapat tidak sesuai dengan versi proyek saat ini.
-
-Dahulukan bukti dari kode proyek dan sumber SDK/paket yang benar-benar terpasang.
-Jangan mengarang nama fungsi, parameter, provider, class, path, atau struktur data.
-Jangan menganggap cache jawaban AI selalu terbaru atau benar.
-Cocokkan setiap asumsi teknis dengan implementasi yang dapat dibaca.
-Contoh benar: Memeriksa definisi fungsi dan seluruh pemanggilnya sebelum mengubah parameter fungsi tersebut.
+Lokasi yang perlu diperiksa:
 
-Contoh salah: Menganggap sebuah fungsi menerima parameter tertentu hanya karena pernah melihat pola serupa pada proyek lain.
+- `$FLUTTER_ROOT/packages/flutter/lib/src/` untuk implementasi framework Flutter.
+- `$FLUTTER_ROOT/packages/flutter/lib/` untuk API publik Flutter.
+- `$FLUTTER_ROOT/bin/cache/dart-sdk/lib/` untuk implementasi pustaka Dart.
+- `$FLUTTER_ROOT/bin/cache/` untuk informasi dan artefak SDK yang relevan.
 
-7. Batasi Ruang Lingkup Perubahan
-   Fokus hanya pada kode dan file yang diperlukan untuk menyelesaikan topik atau tugas pengguna.
-
-Gunakan tool edit atau mekanisme perubahan parsial untuk mengubah bagian kode yang diperlukan.
-Jangan menulis ulang seluruh file jika perubahan hanya membutuhkan beberapa baris.
-Jangan melakukan refactor, penggantian nama, pemindahan file, perubahan arsitektur, atau perapian di luar ruang lingkup tanpa kebutuhan yang terbukti dan persetujuan pengguna.
-Perubahan lintas file hanya diperbolehkan jika memang diperlukan oleh alur fungsi, dependensi, atau perbaikan bug.
-Jika perubahan besar tidak dapat dihindari, jelaskan alasan dan dampaknya sebelum melakukannya.
-Contoh benar: Mengubah satu fungsi dengan tool edit tanpa mengubah bagian file lainnya.
+Jangan menganggap seluruh sumber implementasi Flutter dan Dart berada di `bin/cache`.
 
-Contoh salah: Menulis ulang seluruh file atau merapikan modul lain yang tidak berkaitan dengan permintaan.
+**B. Paket pihak ketiga**
 
-8. File Hasil Generator
-   Jangan mengedit file hasil generator secara langsung, termasuk file dengan akhiran .g.dart dan .freezed.dart.
+Lokasi cache paket:
 
-Jika perubahan pada file hasil generator diperlukan, cari file sumber atau anotasi yang menjadi asalnya.
-Ubah file sumber, lalu jalankan generator yang memang digunakan proyek.
-Periksa konfigurasi dan perintah generator sebelum menjalankannya.
-Jangan menghapus, menimpa, atau mengubah hasil generator secara manual.
-Contoh benar: Mengubah model Freezed, kemudian menjalankan perintah generator yang sesuai dengan konfigurasi proyek.
+`$HOME/.pub-cache/hosted/pub.dev/`
 
-Contoh salah: Mengubah isi file pengguna.freezed.dart secara langsung agar error hilang.
+Gunakan `pubspec.lock` untuk mengetahui versi paket yang benar-benar digunakan.
 
-9. Konsistensi Implementasi
-   Pertahankan konsistensi dengan struktur, pola, penamaan, dan arsitektur yang sudah digunakan proyek.
+Setelah mengetahui nama dan versi paket, periksa direktori paket yang sesuai.
 
-Cari implementasi serupa pada file lain sebelum membuat pola baru.
-Ikuti cara proyek menangani state, error, logging, navigasi, database, serta pemisahan tanggung jawab.
-Jangan membuat abstraksi atau helper baru jika pola yang tersedia sudah dapat digunakan.
-Jangan menyalin pola dari file lain secara membabi buta; pastikan pola tersebut masih sesuai dengan kebutuhan dan versi dependensi.
-Contoh benar: Mengikuti pola repository dan provider yang sudah dipakai oleh fitur sejenis setelah memeriksa implementasinya.
+Periksa bagian berikut jika relevan:
 
-Contoh salah: Membuat mekanisme pengelolaan state baru padahal proyek sudah memiliki pola standar yang sesuai.
+- `lib/` untuk implementasi dan API paket.
+- `example/` untuk contoh implementasi resmi.
+- `README.md` untuk panduan penggunaan.
+- `CHANGELOG.md` untuk perubahan versi dan API.
+- Dokumentasi tambahan yang disediakan paket.
 
-10. Logging dan Larangan print
-    Dilarang menggunakan print() atau debugPrint() untuk logging aplikasi.
+**C. Dokumentasi resmi**
 
-Untuk log ke console, gunakan class atau helper p yang memang tersedia di proyek.
-Untuk log debug yang ditujukan agar dapat dilihat dari aplikasi/APK, gunakan logger yang disediakan melalui file l.dart.
-Sebelum memanggil logger, baca file implementasinya dan gunakan nama metode serta parameter yang benar-benar tersedia. Jangan menebak API logger.
-Jangan meninggalkan log sementara yang tidak diperlukan setelah debugging selesai.
-Contoh benar: Menggunakan metode logging dari p atau logger di l.dart setelah memeriksa definisi API-nya.
+Jika diperlukan, cari dokumentasi resmi Flutter, Dart, atau pengembang paket.
 
-Contoh salah: Menulis print(data); atau debugPrint(data.toString()); untuk mencetak log aplikasi.
+Pastikan dokumentasi sesuai dengan versi dependency yang digunakan proyek. Jangan menggunakan contoh dari versi berbeda tanpa memverifikasi kompatibilitasnya.
 
-11. Konvensi Penamaan
-    Gunakan bahasa Indonesia untuk nama yang dibuat sendiri pada kode aplikasi, dengan tetap mengikuti konvensi penamaan Dart.
+### 3.3. Urutan pemeriksaan referensi
 
-Class, enum, dan type menggunakan PascalCase.
-Variabel, fungsi, method, getter, dan nama provider mengikuti konvensi proyek, umumnya camelCase.
-Nama file wajib menggunakan snake_case.
-Pilih nama singkat, jelas, dan cukup spesifik sehingga maksudnya dapat dipahami tanpa menebak.
-Jangan mengubah nama API Flutter, Dart, paket pihak ketiga, atau simbol hasil generator.
-Pertahankan nama yang diwajibkan oleh kontrak eksternal, format data, atau kompatibilitas API.
-Contoh benar: DaftarPenggunaPage, ambilDataPengguna, dan daftar_pengguna_page.dart.
+Sebelum implementasi, gunakan urutan berikut:
 
-Contoh salah: Membuat file DaftarPenggunaPage.dart, memakai nama ambigu seperti x1, atau menerjemahkan nama API resmi Flutter.
+1. Baca kode proyek yang berkaitan dengan pekerjaan.
+2. Periksa `pubspec.yaml` dan `pubspec.lock`.
+3. Identifikasi dependency serta versi yang digunakan.
+4. Tentukan apakah API yang dibutuhkan berasal dari Flutter SDK, Dart SDK, atau paket pihak ketiga.
+5. Periksa implementasi API pada sumber yang sesuai.
+6. Periksa folder `example` dari paket yang digunakan.
+7. Periksa dokumentasi resmi dan catatan perubahan versi jika diperlukan.
+8. Implementasikan berdasarkan hasil pemeriksaan.
 
-12. Dokumentasi dan Komentar Kode
-    Tambahkan dokumentasi singkat menggunakan doc comment /// pada API publik dan logika kompleks yang tidak mudah dipahami dari kode saja.
+Jika informasi dari sumber berbeda, utamakan implementasi aktual dan dokumentasi yang sesuai dengan versi proyek. Jangan menggabungkan contoh dari versi API yang berbeda.
 
-Setiap doc comment wajib satu baris dan menjelaskan fungsi atau tujuan secara langsung.
-Gunakan komentar biasa hanya jika diperlukan untuk menjelaskan alasan, batasan, atau perilaku yang tidak jelas dari kode.
-Hapus komentar yang sudah tidak relevan, salah, duplikat, atau hanya mengulang isi kode.
-Jangan menghapus komentar yang masih menjelaskan alasan teknis penting, batasan, atau keputusan yang tidak dapat diketahui hanya dari kode.
-Contoh benar:
+## 4. Pemeriksaan kode proyek
 
-/// Mengambil daftar pengguna yang masih aktif.
-Future<List<Pengguna>> ambilPenggunaAktif() async { ... }
-Contoh salah:
+1. Wajib membaca kode yang sudah ada sebelum menganalisis atau mengubah implementasi.
+2. Jangan memberikan solusi berdasarkan asumsi atau hanya berdasarkan potongan kode yang belum dipahami konteksnya.
+3. Periksa file yang berhubungan dengan pekerjaan, termasuk:
+   - File pemanggil.
+   - File yang menyediakan dependency.
+   - Provider dan state management.
+   - Model dan repository.
+   - Service dan helper.
+   - Database dan konfigurasi.
+   - File pengujian.
+4. Jangan menganggap sumber masalah selalu berada pada file yang sedang dikerjakan.
+5. Untuk pemeriksaan awal, usahakan membaca minimal 10 file yang relevan jika tersedia.
+6. Jangan membaca file secara acak hanya untuk memenuhi jumlah minimal. Jika file relevan kurang dari 10, baca seluruh file relevan yang tersedia.
+7. Jika ditemukan kemungkinan masalah pada file lain, periksa file tersebut sebelum menentukan solusi.
+8. Periksa implementasi serupa di file lain untuk menjaga konsistensi pola kode proyek.
+9. Jangan mengandalkan cache konteks AI sebagai pengganti pembacaan file aktual. Cache dapat tidak lengkap atau sudah tidak sesuai dengan kondisi proyek.
 
-/// Fungsi ini digunakan untuk mengambil daftar pengguna yang masih aktif
-/// berdasarkan kondisi tertentu dan kemudian mengembalikannya kepada pemanggil.
-Future<List<Pengguna>> ambilPenggunaAktif() async { ... } 13. Batasan Penggunaan Git
-Perintah Git hanya boleh digunakan untuk membaca informasi. Sebelum menjalankan perintah yang dapat mengubah repository, index, branch, riwayat, atau remote, wajib meminta persetujuan pengguna melalui tool question.
+## 5. Skills
 
-Perintah baca yang diperbolehkan antara lain git status, git diff, git log, git show, git branch --list, dan git ls-files.
-Perintah yang mengubah keadaan Git, misalnya git add, git commit, git checkout, git switch, git reset, git restore, git clean, git stash, git merge, git rebase, git cherry-pick, git tag, git push, dan git pull, wajib meminta persetujuan terlebih dahulu.
-Jika ragu apakah sebuah perintah mengubah repository atau remote, jangan jalankan sebelum bertanya.
-Contoh benar: Menjalankan git diff untuk membaca perubahan.
+1. Sebelum mengerjakan kode, periksa skills yang tersedia pada proyek dan lingkungan Kilo Code.
+2. Baca atau load skills yang relevan sebelum melakukan implementasi.
+3. Gunakan pengetahuan, prosedur, dan standar implementasi yang disediakan oleh skills.
+4. Jangan mengabaikan skills yang relevan hanya karena AI sudah memiliki pengetahuan mengenai topik tersebut.
+5. Jangan menduplikasi instruksi skills jika tidak diperlukan.
 
-Contoh salah: Menjalankan git add . atau git commit tanpa persetujuan pengguna.
+## 6. Instalasi dan penghapusan dependency
 
-14. Manajemen Aset dan Font di pubspec.yaml
-    Setiap aset gambar, font, ikon, atau berkas lokal yang digunakan aplikasi harus didaftarkan pada bagian yang sesuai di pubspec.yaml dan dimuat melalui path yang konsisten.
+1. Dilarang mengubah dependency dengan menulis atau mengedit secara manual bagian `dependencies` maupun `dev_dependencies` di `pubspec.yaml`.
+2. Untuk menambahkan paket, wajib menggunakan:
 
-Periksa struktur folder aset dan konfigurasi yang sudah ada sebelum menambahkan path.
-Jangan mendaftarkan path yang tidak ada.
-Jangan membuat beberapa path berbeda untuk merujuk aset yang sama tanpa alasan.
-Pendaftaran aset/font pada bagian flutter: diperbolehkan diperbarui secara langsung; larangan edit manual pada Aturan 5 hanya berlaku untuk bagian dependensi.
-Contoh benar: Menambahkan folder aset yang benar-benar ada ke bagian flutter/assets, lalu memuat gambar menggunakan path yang sama.
+   `flutter pub add nama_paket`
 
-Contoh salah: Memakai assets/gambar/logo.png di kode tanpa memastikan file tersebut ada dan terdaftar di pubspec.yaml.
+3. Untuk menghapus paket, wajib menggunakan:
 
-15. Format Kode dan Analisis Statis
-    Setelah mengubah kode Dart:
+   `flutter pub remove nama_paket`
 
-Jalankan dart format hanya pada file Dart yang dibuat atau diubah.
-Jalankan flutter analyze untuk memeriksa proyek.
-Jika analisis menemukan masalah yang disebabkan oleh perubahan, perbaiki lalu jalankan kembali format dan analisis.
-Jalankan tes yang relevan apabila perubahan memengaruhi logika yang memiliki tes atau membutuhkan verifikasi perilaku.
-Laporkan error yang sudah ada sebelum perubahan jika dapat dibedakan dari error akibat pekerjaan saat ini.
-Urutan ini memastikan format akhir ikut diperiksa oleh analisis statis. Jangan mengklaim analisis berhasil jika perintah tidak dijalankan atau hasilnya belum diperiksa.
+4. Setelah perubahan dependency, periksa hasil perubahan pada `pubspec.yaml` dan `pubspec.lock`.
+5. Pastikan versi paket yang terpasang sesuai dengan kebutuhan dan kompatibilitas proyek.
+6. Jangan memasang paket baru jika fitur yang dibutuhkan sudah tersedia melalui Flutter SDK, Dart SDK, atau dependency yang sudah digunakan proyek, kecuali terdapat alasan teknis yang jelas.
 
-Contoh benar: Menjalankan dart format lib/fitur/pengguna/daftar_pengguna.dart, kemudian flutter analyze.
+## 7. Prosedur pengeditan kode
 
-Contoh salah: Mengubah file Dart, tidak menjalankan formatter maupun analyzer, lalu menyatakan pekerjaan bebas error.
+1. Fokus hanya pada kode dan file yang berkaitan dengan topik pekerjaan.
+2. Dilarang melakukan refactoring luas yang tidak berkaitan dengan permintaan.
+3. Utamakan perubahan sekecil mungkin dengan mempertahankan struktur dan implementasi yang sudah benar.
+4. Untuk mengubah kode, utamakan tool `edit` atau `apply_patch` yang hanya mengubah bagian tertentu.
+5. Jangan menggunakan tool terminal atau perintah shell untuk mengedit kode.
+6. Tool `write` hanya digunakan apabila:
+   - Membuat file baru.
+   - Mengisi file yang memang harus dibuat ulang.
+   - Penulisan ulang seluruh file benar-benar diperlukan dan sudah memiliki alasan yang jelas.
+7. Jangan menulis ulang seluruh isi file jika perubahan sebagian sudah mencukupi.
+8. Jangan mengubah file di luar ruang lingkup pekerjaan tanpa persetujuan pengguna.
+9. Jangan mengedit file hasil generator seperti `.g.dart` dan `.freezed.dart`.
+10. Jika file generator perlu diperbarui, ubah sumber aslinya kemudian jalankan generator yang sesuai.
+11. Jangan menghapus implementasi yang masih digunakan tanpa memeriksa seluruh pemanggilnya.
 
-16. Penggunaan Google Fonts
-    Gunakan Google Fonts dengan mekanisme cache agar font tidak dimuat berulang kali dari jaringan.
+## 8. Konsistensi implementasi
 
-Periksa apakah paket google_fonts sudah tersedia dan bagaimana konfigurasi versi terpasangnya.
-Ikuti pola pemakaian font yang telah ditentukan proyek.
-Hindari pemuatan jaringan berulang pada setiap pembangunan widget atau setiap perpindahan halaman.
-Jika aplikasi harus dapat menampilkan font secara konsisten tanpa koneksi internet, periksa opsi penyertaan font sebagai aset lokal dan daftarkan font tersebut pada pubspec.yaml.
-Contoh benar: Menggunakan font sesuai konfigurasi cache proyek dan memastikan font yang wajib tersedia secara offline telah dibundel.
+1. Kode wajib mengikuti pola, arsitektur, dan konvensi yang sudah diterapkan proyek.
+2. Jika belum memahami pola implementasi, cari contoh pada file lain yang memiliki fungsi serupa.
+3. Jangan memperkenalkan pola baru apabila pola yang tersedia masih sesuai.
+4. Gunakan helper, utility, service, dan komponen bersama yang sudah tersedia.
+5. Hindari duplikasi kode yang sebenarnya dapat menggunakan implementasi bersama.
+6. Jangan membuat abstraksi baru yang tidak memberikan manfaat nyata.
 
-Contoh salah: Memicu pengunduhan font dari jaringan berulang kali saat widget dibangun.
+## 9. Aturan pencarian file dan kode
 
-17. Splash Screen
-    Gunakan flutter_native_splash untuk membuat splash screen native. Jangan membuat splash screen awal secara manual menggunakan widget Flutter jika kebutuhan tersebut merupakan splash screen saat aplikasi diluncurkan.
+Gunakan tool pencarian sesuai kebutuhan:
 
-Periksa konfigurasi dan versi flutter_native_splash yang digunakan proyek.
-Ikuti konfigurasi warna, gambar, dan platform yang sudah ditetapkan.
-Jalankan generator splash screen sesuai dokumentasi versi paket setelah mengubah konfigurasinya.
-Contoh benar: Mengatur splash screen melalui konfigurasi flutter_native_splash dan menjalankan generatornya.
+- `rg`: mencari teks, nama simbol, fungsi, class, atau pola kode.
+- `glob`: mencari file berdasarkan nama atau pola direktori.
+- `ls`: melihat isi suatu folder.
+- `grep -rn`: hanya digunakan apabila `rg` gagal digunakan.
 
-Contoh salah: Membuat halaman widget buatan sendiri sebagai pengganti splash screen native saat proses awal aplikasi.
+Jika `rg` dilaporkan belum terpasang:
 
-18. Toast dan Feedback Singkat
-    Gunakan fluttertoast untuk feedback singkat yang memang sesuai ditampilkan sebagai toast.
+1. Jalankan `which rg` melalui shell.
+2. Periksa apakah executable tersedia.
+3. Jika memang tidak tersedia, gunakan alternatif pencarian yang sesuai.
 
-Periksa helper atau pola toast yang sudah tersedia sebelum memanggil paket secara langsung.
-Hindari menampilkan toast berulang untuk satu kejadian.
-Jangan gunakan toast sebagai pengganti konfirmasi tindakan berisiko, informasi proses yang berlangsung lama, formulir, atau pesan error panjang.
-Pastikan pesan singkat, jelas, dan sesuai bahasa pengguna.
-Contoh benar: Menampilkan satu toast singkat setelah penyimpanan berhasil.
+Jangan langsung mengganti `rg` dengan `grep` tanpa memeriksa ketersediaan `rg`.
 
-Contoh salah: Menampilkan toast berulang kali selama proses pemuatan atau menggunakan toast sebagai satu-satunya konfirmasi sebelum menghapus data.
+## 10. Penamaan kode
 
-19. Pembuatan ID Unik
-    Gunakan paket uuid untuk membuat ID unik apabila data membutuhkan identifier baru.
+1. Nama variabel, fungsi, class, method, getter, dan provider wajib menggunakan bahasa Indonesia sesuai konvensi penamaan proyek.
+2. Nama file wajib menggunakan `snake_case`.
+3. Gunakan nama yang singkat, jelas, dan mudah dipahami hanya dengan melihat namanya.
+4. Hindari singkatan yang membingungkan.
+5. Jangan menerjemahkan nama API bawaan Flutter, Dart, maupun dependency pihak ketiga.
+6. Pertahankan nama yang diwajibkan framework atau generator.
 
-Periksa apakah paket uuid sudah tersedia dan ikuti pola pemakaiannya di proyek.
-Jangan menggunakan timestamp sebagai pengganti ID unik.
-Jangan membuat ID sendiri dari gabungan waktu atau angka acak sederhana tanpa dasar yang dapat dipertanggungjawabkan.
-Jangan membuat ulang ID untuk data yang sudah memiliki ID tetap.
-Contoh benar: Membuat ID baru menggunakan generator UUID dari paket uuid.
+## 11. Dokumentasi dan komentar
 
-Contoh salah: Menggunakan DateTime.now().millisecondsSinceEpoch sebagai ID utama sebuah data.
+1. API publik wajib memiliki dokumentasi menggunakan doc comment `///`.
+2. Logika kompleks wajib memiliki dokumentasi singkat apabila tanpa penjelasan dapat menyulitkan pemahaman atau pemeliharaan kode.
+3. Dokumentasi kode wajib menggunakan satu baris apabila penjelasan dapat disampaikan secara singkat dan jelas.
+4. Gunakan bahasa Indonesia yang baik dan benar.
+5. Jangan menambahkan komentar yang hanya mengulang kode.
+6. Hapus komentar yang tidak relevan, sudah kedaluwarsa, atau tidak memberikan informasi tambahan.
+7. Jangan menghapus dokumentasi API yang masih diperlukan.
 
-20. Shared Preferences
-    Gunakan shared_preferences hanya untuk pengaturan sederhana yang sesuai disimpan sebagai preferensi lokal.
+## 12. Logging dan debugging
 
-Cocok untuk nilai kecil seperti tema, bahasa pilihan, atau preferensi tampilan.
-Jangan menyimpan data sensitif, kredensial, data berukuran besar, atau kumpulan data utama aplikasi.
-Gunakan database atau mekanisme penyimpanan yang sesuai untuk data terstruktur dan data utama aplikasi.
-Ikuti pola akses preferences yang sudah digunakan proyek.
-Contoh benar: Menyimpan pilihan tema gelap pengguna.
+### 12.1. Console
 
-Contoh salah: Menyimpan seluruh riwayat transaksi atau kata sandi pengguna ke shared_preferences.
-
-21. Daftar dengan Banyak Item
-    Untuk daftar yang berpotensi menampilkan lebih dari 20 item, gunakan widget yang membangun item secara bertahap, seperti ListView.builder atau SliverList.
+Dilarang menggunakan:
 
-Jangan membangun seluruh item sekaligus dengan ListView(children: ...) jika jumlah item dapat melebihi 20.
-Pilih widget berdasarkan struktur layar yang sudah digunakan proyek.
-Pastikan setiap item memiliki identitas dan key yang tepat jika diperlukan.
-Contoh benar: Menggunakan ListView.builder untuk menampilkan daftar ratusan transaksi.
+- `print()`
+- `debugPrint()`
 
-Contoh salah: Membuat seluruh ratusan widget daftar sekaligus di dalam Column atau ListView(children: ...).
+Gunakan class `P` yang sudah tersedia di proyek untuk mencetak log ke console.
 
-22. Skills
-    Sebelum mengerjakan tugas, periksa skills yang tersedia dan muat skill yang relevan dengan bahasa, framework, paket, atau jenis pekerjaan tersebut.
-
-Baca isi skill yang relevan sebelum menulis atau mengubah kode.
-Ikuti instruksi dan referensi yang disediakan skill.
-Jangan memuat atau mengikuti skill yang tidak berhubungan dengan tugas.
-Jika tidak ada skill yang relevan atau tool skill tidak tersedia, lanjutkan berdasarkan dokumentasi resmi dan kode proyek, lalu laporkan keterbatasannya bila berpengaruh.
-Contoh benar: Memuat skill Flutter/Riverpod yang relevan sebelum mengubah provider.
+Periksa implementasi class tersebut sebelum menggunakannya.
 
-Contoh salah: Mengabaikan skill yang tersedia dan langsung menulis implementasi berdasarkan asumsi.
+### 12.2. Log aplikasi
 
-23. Contoh Implementasi Paket
-    Saat menggunakan atau memperbaiki implementasi paket pihak ketiga, periksa folder example/ dari versi paket yang benar-benar terpasang jika folder tersebut tersedia.
-
-Bandingkan pola penggunaan paket dalam proyek dengan contoh resmi paket.
-Periksa apakah contoh menggunakan API yang sama dengan versi terpasang.
-Jangan menyalin contoh mentah tanpa memahami kebutuhan, batasan, dan struktur proyek.
-Jika folder example/ tidak tersedia, periksa dokumentasi resmi, README, tes paket, atau sumber implementasinya.
-Contoh benar: Membandingkan konfigurasi paket yang digunakan proyek dengan contoh pada versi paket yang terpasang.
+Untuk debugging yang perlu ditampilkan melalui sistem logging aplikasi, gunakan class `L` atau `l.dart` yang sudah tersedia di proyek.
 
-Contoh salah: Menyatakan implementasi proyek sudah benar tanpa memeriksa contoh atau dokumentasi paket yang relevan.
-
-24. Klarifikasi kepada Pengguna
-    Jangan menebak keputusan yang dapat mengubah hasil, perilaku, arsitektur, data, atau ruang lingkup pekerjaan. Jika informasi penting belum tersedia atau terdapat beberapa pilihan yang sama-sama mungkin, gunakan tool question untuk meminta kepastian.
+Jangan mencampuradukkan fungsi logging console dan logging aplikasi.
 
-Ajukan pertanyaan yang spesifik dan sertakan pilihan jika pilihan tersebut dapat dirumuskan dengan jelas.
-Jangan menanyakan hal yang jawabannya sudah tersedia di percakapan, kode, konfigurasi, atau dokumentasi proyek.
-Jangan meminta konfirmasi untuk detail teknis rutin yang sudah ditentukan oleh aturan dan pola proyek.
-Jika pertanyaan belum dijawab, jangan menjalankan perubahan yang bergantung pada jawaban tersebut.
-Jika tool question tidak tersedia, ajukan pertanyaan secara langsung di percakapan. Jangan berpura-pura telah menggunakan tool.
-Contoh benar: Bertanya apakah data yang dihapus harus dihapus permanen atau dipindahkan ke arsip ketika kode dan permintaan pengguna belum menjelaskan hal tersebut.
+Jangan membuat sistem logging baru jika implementasi yang tersedia sudah mencukupi.
 
-Contoh salah: Memilih salah satu perilaku penghapusan berdasarkan dugaan, padahal pilihan tersebut berdampak pada data pengguna.
+## 13. Pengujian dan pemeriksaan kode
 
-25. Peta Jalan Pekerjaan dengan todowrite
-    Untuk pekerjaan yang terdiri atas beberapa tahap, melibatkan banyak file, atau membutuhkan analisis dan verifikasi, gunakan tool todowrite sebelum mulai bekerja agar pengguna dapat melihat peta jalan pekerjaan.
+Setiap pekerjaan yang mengubah kode wajib menjalani pemeriksaan berikut.
 
-Susun langkah yang konkret, berurutan, dan sesuai ruang lingkup tugas.
-Perbarui status daftar tugas ketika pekerjaan dimulai, selesai, atau ketika ditemukan langkah tambahan yang memang diperlukan.
-Jangan memasukkan pekerjaan di luar permintaan.
-Untuk permintaan sangat sederhana yang hanya membutuhkan satu tindakan kecil, daftar tugas tidak wajib jika tidak menambah manfaat.
-Jika tool todowrite tidak tersedia, sampaikan rencana singkat melalui percakapan. Jangan mengaku telah memperbarui daftar tugas.
-Contoh benar: Membuat daftar tahap untuk menelusuri bug, memperbaiki beberapa file, menjalankan tes, dan memeriksa hasil analisis.
+### 13.1. Formatting
 
-Contoh salah: Memulai perubahan lintas file tanpa peta jalan, atau membuat daftar tugas yang tidak berkaitan dengan permintaan.
+Jalankan `dart format` pada file Dart yang dibuat atau diubah.
 
-26. Tool untuk Mengubah File
-    Untuk mengubah kode atau file proyek, gunakan tool edit atau write.
+Contoh:
 
-Utamakan edit untuk perubahan sebagian pada file yang sudah ada.
-Gunakan write untuk membuat file baru atau menulis ulang seluruh isi file hanya jika memang diperlukan dan sesuai permintaan.
-Jangan mengubah kode menggunakan perintah terminal, skrip shell, atau teknik penggantian teks melalui terminal.
-Terminal boleh digunakan untuk membaca informasi, mencari file/teks, menjalankan formatter, analyzer, generator, tes, dan perintah verifikasi lain yang tidak mengubah kode sumber secara manual.
-Jangan menggunakan sed -i, perl -pi, tee, pengalihan > atau >>, atau skrip sejenis untuk mengedit file.
-Contoh benar: Mengubah beberapa baris Dart menggunakan tool edit.
-
-Contoh salah: Menjalankan sed -i atau cat > file.dart untuk mengubah kode proyek.
-
-27. Tool dan Perintah Pencarian
-    Gunakan tool yang paling sesuai dengan jenis pencarian.
-
-Gunakan glob untuk mencari file berdasarkan nama atau pola path.
-Gunakan ls untuk melihat isi satu folder.
-Gunakan rg untuk mencari teks di dalam file.
-Gunakan grep -rn hanya sebagai alternatif ketika rg benar-benar gagal atau tidak tersedia.
-Jika rg dilaporkan belum terpasang, periksa lokasinya menggunakan which rg melalui perintah shell sebelum memilih alternatif.
-Kode keluar rg yang menunjukkan tidak ada hasil pencarian bukan berarti tool gagal. Jangan langsung beralih ke grep hanya karena tidak ada hasil.
-Jangan menggunakan pencarian luas tanpa membatasi folder atau pola ketika ruang lingkup sudah diketahui.
-Contoh benar: Mencari pemanggilan fungsi dengan rg "namaFungsi" lib/ dan mencari file dengan glob.
-
-Contoh salah: Langsung menjalankan grep -rn meskipun rg tersedia dan berfungsi.
-
-28. Urutan Kerja Analisis hingga Implementasi
-    Untuk tugas yang membutuhkan analisis dan perubahan kode, gunakan alur berikut:
-
-Pahami tujuan dan batasan permintaan pengguna.
-Baca aturan proyek yang berlaku, termasuk AGENTS.md dan rules lain yang telah didaftarkan.
-Baca optimasi_ui.md jika pekerjaan menyentuh UI.
-Periksa skills yang relevan.
-Periksa struktur dan kode proyek yang berkaitan. Untuk pekerjaan kompleks atau lintas file, terapkan ketentuan pemeriksaan pada Aturan 4.
-Telusuri alur dari UI ke state/provider, repository, database, atau layanan yang terkait.
-Periksa versi dependensi dan sumber SDK/paket mengikuti Aturan 2 dan 3.
-Periksa dokumentasi resmi serta folder example/ paket jika relevan.
-Jika terdapat keputusan penting yang belum jelas, gunakan tool question dan tunggu jawaban.
-Susun peta jalan menggunakan todowrite jika pekerjaan terdiri atas beberapa tahap.
-Lakukan perubahan sekecil mungkin menggunakan tool edit file.
-Jalankan formatter, analyzer, dan tes relevan.
-Tinjau kembali diff agar tidak ada perubahan di luar ruang lingkup.
-Laporkan file yang diubah, alasan perubahan, pemeriksaan yang dijalankan, hasilnya, dan kendala yang belum terselesaikan.
-Contoh benar: Menelusuri seluruh alur data dan API paket sebelum memperbaiki bug pada tampilan.
-
-Contoh salah: Langsung menulis kode dari dugaan tanpa membaca aturan, kode sumber, versi paket, atau alur dependensi.
-
-29. Inisialisasi Database sqflite FFI
-    Jika aplikasi menggunakan sqflite pada platform desktop atau web, atur database factory yang sesuai sebelum membuka database.
-
-Untuk desktop yang menggunakan FFI, panggil sqfliteFfiInit() dan atur databaseFactory ke databaseFactoryFfi sebelum pemanggilan pembukaan database.
-Untuk web, atur databaseFactory ke databaseFactoryFfiWeb sebelum pemanggilan pembukaan database.
-Untuk Android dan iOS, ikuti factory bawaan yang sesuai dengan paket sqflite; jangan memaksakan factory FFI desktop.
-Periksa versi dan dokumentasi paket FFI yang terpasang, termasuk import dan API yang benar.
-Pastikan inisialisasi hanya dilakukan pada tempat yang tepat dan tidak terlambat setelah database dibuka.
-Contoh benar: Memilih factory berdasarkan platform, menyelesaikan inisialisasi terlebih dahulu, lalu memanggil openDatabase.
-
-Contoh salah: Membuka database desktop sebelum sqfliteFfiInit() dan pengaturan databaseFactoryFfi, atau menggunakan factory FFI desktop tanpa memeriksa platform.
-
-30. Navigasi Antarhalaman
-    Semua navigasi antarhalaman wajib menggunakan helper Nav yang tersedia di core_shared.
-
-Baca definisi helper Nav terlebih dahulu untuk mengetahui method, parameter, dan nilai kembaliannya.
-Gunakan helper tersebut untuk navigasi maju, kembali, atau bentuk navigasi lain yang didukung proyek.
-Jangan memanggil API navigasi Flutter secara langsung jika helper proyek sudah menyediakan fungsi yang sesuai.
-Pengecualian yang diperbolehkan: pengecekan guard seperti `Navigator.of(context).canPop()` untuk memastikan navigasi dapat dilakukan, serta `SystemNavigator.pop()` untuk keluar dari aplikasi. Pemanggilan `Navigator.push`, `pushReplacement`, dan `pop` secara langsung tetap dilarang meskipun untuk menutup dialog atau bottom sheet, karena `Nav.pop(context, result)` sudah mendukung pengembalian nilai.
-Gunakan unawaited hanya jika Future memang sengaja tidak perlu ditunggu dan pola tersebut sesuai dengan implementasi helper.
-Contoh benar:
-
-unawaited(Nav.to(context, const StatistikBahanBakar()));
-Contoh salah:
-
-Navigator.push(
-context,
-MaterialPageRoute(builder: (\_) => const StatistikBahanBakar()),
-); 31. Aturan Import
-Gunakan package: import untuk mengimpor file proyek. Jangan menggunakan relative import.
-
-Contoh benar:
-
-import 'package:myapp/fitur/pengguna/halaman/daftar_pengguna.dart';
-Contoh salah:
-
-import '../../pengguna/halaman/daftar_pengguna.dart'; 32. Penyimpanan Tanggal dan Waktu
-Simpan tanggal dan waktu ke database dalam format UTC. Saat menampilkan tanggal dan waktu kepada pengguna, konversikan ke waktu lokal perangkat.
-
-Konversikan nilai ke UTC sebelum disimpan.
-Konversikan nilai UTC ke waktu lokal ketika akan ditampilkan kepada pengguna.
-Ikuti format penyimpanan yang sudah digunakan proyek dan pastikan proses parsing tidak menghilangkan informasi zona waktu.
-Jangan menyimpan waktu lokal seolah-olah merupakan UTC.
-Contoh benar: Menggunakan waktu.toUtc() sebelum menyimpan dan waktuUtc.toLocal() sebelum menampilkan.
-
-Contoh salah: Menyimpan waktu lokal tanpa konversi UTC, lalu menganggap nilai tersebut sudah UTC.
-
-33. Lokalisasi Aplikasi
-    Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit pada MaterialApp.
-
-Deklarasikan supportedLocales.
-Jika aplikasi menargetkan pengguna Indonesia, sertakan const Locale('id', 'ID').
-Gunakan flutter_localizations dari Flutter SDK untuk menyediakan data lokalisasi.
-Pastikan localizationsDelegates mencakup setidaknya:
-GlobalMaterialLocalizations.delegate
-GlobalWidgetsLocalizations.delegate
-GlobalCupertinoLocalizations.delegate
-Jangan hanya mengandalkan delegate paket pihak ketiga jika paket tersebut tidak menyediakan data untuk locale yang dibutuhkan.
-Pastikan teks sistem yang tampil kepada pengguna, seperti toolbar pemilihan teks, dialog, date picker, dan komponen Material/Cupertino, mengikuti locale yang didukung.
-Setiap perubahan lokalisasi wajib diverifikasi secara visual pada layar yang terdampak.
-Pastikan dependensi dan import lokalisasi sesuai dengan versi Flutter SDK yang digunakan.
-Contoh benar: Mendeklarasikan supportedLocales, delegate global Flutter, dan memeriksa date picker dalam locale Indonesia.
-
-Contoh salah: Hanya mengatur teks buatan aplikasi ke bahasa Indonesia, tetapi membiarkan komponen sistem memakai locale yang tidak sesuai.
-
-34. Pendaftaran dan Pemuatan Rules Kilo Code
-    Keberadaan file rules di folder proyek tidak otomatis membuktikan bahwa Kilo Code memuat rules tersebut.
-
-Daftarkan file rules proyek secara eksplisit pada array instructions di kilo.jsonc.
-Untuk file ini, pastikan path prompt/aturan/aturan_lainnya.md tercantum dalam instructions.
-Sebelum mengubah konfigurasi, baca isi kilo.jsonc yang sudah ada. Pertahankan seluruh konfigurasi lain dan jangan menimpa isi file secara keseluruhan.
-Jika path belum terdaftar, tambahkan hanya entri yang diperlukan menggunakan tool edit file.
-Jika rules terlalu besar atau mencampur banyak topik, pecah menjadi beberapa file berdasarkan tanggung jawab. Pastikan setiap file hasil pemecahan juga didaftarkan secara eksplisit.
-Jangan menganggap rules aktif hanya karena file ada, namanya benar, atau foldernya sudah dibuat.
-Setelah perubahan konfigurasi rules, pastikan sintaks JSONC valid dan ikuti kebutuhan pemuatan ulang sesi Kilo Code agar konfigurasi terbaru diterapkan.
-Rules berbentuk instruksi teks tidak menjamin semua tindakan dapat dicegah secara teknis. Untuk larangan yang sangat kritis, gunakan juga permission Kilo Code yang sesuai dan pemeriksaan otomatis seperti analyzer, tes, atau validasi konfigurasi.
-Contoh benar: Memeriksa kilo.jsonc, memastikan path prompt/aturan/aturan_lainnya.md berada di dalam instructions, lalu memeriksa ulang konfigurasi.
-
-Contoh salah: Menganggap rules otomatis aktif hanya karena file prompt/aturan/aturan_lainnya.md tersedia di proyek.
-
-35. Pemeriksaan Kepatuhan Sebelum Menyelesaikan Tugas
-    Sebelum menyatakan pekerjaan selesai, lakukan pemeriksaan berikut:
-
-Apakah semua aturan yang relevan telah diterapkan?
-Apakah file dan alur dependensi yang berkaitan sudah diperiksa?
-Apakah perubahan tetap berada dalam ruang lingkup permintaan?
-Apakah tidak ada file .g.dart atau .freezed.dart yang diedit langsung?
-Apakah tidak ada print() atau debugPrint() yang ditambahkan?
-Apakah import, penamaan, navigasi, logging, dan pola proyek sudah konsisten?
-Apakah dart format dan flutter analyze sudah dijalankan setelah perubahan kode Dart?
-Apakah tes atau verifikasi visual yang relevan sudah dilakukan?
-Apakah diff sudah diperiksa untuk menemukan perubahan yang tidak diminta?
-Apakah semua kendala, pemeriksaan yang gagal, atau aturan yang tidak dapat diterapkan sudah dilaporkan secara jujur?
-Apakah larangan yang sangat kritis juga dilindungi dengan permission atau pemeriksaan otomatis jika memungkinkan?
-Jangan menyatakan tugas selesai atau bebas error apabila pemeriksaan yang diwajibkan belum dilakukan. Jangan menganggap pendaftaran rules sebagai jaminan teknis bahwa semua tindakan akan selalu dicegah; rules Kilo Code merupakan instruksi bagi agen dan perlu didukung oleh permission serta pemeriksaan otomatis untuk kebutuhan yang kritis.
-
-Contoh benar: Melaporkan bahwa formatter dan analyzer berhasil, menyebutkan file yang berubah, serta menjelaskan tes yang dijalankan.
-
-Contoh salah: Mengatakan "semua sudah aman" tanpa memeriksa hasil formatter, analyzer, tes, atau diff.
+`dart format lib/fitur/contoh/contoh.dart`
+
+Jangan memformat seluruh proyek jika pekerjaan hanya mengubah beberapa file dan pemformatan terbatas sudah mencukupi.
+
+### 13.2. Flutter Analyze
+
+Setelah perubahan selesai, wajib menjalankan:
+
+`flutter analyze`
+
+Periksa seluruh hasil analisis.
+
+Jika terdapat error atau warning baru akibat perubahan:
+
+1. Identifikasi sumber masalah.
+2. Perbaiki masalah yang berkaitan dengan pekerjaan.
+3. Jalankan kembali formatting.
+4. Jalankan kembali `flutter analyze`.
+
+Jangan menyatakan pekerjaan selesai apabila pemeriksaan belum dilakukan.
+
+### 13.3. Hasil pemeriksaan
+
+Laporkan secara jelas:
+
+- File yang diubah.
+- Perubahan yang dilakukan.
+- Hasil `dart format`.
+- Hasil `flutter analyze`.
+- Pengujian tambahan yang dilakukan.
+- Pemeriksaan yang belum dapat dilakukan beserta alasannya.
+
+Jangan mengklaim pengujian berhasil jika perintahnya belum dijalankan.
+
+## 14. Git
+
+1. Operasi Git hanya diperbolehkan untuk membaca informasi.
+2. Contoh operasi yang diperbolehkan:
+   - `git status`
+   - `git diff`
+   - `git log`
+   - `git show`
+   - `git branch --show-current`
+3. Dilarang menjalankan operasi Git yang mengubah kondisi repositori tanpa persetujuan pengguna.
+4. Operasi yang memerlukan persetujuan meliputi commit, push, pull, merge, rebase, checkout yang mengubah kondisi kerja, reset, stash, dan perubahan branch.
+5. Jika operasi Git diperlukan, jelaskan tujuan dan dampaknya kemudian tanyakan persetujuan pengguna menggunakan tool `question`.
+
+## 15. Manajemen aset
+
+1. Aset gambar dan font yang digunakan secara lokal wajib didaftarkan di `pubspec.yaml`.
+2. Gunakan path aset yang konsisten dengan struktur proyek.
+3. Jangan memuat aset menggunakan path yang tidak jelas atau tidak terdaftar.
+4. Sebelum menambahkan aset, periksa apakah aset serupa sudah tersedia.
+5. Jangan menduplikasi aset yang sebenarnya dapat digunakan bersama.
+
+## 16. Font
+
+1. Gunakan paket Google Fonts yang sudah tersedia apabila proyek menerapkannya.
+2. Aktifkan dan manfaatkan mekanisme cache font agar font tidak dimuat berulang kali dari jaringan.
+3. Hindari ketergantungan pada jaringan untuk pemuatan font yang sebenarnya dapat disediakan secara lokal.
+4. Jika font dibundel secara lokal, daftarkan melalui konfigurasi `fonts` di `pubspec.yaml`.
+5. Jangan menambahkan paket font baru tanpa memeriksa dependency yang sudah tersedia.
+
+## 17. Splash Screen
+
+1. Gunakan `flutter_native_splash` untuk membuat splash screen.
+2. Jangan membuat splash screen native secara manual menggunakan widget Flutter.
+3. Periksa konfigurasi dan versi paket yang sudah digunakan proyek.
+4. Jika konfigurasi splash screen berubah, jalankan generator sesuai dokumentasi paket.
+5. Pastikan hasil splash screen sesuai dengan desain proyek.
+
+## 18. Feedback pengguna
+
+1. Gunakan `fluttertoast` untuk feedback singkat kepada pengguna apabila sesuai dengan kebutuhan interaksi.
+2. Hindari penggunaan toast secara berulang atau berlebihan.
+3. Jangan menggunakan toast untuk informasi penting yang membutuhkan tindakan atau perhatian lebih lama.
+4. Pastikan feedback tidak mengganggu alur penggunaan aplikasi.
+5. Ikuti sistem feedback yang sudah tersedia dalam proyek apabila sudah memiliki implementasi khusus.
+
+## 19. UUID
+
+1. Gunakan paket `uuid` untuk menghasilkan ID unik.
+2. Jangan menggunakan timestamp sebagai pengganti ID unik.
+3. Periksa konfigurasi dan versi paket sebelum mengimplementasikannya.
+4. Gunakan mekanisme UUID yang konsisten dengan kebutuhan penyimpanan dan identifikasi data.
+
+## 20. Shared Preferences
+
+1. Gunakan `shared_preferences` untuk menyimpan pengaturan sederhana.
+2. Jangan menggunakannya untuk menyimpan data sensitif.
+3. Jangan menggunakannya untuk menyimpan data berukuran besar.
+4. Untuk data kompleks atau data utama aplikasi, gunakan penyimpanan yang sesuai dengan arsitektur proyek.
+5. Periksa implementasi penyimpanan yang sudah tersedia sebelum menambahkan mekanisme baru.
+
+## 21. Daftar panjang
+
+1. Untuk daftar yang berpotensi menampilkan lebih dari 20 item, gunakan mekanisme lazy loading.
+2. Utamakan:
+   - `ListView.builder`
+   - `SliverList`
+3. Jangan membuat seluruh item sekaligus menggunakan `ListView` biasa atau widget lain yang melakukan rendering seluruh elemen tanpa kebutuhan khusus.
+4. Pastikan daftar panjang tidak menyebabkan penggunaan memori berlebihan dan penurunan performa.
+5. Gunakan pagination apabila ukuran data dan kebutuhan aplikasi memerlukannya.
+
+## 22. Navigasi antarhalaman
+
+1. Navigasi antarhalaman wajib menggunakan helper `Nav` yang tersedia di `core_shared`.
+2. Jangan menggunakan mekanisme navigasi langsung apabila helper `Nav` sudah menyediakan fungsi yang diperlukan.
+3. Periksa implementasi helper `Nav` dan contoh penggunaannya sebelum mengimplementasikan navigasi.
+4. Ikuti pola navigasi yang sudah diterapkan proyek.
+
+Contoh:
+
+`unawaited(Nav.to(context, const StatistikBahanBakar()))`
+
+Jangan mengasumsikan signature method `Nav` tanpa memeriksa implementasinya.
+
+## 23. Import
+
+1. Seluruh import file proyek wajib menggunakan format `package:`.
+2. Dilarang menggunakan relative import untuk mengimpor file proyek.
+3. Ikuti konvensi import yang sudah diterapkan proyek.
+
+Contoh yang benar:
+
+`import 'package:myapp/fitur/contoh/contoh.dart';`
+
+## 24. Pengelolaan tanggal dan waktu
+
+### 24.1. Penyimpanan
+
+1. Simpan tanggal dan waktu dalam format UTC.
+2. Sebelum serialisasi, gunakan `toUtc()`.
+3. Untuk serialisasi ISO 8601, gunakan:
+
+   `tanggal.toUtc().toIso8601String()`
+
+4. Jika menggunakan `DateTime.now()` untuk data yang akan disimpan, gunakan:
+
+   `DateTime.now().toUtc()`
+
+### 24.2. Pembacaan
+
+1. Gunakan `ParserUtil.parseDateTime(...)` untuk membaca tanggal dan waktu apabila helper tersebut tersedia.
+2. Konversikan hasil pembacaan ke waktu lokal menggunakan `.toLocal()` apabila diperlukan untuk ditampilkan kepada pengguna.
+3. Jangan mencampuradukkan waktu UTC dan waktu lokal dalam proses perbandingan atau penyimpanan.
+
+Contoh:
+
+`ParserUtil.parseDateTime(nilai)?.toLocal()`
+
+## 25. Aturan lokalisasi
+
+### 25.1. Konfigurasi
+
+1. `MaterialApp` wajib mendeklarasikan `supportedLocales`.
+2. Aplikasi yang menargetkan pengguna Indonesia wajib menyertakan:
+
+   `Locale('id', 'ID')`
+
+3. Gunakan `flutter_localizations` dari Flutter SDK.
+4. `localizationsDelegates` wajib mencakup minimal:
+   - `GlobalMaterialLocalizations.delegate`
+   - `GlobalWidgetsLocalizations.delegate`
+   - `GlobalCupertinoLocalizations.delegate`
+
+5. Jangan mengandalkan delegate paket pihak ketiga sebagai satu-satunya sumber lokalisasi jika paket tersebut tidak menyediakan locale yang dibutuhkan.
+
+### 25.2. Penerapan
+
+1. Seluruh teks sistem yang ditampilkan kepada pengguna wajib mengikuti locale aplikasi.
+2. Cakupan meliputi:
+   - Toolbar pemilihan teks.
+   - Dialog.
+   - Date picker.
+   - Time picker.
+   - Komponen Material.
+   - Komponen Cupertino.
+3. Pastikan format tanggal, angka, dan informasi lokal sesuai dengan bahasa serta locale yang didukung.
+
+### 25.3. Verifikasi
+
+1. Setiap perubahan lokalisasi wajib diverifikasi secara visual.
+2. Pastikan teks sistem benar-benar menggunakan locale yang ditentukan.
+3. Jangan hanya mengandalkan pemeriksaan kode untuk menyatakan lokalisasi berhasil.
+4. Jika aplikasi tidak dapat dijalankan atau diverifikasi secara visual, laporkan keterbatasan tersebut.
+
+## 26. Penggunaan folder example
+
+1. Sebelum menggunakan atau mengubah implementasi paket pihak ketiga, periksa folder `example` paket tersebut apabila tersedia.
+2. Pelajari cara pengembang paket menggunakan API yang dibutuhkan.
+3. Bandingkan contoh resmi dengan implementasi proyek.
+4. Periksa apakah terdapat perbedaan konstruktor, parameter, konfigurasi, atau urutan inisialisasi.
+5. Jangan menyalin contoh secara langsung tanpa menyesuaikannya dengan arsitektur proyek.
+6. Jangan menganggap implementasi proyek sudah benar hanya karena kode berhasil dikompilasi.
+
+## 27. Inisialisasi Sqflite FFI
+
+1. Sebelum membuka database pada platform yang membutuhkan SQLite FFI, lakukan inisialisasi sesuai platform.
+2. Gunakan `sqfliteFfiInit()` sebelum menggunakan database factory FFI.
+3. Pada platform desktop, gunakan `databaseFactoryFfi`.
+4. Pada platform web, gunakan `databaseFactoryFfiWeb` sesuai dukungan dan dependency paket yang digunakan.
+5. Pastikan `databaseFactory` sudah ditentukan sebelum membuka database.
+6. Jangan menjalankan inisialisasi FFI secara sembarangan pada platform mobile yang menggunakan implementasi native.
+7. Periksa dokumentasi, versi paket, dan contoh resmi untuk memastikan urutan inisialisasi yang benar.
+8. Hindari inisialisasi database berulang kali jika proyek sudah menyediakan mekanisme inisialisasi terpusat.
+
+## 28. Penggunaan tools Kilo Code
+
+### 28.1. Pembacaan dan pencarian
+
+Gunakan tools sesuai fungsi:
+
+- `read` untuk membaca isi file.
+- `glob` untuk mencari file.
+- `grep` atau `rg` untuk mencari kode dan teks.
+- `ls` untuk melihat isi direktori.
+
+### 28.2. Pengeditan
+
+1. Gunakan `edit` atau `apply_patch` untuk perubahan sebagian.
+2. Hindari penggunaan terminal untuk mengedit file kode.
+3. Jangan menggunakan `write` untuk menulis ulang seluruh file jika perubahan sebagian sudah cukup.
+
+### 28.3. Pertanyaan
+
+1. Gunakan tool `question` apabila terdapat informasi yang belum pasti dan dapat memengaruhi hasil pekerjaan.
+2. Jangan menebak keputusan yang seharusnya ditentukan pengguna.
+3. Ajukan pertanyaan yang spesifik dan mudah dipahami.
+4. Jika ada beberapa pilihan yang memiliki konsekuensi berbeda, jelaskan pilihan tersebut.
+5. Jangan menanyakan kembali informasi yang sudah tersedia dalam aturan atau konteks proyek.
+
+### 28.4. TodoWrite
+
+1. Gunakan tool `todowrite` sebagai peta jalan pekerjaan yang memiliki beberapa tahapan.
+2. Buat daftar pekerjaan sebelum memulai implementasi.
+3. Susun pekerjaan berdasarkan urutan ketergantungan.
+4. Perbarui status pekerjaan selama proses berlangsung.
+5. Tandai pekerjaan selesai hanya setelah benar-benar dilaksanakan.
+6. Jangan menganggap pekerjaan selesai hanya karena kode sudah ditulis.
+
+## 29. Verifikasi penerapan aturan Kilo Code
+
+1. Seluruh file rules yang diwajibkan proyek harus didaftarkan secara eksplisit dalam `kilo.jsonc` melalui konfigurasi `instructions`.
+2. Jangan menganggap file aturan otomatis diterapkan hanya karena sudah tersedia di dalam direktori proyek.
+3. Periksa apakah path yang didaftarkan benar-benar menunjuk ke file yang tersedia.
+4. Pastikan tidak terdapat kesalahan penulisan path.
+5. Jika bundel rules terlalu besar, pecah berdasarkan tanggung jawab dan topik agar lebih mudah dibaca serta dipatuhi.
+6. Jangan menghapus aturan ketika memecah file tanpa mempertahankan seluruh maksud aslinya.
+7. Setiap aturan wajib mempunyai kriteria pelaksanaan yang dapat diperiksa.
+8. Jika aturan belum terdaftar, laporkan bahwa aturan tersebut belum terverifikasi penerapannya.
+9. Jangan mengklaim seluruh rules sudah aktif hanya berdasarkan keberadaan file.
+10. Setelah perubahan konfigurasi rules, periksa kembali konfigurasi dan pastikan sesi Kilo Code memuat instruksi terbaru.
+
+## 30. Alur kerja wajib
+
+Setiap pekerjaan pengembangan harus mengikuti alur berikut.
+
+### Tahap 1 — Memahami pekerjaan
+
+1. Pahami permintaan pengguna.
+2. Tentukan ruang lingkup perubahan.
+3. Identifikasi fitur dan file yang berkaitan.
+4. Gunakan `question` jika terdapat keputusan penting yang belum jelas.
+
+### Tahap 2 — Membaca aturan dan skills
+
+1. Baca aturan proyek yang relevan.
+2. Baca `optimasi_ui.md` jika pekerjaan berkaitan dengan tampilan.
+3. Periksa seluruh skills yang relevan.
+4. Pastikan rules sudah terdaftar dan diterapkan.
+
+### Tahap 3 — Menganalisis implementasi
+
+1. Baca kode aktual yang berkaitan dengan pekerjaan.
+2. Periksa file pemanggil dan dependency terkait.
+3. Periksa pola implementasi pada file lain.
+4. Baca `pubspec.yaml` dan `pubspec.lock`.
+5. Identifikasi sumber API yang diperlukan.
+6. Periksa kode SDK atau paket yang relevan.
+7. Baca contoh resmi paket jika tersedia.
+8. Periksa dokumentasi resmi jika diperlukan.
+9. Identifikasi kemungkinan deprecated API, perubahan signature, dan potensi bug runtime.
+
+### Tahap 4 — Menyusun rencana
+
+1. Gunakan `todowrite` untuk membuat peta jalan.
+2. Tentukan file yang akan diubah.
+3. Tentukan implementasi yang akan digunakan.
+4. Identifikasi risiko dan ketergantungan.
+5. Pastikan solusi tidak menimbulkan perubahan di luar ruang lingkup.
+
+### Tahap 5 — Implementasi
+
+1. Ubah hanya bagian kode yang diperlukan.
+2. Gunakan tools edit, bukan terminal.
+3. Ikuti seluruh aturan dependency dan SDK.
+4. Pertahankan konsistensi arsitektur.
+5. Hindari refactoring yang tidak berkaitan.
+
+### Tahap 6 — Verifikasi
+
+1. Jalankan `dart format` pada file Dart yang berubah.
+2. Jalankan `flutter analyze`.
+3. Perbaiki error atau warning baru yang berkaitan dengan perubahan.
+4. Jalankan pengujian tambahan yang relevan.
+5. Verifikasi visual apabila pekerjaan mengubah tampilan atau lokalisasi.
+6. Periksa kembali hasil perubahan.
+
+### Tahap 7 — Pelaporan
+
+Sampaikan laporan yang mencakup:
+
+1. Ringkasan pekerjaan.
+2. Daftar file yang diubah.
+3. Penjelasan perubahan.
+4. Hasil formatting.
+5. Hasil analisis.
+6. Hasil pengujian.
+7. Hal yang belum diverifikasi.
+8. Kendala atau keputusan yang masih membutuhkan persetujuan pengguna.
+
+Jangan mengklaim keberhasilan pada tahapan yang belum benar-benar dilakukan.
