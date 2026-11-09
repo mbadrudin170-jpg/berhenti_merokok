@@ -1,9 +1,6 @@
 # Kelompok 1
 
 
-
-
-
 ## File terdampak
 
 - [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
