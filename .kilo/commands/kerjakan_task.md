@@ -1,15 +1,31 @@
-buatkan prompt yang ringkas namun jelas lalu perbarui isi file prompt/lainnya/kerjakan_task.md dengan yang di bawah ini
+# Perintah Kerjakan Task
 
-Baca terlebih dahulu file `AGENTS.md` diroot lalu patuhi aturannya.
-kerjakan semua task yang statusnya kerjakan, beri penekanan disini karena kilo code suka mengerjakan task selain yang status nya `kerjakan`.
-hanya kerjakan task yang statusnya `Kerjakan` saja selain itu jangan kerjakan harus laporan dulu kesaya.
-urutan pengerjaan nya selesaikan dulu semua task yang statusnya `kerjakan` tasknya perkelompok, kalau dalam satu kelompok sudah tidak ada lagi baru pindah ke kelompok lain.
-setelah mengerjakan satu task wajib edit dulu file task.md nya agar menandai task itu dengan selesai atau dilewati.
-jangan mengerjakan task yang file nya sedang terbuka di editor dan tandai task nya dilewati saja.
-untuk task yang ternyata setelah di analyze error nya tak kunjung hilang maka stop dan rollback isi file .dart nya ke semula lalu tandai task nya sebagai dilewati.
-untuk task yang ternyata sudah diKerjakan` tandai dengan selesai.
-setiap ingin mengedit file tolong buat file backupnya dulu di folder .backup task dan kasih tipe .bak contoh app.dart.bak.
-komentar : tambahkan komentar ke kode yang diedit/ditambahkan jelaskan alasannya kenapa diedit/ditambah. harus deskriptif dan tidak panjang juga.
-lewati : setiap status lewati beri penjelasan kenapa sebuah task dilewati.
-flutter analyze : setelah itu jalankan flutter analyze harus bersih dari linter.
-tambahkan aturan karena AI suka mengerjakan task yang status nya bukan Kerjakan.
+Baca terlebih dahulu file `AGENTS.md` di root lalu patuhi semua aturannya, termasuk keterkaitan ke folder `agents/` dan `.agents/skills/`.
+
+## Aturan utama (wajib dibaca)
+
+JANGAN mengerjakan task selain yang statusnya `Kerjakan`. Kilo Code sering melakukan kesalahan ini. Hanya kerjakan task yang statusnya `Kerjakan` (case-insensitive).
+Task dengan status lain (mis. `batal`, `Belum dikerjakan`, `selesai`, `dilewati`, atau kosong) dilarang dikerjakan — laporan dulu ke saya sebelum mengambil tindakan apa pun.
+
+## Urutan pengerjaan
+
+1. Kelompokkan task berdasarkan kelompok di `task.md`.
+2. Selesaikan SEMUA task dengan status `Kerjakan` dalam satu kelompok terlebih dahulu.
+3. Setelah tidak ada lagi task `Kerjakan` dalam kelompok tersebut, baru pindah ke kelompok berikutnya.
+
+## Langkah pengerjaan setiap task
+
+1. Edit file `task.md` terlebih dahulu untuk menandai task tersebut sebagai `selesai` atau `dilewati`.
+2. Jika file yang akan diedit sedang terbuka di editor, jangan mengerjakannya — tandai task tersebut sebagai `dilewati` di `task.md` dengan penjelasan.
+3. Sebelum mengedit file `.dart`, buat file backup di folder `.backup task` dengan ekstensi `.bak` (contoh: `app.dart.bak`).
+4. Tambahkan komentar deskriptif (singkat, tidak panjang) pada kode yang diedit/ditambahkan, jelaskan alasannya kenapa diedit/ditambah.
+5. Setelah selesai, jalankan `flutter analyze` dan pastikan hasilnya bersih dari linter.
+
+## Penanganan error
+
+- Jika setelah dianalisis error tak kunjung hilang, hentikan pengerjaan task tersebut, rollback isi file `.dart` ke semula, lalu tandai task sebagai `dilewati` di `task.md` dengan penjelasan.
+- Jika task ternyata sudah dikerjakan sebelumnya, tandai dengan `selesai` di `task.md`.
+
+## Lewati
+
+Setiap task yang dilewati wajib diberi penjelasan kenapa task tersebut dilewati di `task.md`.
