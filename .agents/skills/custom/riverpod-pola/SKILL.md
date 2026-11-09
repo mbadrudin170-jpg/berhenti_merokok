@@ -1,6 +1,6 @@
 ---
 name: riverpod-pola
-description: Pola Riverpod standar - Notifier CRUD keepAlive, provider usage, Consumer/ref.watch/ref.read, family providers, autoDispose, overrides testing.
+description: Pola Riverpod standar - Notifier CRUD keepAlive, provider usage, Consumer/ref.watch/ref.read, family providers, autoDispose, overrides testing, ProviderScope & ProviderContainer, UncontrolledProviderScope, dan Vsync scheduleRefresh/scheduleDispose.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -190,6 +190,42 @@ final data = async.requireValue; // atau async.asData?.value untuk opsional
 - **DILARANG** mutate state langsung (`state = ...`) di luar Notifier class.
 - **DILARANG** `ProviderScope` nested di widget (hanya di `main.dart` / `app.dart`).
 - **DILARANG** family parameter yang mutable (List, Map, custom object tanpa equality).
+
+## 10. ProviderScope & ProviderContainer
+
+### Aturan
+1. Wajib memasang `ProviderScope` di root widget tree (biasanya `main.dart` atau `app.dart`) agar semua provider dapat diakses di seluruh aplikasi.
+2. Gunakan `ProviderScope.containerOf(BuildContext context, {bool listen = true})` untuk mendapatkan `ProviderContainer` dari widget tree.
+3. `containerOf(context, listen: true)` mendaftarkan dependensi ke InheritedWidget sehingga widget akan rebuild saat provider berubah; gunakan `listen: false` jika hanya butuh akses baca tanpa trigger rebuild.
+4. Parameter `overrides` hanya berlaku untuk `ProviderScope` itu sendiri dan keturunannya (descendants), bukan untuk widget induk (ancestors).
+5. `observers` digunakan untuk memantau perubahan provider secara global di dalam scope tersebut.
+6. `retry` mengatur logika retry default untuk provider yang terkait dengan container ini.
+7. `ProviderContainer` dibuat dalam `initState` dari `ProviderScopeState` dan dibuang dalam `dispose` untuk mengelola siklus hidup container.
+
+### Larangan
+- DILARANG membuat `ProviderScope` nested di dalam widget lain (hanya diperbolehkan di `main.dart` / `app.dart`).
+- DILARANG memanggil `containerOf()` di konteks yang tidak memiliki `ProviderScope` sebagai ancester (akan melempar `StateError('No ProviderScope found')`).
+
+## 11. UncontrolledProviderScope
+
+### Aturan
+1. `UncontrolledProviderScope` expose `ProviderContainer` ke widget tree tanpa mengelola siklus hidupnya (tidak akan dispose container saat widget dihancurkan).
+2. Tanggung jawab untuk dispose `ProviderContainer` ada pada pemanggil, bukan pada widget ini.
+3. Gunakan `ProviderScope` (bukan `UncontrolledProviderScope`) jika ingin siklus hidup container terkelola otomatis oleh framework.
+
+### Larangan
+- DILARANG mengandalkan `UncontrolledProviderScope` untuk dispose container secara otomatis.
+
+## 12. Vsync & scheduleRefresh / scheduleDispose
+
+### Aturan
+1. `_UncontrolledProviderScopeState` mengimplementasikan `Vsync` untuk mengelola task refresh dan dispose melalui `setState` serta `Timer`.
+2. `scheduleRefresh(Task task)` menjadwalkan task untuk dijalankan pada frame berikutnya menggunakan `Timer(Duration.zero)` dan `setState`.
+3. `scheduleDispose(Task task)` menjadwalkan task dispose melalui `Future.microtask` agar dijalankan setelah build tree selesai.
+4. Jangan memodifikasi provider di dalam siklus hidup widget (`build`, `initState`, `dispose`, `didUpdateWidget`, `didChangeDependencies`) karena dapat menyebabkan state tidak konsisten di antara widget yang listen ke provider yang sama.
+
+### Larangan
+- DILARANG memodifikasi provider secara langsung di dalam lifecycle method widget.
 
 ## Referensi Aturan Sumber
 
