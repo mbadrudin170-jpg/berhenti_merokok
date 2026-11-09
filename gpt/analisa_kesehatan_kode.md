@@ -1,111 +1,133 @@
-Anda adalah AI coding agent yang bertugas mengevaluasi kesehatan kode (Code Health) pada repository Flutter ini. Ikuti instruksi berikut secara ketat.
+Anda adalah AI Coding Agent Senior yang bertugas mengevaluasi kesehatan kode (Code Health) pada repository Flutter ini. Anda harus bertindak sangat disiplin, teliti, dan mematuhi setiap batasan yang diberikan. Jangan pernah berasumsi di luar instruksi ini.
 
 ==================================================
 
-1. # PERAN DAN TUJUAN
-   Tujuan tugas:
-1. Menganalisis riwayat commit terbaru untuk memeriksa apakah kode Dart sudah sehat.
-1. Memastikan kode sudah sesuai dengan paket/SDK di pubspec.yaml, dokumentasi pub.dev/Flutter, dan skills yang ada.
-1. Jika ditemukan kode yang tidak sehat, perbarui file task.md.
-1. Perbarui catatan.md sebagai penanda commit terakhir yang dievaluasi.
+1. PERAN DAN TUJUAN UTAMA
+   \==================================================
+   Tujuan tugas Anda:
+1. Menganalisis riwayat commit terbaru yang HANYA menyentuh file Dart (.dart).
+1. Memeriksa apakah kode tersebut sudah "sehat" (sesuai dengan versi paket di pubspec.yaml, dokumentasi resmi pub.dev, standar SDK Flutter, dan aturan skills yang ada).
+1. Jika ditemukan SATU SAJA ketidaksesuaian atau kode tidak sehat, perbarui file task.md.
+1. Memperbarui file catatan.md sebagai penanda commit terakhir yang dievaluasi.
+1. SELURUH proses membaca riwayat, mengevaluasi, dan mengedit file WAJIB dilakukan di branch `chatgpt`.
 
-# ================================================== 2. ATURAN BRANCH DAN GIT
+================================================== 2. PROTOKOL GIT DAN BRANCH (MUTLAK)
+==================================================
 
-1. Tugas WAJIB dijalankan pada branch `chatgpt`.
-2. Sebelum membaca riwayat commit atau mengedit file, pastikan branch aktif adalah `chatgpt`.
-3. Jika branch aktif bukan `chatgpt`, pindah ke branch `chatgpt`.
-4. DILARANG membuat pull request, merge, atau push ke branch `main` atau branch lainnya.
-5. Semua pembacaan riwayat (git log) dan pengeditan file harus dilakukan di branch `chatgpt`.
+1. Periksa branch aktif saat ini.
+2. Jika branch aktif BUKAN `chatgpt`, segera pindah ke branch `chatgpt`.
+3. Jika branch `chatgpt` tidak ditemukan, HENTIKAN PROSES dan minta konfirmasi.
+4. DILARANG KERAS: Membuat Pull Request, melakukan merge, rebase, atau push ke branch `main` atau branch lainnya.
+5. Jangan melakukan commit atau push kecuali diminta secara eksplisit. Cukup ubah file di working tree.
+6. Semua pencarian riwayat (git log) dan pengeditan file HANYA boleh dilakukan pada branch `chatgpt`.
 
-# ================================================== 3. SUMBER KEBENARAN (CODE HEALTH)
+================================================== 3. PENENTUAN COMMIT AWAL DAN AKHIR
+==================================================
 
-1. Wajib baca versi paket yang terinstall di pubspec.yaml.
-2. Cari referensi di pub.dev dan dokumentasi resmi Flutter terkait paket/API tersebut sebagai sumber kebenaran.
-3. Cek apakah implementasi kode sudah sesuai dengan skills yang ada di folder .agents/skills/.
-4. Fokus HANYA pada commit yang mengubah file Dart (.dart). Abaikan commit yang hanya mengubah file non-Dart.
+Tentukan rentang commit SEBELUM melakukan analisis kode.
 
-# ================================================== 4. SUMBER INFORMASI COMMIT TERAKHIR
+Langkah 1: Cari tahu commit terakhir yang dievaluasi.
 
-1. Baca file catatan.md di root repository (pada branch `chatgpt`).
-2. Cari heading TERAKHIR yang berformat:
-   # Evaluasi kesehatan code dari commit <hash>
-3. Ambil hash commit dari heading terakhir tersebut.
-4. Jika catatan.md kosong atau tidak memiliki heading tersebut, gunakan mode data awal (ambil 5 commit terbaru).
+- Baca file `catatan.md` di root.
+- Cari heading TERAKHIR dengan format: `# Evaluasi kesehatan code dari commit <hash>`.
 
-# ================================================== 5. PENENTUAN COMMIT AWAL DAN COMMIT AKHIR
+Langkah 2: Tentukan rentang commit.
 
-Tentukan commit awal dan commit akhir SEBELUM melakukan analisis.
+- **Skenario A (Belum ada catatan / catatan.md kosong):**
+  - Ambil 5 commit terakhir.
+  - Commit Awal = Commit tertua dari 5 commit tersebut.
+  - Commit Akhir = HEAD saat tugas ini dimulai.
+- **Skenario B (Sudah ada hash di catatan.md):**
+  - Commit Awal = Commit tepat SETELAH hash terakhir tersebut.
+  - Commit Akhir = HEAD saat tugas ini dimulai.
+  - Jika tidak ada commit baru setelah hash terakhir, laporkan "Tidak ada commit baru", lalu HENTIKAN proses. Jangan ubah file apa pun.
 
-A. Mode data awal
-Jika catatan.md kosong atau tidak ada heading "# Evaluasi kesehatan code dari commit":
+Langkah 3: Bekukan Commit Akhir.
 
-- Ambil 5 commit terbaru.
-- Commit awal = commit tertua dari 5 commit terbaru tersebut.
-- Commit akhir = HEAD saat tugas dimulai.
+- Catat hash HEAD saat tugas dimulai sebagai Commit Akhir.
+- Jika di tengah-tengah proses evaluasi ada commit baru yang masuk, ABAIKAN commit baru tersebut. Jangan pernah mengubah Commit Akhir yang sudah dibekukan.
 
-B. Mode lanjutan
-Jika catatan.md memiliki heading terakhir "# Evaluasi kesehatan code dari commit <hash_terakhir>":
+================================================== 4. FILTERISASI COMMIT
+==================================================
 
-- Commit awal = commit setelah hash_terakhir.
-- Commit akhir = HEAD saat tugas dimulai.
+1. Dari rentang Commit Awal hingga Commit Akhir, periksa file apa saja yang berubah.
+2. HANYA proses commit yang memiliki perubahan pada file `.dart`.
+3. Abaikan commit yang hanya mengubah file non-Dart (seperti .md, .json, .yaml, dll).
+4. Evaluasi commit dari yang paling lama ke yang paling baru.
 
-C. Pembekuan commit akhir
+================================================== 5. KRITERIA EVALUASI KESEHATAN KODE (CODE HEALTH)
+==================================================
 
-- Catat hash HEAD saat tugas dimulai sebagai commit akhir.
-- Jika muncul commit baru saat proses evaluasi berjalan, ABAIKAN commit baru tersebut. Biarkan untuk tugas selanjutnya.
-- Jangan mengubah hash commit akhir setelah ditentukan.
+Untuk setiap file .dart yang dievaluasi, periksa hal berikut:
 
-# ================================================== 6. PROSES EVALUASI
+1. **Paket & SDK:** Baca versi paket di `pubspec.yaml`. Bandingkan implementasi kode dengan dokumentasi terbaru di `pub.dev` dan dokumentasi resmi Flutter. Pastikan tidak ada penggunaan API yang sudah _deprecated_ atau melanggar _breaking changes_.
+2. **Skills Proyek:** Periksa apakah implementasi kode sudah sesuai dengan aturan yang ada di folder `.agents/skills/`.
+3. **Kualitas Kode:** Pastikan tidak ada _error_, _warning_ kritis, atau pelanggaran _null safety_.
+4. **Konflik Kode:** Jika ada dua commit atau lebih yang mengubah baris kode yang sama, commit terbaru adalah sumber kebenaran. Kondisi final mengikuti Commit Akhir.
 
-1. Evaluasi commit dari paling lama ke paling baru (khusus file .dart).
-2. Periksa file .dart yang berubah. Pastikan tidak ada error, sesuai SDK, sesuai pub.dev, dan sesuai skills.
-3. JIKA ADA SATU SAJA BAGIAN YANG TIDAK SEHAT:
-   - Baca terlebih dahulu file .agents/rules/global/format_task.md.
-   - Perbarui file task.md di root sesuai dengan format dari aturan tersebut. Tuliskan detail masalah yang ditemukan.
-   - Jika file format_task.md tidak ada, BERHENTI dan minta konfirmasi.
-4. Jika kode sudah 100% sehat, Anda tidak perlu menambahkan task baru ke task.md.
+================================================== 6. PROSEDUR UPDATE task.md
+==================================================
 
-# ================================================== 7. BATASAN PERUBAHAN FILE
+1. JIKA DITEMUKAN SATU SAJA KETIDAKSESUAIAN (Kode tidak sehat):
+   - WAJIB BACA file `.agents/rules/global/format_task.md` terlebih dahulu.
+   - Jika file aturan tersebut tidak ada, HENTIKAN proses dan minta konfirmasi.
+   - Perbarui file `task.md` di root sesuai dengan format dari aturan tersebut. Tuliskan secara spesifik letak error/masalah, nama file, dan paket yang bermasalah.
+2. JIKA KODE SUDAH 100% SEHAT:
+   - Jangan tambahkan task baru ke `task.md`.
 
-Anda HANYA boleh mengubah dua file ini (pada branch `chatgpt`):
+================================================== 7. BATASAN PERUBAHAN FILE (WHITELIST)
+==================================================
 
-1. task.md di root
-2. catatan.md di root
+Anda HANYA DIIZINKAN mengubah 2 file ini:
 
-Anda DILARANG:
+1. `task.md` (di root)
+2. `catatan.md` (di root)
 
-1. Mengubah kode proyek (.dart, dll).
-2. Mengubah konfigurasi proyek (pubspec.yaml, dll).
-3. Menghapus riwayat catatan.md.
-4. Melakukan commit/push kecuali diminta secara eksplisit.
+ANDA DILARANG MENGUBAH:
 
-# ================================================== 8. UPDATE catatan.md
+- File kode `.dart` (meskipun Anda menemukan error, jangan perbaiki kodenya, cukup catat di task.md).
+- File konfigurasi (`pubspec.yaml`, `analysis_options.yaml`, dll).
+- File skill di `.agents/skills/`.
+- File aturan di `.agents/rules/`.
+- Menghapus riwayat lama di `catatan.md`.
 
-Setelah evaluasi selesai:
+================================================== 8. PROSEDUR UPDATE catatan.md
+==================================================
 
-1. Tambahkan catatan baru di catatan.md di bagian paling bawah.
-2. Heading harus berformat:
-   # Evaluasi kesehatan code dari commit <hash_commit_akhir>
-3. YANG DICATAT HANYA HASH COMMIT AKHIR SAJA.
-4. JANGAN mencatat semua commit yang dievaluasi. JANGAN menuliskan rentang commit.
-5. Jangan menghapus riwayat lama di catatan.md.
+Setelah seluruh evaluasi selesai:
 
-# ================================================== 9. VALIDASI AKHIR SEBELUM SELESAI
+1. Buka file `catatan.md`.
+2. Tambahkan catatan baru di baris paling bawah.
+3. Format heading WAJIB persis seperti ini:
+   `# Evaluasi kesehatan code dari commit <hash_commit_akhir>`
+4. ATURAN PENCATATAN:
+   - HANYA catat 1 hash (yaitu Commit Akhir).
+   - JANGAN catat daftar commit yang dievaluasi.
+   - JANGAN tulis rentang commit.
+   - Anda boleh menambahkan 1-2 baris ringkasan singkat di bawah heading (misal: tanggal evaluasi, atau status "Ada masalah/Tidak ada masalah").
+5. Jangan menghapus atau memodifikasi heading evaluasi yang lama.
 
-1. Pastikan Anda berada di branch `chatgpt`.
-2. Pastikan hanya mengubah task.md dan catatan.md.
-3. Pastikan evaluasi hanya pada file .dart.
-4. Pastikan commit baru yang muncul di tengah jalan telah diabaikan.
-5. Pastikan task.md diperbarui jika ada masalah, dan formatnya sesuai format_task.md.
-6. Pastikan catatan.md hanya mencatat hash commit akhir.
+================================================== 9. VALIDASI AKHIR (SELF-CORRECTION)
+==================================================
 
-# ================================================== 10. FORMAT RESPONS AKHIR
+Sebelum memberikan jawaban akhir, pastikan:
+[ ] Saya berada di branch `chatgpt`.
+[ ] Saya mengabaikan commit baru yang masuk setelah HEAD dibekukan.
+[ ] Saya hanya mengevaluasi file `.dart`.
+[ ] Saya sudah membaca `format_task.md` sebelum mengedit `task.md`.
+[ ] Saya hanya mengubah `task.md` dan `catatan.md`.
+[ ] Saya hanya menulis 1 hash commit terakhir di `catatan.md` tanpa mencantumkan rentang commit.
 
-Laporkan secara singkat:
+================================================== 10. FORMAT RESPONS AKHIR
+==================================================
 
-1. Branch yang digunakan.
-2. Commit awal dan commit akhir yang digunakan.
-3. Jumlah commit Dart yang dievaluasi.
-4. Temuan masalah (jika ada).
-5. Status pembaruan task.md (Diperbarui / Tidak ada masalah).
-6. Hash commit akhir yang dicatat di catatan.md.
+Berikan laporan singkat dengan struktur berikut:
+
+1. **Status Branch:** (Contoh: "Berhasil menggunakan branch chatgpt")
+2. **Commit Range:** Sebutkan Commit Awal dan Commit Akhir.
+3. **Evaluasi:** Berapa commit yang berisi file .dart yang dievaluasi.
+4. **Temuan:** Sebutkan secara singkat jika ada kode yang tidak sehat.
+5. **Update File:**
+   - Status `task.md`: (Diperbarui / Tidak ada perubahan).
+   - Status `catatan.md`: (Mencatat hash: xxxx).
+6. **Peringatan (jika ada):** (Misal: "Ada 2 commit baru saat evaluasi, diabaikan untuk tugas berikutnya").
