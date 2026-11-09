@@ -1,20 +1,14 @@
-# Contoh Output: Kartu Motivasi dan Pintasan Aksi Cepat
+// commit: e6595744b3840998d840e398ca1782e7be7d50b4
+// Output: Kartu motivasi dengan akses data async aman & navigasi error handling
 
-## Sumber
-- Commit: `e6595744b3840998d840e398ca1782e7be7d50b4`
-- File rujukan: `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart`
-
-## Implementasi
-
-### 1. Akses Data Opsional Aman (Dashboard)
-```dart
-Widget _buildCardAlasanBerhenti(WidgetRef ref) {
+Widget buildKartuAlasanBerhenti(WidgetRef ref) {
   final alasanAsync = ref.watch(alasanBerhentiProvider);
   
-  // Akses aman tanpa blokir UI
+  // BENAR: Akses aman tanpa blokir UI
   final jumlah = alasanAsync.asData?.value.jumlahAlasan ?? 0;
   L.i('jumlahAlasan=$jumlah');
 
+  // Early return jika data kosong
   if (jumlah == 0) {
     L.w('daftar alasan kosong, sembunyikan kartu');
     return const SizedBox.shrink();
@@ -55,11 +49,9 @@ Widget _buildCardAlasanBerhenti(WidgetRef ref) {
     ),
   );
 }
-```
 
-### 2. Navigasi Pintasan dengan Error Handling (Dashboard → SOS Craving)
-```dart
-Widget _buildCardSosCraving() {
+// Navigasi pintasan SOS Craving di dashboard:
+Widget buildCardSosCraving() {
   return Card(
     child: InkWell(
       onTap: () => unawaited(
@@ -94,10 +86,8 @@ Widget _buildCardSosCraving() {
     ),
   );
 }
-```
 
-### 3. FilterChip Pilihan Cepat dengan Logging (Form Alasan Berhenti)
-```dart
+// FilterChip dengan logging (FormAlasanBerhenti):
 class _FormAlasanBerhentiState extends State<FormAlasanBerhenti> {
   final _snippetPilihan = [
     'Kesehatan saya dan keluarga',
@@ -135,39 +125,3 @@ class _FormAlasanBerhentiState extends State<FormAlasanBerhenti> {
     );
   }
 }
-```
-
-### 4. Kartu Motivasi di SOS Craving (Akses Data Opsional)
-```dart
-Widget _buildKartuAlasanBerhenti(WidgetRef ref) {
-  final alasanAsync = ref.watch(alasanBerhentiProvider);
-  final listAlasan = alasanAsync.asData?.value.listAlasan ?? <AlasanBerhentiModel>[];
-  L.i('listAlasan.length=${listAlasan.length}');
-
-  if (listAlasan.isEmpty) {
-    L.w('tidak ada alasan berhenti, tampilkan placeholder');
-    return const _PlaceholderAlasanBerhenti();
-  }
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: 8,
-    children: [
-      Text('Alasan Saya Berhenti', style: Theme.of(context).textTheme.titleMedium),
-      ...listAlasan.take(3).map((alasan) => Card(
-        child: ListTile(
-          leading: const Icon(CupertinoIcons.heart_fill, color: Colors.red),
-          title: Text(alasan.teks),
-        ),
-      )),
-    ],
-  );
-}
-```
-
-## Penjelasan
-1. **`asData?.value ?? fallback`** → akses data async opsional tanpa crash saat loading/error.
-2. **`unawaited(Nav.to(...).catchError(...))`** → navigasi non-blocking, error di-log via `L.e`.
-3. **Logging tergabung** → `L.i('snippet=$snippet, terpilih=$terpilih')` satu log untuk variabel terkait.
-4. **Early return `SizedBox.shrink()` + `L.w`** → handle data kosong graceful tanpa error.
-5. **FilterChip stateful** → log saat render dan saat user ubah pilihan.

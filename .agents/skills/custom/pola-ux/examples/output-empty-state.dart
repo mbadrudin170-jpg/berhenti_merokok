@@ -1,11 +1,6 @@
-# Contoh Output: Empty State Daftar Kosong
+// commit: 3b67d3095dacc4e5c7ea78d7eb251809e3e9d981
+// Output: Empty state informatif dengan ikon, judul, deskripsi, dan CTA
 
-## Sumber
-- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
-- File rujukan: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`
-
-## Implementasi
-```dart
 class _EmptyDiaryCraving extends StatelessWidget {
   const _EmptyDiaryCraving();
 
@@ -46,7 +41,7 @@ class _EmptyDiaryCraving extends StatelessWidget {
   }
 }
 
-// Penggunaan di layar:
+// Penggunaan di layar dengan early return pattern:
 @override
 Widget build(BuildContext context) {
   final stateAsync = ref.watch(diaryCravingProvider);
@@ -73,12 +68,3 @@ Widget build(BuildContext context) {
     ),
   );
 }
-```
-
-## Penjelasan
-1. **`SafeArea` + `Padding`** → konten tidak tertutup notch/status bar, memiliki jarak tepi layar.
-2. **`Column.spacing: 8`** → jarak konsisten antar elemen tanpa `SizedBox` berulang.
-3. **Ikon + Judul Bold + Deskripsi** → informatif, user paham situasi.
-4. **FAB/FilledButton** → call-to-action jelas untuk menambah data pertama.
-5. **`unawaited(Nav.to(...).catchError(...))`** → navigasi non-blocking dengan error handling.
-6. **Early return pattern** di layar → loading → error → empty → daftar, alur linear mudah dibaca.

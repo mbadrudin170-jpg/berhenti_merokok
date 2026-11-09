@@ -1,9 +1,11 @@
 ---
 name: pola-ux
 description: Pola UX standar untuk aplikasi Flutter: dialog konfirmasi destruktif, empty state informatif, kartu motivasi dengan pintasan aksi, perayaan pencapaian dengan toast sekali, validasi form sebelum simpan, dan akses data async opsional aman.
-kategori: custom
-versi: 1.0.0
-commit-terakhir: e6595744b3840998d840e398ca1782e7be7d50b4
+metadata:
+  kategori: "custom"
+  versi: "1.0.0"
+  commit-terakhir: "e6595744b3840998d840e398ca1782e7be7d50b4"
+  model: "models/gemini-3.1-pro-preview"
 ---
 
 # Pola UX Standar
