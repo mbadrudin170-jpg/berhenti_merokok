@@ -1,6 +1,5 @@
-// commit: adc85b57da72eb4c000a29c324db7cdb15d388bc
+// commit: c9f96b2debb9e678513229c5a4a68a062e3a8afc
 class NamaKolomBenar {
-  // BENAR: lowercase + underscore (snake_case)
+  // BENAR: nama kolom konsisten dengan skema SQLite dalam snake_case.
   static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
-  static const String targetSmokeFreeHari = 'target_smoke_free_hari';
 }

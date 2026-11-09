@@ -1,6 +1,5 @@
-// commit: adc85b57da72eb4c000a29c324db7cdb15d388bc
+// commit: c9f96b2debb9e678513229c5a4a68a062e3a8afc
 class NamaKolomSalah {
-  // SALAH: Huruf kapital di nilai konstanta
+  // SALAH: nama kolom memakai huruf kapital dan tidak sama dengan skema SQLite.
   static const String tanggalMulaiTapering = 'Tanggal_mulai_tapering';
-  static const String targetSmokeFreeHari = 'Target_Smoke_Free_Hari';
 }

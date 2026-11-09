@@ -1,15 +1,4 @@
-// commit: adc85b57da72eb4c000a29c324db7cdb15d388bc
-import 'package:berhenti_merokok/shared/utils/parser_util.dart';
-
-class BiodataModelBenar {
-  final int? targetSmokeFreeHari;
-  
-  BiodataModelBenar({this.targetSmokeFreeHari});
-  
-  factory BiodataModelBenar.fromSqflite(Map<String, Object?> row) {
-    return BiodataModelBenar(
-      // BENAR: parseIntOrNull, null tetap null
-      targetSmokeFreeHari: ParserUtil.parseIntOrNull(row['target_smoke_free_hari']),
-    );
-  }
-}
+// commit: c9f96b2debb9e678513229c5a4a68a062e3a8afc
+targetSmokeFreeHari: ParserUtil.parseIntOrNull(
+  row[NamaKolom.targetSmokeFreeHari],
+), // BENAR: field int? mempertahankan null dari database
