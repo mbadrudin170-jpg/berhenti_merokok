@@ -51,10 +51,10 @@ Flutter app (Android-first, offline-first) for smoking-cessation tracking: bioda
 
 ## Pre-flight (do this before any non-trivial change)
 
-1. Read `.agents/rules/proyek/aturan_proyek.md` — it overrides `.agents/rules/global/` on conflict.
-2. Check the sibling dep `share_global_saya` (path `../share_global_saya`) for `Nav`, `AppToast`, `ParserUtil`, `FormatTanggal`, `L` signatures before assuming APIs.
-3. Confirm the current DB schema version in `lib/shared/db/sqflite/sqflite.dart` (`_versiDatabase`, currently **8**) before any schema change.
-4. `flutter pub get` first — `share_global_saya` is a path dependency and must resolve.
+1. Read relevant `.agents/rules/` and `.agents/skills/` first; if `.agents/rules/proyek/aturan_proyek.md` appears later, it overrides `.agents/rules/global/`.
+2. Check the sibling dep `share_global_saya` (`../share_global_saya`) for `Nav`, `AppToast`, `ParserUtil`, `FormatTanggal`, `L` signatures before assuming APIs.
+3. Confirm current DB schema in `lib/shared/db/sqflite/sqflite.dart` (`_versiDatabase`, currently **8**) before any schema change.
+4. Run `flutter pub get` first — `share_global_saya` is a path dependency (CI clones it via `PAT_SHARE_GLOBAL`).
 
 ## Codegen trigger rule
 
@@ -68,7 +68,7 @@ Run `dart run build_runner build --delete-conflicting-outputs` **whenever you to
 
 ## Rules
 
-Detailed rules live in `.agents/rules/global/` and `.agents/rules/proyek/` (registered in `~/.config/kilo/kilo.jsonc` `instructions`). Read those before non-trivial work; `aturan_proyek.md` overrides globals on conflict.
+Repo-local rules live under `.agents/rules/global/` and repo-local skills under `.agents/skills/` (project Kilo config may also register global instructions). Read relevant rules/skills before non-trivial work; if `.agents/rules/proyek/aturan_proyek.md` exists, it overrides `.agents/rules/global/` on conflict.
 
 ## Non-obvious wiring
 
@@ -77,4 +77,4 @@ Detailed rules live in `.agents/rules/global/` and `.agents/rules/proyek/` (regi
 - **`home` is wrapped in `PengelolaOverlayLogDebug`.** The root widget in `app.dart` is `PengelolaOverlayLogDebug(child: home)`, not `Scaffold` directly. Don't assume the widget tree starts at the tab `Scaffold`.
 - **Onboarding is data-driven, not a separate route.** `app.dart` watches `biodataProvider`; loading → spinner, error → retry button, empty → `FormBiodata(buatPertama: true)`, present → `Home()`. There is no named `/onboarding` route to navigate to.
 - **`share_global_saya` is a path dependency (`../share_global_saya`), cloned in CI via PAT.** `flutter pub get` must resolve it before anything else. `core_shared` exports `Nav`, `AppToast`, `ParserUtil`, `FormatUang`, `FormatTanggal`, `L`, `P`, `InputTeks`, etc.
-- **`material_ui` and `uuid` are transitive deps used directly** (not declared in `pubspec.yaml`). Don't remove them; don't add a replacement for either.
+- **`material_ui` and `uuid` are used directly but not declared in `pubspec.yaml`** (present in `pubspec.lock`). Don't remove them or replace imports without updating dependency resolution.
