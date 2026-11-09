@@ -50,7 +50,6 @@
 - `lib/shared/konstanta/nama_tabel.dart`
 - `lib/shared/notifikasi/notifikasi_service.dart`
 
-## ⚠️  assets (tidak ditemukan)
+## ⚠️ assets (tidak ditemukan)
 
-## ⚠️  supabase (tidak ditemukan)
-
+## ⚠️ supabase (tidak ditemukan)

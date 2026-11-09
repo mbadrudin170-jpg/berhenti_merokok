@@ -318,7 +318,6 @@ extension BiodataModelPerhitungan on BiodataModel {
 
 ---
 
-
 ## 📊 STATISTIK
 
 - **Total file model:** 4

@@ -170,7 +170,6 @@ class AppDatabase {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/shared/db/sqflite/sqflite_op.dart
 // ============================================================
@@ -428,7 +427,6 @@ class SqfliteOp {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/shared/helper/shared_keys.dart
 // ============================================================
@@ -454,7 +452,6 @@ class SharedKeys {
   static const String notifikasiMenit = 'notifikasi_menit';
 }
 ```
-
 
 // ============================================================
 // FILE: lib/shared/konstanta/milestone_kesehatan.dart
@@ -561,7 +558,6 @@ MilestoneKesehatan? milestoneBerikutnya(Duration durasi) {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/shared/konstanta/nama_kolom.dart
 // ============================================================
@@ -633,7 +629,6 @@ class NamaKolom {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/shared/konstanta/nama_tabel.dart
 // ============================================================
@@ -656,7 +651,6 @@ class NamaTabel {
   static const String alasanBerhenti = 'alasan_berhenti';
 }
 ```
-
 
 // ============================================================
 // FILE: lib/shared/notifikasi/notifikasi_service.dart
@@ -1122,5 +1116,3 @@ class NotifikasiService {
   }
 }
 ```
-
-

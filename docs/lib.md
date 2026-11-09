@@ -156,7 +156,6 @@ class _MaterialUiLocalizationsDelegate
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/alasan_berhenti/model/alasan_berhenti_model.dart
 // ============================================================
@@ -199,7 +198,6 @@ abstract class AlasanBerhentiModel with _$AlasanBerhentiModel {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart
@@ -318,7 +316,6 @@ class AlasanBerhentiNotifier extends _$AlasanBerhentiNotifier {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart
@@ -503,7 +500,6 @@ class _EmptyAlasanBerhenti extends StatelessWidget {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart
 // ============================================================
@@ -653,7 +649,6 @@ class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/alasan_berhenti/state/alasan_berhenti_state.dart
 // ============================================================
@@ -674,7 +669,6 @@ abstract class AlasanBerhentiState with _$AlasanBerhentiState {
   }) = _AlasanBerhentiState;
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/badge/helper/badge_helper.dart
@@ -834,7 +828,6 @@ List<BadgePencapaian> hitungBadge({
   return daftar;
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/badge/screens/badge_screen.dart
@@ -1071,7 +1064,6 @@ class _BadgeCard extends StatelessWidget {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/biodata/enum/mode_berhenti.dart
 // ============================================================
@@ -1095,7 +1087,6 @@ extension ModeBerhentiExtension on ModeBerhenti {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/biodata/model/biodata_model.dart
@@ -1246,7 +1237,6 @@ extension BiodataModelPerhitungan on BiodataModel {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/biodata/notifier/biodata_notifier.dart
 // ============================================================
@@ -1309,7 +1299,6 @@ class BiodataNotifier extends _$BiodataNotifier {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/biodata/screens/biodata_screen.dart
 // ============================================================
@@ -1333,7 +1322,7 @@ class BiodataScreen extends ConsumerStatefulWidget {
 }
 
 class _BiodataScreenState extends ConsumerState<BiodataScreen> {
-  
+
   @override
   void initState() {
     super.initState();
@@ -1515,7 +1504,6 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/biodata/screens/form_biodata.dart
@@ -1944,7 +1932,6 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/dashboard/notifier/dashboard_notifier.dart
 // ============================================================
@@ -1971,7 +1958,6 @@ class DashboardNotifier extends _$DashboardNotifier {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/dashboard/screens/dashboard_screen.dart
@@ -2479,7 +2465,6 @@ String _formatLamaBerhenti(DateTime? tanggalBerhenti) {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/dashboard/state/dashboard_state.dart
 // ============================================================
@@ -2499,7 +2484,6 @@ abstract class DashboardState with _$DashboardState {
   }) = _DashboardState;
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/diary_craving/enum/pemicu_enum.dart
@@ -2571,7 +2555,6 @@ extension PemicuEnumExtension on PemicuEnum {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/diary_craving/model/diary_craving_model.dart
 // ============================================================
@@ -2634,7 +2617,6 @@ abstract class DiaryCravingModel with _$DiaryCravingModel {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/diary_craving/notifier/diary_craving_notifier.dart
@@ -2747,7 +2729,6 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/diary_craving/screens/diary_craving_screen.dart
@@ -2945,7 +2926,6 @@ class _EmptyDiaryCraving extends StatelessWidget {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/diary_craving/screens/form_diary_craving.dart
@@ -3202,7 +3182,6 @@ class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/diary_craving/state/diary_craving_state.dart
 // ============================================================
@@ -3223,7 +3202,6 @@ abstract class DiaryCravingState with _$DiaryCravingState {
   }) = _DiaryCravingState;
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/dummy/dummy_data/dummy_biodata.dart
@@ -3258,7 +3236,6 @@ final List<BiodataModel> dummyBiodata = [
   ),
 ];
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/dummy/dummy_data/dummy_impian.dart
@@ -3336,7 +3313,6 @@ final List<ImpianModel> dummyImpian = [
   ),
 ];
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/dummy/helper/dummy_helper.dart
@@ -3417,7 +3393,6 @@ class DummyHelper {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/dummy/screens/dummy_screen.dart
@@ -3647,7 +3622,6 @@ class _DummyScreenState extends ConsumerState<DummyScreen> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/impian/enum/sort_impian.dart
 // ============================================================
@@ -3703,7 +3677,6 @@ extension SortImpianExtension on SortImpian {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/impian/model/impian_model.dart
 // ============================================================
@@ -3754,7 +3727,6 @@ abstract class ImpianModel with _$ImpianModel {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/impian/notifier/impian_notifier.dart
@@ -4019,7 +3991,6 @@ class ImpianNotifier extends _$ImpianNotifier {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/impian/screens/detail_impian_screen.dart
 // ============================================================
@@ -4150,7 +4121,6 @@ class DetailImpianScreen extends ConsumerWidget {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/impian/screens/form_impian.dart
@@ -4368,7 +4338,6 @@ class _FormImpianState extends ConsumerState<FormImpian> {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/impian/screens/impian_screen.dart
@@ -4677,7 +4646,6 @@ class _EmptyImpian extends StatelessWidget {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/impian/state/impian_state.dart
 // ============================================================
@@ -4699,7 +4667,6 @@ abstract class ImpianState with _$ImpianState {
   }) = _ImpianState;
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart
@@ -5207,7 +5174,6 @@ class _ItemLegenda extends StatelessWidget {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart
 // ============================================================
@@ -5559,7 +5525,6 @@ class _HeaderPemulihanState extends State<_HeaderPemulihan> {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/pengaturan/screens/pengaturan_screen.dart
@@ -5962,7 +5927,6 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/sos_craving/screens/sos_craving_screen.dart
@@ -6500,7 +6464,6 @@ class _DistraksiViewState extends State<_DistraksiView> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/fitur/tema/enum/tema_enum.dart
 // ============================================================
@@ -6536,7 +6499,6 @@ extension TemaEnumExtension on TemaEnum {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/fitur/tema/notifier/tema_notifier.dart
@@ -6574,7 +6536,6 @@ class TemaNotifier extends _$TemaNotifier {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/home.dart
@@ -6708,7 +6669,6 @@ class _HomeState extends ConsumerState<Home> {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/lainnya_screen.dart
 // ============================================================
@@ -6777,7 +6737,6 @@ class LainnyaScreen extends StatelessWidget {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/main.dart
 // ============================================================
@@ -6819,7 +6778,6 @@ Future<void> main() async {
   });
 }
 ```
-
 
 // ============================================================
 // FILE: lib/shared/db/sqflite/sqflite.dart
@@ -6992,7 +6950,6 @@ class AppDatabase {
   }
 }
 ```
-
 
 // ============================================================
 // FILE: lib/shared/db/sqflite/sqflite_op.dart
@@ -7251,7 +7208,6 @@ class SqfliteOp {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/shared/helper/shared_keys.dart
 // ============================================================
@@ -7277,7 +7233,6 @@ class SharedKeys {
   static const String notifikasiMenit = 'notifikasi_menit';
 }
 ```
-
 
 // ============================================================
 // FILE: lib/shared/konstanta/milestone_kesehatan.dart
@@ -7384,7 +7339,6 @@ MilestoneKesehatan? milestoneBerikutnya(Duration durasi) {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/shared/konstanta/nama_kolom.dart
 // ============================================================
@@ -7456,7 +7410,6 @@ class NamaKolom {
 }
 ```
 
-
 // ============================================================
 // FILE: lib/shared/konstanta/nama_tabel.dart
 // ============================================================
@@ -7479,7 +7432,6 @@ class NamaTabel {
   static const String alasanBerhenti = 'alasan_berhenti';
 }
 ```
-
 
 // ============================================================
 // FILE: lib/shared/notifikasi/notifikasi_service.dart
@@ -7945,5 +7897,3 @@ class NotifikasiService {
   }
 }
 ```
-
-

@@ -2,7 +2,7 @@
 // FILE: .vscode/aturan.code-snippets
 // ============================================================
 
-```json
+````json
 {
 	"Snippet baru": {
 		"scope": "json,jsonc,snippets",
@@ -429,8 +429,7 @@
     "description": "Menulis sebuah file PRD berformat .md",
   },
 }
-```
-
+````
 
 // ============================================================
 // FILE: .vscode/komentar.code-snippets
@@ -442,13 +441,12 @@
     "scope": "dart",
     "prefix": "/komentar belum paham",
     "body": [
-      "// TODO : tolong tambahkan komentar untuk kode di bawah ini karena saya belum paham fungsinya untuk apa",
+      "// TODO : tolong tambahkan komentar untuk kode di bawah ini karena saya belum paham fungsinya untuk apa"
     ],
-    "description": "komentar untuk memerintahkan ai agar menulis komentar untuk kode yang belum di pahami",
-  },
+    "description": "komentar untuk memerintahkan ai agar menulis komentar untuk kode yang belum di pahami"
+  }
 }
 ```
-
 
 // ============================================================
 // FILE: .vscode/lainnya.code-snippets
@@ -465,45 +463,45 @@
       "  data: ($1State) {",
       "    ${2:return Text('data');},",
       "  },)",
-      "$0",
+      "$0"
     ],
-    "description": "AsyncValueWidget hanya dengan value dan data (loading & error default)",
+    "description": "AsyncValueWidget hanya dengan value dan data (loading & error default)"
   },
   "Fungsi": {
     "scope": "dart",
     "prefix": "/fungsi",
     "body": ["${1:void} ${2:namaFungsi}() {", "  $3", "}$0"],
-    "description": "Membuat fungsi",
+    "description": "Membuat fungsi"
   },
   "Log debug info ": {
     "scope": "dart",
     "prefix": "/loginfo",
     "body": ["L.i('$1');$0"],
-    "description": "membuat log debug info",
+    "description": "membuat log debug info"
   },
   "Log debug error": {
     "scope": "dart",
     "prefix": "/logerror",
     "body": ["L.e('$1: \\$e \\$s');$0"],
-    "description": "membuat log debug error",
+    "description": "membuat log debug error"
   },
   "snackbar info ": {
     "scope": "dart",
     "prefix": "/apptoastinfo",
     "body": ["AppToast.info(context, '$1');$0"],
-    "description": "membuat snackbar info",
+    "description": "membuat snackbar info"
   },
   "snackbar sukses ": {
     "scope": "dart",
     "prefix": "/apptoastsukses",
     "body": ["AppToast.sukses(context, '$1');$0"],
-    "description": "membuat snackbar sukses",
+    "description": "membuat snackbar sukses"
   },
   "snackbar gagal ": {
     "scope": "dart",
     "prefix": "/apptoastgagal",
     "body": ["AppToast.gagal(context, '$1');$0"],
-    "description": "",
+    "description": ""
   },
   "InputDropdown widget": {
     "scope": "dart",
@@ -519,9 +517,9 @@
       "      _${2:selected} = value;",
       "    });",
       "  },",
-      ")$0",
+      ")$0"
     ],
-    "description": "Widget InputDropdown (Material 3) dengan generic type",
+    "description": "Widget InputDropdown (Material 3) dengan generic type"
   },
   "InputAngka widget": {
     "scope": "dart",
@@ -533,9 +531,9 @@
       "  prefixIcon: Icons.numbers,",
       "  focusNode: _${1:angka}FocusNode,",
       "  nextFocusNode: _${3:nextFocusNode},",
-      ")$0",
+      ")$0"
     ],
-    "description": "Widget InputAngka dengan controller dan label",
+    "description": "Widget InputAngka dengan controller dan label"
   },
   "Konfirmasi hapus": {
     "scope": "dart",
@@ -549,9 +547,9 @@
       ");",
       "if (confirmed == true) {",
       "  ${2:// lakukan penghapusan}",
-      "}$0",
+      "}$0"
     ],
-    "description": "Tampilkan dialog konfirmasi hapus menggunakan ConfirmationDialog",
+    "description": "Tampilkan dialog konfirmasi hapus menggunakan ConfirmationDialog"
   },
   "ElevatedButton Loading (disabled)": {
     "scope": "dart",
@@ -569,21 +567,21 @@
       "          ),",
       "        )",
       "      : const Text('${3:Simpan}'),$0",
-      ")",
+      ")"
     ],
-    "description": "ElevatedButton dengan state loading (disabled saat loading)",
+    "description": "ElevatedButton dengan state loading (disabled saat loading)"
   },
   "Nav.to": {
     "scope": "dart",
     "prefix": "/Nav.to",
     "body": [" Nav.to(context, $1());$0"],
-    "description": "Nav.to",
+    "description": "Nav.to"
   },
   "Nav.pop": {
     "scope": "dart",
     "prefix": "/Nav.pop",
     "body": ["Nav.pop(context);$0"],
-    "description": "",
+    "description": ""
   },
   "InputTeks (ringkas)": {
     "scope": "dart",
@@ -596,25 +594,24 @@
       "  validator: ${7:(value) {}},",
       "  focusNode: ${10:null},",
       "  nextFocusNode: ${11:null},",
-      ")$0",
+      ")$0"
     ],
-    "description": "InputTeks dengan parameter umum, tanpa default yang tidak perlu",
+    "description": "InputTeks dengan parameter umum, tanpa default yang tidak perlu"
   },
   "parameter log debug": {
     "scope": "dart",
     "prefix": "///parameter log debug",
     "body": ["$1=\\$$1, $0"],
-    "description": "Log nilai variabel Dart",
-  },
+    "description": "Log nilai variabel Dart"
+  }
 }
 ```
-
 
 // ============================================================
 // FILE: .vscode/logika_flutter.code-snippets
 // ============================================================
 
-```json
+````json
 {
   "Try-catch dengan logging": {
     "scope": "dart",
@@ -1394,3 +1391,4 @@
 }```
 
 
+````
