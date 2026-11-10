@@ -1,19 +1,26 @@
 1. saya ingin agar kamu mencarikan referensi dari semua apk yang terdaftar di file \`apk_serupa.md\` di root proyek saja,
 2. cari sebanyak mungkin yang bisa di dapat.
 3. setelah mendapatkan hasil perbarui isi file \`refrensi_apk.md\` di root proyek.
-4. Fitur :
+4. file yang wajib di baca terlebih dahulu :
 
-- untuk fitur carikan fitur dari aplikasi sejenis yang bisa saya tambahkan ke proyek saya.
+- [README.md](http://README.md)
+- [AGENTS.md](http://AGENTS.md)
+- apk_serupa.md
+
+5. Fitur :
+
+- untuk fitur carikan fitur dari aplikasi kompetitor yang bisa saya tambahkan ke proyek saya.
 - untuk fitur nya hanya sarankan yang bisa berjalan di mobile saja.
 - carikan juga fitur fitur yang sama apakah fitur tersebut bisa kita optimalkan.
 
-5. UI, UX & Layout :
+6. UI, UX & Layout :
 
-- carika apk kompetitor yang yang punya fitur yang sama dengan proyek saya
+- carikan apk kompetitor yang punya fitur yang serupa dengan proyek saya
 - identifikasi pola ui,ux dan layout apk mereka.
 - lalu berikan saran untuk hasil temuan tersebut.
 - biar saya yang sortir
--
+
+7. semua apk yang wajib di cek terlebih dahulu adalah semua daftar apk kompetitor yang sudah saya list di dalam file apk_serupa.md.
 
 \# Format penulisan isi file \`refrensi_apk.md\`
 

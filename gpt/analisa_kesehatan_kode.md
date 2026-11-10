@@ -1,4 +1,3 @@
-bantu saya untuk menentukan poin poin penting agar chat gpt sesuai dengan keinginan saya
 
 1. saya ingin kamu menganalisa semua commit terbaru saya, apakah code terbaru saya sudah sehat, baik itu sudah sesuai paket sdk dan flutter atau sudah sesuai skills yang ada.  
 2. untuk paket sdk wajib baca versi yang terinstall di pubscl.yml lalu cari di pub.dev dan dokumentasi terkait untuk sumber kebenaran.  
@@ -15,4 +14,8 @@ bantu saya untuk menentukan poin poin penting agar chat gpt sesuai dengan keingi
 10. jika sedang evaluasi dan terdapat commit baru maka abaikan semua commit baru tersebut, biarkan commit baru untuk di kerjakan pada tugas selanjut nya saja.  
 11. setelah selesai memperbarui [`task.md`](http://task.md) maka perbarui isi file [`catatan.md`](http://catatan.md) ny yang bagian `# Evaluasi kesehatan code dari commit` dengan commit terakhir yang di evaluasi tersebut.  
 12. cari di  branch `master` untuk melihat riwayat commit menggunakan branch itu.  
-13. jika belum ada commit terakhir dievaluasi yang tercatat di  `# Evaluasi kesehatan code dari commit` cukup ambil 5 commit terakhir saja.
+13. jika belum ada commit terakhir dievaluasi yang tercatat di  `# Evaluasi kesehatan code dari commit` cukup ambil 5 commit terakhir saja.  
+14. file yang wajib dibaca terlebih dahulu :   
+- AGENTS.md  
+- [catatan.md](http://catatan.md)  
+- task.md
