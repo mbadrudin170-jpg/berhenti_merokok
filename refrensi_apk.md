@@ -181,6 +181,8 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 
 #### 5. SOS Craving — Simpan Hasil Intervensi
 
+> **Status: PRD sudah dibuat — lihat `prd/sos_craving_simpan_hasil_intervensi.md` (10 November 2026).**
+
 - **Kondisi proyek:** Napas 4-7-8, timer tiga menit, dan distraksi sudah tersedia. Riwayat permanen mengenai intervensi yang dipilih dan apakah berhasil belum tampak pada model diary saat ini.
 - **Referensi:** [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [QUIT SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking), [Quit Smoking Now – Tracker](https://play.google.com/store/apps/details?id=com.mifasuse.quitsmokingnow), dan [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy).
 - **Peluang optimasi:** Setelah latihan selesai, tawarkan satu pertanyaan opsional: “Apakah dorongan merokok berkurang?” Simpan jenis intervensi, waktu, dan hasil; tautkan ke pemicu diary bila pengguna setuju.
