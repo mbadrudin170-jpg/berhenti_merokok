@@ -216,3 +216,62 @@ Tidak ada temuan.
 - Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
 - File bermasalah: [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L41), [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart#L67)
 - Prompt:
+
+# Kelompok 14
+
+## File terdampak
+
+- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Ringkasan menggabungkan seluruh kategori di luar tiga teratas menjadi baris berlabel `Lainnya` (baris 108-110 dan 250-254), sementara `PemicuEnum.lainnya` juga merupakan kategori pilihan pengguna dengan label yang sama. Jika kategori enum tersebut masuk tiga teratas, UI dapat menampilkan dua baris bernama `Lainnya`. Jika tidak masuk tiga teratas, jumlah kategori itu tercampur dalam agregat kategori lain sehingga arti label tidak jelas.
+- Solusi: Bedakan label kategori enum `PemicuEnum.lainnya` dari label agregat kategori di luar tiga teratas, misalnya gunakan `Kategori lain` untuk agregat. Pastikan jumlah yang ditampilkan tetap mencakup setiap entri tepat satu kali.
+- Aturan dilanggar: Konsistensi label dan makna agregasi data pada ringkasan pemicu.
+- File bermasalah: [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L101-L110), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L242-L255), [pemicu_enum.dart](lib/fitur/diary_craving/enum/pemicu_enum.dart)
+- Prompt:
+
+#### Task 2
+
+- Status: Belum dikerjakan
+- Masalah: Tiga navigasi memakai `unawaited(Nav.to(...))` tanpa penanganan error: tombol tambah pada empty state (baris 118), navigasi dari item daftar (baris 167-169), dan tombol tambah pada daftar (baris 181). Jika Future navigasi gagal, error dapat menjadi unhandled. Pola ini sudah ada sebelum commit yang dievaluasi, tetapi masih terdapat pada berkas yang berubah.
+- Solusi: Tambahkan `.catchError(...)` pada setiap Future navigasi dan catat kegagalan melalui `L.e`. Sesuaikan nilai balik handler dengan tipe Future dari `Nav.to`.
+- Aturan dilanggar: [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md), [pola-ux](.agents/skills/custom/pola-ux/SKILL.md)
+- File bermasalah: [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L118), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L166-L169), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L181)
+- Prompt:
+
+## Rendah
+
+#### Task 3
+
+- Status: Belum dikerjakan
+- Masalah: `_BarisPemicu` menggunakan `const SizedBox(width: 8)` hanya untuk memberi jarak antara ikon dan teks di dalam `Row` (baris 278-282). Skill spacing mewajibkan penggunaan properti `Row.spacing` untuk jarak seragam antar-anak.
+- Solusi: Tambahkan `spacing: 8` pada `Row` dan hapus `SizedBox(width: 8)`.
+- Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
+- File bermasalah: [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L278-L282)
+- Prompt:
+
+#### Task 4
+
+- Status: Belum dikerjakan
+- Masalah: Comparator pada `entriPemicu.sort((a, b) => b.value.compareTo(a.value))` hanya membandingkan jumlah. Saat dua kategori memiliki jumlah sama, comparator mengembalikan `0`; API Dart menyatakan `List.sort` tidak menjamin urutan stabil. Jika seri terjadi di batas tiga kategori teratas, anggota `topPemicu` dan agregat kategori lain dapat berubah urutannya.
+- Solusi: Tambahkan tie-breaker deterministik, misalnya membandingkan `PemicuEnum.index` ketika jumlah sama. Pastikan pemilihan tiga kategori teratas konsisten.
+- Aturan dilanggar: Determinisme pengurutan hasil ketika nilai pembanding sama. Referensi: [Dart List.sort](https://api.flutter.dev/flutter/dart-core/List/sort.html).
+- File bermasalah: [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L105-L107)
+- Prompt:
+
+#### Task 5
+
+- Status: Belum dikerjakan
+- Masalah: Logging `L.i` masih dilakukan pada jalur `build()` untuk status `cravingAsync` (baris 66-68), jumlah daftar (baris 98), dan di `itemBuilder` (baris 143-146). Logging ini dapat berulang setiap rebuild atau saat item daftar dibangun kembali sehingga menambah noise. Temuan ini sudah ada sebelum commit yang dievaluasi.
+- Solusi: Hapus atau pindahkan log dari `build()` dan `itemBuilder`; pertahankan log pada titik yang tidak berfrekuensi tinggi seperti `initState`, `dispose`, atau handler aksi bila masih diperlukan.
+- Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
+- File bermasalah: [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L66-L68), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L98), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L143-L146)
+- Prompt:
