@@ -229,3 +229,197 @@ Tidak ada temuan.
 ## Rendah
 
 Tidak ada temuan.
+
+# Kelompok 16
+
+## file terdampak
+
+- [hasil_craving_enum.dart](lib/fitur/diary_craving/enum/hasil_craving_enum.dart)
+- [strategi_craving_enum.dart](lib/fitur/diary_craving/enum/strategi_craving_enum.dart)
+- [hasil_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart)
+- [jenis_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart)
+- [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart)
+- [sos_intervensi_model.dart](lib/fitur/sos_craving/model/sos_intervensi_model.dart)
+- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
+- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
+- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+
+## Tinggi
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `a15acd9` mendefinisikan enum value dengan gaya `snake_case` di beberapa enum baru (mis. `HasilCravingEnum.berhasil_menahan`, `HasilCravingEnum.belum_selesai`, `StrategiCravingEnum.napas_478`, `StrategiCravingEnum.tunda_5_menit`, `StrategiCravingEnum.alih_aktivitas`, `HasilIntervensiSos.belum_selesai`, `JenisIntervensiSos.timer_3_menit`) sedangkan enum value yang sudah dipakai proyek (`PemicuEnum.bauRokok`, `ModeBerhenti.seketika`, `StatusKalender.adaKonsumsi`) memakai `lowerCamelCase`. Nilai `.name` enum ini juga dipersistenkan ke kolom database (`mood`, `strategi`, `hasil`, `jenis_intervensi`, `hasil_intervensi`) sehingga inkonsistensi ikut tersimpan di data pengguna. (Value satu kata seperti `senang`, `stres`, `berkurang`, `distraksi`, `jalan`, `lainnya` tidak melanggar dan tidak perlu diubah.)
+- Solusi : Ubah enum value yang melanggar menjadi `lowerCamelCase` (mis. `berhasilMenahan`, `tetapMerokok`, `belumSelesai`, `napas478`, `minumAir`, `alihAktivitas`, `tunda5Menit`, `timer3Menit`), perbarui seluruh referensi literal di model, helper, layar, dan bottom sheet, lalu bila nilai `snake_case` sudah tersimpan di database tambahkan migrasi pada `onUpgrade` versi berikutnya untuk memetakan nilai lama ke nilai baru (mis. `UPDATE diary_craving SET strategi = 'berhasilMenahan' WHERE strategi = 'berhasil_menahan'`). Contoh benar: `enum HasilCravingEnum { berhasilMenahan, tetapMerokok, belumSelesai }`.
+- aturan dilanggar : [penamaan-konvensi](.agents/skills/custom/penamaan-konvensi/SKILL.md)
+- file bermasalah : [hasil_craving_enum.dart](lib/fitur/diary_craving/enum/hasil_craving_enum.dart), [strategi_craving_enum.dart](lib/fitur/diary_craving/enum/strategi_craving_enum.dart), [hasil_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart), [jenis_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart), [sos_intervensi_model.dart](lib/fitur/sos_craving/model/sos_intervensi_model.dart), [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart), [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart), [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+- prompt :
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 17
+
+## file terdampak
+
+- [sos_intervensi_notifier.dart](lib/fitur/sos_craving/notifier/sos_intervensi_notifier.dart)
+- [pubspec.yaml](pubspec.yaml)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `a15acd9` mengimpor `package:uuid/uuid.dart` di `sos_intervensi_notifier.dart` (`const Uuid().v4()`), tetapi `uuid` tidak dideklarasikan di `pubspec.yaml`; `pubspec.lock` mencatat `uuid 4.6.0` sebagai dependensi `transitive` (dibawa oleh `share_global_saya`). Jika `share_global_saya` berhenti bergantung pada `uuid`, impor ini langsung gagal compile.
+- Solusi : Deklarasikan `uuid` sebagai dependensi langsung di `pubspec.yaml` sesuai versi yang terpasang (tervalidasi di pub.dev, https://pub.dev/packages/uuid, terpasang `4.6.0`): tambahkan `uuid: ^4.6.0` pada bagian `dependencies`. Ini sejalan dengan konvensi pub (dependensi langsung wajib dideklarasikan sendiri; versi `^4.6.0` cocok dengan constraint `share_global_saya`).
+- aturan dilanggar : tidak ada skill spesifik; rujukan dokumentasi paket pub.dev dan konvensi Dart/Flutter ("depend on the packages you directly import").
+- file bermasalah : [sos_intervensi_notifier.dart](lib/fitur/sos_craving/notifier/sos_intervensi_notifier.dart), [pubspec.yaml](pubspec.yaml)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 18
+
+## file terdampak
+
+- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
+- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `a15acd9` melemparkan `WidgetRef` dari `SosCravingScreen` ke widget `StatefulWidget` anak lewat konstruktor (`_Napas478View({required this.ref})`, `_TimerCravingView({required this.ref})`, `_DistraksiView({required this.ref})`) dan menyimpannya di field State. `WidgetRef` terikat pada siklus hidup element pembuatnya, sehingga menyimpannya di objek lain berisiko dipakai setelah element tidak aktif/rebuild. Pola yang benar untuk akses `ref` di dalam `StatefulWidget` adalah `ConsumerStatefulWidget`.
+- Solusi : Ubah ketiga widget tersebut menjadi `ConsumerStatefulWidget` dan gunakan `ref` bawaan `ConsumerState` langsung di callback (timer selesai, napas selesai, distraksi selesai). Untuk helper `tampilkanDanSimpanHasilIntervensi` di `sheet_hasil_intervensi.dart`, pertahankan parameter `WidgetRef ref` yang dioper saat pemanggilan (bukan disimpan di field objek), atau lebih baik ambil `ref` di dalam `ConsumerWidget`/`ConsumerState` pemanggil saat callback dipicu. Contoh: `class _Napas478View extends ConsumerStatefulWidget { ... }` lalu `class _Napas478ViewState extends ConsumerState<_Napas478View> { ... }` dan panggil `tampilkanDanSimpanHasilIntervensi(context: context, ref: ref, ...)` dari dalam State tersebut.
+- aturan dilanggar : [riverpod-pola](.agents/skills/custom/riverpod-pola/SKILL.md)
+- file bermasalah : [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart), [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 19
+
+## file terdampak
+
+- [kalender_smoke_free_screen.dart](lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `a15acd9` menambahkan fungsi top-level `_streakSaatIni` di `kalender_smoke_free_screen.dart` (dengan TODO(B.1) merujuk `prd/satukan_perhitungan_baseline_aktual.md`), tetapi commit `9c5dafb` kemudian membuat `MetrikBerhentiHelper.hitungStreak` dengan logika identik di `lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart` tanpa memigrasi layar kalender. Akibatnya perhitungan turunan yang sama ditulis dua kali dan komentar TODO menjadi basi (PRD terkait sudah diimplementasikan dan dihapus pada `9c5dafb`).
+- Solusi : Hapus `_streakSaatIni` dan ganti pemanggilannya dengan `MetrikBerhentiHelper.hitungStreak(konsumsiState.listKonsumsi)` (impor `lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart`). Hapus juga komentar TODO(B.1) yang merujuk PRD yang sudah tidak ada.
+- aturan dilanggar : [ekstraksi-perhitungan-turunan](.agents/skills/custom/ekstraksi-perhitungan-turunan/SKILL.md)
+- file bermasalah : [kalender_smoke_free_screen.dart](lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 20
+
+## file terdampak
+
+- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `a15acd9` menempatkan `CREATE TABLE IF NOT EXISTS sos_intervensi (...)` dua kali di `onUpgrade`: di dalam blok `if (oldVersion < 9)` (sekitar baris 209-218, branch yang seharusnya hanya membuat `konsumsi_rokok`) dan di dalam blok `if (oldVersion < 11)` (sekitar baris 239-249). Duplikasi DDL yang sama di dua kondisi versi melanggar penanganan kondisional per versi dan berisiko inkonsisten bila skema tabel `sos_intervensi` diubah di masa depan (hanya satu salinan yang kemungkinan diperbarui).
+- Solusi : Hapus blok `CREATE TABLE IF NOT EXISTS sos_intervensi` dari branch `oldVersion < 9` sehingga `konsumsi_rokok` (v9) dan `sos_intervensi` (v11) didefinisikan tepat sekali pada kondisi versinya masing-masing; `onCreate` tetap membuat kedua tabel. Ratakan juga indentasi blok `oldVersion < 9` agar konsisten dengan blok lain.
+- aturan dilanggar : [migrasi-skema-sqlite](.agents/skills/custom/migrasi-skema-sqlite/SKILL.md)
+- file bermasalah : [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 21
+
+## file terdampak
+
+- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `f6d1fa2` mendaftarkan `WidgetsBinding.instance.addPostFrameCallback` di dalam `build()` pada `BadgeScreen`. Setiap rebuild mendaftarkan callback baru yang tidak dapat dibatalkan, sehingga penulisan `SharedPreferences` (`_simpanBadgeHistoris`) dapat terdaftar berkali-kali untuk badge yang sama selama fase awal (mis. saat `_historisDimuat` baru selesai). Pendaftaran post-frame callback yang berulang melanggar ketentuan bahwa pendaftaran dilakukan hanya sekali.
+- Solusi : Pindahkan logika penyimpanan badge historis keluar dari `build()`: panggil `_simpanBadgeHistoris` tepat sekali setelah `_badgeHistoris` dimuat dan badge baru tercapai (mis. di dalam `_muatBadgeHistoris` setelah setState, atau di `didChangeDependencies` dengan flag `_postFrameTerdaftar`), atau minimal dedup pendaftaran dengan flag agar post-frame callback hanya didaftarkan sekali per perubahan. Contoh: `if (!_postFrameTerdaftar) { _postFrameTerdaftar = true; WidgetsBinding.instance.addPostFrameCallback(...); }`.
+- aturan dilanggar : [penjadwalan-frame-dan-pemantauan-performa-flutter](.agents/skills/custom/penjadwalan-frame-dan-pemantauan-performa-flutter/SKILL.md)
+- file bermasalah : [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 22
+
+## file terdampak
+
+- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `a15acd9` mendeklarasikan parameter/field `value` (`final HasilIntervensiSos value;`) pada `_TombolHasil` di `sheet_hasil_intervensi.dart`, tetapi `value` tidak pernah dibaca di `build` (tombol hanya memakai `label` dan `onTap`). Kode mati ini menyesatkan pemelihara karena mengisyaratkan `value` dipakai.
+- Solusi : Hapus parameter `value` beserta field-nya, atau bila memang ingin dipakai, gunakan `value` untuk menentukan `onTap`/gaya tombol. Contoh: `const _TombolHasil({required this.label, required this.onTap});` dan perbarui ketiga pemanggilan di bottom sheet.
+- aturan dilanggar : tidak ada (kode mati / parameter tidak terpakai).
+- file bermasalah : [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+- prompt :
+
+#### Task 2
+
+- Status : belum
+- Masalah : `_ambilEntriDiaryTerbaruHariIni` pada `sheet_hasil_intervensi.dart` mencari entri diary memakai prefix tanggal `DateTime.now().toUtc()` (mis. `2026-11-10%`), sedangkan entri diary dibuat dari waktu lokal perangkat yang dikonversi ke UTC sebelum disimpan. Untuk zona UTC+7, entri pagi hari (mis. lokal 10 Nov 06:30 WIB → UTC 09 Nov 23:30) tersimpan dengan tanggal UTC sehari sebelumnya, sehingga tawaran "Tautkan ke catatan craving?" gagal menemukan entri yang dibuat pada hari yang sama menurut waktu pengguna.
+- Solusi : Normalisasi perbandingan ke komponen tanggal yang konsisten dengan cara entri disimpan, mis. cari entri dengan `tanggal >= awal hari lokal hari ini yang dikonversi ke UTC` dan `tanggal < awal hari lokal besok yang dikonversi ke UTC` (rentang UTC dari batas hari lokal), bukan prefix tanggal UTC. Contoh: `final awalLokal = DateTime(now.year, now.month, now.day); final awalUtc = awalLokal.toUtc().toIso8601String(); final akhirUtc = awalLokal.add(const Duration(days: 1)).toUtc().toIso8601String(); where: '${NamaKolom.tanggal} >= ? AND ${NamaKolom.tanggal} < ?', whereArgs: [awalUtc, akhirUtc]`.
+- aturan dilanggar : [normalisasi-tanggal](.agents/skills/custom/normalisasi-tanggal/SKILL.md)
+- file bermasalah : [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+- prompt :
