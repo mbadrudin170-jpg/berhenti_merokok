@@ -141,6 +141,8 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 
 #### 1. Satukan Perhitungan Baseline, Konsumsi Aktual, Streak, dan Tabungan
 
+> **Status: PRD sudah dibuat — lihat `prd/satukan_perhitungan_baseline_aktual.md` (10 November 2026).**
+
 - **Kondisi proyek:** Konsumsi harian sudah tercatat dan dapat diringkas. Namun counter, jumlah rokok tidak dihisap, dan uang dihemat masih dihitung dari parameter baseline biodata serta tanggal berhenti.
 - **Referensi:** [SmokingYou](https://github.com/bodyaant/SmokingYou), [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
 - **Peluang optimasi:** Pisahkan baseline kebiasaan, target tapering, konsumsi tercatat, estimasi yang dihindari, dan uang yang secara estimatif tidak dibelanjakan. Jangan menganggap tidak adanya log sebagai bukti bahwa pengguna tidak merokok.
@@ -148,6 +150,8 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 - **Tujuan:** Meningkatkan kepercayaan pengguna pada statistik serta menghindari angka yang bertentangan antarhalaman.
 
 #### 2. Hubungkan Kalender Smoke-Free dengan Log Konsumsi dan Penanda Slip
+
+> **Status: PRD sudah dibuat — lihat `prd/kalender_smoke_free_log_konsumsi.md` (10 November 2026).**
 
 - **Kondisi proyek:** Model konsumsi mendukung `isSlip`, tetapi kalender yang diperiksa hanya membaca tanggal berhenti dari biodata dan tidak membaca daftar konsumsi.
 - **Referensi:** [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [NoMore](https://play.google.com/store/apps/details?id=com.appfactory.breakfree), [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking), dan [ClearStack](https://clearstackapps.com/apps/smokefree).
@@ -158,6 +162,8 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 ### Prioritas Sedang
 
 #### 3. Diary Craving — Catat Strategi, Durasi, dan Hasil
+
+> **Status: PRD sudah dibuat — lihat `prd/diary_craving_strategi_durasi_hasil.md` (10 November 2026).**
 
 - **Kondisi proyek:** Model saat ini berisi tanggal/waktu, pemicu, intensitas, dan catatan bebas. Analisis jam teratas baru tersedia setelah minimal tiga entri.
 - **Referensi:** [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [TrackLess](https://github.com/poorangryman/trackless-public), [Nonic](https://github.com/bllfoad/nonic), dan [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking).
