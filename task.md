@@ -102,15 +102,7 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 3
-
-- Status: batal
-- Alasan: Task ini duplikat dengan Task 4 di Kelompok 1 yang sudah selesai dikerjakan (menghapus penandaan `dynamic` eksplisit pada `impianProvider` dan parameter method). File `dashboard_screen.dart` sudah diperbaiki di Kelompok 1 Task 4.
-- Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
-- Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
-- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L203-L206)
-- Prompt: langsung saja cek isloading dan error sepertio biodataasync
+Tidak ada temuan.
 
 # Kelompok 9
 
@@ -349,33 +341,6 @@ Tidak ada temuan.
 - Aturan dilanggar: [parsing-nullable-int](.agents/skills/custom/parsing-nullable-int/SKILL.md)
 - File bermasalah: [konsumsi_rokok_model.dart](lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart#L27-L28)
 - Prompt:
-
-#### Task 11
-
-- Status: batal
-- Masalah: `flutter_local_notifications ^23.0.0` di `pubspec.yaml` memerlukan Flutter SDK 3.44.0 minimum (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi SDK yang dapat menyebabkan build gagal atau perilaku tidak terduga.
-- Solusi: Verifikasi versi Flutter SDK yang terinstall dan pertimbangkan untuk menurunkan `flutter_local_notifications` ke versi yang kompatibel, atau naikkan batasan SDK project jika memungkinkan.
-- Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
-- File bermasalah: [pubspec.yaml](pubspec.yaml#L18)
-- Prompt: biarkan saja 
-
-#### Task 12
-
-- Status: batal
-- Masalah: `flutter_easyloading ^4.0.2` di `pubspec.yaml` memerlukan Flutter 3.27.0+ dan Dart 3.6.0+ (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi.
-- Solusi: Verifikasi versi Flutter/Dart SDK yang terinstall dan pastikan kompatibel dengan versi paket yang digunakan.
-- Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
-- File bermasalah: [pubspec.yaml](pubspec.yaml#L17)
-- Prompt: biarkan saja
-
-#### Task 13
-
-- Status: batal
-- Masalah: `share_plus ^13.3.1` di `pubspec.yaml` memerlukan Flutter >=3.38.1 dan Dart >=3.10.0 (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi.
-- Solusi: Verifikasi versi Flutter SDK yang terinstall dan pastikan kompatibel dengan `share_plus`.
-- Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
-- File bermasalah: [pubspec.yaml](pubspec.yaml#L27)
-- Prompt: biarkan saja
 
 ## Sedang
 
