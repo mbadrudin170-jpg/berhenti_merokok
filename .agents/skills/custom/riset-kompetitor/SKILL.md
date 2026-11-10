@@ -1,22 +1,25 @@
 ---
 name: riset-kompetitor
-description: Panduan melakukan riset kompetitor aplikasi berhenti merokok - mencatat daftar aplikasi serupa di berbagai store (Google Play, Apple App Store, F-Droid, GitHub, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Huawei AppGallery), menyertakan ringkasan fitur relevan, link store/repositori yang terverifikasi otomatis (curl HTTP 200, iTunes lookup), dan mengikuti format tabel yang terstandarisasi untuk perbandingan fitur, platform, dan relevansi terhadap proyek.
+description: Panduan melakukan riset kompetitor aplikasi berhenti merokok - mencatat daftar aplikasi serupa di berbagai store (Google Play, Apple App Store, F-Droid, GitHub, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Huawei AppGallery, Samsung Galaxy Store, Uptodown, IzzyOnDroid), menyertakan ringkasan fitur relevan, link store/repositori yang terverifikasi otomatis (curl HTTP 200, iTunes lookup), mengikuti format tabel yang terstandarisasi di apk_serupa.md, serta menyusun laporan referensi mendalam refrensi_apk.md (fitur baru mobile, optimasi fitur eksisting, pola UI/UX/layout, rekomendasi ber-prioritas). Gunakan saat menambah/memperbarui apk_serupa.md atau saat diminta mencari referensi fitur/UI/UX dari seluruh APK yang terdaftar di apk_serupa.md.
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  commit-terakhir: "3af4f53"
+  versi: "1.2.0"
+  commit-terakhir: "b7f455c"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Riset Kompetitor Aplikasi Berhenti Merokok
 
-Mengumpulkan dan mendokumentasikan daftar aplikasi kompetitor (serupa) untuk analisis fitur, positioning, dan celah pasar. Hasil riset disimpan dalam format tabel standar di `apk_serupa.md` untuk referensi tim dan stakeholder.
+Mengumpulkan dan mendokumentasikan daftar aplikasi kompetitor (serupa) untuk analisis fitur, positioning, dan celah pasar. Hasil riset disimpan dalam format tabel standar di `apk_serupa.md` untuk referensi tim dan stakeholder. Tugas lanjutan "mencarikan referensi dari seluruh APK di apk_serupa.md" menghasilkan dokumen analisis mendalam `refrensi_apk.md` (bukan daftar baru).
 
 ## Cakupan yang Di-Cover
 
 - Package: `tidak ada` (dokumentasi non-kode)
-- File: `apk_serupa.md` (root proyek)
+- File: `apk_serupa.md` (root proyek) — katalog daftar aplikasi per store
+- File: `refrensi_apk.md` (root proyek) — laporan referensi mendalam dari seluruh APK di `apk_serupa.md`
+- File wajib dibaca sebelum mengerjakan tugas riset: `README.md`, `AGENTS.md`, `apk_serupa.md`
 - Kolom tabel: `Nama Aplikasi`, `Ringkasan Singkat`, `Store`, `Link`
+- Struktur `refrensi_apk.md`: informasi riset + cara membaca → ringkasan temuan terbesar → kondisi fitur aktual proyek → A. Rekomendasi fitur baru → B. Optimasi fitur eksisting → C. UI/UX & Layout → D. Katalog semua listing → E. Prioritas gabungan → F. Verifikasi & keterbatasan → G. Sumber
 - Store yang didukung: Google Play Store, Apple App Store, F-Droid, GitHub, Samsung Galaxy Store, Uptodown, IzzyOnDroid, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Huawei AppGallery
 - Toko yang sering memblokir/menyulitkan akses langsung (Xiaomi GetApps, Oppo App Market, Vivo App Store, Huawei AppGallery, Baidu Mobile Assistant): hanya sertakan aplikasi bila link halaman aplikasi spesifik dapat diverifikasi.
 - Kategori relevansi: pelacakan progres, penghematan uang, milestone kesehatan, mode tapering, diary craving, SOS craving, lencana/badge, widget, komunitas, CBT/AI coach, offline-first, backup/restore, gamifikasi
@@ -37,6 +40,14 @@ Mengumpulkan dan mendokumentasikan daftar aplikasi kompetitor (serupa) untuk ana
 12. Aplikasi Tionghoa/Regional tanpa link halaman aplikasi spesifik yang terverifikasi (mis. 戒烟军团, 今日抽烟, 自律戒烟, 戒烟小目标, 决心戒烟) **tidak boleh** disertakan; keberadaan di store saja (dari sumber sekunder) tidak cukup.
 13. Periksa duplikat exact berdasarkan `package id` sebelum menambah baris (mis. `com.siwooeo.quitday` dan `com.siwooeo.quitsmoke` di Samsung Galaxy Store sudah tercatat sebagai QuitDay/QuitSave).
 14. Untuk batch besar, tambahkan section `# Tambahan Riset (YYYY-MM-DD)` dengan sub-section `## <Store>`; setiap tabel tetap wajib punya header + separator (tabel yang kehilangan header rusak saat dirender).
+15. Untuk tugas "mencarikan referensi dari seluruh APK di `apk_serupa.md`": baca `README.md`, `AGENTS.md`, dan `apk_serupa.md` lebih dulu; **lingkup hanya APK yang terdaftar di `apk_serupa.md`** — jangan menambah aplikasi baru ke daftar tanpa perintah eksplisit. Hasil ditulis/diperbarui di `refrensi_apk.md`.
+16. `refrensi_apk.md` wajib memuat: link referensi pada tiap rekomendasi, pengelompokan per fitur (A), optimasi fitur eksisting (B), dan UI/UX/layout (C), penjelasan **tujuan** tiap item, serta **prioritas** (Tinggi/Sedang/Rendah) untuk penyortiran pengguna. Pengguna menyortir sendiri; dokumen ini riset pembanding, bukan keputusan implementasi.
+17. Untuk `refrensi_apk.md`: hanya rekomendasikan fitur yang dapat berjalan di mobile. Fitur khusus iOS (Apple Watch, Live Activities, WidgetKit, Wear-only tanpa padanan Android) dicatat sebagai referensi pola saja, bukan rekomendasi. Fitur yang butuh backend/akun (AI coach, komunitas) ditandai jelas dan ditempatkan pada prioritas rendah; proyek ini offline-first.
+18. Klasifikasikan status verifikasi listing dengan tiga tingkat: **terverifikasi** (halaman/README/mirror terbaca, atau iTunes `resultCount > 0`, atau curl 200 dengan isi terbaca), **verifikasi ringan** (Samsung Galaxy Store: curl 200 tetapi hanya judul halaman tampil, atau Amazon Appstore tanpa isi detail — cukup untuk ketersediaan, tidak cukup untuk rekomendasi fitur), **tidak terverifikasi** (HTTP 404, 403 tanpa sumber alternatif, halaman kosong, atau listing tidak ditemukan). Cantumkan jumlah perkiraan ("sekitar N dari 159") karena tidak semua listing bisa dibaca; listing tidak terverifikasi (Breev, Quit Smoking Tracker: Stop it App Store, ZeroSmoke, Smoker Reducer, QuitSM SlideME, Flamy Aptoide) tidak dijadikan dasar rekomendasi.
+19. Uptodown bisa berputar antara HTTP 410 dan 404 untuk URL yang sama — treat sebagai flaky/rotasi; tandai tidak terverifikasi kecuali ada mirror resmi yang menyebut package id sama (mis. `com.despdev.quitsmoking` di Play Store). Smoke Reducer (`com.java.SmokeReducer`) hanya tersedia sebagai arsip IzzyOnDroid, bukan listing eksak.
+20. Temuan cacat kode yang ditemukan saat riset (mis. `buatCadanganJson()` hanya menulis 4 dari 6 tabel yang terdaftar pada `tabelCadangan`) **didokumentasikan di `refrensi_apk.md` dengan prioritas dan path file, tidak diperbaiki** sebagai bagian dari tugas riset. Perbaikan kode adalah tugas terpisah.
+21. Sebelum memperbarui `refrensi_apk.md`, periksa `git diff` working tree/staged — jangan menimpa, membangkitkan kembali, atau menggabungkan ulang bagian yang sudah dihapus pengguna (mis. usulan fitur yang dibatalkan); hilangkan pula tautan ke dokumen yang sudah dihapus (mis. `prd/*.md` yang dihapus) dari teks referensi.
+22. Amazon Appstore dan Samsung Galaxy Store dapat mengembalikan HTTP 200 langsung pada curl dengan user agent Chrome; Galaxy Store tetap hanya menampilkan judul halaman, sehingga tetap diklasifikasi **verifikasi ringan**. APKPure/Aptoide/SlideME tetap 403 (anti-bot) — verifikasi via websearch/webfetch, bukan dibuang otomatis.
 
 ## Larangan
 
@@ -50,6 +61,12 @@ Mengumpulkan dan mendokumentasikan daftar aplikasi kompetitor (serupa) untuk ana
 - DILARANG menyertakan aplikasi hanya dari sumber sekunder (situs agregator) tanpa link halaman aplikasi resmi yang terverifikasi.
 - DILARANG menganggap HTTP 403 dari APKPure/Aptoide/SlideME sebagai link mati (itu anti-bot); sebaliknya DILARANG menyertakan link ber-HTTP 404 atau id App Store dengan `resultCount: 0`.
 - DILARANG menambah tabel tanpa header/separator, atau menumpuk baris batch riset di bawah tabel yang sudah ada tanpa header baru.
+- DILARANG merekomendasikan fitur yang tidak dapat berjalan di mobile (Apple Watch, Live Activities, WidgetKit-only) sebagai rekomendasi utama `refrensi_apk.md`.
+- DILARANG menganggap Samsung Galaxy Store HTTP 200 + judul halaman sebagai verifikasi penuh isi fitur; hanya ketersediaan (verifikasi ringan).
+- DILARANG memperluas lingkup tugas referensi di luar daftar `apk_serupa.md` tanpa perintah eksplisit dari pengguna.
+- DILARANG menimpa/membangkitkan kembali bagian `refrensi_apk.md` yang sudah dihapus pengguna, atau menyisakan tautan ke PRD/dokumen yang sudah dihapus, tanpa diminta.
+- DILARANG memperbaiki kode aplikasi sebagai bagian dari tugas riset; dokumentasikan temuan dengan path file dan prioritas.
+- DILARANG menjadikan listing tidak terverifikasi (atau verifikasi ringan) sebagai dasar rekomendasi fitur atau angka prioritas.
 
 ## Contoh Benar
 
@@ -74,6 +91,32 @@ done
 curl -s "https://itunes.apple.com/lookup?id=<app_id>" | head -c 300
 
 # APKPure / Aptoide / SlideME sering 403 (anti-bot, bukan mati) -> verifikasi via websearch/webfetch
+
+# Samsung Galaxy Store: curl bisa 200 tetapi hanya judul halaman -> "verifikasi ringan"
+curl -s -o /dev/null -w "%{http_code}\n" -L "https://galaxystore.samsung.com/detail/<package>?cntyCd=IDN"
+webfetch "https://galaxystore.samsung.com/detail/<package>?cntyCd=IDN"  # baca judul halaman saja
+```
+
+Contoh item pada `refrensi_apk.md` (fitur/optimasi/UI-UX diberi tujuan + link + prioritas):
+
+```markdown
+#### B1. Ekspor Cadangan Hilangkan Data Konsumsi & Intervensi SOS (bug)
+
+- **Temuan:** `lib/fitur/cadangan/helper/cadangan_helper.dart` — `tabelCadangan`
+  mendaftarkan 6 tabel, `buatCadanganJson()` hanya menulis 4 tabel.
+- **Tujuan perbaikan:** keamanan data pengguna; konsisten dengan validasi.
+- **Referensi:** [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy) · [TrackLess](https://github.com/poorangryman/trackless-public)
+- **Saran:** tambahkan `konsumsi_rokok` & `sos_intervensi` ke payload ekspor; uji kontrak ekspor↔pulihkan.
+- **Prioritas:** Tinggi (integritas data; kerugian senyap).
+```
+
+Klasifikasi verifikasi listing:
+
+```text
+terverifikasi   -> isi terbaca / iTunes resultCount>0 / mirror resmi package id sama
+verifikasi ringan -> Galaxy Store 200 + judul halaman saja; Amazon tanpa isi detail
+tidak terverifikasi -> 404/403 tanpa alternatif (Breev, ZeroSmoke, Smoker Reducer,
+                      QuitSM SlideME, Flamy Aptoide, Quit Tracker Uptodown 410/404)
 ```
 
 ## Contoh Salah
@@ -97,8 +140,11 @@ curl -s "https://itunes.apple.com/lookup?id=<app_id>" | head -c 300
 
 ## Sumber Evaluasi
 
-- File: `apk_serupa.md` (root proyek)
+- File: `apk_serupa.md` (root proyek), `refrensi_apk.md` (root proyek)
 - Commit rujukan: `a6f3020` — Tambah daftar aplikasi berhenti merokok serupa (85+ aplikasi)
 - Commit rujukan: `d174c1b` — Revisi instruksi riset aplikasi sejenis
 - Commit rujukan: `f6ad391` — Delegasi pencarian aplikasi serupa ke berkas panduan
 - Commit rujukan: `3af4f53` — Tambah riset aplikasi serupa lintas-store (delegasi subagen paralel, verifikasi curl/HTTP 200 + iTunes lookup, 403 anti-bot APKPure/Aptoide/SlideME, section `# Tambahan Riset (2026-11-10)`)
+- Commit rujukan: `7cb9c64` — Perbarui skill riset-kompetitor dengan pengetahuan riset lintas-store (kerangka ref. aturan-pembuatan-skill); commit ini memperbarui isi skill tetapi menyisakan metadata `commit-terakhir` menunjuk `3af4f53` (dibawa hingga v1.1.0); diperbaiki pada v1.2.0
+- Commit rujukan: `b7f455c` — Perbarui refrensi_apk.md: cakupan 159 tautan listing, hasil verifikasi sumber, metodologi verifikasi, dan analisis referensi (dasar struktur `refrensi_apk.md`, aturan 15–21, contoh item B1, klasifikasi verifikasi)
+- Catatan sumber langsung (2026-11-10, probe mandiri, belum di-commit pada `refrensi_apk.md`): Samsung Galaxy Store `com.siwooeo.quitday` & `com.siwooeo.quitsmoke` mengembalikan HTTP 200 dengan judul halaman tampil; Quit Tracker Uptodown berubah dari HTTP 410 menjadi 404; Amazon Appstore mengembalikan 200 langsung dengan UA Chrome

@@ -8,7 +8,7 @@
 - **Path dokumen ini:** `refrensi_apk.md` di root proyek.
 - **Tanggal penelitian:** 10 November 2026.
 - **Cakupan sumber:** seluruh **159 tautan listing** pada `apk_serupa.md` di root proyek (bukan hanya daftar awal 79 entri). Setiap listing diperiksa via `webfetch`/`websearch` pada 10–11 November 2026: Google Play, Apple App Store, F-Droid/IzzyOnDroid, GitHub, Samsung Galaxy Store, Uptodown, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Huawei AppGallery.
-- **Hasil verifikasi:** sekitar **140 dari 159 listing berhasil dibaca/diverifikasi isinya**. Sisanya ditandai **tidak terverifikasi** (tautan mati/403/halaman kosong) dan tidak dijadikan dasar rekomendasi: Breev (404), Quit Smoking Tracker: Stop it App Store KW (404), ZeroSmoke (404), Smoker Reducer (listing eksak tidak ditemukan), QuitSM SlideME (403), QuitDay & QuitSave Galaxy Store (halaman tidak menampilkan isi), Flamy Aptoide (403).
+- **Hasil verifikasi:** sekitar **142 dari 159 listing berhasil dibaca/diverifikasi isinya**. Sisanya ditandai **tidak terverifikasi** (tautan mati/403/halaman kosong) dan tidak dijadikan dasar rekomendasi: Breev (404), Quit Smoking Tracker: Stop it App Store KW (404), ZeroSmoke (404), Smoker Reducer (listing eksak tidak ditemukan), QuitSM SlideME (403), Flamy Aptoide (403), Quit Tracker Uptodown (404). Verifikasi ulang sampel tautan pada 10 November 2026: Galaxy Store (#74 QuitDay & #75 QuitSave) kini mengembalikan HTTP 200 dan judul halaman tampil ("QuitDay: Quit Smoking & Drink" / "QuitSave: Quit Smoking Tracker") — diverifikasi ringan (ketersediaan + nama aplikasi), detail fitur tidak terbaca penuh.
 - **Platform sasaran:** Android (APK/Flutter). Fitur yang hanya berjalan di Apple Watch, Live Activities, WidgetKit iOS, dan macOS **tidak** dijadikan rekomendasi implementasi. Referensi lintas platform tetap dicatat karena polanya dapat memberi ide produk.
 - **Metode:** webfetch langsung ke halaman toko/repositori/README; halaman yang gagal diakses diganti sumber alternatif (situs resmi pengembang, mirror store, pencarian web). Fitur iOS yang lolos disaring ke relevansi mobile/Android.
 
@@ -263,17 +263,6 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 
 ### Prioritas Tinggi
 
-#### C1. Dashboard: Satu Metrik Dominan + Aksi Cepat + Metrik Pendukung
-
-- **Aplikasi serupa:** [SmokingYou](https://f-droid.org/en/packages/com.smokingtracker) · [TrackLess](https://github.com/poorangryman/trackless-public) · [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) · [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy) · [Quitrise](https://play.google.com/store/apps/details?id=com.matrissoftware.Quitrise) · [Breathing Room](https://github.com/anindya127/Breathing-Room) · [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) · [Smoke Tracker freedom_from_smoke](https://play.google.com/store/apps/details?id=com.trifoiltrailblazer.freedom_from_smoke).
-- **Pola UI:** counter/timer smoke-free besar; 2–3 metrik sekunder (uang, rokok dihindari, milestone berikutnya) dengan bobot visual seragam; tombol SOS jelas; tema terang/gelap.
-- **Pola UX:** hierarki baca "kondisi sekarang" dalam <5 detik; tindakan utama selalu terlihat; angka spesifik > umum.
-- **Pola layout:** header status → ringkasan 3 kartu → aksi cepat → progres milestone → lainnya; grafik tidak diletakkan di Dashboard.
-- **Kondisi proyek:** Dashboard sudah padat (banyak kartu). **Saran:** audit ulang di layar kecil; pertahankan 1 metrik dominan; pindahkan statistik ke layar Analitik (A5); jangan tambah kartu tanpa mengurangi.
-- **Tujuan pola:** beban kognitif rendah; aksi kritis (SOS) selalu terjangkau.
-- **Prioritas:** Tinggi.
-- **PRD:** [dashboard_metrik_dominan.md](prd/dashboard_metrik_dominan.md) (Final, dibuat 2026-11-10)
-
 #### C2. Log Konsumsi Satu Ketukan dengan Undo yang Terjangkau
 
 - **Aplikasi serupa:** [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app) (quick log + undo) · [SmokingYou](https://f-droid.org/en/packages/com.smokingtracker) · [Smoking Tracker](https://f-droid.org/en/packages/com.gasperpintar.smokingtracker) · [Pace Android](https://github.com/ravipurohit1991/pace) (undo 12 detik, catatan quick) · [TrackLess](https://github.com/poorangryman/trackless-public) · [Cut Smoking](https://play.google.com/store/apps/details?id=com.nfm.aval024).
@@ -490,9 +479,9 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 
 | No. | Aplikasi (link) | Platform | Status / catatan | Kegunaan |
 |---|---|---|---|---|
-| 74 | [QuitDay (Galaxy Store)](https://galaxystore.samsung.com/detail/com.siwooeo.quitday?cntyCd=IDN) | Android | **Halaman tidak menampilkan isi — tidak terverifikasi.** Kemungkinan besar saudara QuitSave (paket `com.siwooeo.*`) | — |
-| 75 | [QuitSave (Galaxy Store)](https://galaxystore.samsung.com/detail/com.siwooeo.quitsmoke?cntyCd=IDN) (duplikat #25) | Android | = QuitSave Google Play (package sama) | — |
-| 78 | [Quit Tracker (Uptodown)](https://quit-tracker.en.uptodown.com/android) (duplikat #9) | Android | Package `com.despdev.quitsmoking`; HTTP 410 (dirotasi); data via mirror = daftar resmi Play besok | Distribusi alternatif |
+| 74 | [QuitDay (Galaxy Store)](https://galaxystore.samsung.com/detail/com.siwooeo.quitday?cntyCd=IDN) | Android | **Verifikasi ringan (2026-11-10): HTTP 200, judul halaman tampil "QuitDay: Quit Smoking & Drink"** — package `com.siwooeo.quitday`; detail fitur tidak terbaca penuh; kemungkinan saudara QuitSave (paket `com.siwooeo.*`) | Ketersediaan terverifikasi |
+| 75 | [QuitSave (Galaxy Store)](https://galaxystore.samsung.com/detail/com.siwooeo.quitsmoke?cntyCd=IDN) (duplikat #25) | Android | **Verifikasi ringan (2026-11-10): HTTP 200, judul halaman tampil "QuitSave: Quit Smoking Tracker"** — package `com.siwooeo.quitsmoke`; = QuitSave Google Play (duplikat lintas toko) | Ketersediaan terverifikasi |
+| 78 | [Quit Tracker (Uptodown)](https://quit-tracker.en.uptodown.com/android) (duplikat #9) | Android | Package `com.despdev.quitsmoking`; HTTP 404 saat verifikasi ulang 2026-11-10 (sebelumnya 410); data via mirror = daftar resmi Play | Tidak terverifikasi |
 | 79 | [Smoking Tracker (IzzyOnDroid)](https://apt.izzysoft.de/fdroid/index/apk/com.gasperpintar.smokingtracker) (duplikat #22) | Android | Mirror F-Droid; v1.9.2, 18 oct 2026 | Mirror |
 | 146 | [QuitNow! (Amazon Appstore)](https://www.amazon.com/Fewlaps-QuitNow-Stop-smoking/dp/B008LJXY0A) (duplikat #11, #104) | Android | 403 pada link awal; terverifikasi via web: = QuitNow, Fewlaps, 4,8★, WHO | Distribusi alternatif |
 | 147 | [Quit Smoking Hypnosis FREE](https://www.amazon.com/Quit-Smoking-Hypnosis-FREE-Hypnotherapy/dp/B00HLP0BHO) | Android | Audio hipnosis harian + binaural, 3,44★, Amazon gagal langsung; terverifikasi via web | Hypnotherapy |
@@ -545,7 +534,7 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 | 13 | Gamifikasi ringan (misi harian, opsional) (A9) | Fitur baru | Retensi opt-in | Sistem reward sederhana |
 | 14 | If-then plan (A10) & letters to future self (A11) | Fitur baru | Kedalaman motivasi | Layar kecil |
 | 15 | NRT tracker (A12) | Fitur baru | Lengkapnya rencana tapering | Model `nrt_entri` |
-| 16 | Dashboard audit kepadatan (C1) | UX | Fokus; beban kognitif | Tinjau layar di HP kecil |
+| 16 | Pindahkan statistik sekunder ke layar Analitik terpisah dari Dashboard (lihat A5) | UX | Fokus; beban kognitif | Tinjau layar di HP kecil |
 | 17 | AI coach (A8) | Fitur baru | Dukungan personal (opsional) | Backend, biaya, privasi |
 | 18 | Komunitas (di luar offline-first) | Fitur baru | Dukungan sosial | Backend + moderasi; **bukan** rekomendasi utama |
 
@@ -554,7 +543,7 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 ## F. Verifikasi & Keterbatasan
 
 - **Cakupan daftar:** seluruh **159 tautan** pada `apk_serupa.md` tercatat di katalog. Entri duplikat lintas toko diberi catatan, bukan dihitung sebagai produk berbeda.
-- **Status verifikasi:** sekitar 140/159 listing berhasil dibaca (store page/README terakses, atau didukung mirror/situs resmi/websearch). **Tidak terverifikasi:** Breev (#29, 404), Quit Smoking Tracker: Stop it App Store (#35, 404), ZeroSmoke (#44, 404), Smoker Reducer (#54, listing tidak ditemukan), QuitSM SlideME (#157, 403), QuitDay & QuitSave Galaxy Store (#74–75, halaman kosong), Flamy Aptoide (#156, 403). Android `polymath-saksh` GitHub (#16) 404 saat fetch tetapi terverifikasi websearch (web app Django — bukan mobile).
+- **Status verifikasi:** sekitar 142/159 listing berhasil dibaca (store page/README terakses, atau didukung mirror/situs resmi/websearch). **Tidak terverifikasi:** Breev (#29, 404), Quit Smoking Tracker: Stop it App Store (#35, 404), ZeroSmoke (#44, 404), Smoker Reducer (#54, listing tidak ditemukan), QuitSM SlideME (#157, 403), Flamy Aptoide (#156, 403), Quit Tracker Uptodown (#78, 404 pada verifikasi ulang 2026-11-10; sebelumnya 410). **Verifikasi ringan:** QuitDay & QuitSave Galaxy Store (#74–75) — HTTP 200 dan judul halaman tampil pada 2026-11-10, tetapi detail fitur tidak terbaca penuh; tidak dijadikan dasar rekomendasi fitur. Android `polymath-saksh` GitHub (#16) 404 saat fetch tetapi terverifikasi websearch (web app Django — bukan mobile).
 - **Angka adopsi:** banyak listing baru (Stosmok, Cut Smoking, NicoQuit, QuitRise itd.) menampilkan <1K unduhan. Angka berubah; bukan bukti kualitas/efektivitas.
 - **Privasi & cloud:** Kwit, QuitNow, Quit Smoking Now, Jones, QuitSure, Pelago, Tabac info service, Ouiquit memerlukan akun/cloud; proyek offline-first sebaiknya tidak meniru apa adanya.
 - **AI coach:** memerlukan koneksi, backend, biaya, dan review konten; jatuhkan ke prioritas rendah.
@@ -576,8 +565,8 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 
 **GitHub:** TrackLess, Quit-Smoke-App, Quitter (brandonp2412), QuitTrack, QuitEase, SmokeFree (web — di luar ruang lingkup), paceapp (iOS), Nonic, Breathe, SmartQuit, QuitSmoking (rmiguel1985), QuitSmoke (nepaliparadox), Quit Smoking While Smoking, Breathing Room, Moke-Smoke, QuitBuddy, smokeless, Pace (ravipurohit1991), My Tracking App, MyQuitBuddy.
 
-**Lainnya:** Samsung Galaxy Store (tidak terverifikasi), Uptodown (410), IzzyOnDroid, APKPure/Aptoide/SlideME (403; terverifikasi via web), Amazon (146–148), Tencent MyApp (戒烟), Huawei AppGallery (HK Gov / livetobaccofree.hk).
+**Lainnya:** Samsung Galaxy Store (#74–75, verifikasi ringan: HTTP 200 + judul halaman, 2026-11-10), Uptodown (#78, 404), IzzyOnDroid, APKPure/Aptoide/SlideME (403; terverifikasi via web), Amazon (#146–148), Tencent MyApp (戒烟), Huawei AppGallery (HK Gov / livetobaccofree.hk).
 
 ---
 
-_Dokumen diperbarui 10 November 2026 berdasarkan riset ulang seluruh 159 listing di `apk_serupa.md`. Seluruh rekomendasi menunggu penyortiran dan keputusan pengguna. Tidak ada kode aplikasi yang diubah._
+_Dokumen diperbarui 10 November 2026 berdasarkan riset seluruh 159 listing di `apk_serupa.md`, ditambah verifikasi ulang sampel tautan pada tanggal yang sama: Galaxy Store (#74–75) kini HTTP 200 (verifikasi ringan), Quit Tracker Uptodown (#78) berubah dari 410 menjadi 404, dan bagian C1 (usulan Dashboard Metrik Dominan) dihapus oleh pengguna bersamaan dengan penghapusan PRD `prd/dashboard_metrik_dominan.md`. Rekomendasi menunggu penyortiran dan keputusan pengguna. Tidak ada kode aplikasi yang diubah._
