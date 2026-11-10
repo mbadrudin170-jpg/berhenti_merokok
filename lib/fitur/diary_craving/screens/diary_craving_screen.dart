@@ -97,6 +97,19 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
     final list = state.listCraving;
     L.i('list.length=${list.length}');
 
+    // Hitung frekuensi pemicu untuk ringkasan analisis pemicu.
+    final Map<PemicuEnum, int> freqPemicu = {};
+    for (final c in list) {
+      freqPemicu[c.pemicu] = (freqPemicu[c.pemicu] ?? 0) + 1;
+    }
+    final entriPemicu = freqPemicu.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final topPemicu = entriPemicu.take(3).toList();
+    final jumlahLainnya = entriPemicu.skip(3).fold<int>(
+      0,
+      (total, e) => total + e.value,
+    );
+
     if (list.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Diary Craving')),
@@ -113,41 +126,54 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: ListView.separated(
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              final item = list[index];
-              L.i(
-                'item.id=${item.id}, item.pemicu=${item.pemicu}, item.intensitas=${item.intensitas}',
-              );
-              return Card(
-                key: ValueKey(item.id),
-                child: ListTile(
-                  leading: Icon(item.pemicu.icon),
-                  title: Text(item.pemicu.label),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 4,
-                    children: [
-                      Text(
-                        'Intensitas: ${item.intensitas}/5  •  ${FormatWaktuLengkap.formatSingkat(item.tanggal)}',
-                      ),
-                      if (item.catatan != null && item.catatan!.isNotEmpty)
-                        Text(item.catatan!),
-                    ],
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    tooltip: 'Hapus',
-                    onPressed: () => unawaited(_hapus(item)),
-                  ),
-                  onTap: () => unawaited(
-                    Nav.to(context, FormDiaryCraving(craving: item)),
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              if (topPemicu.isNotEmpty)
+                _RingkasanPemicu(
+                  topPemicu: topPemicu,
+                  jumlahLainnya: jumlahLainnya,
                 ),
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    final item = list[index];
+                    L.i(
+                      'item.id=${item.id}, item.pemicu=${item.pemicu}, item.intensitas=${item.intensitas}',
+                    );
+                    return Card(
+                      key: ValueKey(item.id),
+                      child: ListTile(
+                        leading: Icon(item.pemicu.icon),
+                        title: Text(item.pemicu.label),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4,
+                          children: [
+                            Text(
+                              'Intensitas: ${item.intensitas}/5  •  ${FormatWaktuLengkap.formatSingkat(item.tanggal)}',
+                            ),
+                            if (item.catatan != null && item.catatan!.isNotEmpty)
+                              Text(item.catatan!),
+                          ],
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          tooltip: 'Hapus',
+                          onPressed: () => unawaited(_hapus(item)),
+                        ),
+                        onTap: () => unawaited(
+                          Nav.to(context, FormDiaryCraving(craving: item)),
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -185,6 +211,86 @@ class _EmptyDiaryCraving extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Ringkasan analisis pemicu: menampilkan 3 pemicu teratas beserta jumlahnya,
+/// ditambah label "Lainnya" dengan jumlah sisa jika ada pemicu di luar top 3.
+class _RingkasanPemicu extends StatelessWidget {
+  const _RingkasanPemicu({
+    required this.topPemicu,
+    required this.jumlahLainnya,
+  });
+
+  final List<MapEntry<PemicuEnum, int>> topPemicu;
+  final int jumlahLainnya;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              'Pemicu Teratas',
+              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            ...topPemicu.map(
+              (e) => _BarisPemicu(
+                icon: e.key.icon,
+                label: e.key.label,
+                jumlah: e.value,
+              ),
+            ),
+            if (jumlahLainnya > 0)
+              _BarisPemicu(
+                icon: Icons.more_horiz,
+                label: 'Lainnya',
+                jumlah: jumlahLainnya,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Satu baris ringkasan pemicu: ikon, label, dan jumlah kemunculan.
+class _BarisPemicu extends StatelessWidget {
+  const _BarisPemicu({
+    required this.icon,
+    required this.label,
+    required this.jumlah,
+  });
+
+  final IconData icon;
+  final String label;
+  final int jumlah;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            style: textTheme.bodyMedium,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Text(
+          '$jumlah',
+          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      ],
     );
   }
 }

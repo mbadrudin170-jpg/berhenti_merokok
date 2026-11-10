@@ -218,14 +218,6 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 
 ### Prioritas Sedang
 
-#### 3. Diary Craving — Tambahkan Ringkasan, Filter, dan Analisis
-
-- **Kondisi proyek:** Entri pemicu dan intensitas telah tersimpan; belum ditemukan grafik/insight khusus untuk menampilkan pola.
-- **Referensi:** [TrackLess](https://github.com/poorangryman/trackless-public), [SmokingYou](https://github.com/bodyaant/SmokingYou), [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [ClearStack](https://clearstackapps.com/apps/smokefree).
-- **Peluang optimasi:** Ringkasan pemicu teratas, intensitas rata-rata, tren mingguan, distribusi jam, serta strategi koping yang paling efektif berdasarkan catatan pengguna.
-- **Saran:** Tampilkan ringkasan pendek sebelum daftar; filter periode dan pemicu; sediakan keadaan kosong yang mengarahkan pengguna untuk mulai mencatat. Jangan membuat grafik tanpa data minimum yang memadai.
-- **Tujuan:** Pengguna bisa mengenali pola dan menentukan strategi berdasarkan pengalaman sendiri.
-
 #### 4. SOS Craving — Simpan Hasil dan Personalisasikan Intervensi
 
 - **Kondisi proyek:** Dashboard sudah mempunyai kartu akses SOS. Layar SOS telah berisi tab napas 4-7-8, timer tiga menit, dan distraksi. Pada tab distraksi, daftar aktivitas berupa pilihan teks; jumlah keberhasilan disimpan pada state layar, bukan riwayat permanen.
