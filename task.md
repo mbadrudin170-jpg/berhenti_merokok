@@ -275,3 +275,170 @@ Tidak ada temuan.
 - Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
 - File bermasalah: [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L66-L68), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L98), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart#L143-L146)
 - Prompt:
+
+# Kelompok 15
+
+## file terdampak
+
+- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
+- [konsumsi_hitung_helper.dart](lib/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart)
+- [konsumsi_rokok_model.dart](lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart)
+- [konsumsi_rokok_notifier.dart](lib/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart)
+- [konsumsi_rokok_state.dart](lib/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart)
+- [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart)
+- [form_konsumsi_rokok.dart](lib/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart)
+- [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart)
+- [lainnya_screen.dart](lib/lainnya_screen.dart)
+- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
+- [shared_keys.dart](lib/shared/helper/shared_keys.dart)
+- [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart)
+- [nama_tabel.dart](lib/shared/konstanta/nama_tabel.dart)
+- [cadangan_helper.dart](lib/fitur/cadangan/helper/cadangan_helper.dart)
+- [toxin_hitung_helper.dart](lib/fitur/toxin_pelacakan/helper/toxin_hitung_helper.dart)
+- [toxin_model.dart](lib/fitur/toxin_pelacakan/model/toxin_model.dart)
+- [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart)
+- [toxin_pelacakan_state.dart](lib/fitur/toxin_pelacakan/state/toxin_pelacakan_state.dart)
+- [pubspec.yaml](pubspec.yaml)
+
+## Tinggi
+
+#### Task 1
+
+- Status: belum
+- Masalah: Commit `17d53cf` menambahkan logging `L.i('konsumsiAsync.isLoading=..., hasError=...')` di dalam method `build()` (baris 88-89) pada `dashboard_screen.dart`. Log di jalur `build()` dapat dipanggil berulang setiap rebuild, menambah noise log.
+- Solusi: Hapus log `konsumsiAsync.isLoading/hasError` dari `build()`; pindahkan ke titik tidak berfrekuensi tinggi seperti `initState` atau handler aksi bila masih diperlukan.
+- Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L88-L89)
+- Prompt:
+
+#### Task 2
+
+- Status: belum
+- Masalah: Commit `17d53cf` menambahkan logging `L.i('konsumsiHariIni=..., targetHariIni=..., sedangTapering=..., melebihiTarget=...')` di dalam method widget `_buildCardKonsumsiHariIni` (baris 357-361) yang dipanggil dari `build()`. Log di jalur build dapat dipanggil berulang.
+- Solusi: Hapus log dari method widget yang dipanggil `build()`; pindahkan ke titik tidak berfrekuensi tinggi.
+- Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L357-L361)
+- Prompt:
+
+#### Task 3
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan warna hardcode `const Color(0xFFFF9800)` dan `const Color(0xFF4CAF50)` (baris 355-356) pada `dashboard_screen.dart` bukan dari `ColorScheme`/tema. Melangguarkan aturan styling warna yang wajib diambil dari tema.
+- Solusi: Ganti warna hardcode dengan `Theme.of(context).colorScheme` atau warna semantik dari tema (mis. `colorScheme.primary`, `colorScheme.error`, `colorScheme.surface`).
+- Aturan dilanggar: [gaya](.agents/skills/custom/gaya/SKILL.md)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L355-L356)
+- Prompt:
+
+#### Task 4
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan `const SizedBox(height: 8)` (baris 381) pada `Column` yang sudah memiliki `spacing: 8` pada `dashboard_screen.dart`. Skill spacing mewajibkan properti `spacing` pada `Column` untuk jarak antaranak seragam.
+- Solusi: Hapus `SizedBox(height: 8)` yang redundan; gunakan `spacing` pada `Column` untuk jarak yang seragam.
+- Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L381)
+- Prompt:
+
+#### Task 5
+
+- Status: belum
+- Masalah: Commit `17d53cf` menambahkan logging `L.i('konsumsiAsync=$konsumsiAsync')` di dalam method `build()` (baris 24) pada `konsumsi_rokok_screen.dart`. Logging seluruh objek `AsyncValue` di jalur build dapat dipanggil berulang.
+- Solusi: Hapus log dari `build()`; pindahkan ke titik tidak berfrekuensi tinggi.
+- Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
+- File bermasalah: [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L24)
+- Prompt:
+
+#### Task 6
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan warna hardcode `Color(0xFFEF5350)` (baris 131 dan 139) pada `konsumsi_rokok_screen.dart` bukan dari `ColorScheme`/tema.
+- Solusi: Ganti dengan `Theme.of(context).colorScheme.error` atau warna semantik dari tema.
+- Aturan dilanggar: [gaya](.agents/skills/custom/gaya/SKILL.md)
+- File bermasalah: [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L131), [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L139)
+- Prompt:
+
+#### Task 7
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan warna hardcode `Colors.grey` (baris 175 dan 183) pada `_EmptyKonsumsiRokok` di `konsumsi_rokok_screen.dart` bukan dari `ColorScheme`/tema.
+- Solusi: Ganti dengan `Theme.of(context).colorScheme.onSurfaceVariant` atau warna semantik dari tema.
+- Aturan dilanggar: [gaya](.agents/skills/custom/gaya/SKILL.md)
+- File bermasalah: [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L175), [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L183)
+- Prompt:
+
+#### Task 8
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan `const SizedBox(height: 8)` (baris 214) pada `Column` yang sudah memiliki `spacing: 12` di `form_konsumsi_rokok.dart`. Skill spacing mewajibkan properti `spacing` pada `Column`.
+- Solusi: Hapus `SizedBox(height: 8)` yang redundan; gunakan `spacing` pada `Column`.
+- Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
+- File bermasalah: [form_konsumsi_rokok.dart](lib/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart#L214)
+- Prompt:
+
+#### Task 9
+
+- Status: belum
+- Masalah: Commit `1788a1c` menggunakan `unawaited(Nav.to(...))` tanpa penanganan `catchError` pada 3 tombol navigasi di `toxin_pelacakan_screen.dart` (baris 212-213, 248-249, 283-284). Jika Future navigasi gagal, error tidak ditangani.
+- Solusi: Tambahkan `.catchError(...)` pada setiap Future navigasi dan catat kegagalan menggunakan `L.e`. Sesuaikan nilai balik handler dengan tipe Future dari `Nav.to`.
+- Aturan dilanggar: [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)
+- File bermasalah: [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart#L212-L213), [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart#L248-L249), [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart#L283-L284)
+- Prompt:
+
+#### Task 10
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan `parseInt` dengan `defaultValue` pada field yang nullable di `konsumsi_rokok_model.dart` (`fromSqflite` baris 27-28). Nilai `null` dari database dapat dibaca sebagai `0` atau `1` bukan tetap `null`.
+- Solusi: Gunakan `parseIntOrNull` untuk field nullable agar `null` tetap `null`, sesuai skill `parsing-nullable-int`.
+- Aturan dilanggar: [parsing-nullable-int](.agents/skills/custom/parsing-nullable-int/SKILL.md)
+- File bermasalah: [konsumsi_rokok_model.dart](lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart#L27-L28)
+- Prompt:
+
+#### Task 11
+
+- Status: belum
+- Masalah: `flutter_local_notifications ^23.0.0` di `pubspec.yaml` memerlukan Flutter SDK 3.44.0 minimum (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi SDK yang dapat menyebabkan build gagal atau perilaku tidak terduga.
+- Solusi: Verifikasi versi Flutter SDK yang terinstall dan pertimbangkan untuk menurunkan `flutter_local_notifications` ke versi yang kompatibel, atau naikkan batasan SDK project jika memungkinkan.
+- Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
+- File bermasalah: [pubspec.yaml](pubspec.yaml#L18)
+- Prompt:
+
+#### Task 12
+
+- Status: belum
+- Masalah: `flutter_easyloading ^4.0.2` di `pubspec.yaml` memerlukan Flutter 3.27.0+ dan Dart 3.6.0+ (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi.
+- Solusi: Verifikasi versi Flutter/Dart SDK yang terinstall dan pastikan kompatibel dengan versi paket yang digunakan.
+- Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
+- File bermasalah: [pubspec.yaml](pubspec.yaml#L17)
+- Prompt:
+
+#### Task 13
+
+- Status: belum
+- Masalah: `share_plus ^13.3.1` di `pubspec.yaml` memerlukan Flutter >=3.38.1 dan Dart >=3.10.0 (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi.
+- Solusi: Verifikasi versi Flutter SDK yang terinstall dan pastikan kompatibel dengan `share_plus`.
+- Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
+- File bermasalah: [pubspec.yaml](pubspec.yaml#L27)
+- Prompt:
+
+## Sedang
+
+#### Task 1
+
+- Status: belum
+- Masalah: Commit `17d53cf` melakukan logging `L.i('catatCepat model=$model')` pada `konsumsi_rokok_notifier.dart` (baris 54) yang mencatat seluruh objek model. Dapat menambah noise log dan potensi membocorkan data.
+- Solusi: Kurangi detail log atau hapus log model lengkap; log hanya ID atau ringkasan non-sensitif bila diperlukan.
+- Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
+- File bermasalah: [konsumsi_rokok_notifier.dart](lib/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart#L54)
+- Prompt:
+
+#### Task 2
+
+- Status: belum
+- Masalah: Commit `1788a1c` melakukan logging `L.i('biodata=$biodata, rokokTidakDiHisap=$rokokTidakDiHisap')` pada `toxin_pelacakan_screen.dart` (baris 87) yang mencatat seluruh objek `BiodataModel`. Dapat membocorkan data sensitif pengguna ke log.
+- Solusi: Hapus logging objek `biodata` lengkap; log hanya field non-sensitif seperti `rokokTidakDiHisap` bila diperlukan.
+- Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md), [keamanan-aplikasi](.agents/skills/custom/keamanan-aplikasi/SKILL.md)
+- File bermasalah: [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart#L87)
+- Prompt:
+
+## Rendah
+
+Tidak ada temuan.
