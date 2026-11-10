@@ -93,6 +93,7 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 
 #### A4. SOS Craving — Tool Tambahan
 
+- **PRD:** [prd/sos_craving_tool_tambahan.md](prd/sos_craving_tool_tambahan.md) (Draft, dibuat 2026-11-10)
 - **Tujuan fitur:** memperluas menu coping tanpa mengubah inti (napas 4-7-8 + timer 3 menit tetap).
 - **Referensi:** [QUIT SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (10 teknik napas + mini-game + Quity AI) · [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (SOS 4-7-8 + timer 3 menit + analisis pola craving) · [PuffGone](https://play.google.com/store/apps/details?id=com.puffgone.app) (toolkit SOS: 4-7-8, 5-4-3-2-1, tap game, brain math) · [Nicotine Free](https://apps.apple.com/us/app/nicotine-free-quit-vape-zyn/id6810766797) (jeda 90 detik) · [Quit Smoking Vaping & Nicotine](https://apps.apple.com/us/app/quit-smoking-vaping-nicotine/id6756565950) (4 jenis napas) · [Qwit](https://play.google.com/store/apps/details?id=stopSmokingDemo.team.geny) · [Stop Smoking Day Counter](https://play.google.com/store/apps/details?id=smokefree.daycounter.quitsmoking) · [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) (pursed-lip breathing + delay 5 menit).
 - **Tool tambahan yang terbukti di kompetitor dan mobile-capable:**
