@@ -4,6 +4,7 @@ import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/helper/progres_milestone_helper.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -176,25 +177,14 @@ class _PemulihanKesehatanScreenState
   Widget _buildBiodataNull() {
     return Scaffold(
       appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 12,
-              children: [
-                const Text('Belum ada data biodata'),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
-                  ),
-                  child: const Text('Isi Biodata'),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: EmptyStateView(
+        ikon: CupertinoIcons.person,
+        judul: 'Belum ada data biodata',
+        deskripsi:
+            'Pemulihan kesehatan membutuhkan biodata untuk menghitung '
+            'milestone berdasarkan kebiasaan merokokmu.',
+        ctaLabel: 'Isi Biodata',
+        onCta: _bukaFormBiodata,
       ),
     );
   }
@@ -202,36 +192,27 @@ class _PemulihanKesehatanScreenState
   Widget _buildBelumBerhenti() {
     return Scaffold(
       appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 12,
-              children: [
-                const Icon(CupertinoIcons.heart, size: 48),
-                const Text(
-                  'Belum ada tanggal mulai berhenti merokok.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  'Isi tanggal mulai berhenti pada biodata untuk melihat '
-                  'pemulihan kesehatan.',
-                  textAlign: TextAlign.center,
-                ),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
-                  ),
-                  child: const Text('Isi Biodata'),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: EmptyStateView(
+        ikon: CupertinoIcons.heart,
+        judul: 'Belum ada tanggal mulai berhenti',
+        deskripsi:
+            'Isi tanggal mulai berhenti pada biodata untuk melihat '
+            'pemulihan kesehatan.',
+        ctaLabel: 'Isi Biodata',
+        onCta: _bukaFormBiodata,
       ),
+    );
+  }
+
+  void _bukaFormBiodata() {
+    unawaited(
+      Nav.to(context, const FormBiodata(buatPertama: false)).catchError((
+        Object e,
+        StackTrace s,
+      ) {
+        L.e('Gagal navigasi ke Form Biodata: $e $s');
+        return null;
+      }),
     );
   }
 

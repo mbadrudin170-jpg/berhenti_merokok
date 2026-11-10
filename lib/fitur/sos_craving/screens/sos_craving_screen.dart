@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +39,63 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
     final listAlasan = alasanAsync.asData?.value.listAlasan;
     L.i('listAlasan.length=${listAlasan?.length}');
     if (listAlasan == null || listAlasan.isEmpty) {
-      L.w('alasan kosong, kartu motivasi tidak ditampilkan');
-      return const SizedBox.shrink();
+      L.w('alasan kosong, tampilkan pesan + CTA');
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 12,
+                  children: [
+                    Icon(
+                      Icons.favorite_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 4,
+                        children: [
+                          Text(
+                            'Belum ada alasan berhenti',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Catat alasan berhenti agar bisa menguatkanmu '
+                            'saat craving.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const AlasanBerhentiScreen()).catchError((
+                      Object e,
+                      StackTrace s,
+                    ) {
+                      L.e('Gagal navigasi ke Alasan Berhenti: $e $s');
+                      return null;
+                    }),
+                  ),
+                  child: const Text('Tambah alasan'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
     final terbaru = listAlasan.first;
     L.i('terbaru=$terbaru');

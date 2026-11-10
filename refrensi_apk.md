@@ -272,6 +272,7 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 - **Kondisi proyek:** Dashboard sudah padat (banyak kartu). **Saran:** audit ulang di layar kecil; pertahankan 1 metrik dominan; pindahkan statistik ke layar Analitik (A5); jangan tambah kartu tanpa mengurangi.
 - **Tujuan pola:** beban kognitif rendah; aksi kritis (SOS) selalu terjangkau.
 - **Prioritas:** Tinggi.
+- **PRD:** [dashboard_metrik_dominan.md](prd/dashboard_metrik_dominan.md) (Final, dibuat 2026-11-10)
 
 #### C2. Log Konsumsi Satu Ketukan dengan Undo yang Terjangkau
 
@@ -281,15 +282,6 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 - **Pola layout:** FAB utama di Dashboard dan tab Konsumsi; bottom sheet umpan balik berisi tombol "Urungkan".
 - **Kondisi proyek:** quick log +1 ada; koreksi lewat form; undo belum ada (B3).
 - **Tujuan pola:** data akurat → metrik lain bisa dipercaya.
-- **Prioritas:** Tinggi.
-
-#### C3. Empty State yang Informatif + SATU Destinasi Utama per Tab
-
-- **Aplikasi serupa:** [Quitter](https://github.com/brandonp2412/quitter) · [SmokingYou](https://f-droid.org/en/packages/com.smokingtracker) · [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) · [BreatheStreak](https://play.google.com/store/apps/details?id=com.breathe.streak.app.breathqxa) · [Sobriety](https://f-droid.org/packages/com.katiearose.sobriety/) · [Smokeless](https://github.com/samer-saied/smokeless).
-- **Pola UI:** ikon + judul + deskripsi + CTA; tidak ada layar kosong tanpa tindakan.
-- **Pola UX:** pengguna tahu apa yang harus dilakukan; tidak tersesat.
-- **Pola layout:** setiap halaman (diary kosong, impian kosong, kalender belum ada data) punya CTA kontekstual.
-- **Kondisi proyek:** sebagian empty state sudah ada; konsisten-kan semua.
 - **Prioritas:** Tinggi.
 
 ### Prioritas Sedang
@@ -330,15 +322,6 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 - **Pola UX:** tujuan abstrak terasa konkret; tetap transparan (label "estimasi").
 - **Pola layout:** kartu impian + objek visual kecil; detail terpisah.
 - **Saran:** pertahankan progress bar; tambah opsi tema visual (mis. "Toples"/"Pohon"); jangan menggantikan data dengan dekorasi.
-- **Prioritas:** Rendah.
-
-#### C8. Navigasi & Pengelompokan Fitur Sekunder
-
-- **Aplikasi serupa:** [Quitter](https://github.com/brandonp2412/quitter) · [SmokingYou](https://f-droid.org/en/packages/com.smokingtracker) · [Breathing Room](https://github.com/anindya127/Breathing-Room) · [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy) (tab Home/Tools).
-- **Pola UI:** 3–5 destinasi utama; alat sekunder di satu halaman terkelompok ("Lainnya").
-- **Pola UX:** mudah dipelajari; hanya fitur paling sering dipakai di tab utama.
-- **Pola layout:** pertahankan 4 tab; halaman Lainnya dengan kartu daftar.
-- **Saran:** jangan tambah tab; konsisten ikon & label; SOS tetap dari Dashboard.
 - **Prioritas:** Rendah.
 
 ---

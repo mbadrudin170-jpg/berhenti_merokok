@@ -10,6 +10,7 @@ import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -119,11 +120,13 @@ class DetailImpianScreen extends ConsumerWidget {
     if (impian == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Detail Impian')),
-        body: const SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: Text('Impian tidak ditemukan')),
-          ),
+        body: EmptyStateView(
+          ikon: CupertinoIcons.question_circle,
+          judul: 'Impian tidak ditemukan',
+          deskripsi:
+              'Impian ini mungkin sudah dihapus atau tidak tersedia lagi.',
+          ctaLabel: 'Kembali',
+          onCta: () => Nav.pop(context),
         ),
       );
     }
