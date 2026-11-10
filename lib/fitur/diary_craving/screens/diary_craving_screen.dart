@@ -1,7 +1,11 @@
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/hasil_craving_enum.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/mood_craving_enum.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/strategi_craving_enum.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/helper/pola_craving_helper.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/form_diary_craving.dart';
@@ -145,11 +149,17 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
                   topPemicu: topPemicu,
                   jumlahLainnya: jumlahLainnya,
                 ),
+              if (list.length >= PolaCravingHelper.minimumEntri)
+                _RingkasanWawasan(list: list)
+              else
+                const _PlaceholderWawasan(),
               Expanded(
                 child: ListView.separated(
                   itemCount: list.length,
                   itemBuilder: (context, index) {
                     final item = list[index];
+                    final mood = item.mood;
+                    final hasil = item.hasil;
                     return Card(
                       key: ValueKey(item.id),
                       child: ListTile(
@@ -164,6 +174,25 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
                             ),
                             if (item.catatan != null && item.catatan!.isNotEmpty)
                               Text(item.catatan!),
+                            if (mood != null || hasil != null)
+                              Row(
+                                spacing: 8,
+                                children: [
+                                  if (mood != null)
+                                    _PenandaDetail(
+                                      icon: Icons.mood_outlined,
+                                      label: mood.label,
+                                    ),
+                                  if (hasil != null)
+                                    _PenandaDetail(
+                                      icon: hasil ==
+                                              HasilCravingEnum.berhasil_menahan
+                                          ? Icons.check_circle_outline
+                                          : Icons.radio_button_unchecked,
+                                      label: hasil.label,
+                                    ),
+                                ],
+                              ),
                           ],
                         ),
                         trailing: IconButton(
@@ -310,6 +339,162 @@ class _BarisPemicu extends StatelessWidget {
         Text(
           '$jumlah',
           style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+/// Ringkasan wawasan craving: rata-rata intensitas 7/30 hari, jam rawan,
+/// dan strategi paling membantu (bila data memadai).
+class _RingkasanWawasan extends StatelessWidget {
+  const _RingkasanWawasan({required this.list});
+
+  final List<DiaryCravingModel> list;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final sekarang = DateTime.now();
+    L.i('list.length=${list.length}, sekarang=$sekarang');
+    final rataRata7 = PolaCravingHelper.rataRataIntensitas(
+      PolaCravingHelper.pola7Hari(list, sekarang: sekarang),
+    );
+    final rataRata30 = PolaCravingHelper.rataRataIntensitas(
+      PolaCravingHelper.pola30Hari(list, sekarang: sekarang),
+    );
+    final jamRawan = PolaCravingHelper.jamTeratas(list);
+    final strategi = PolaCravingHelper.strategiPalingMembantu(list);
+    L.i(
+      'rataRata7=$rataRata7, rataRata30=$rataRata30, jamRawan=$jamRawan, strategi=$strategi',
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              'Wawasan',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            _BarisWawasan(
+              label: 'Rata-rata intensitas 7 hari',
+              nilai: rataRata7 == null
+                  ? '-'
+                  : '${rataRata7.toStringAsFixed(1)}/5',
+            ),
+            _BarisWawasan(
+              label: 'Rata-rata intensitas 30 hari',
+              nilai: rataRata30 == null
+                  ? '-'
+                  : '${rataRata30.toStringAsFixed(1)}/5',
+            ),
+            _BarisWawasan(
+              label: 'Jam rawan',
+              nilai: jamRawan == null
+                  ? '-'
+                  : '${jamRawan.toString().padLeft(2, '0')}.00',
+            ),
+            if (strategi != null)
+              _BarisWawasan(
+                label: 'Strategi paling membantu',
+                nilai: strategi.label,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Satu baris ringkasan wawasan: label dan nilai.
+class _BarisWawasan extends StatelessWidget {
+  const _BarisWawasan({required this.label, required this.nilai});
+
+  final String label;
+  final String nilai;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      spacing: 8,
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: textTheme.bodyMedium,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Text(
+          nilai,
+          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+/// Placeholder kecil yang ditampilkan saat entri belum cukup untuk wawasan.
+class _PlaceholderWawasan extends StatelessWidget {
+  const _PlaceholderWawasan();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          spacing: 8,
+          children: [
+            Icon(
+              CupertinoIcons.info_circle,
+              size: 18,
+              color: colorScheme.primary,
+            ),
+            Expanded(
+              child: Text(
+                'Catat minimal 3 craving untuk melihat wawasan',
+                style: textTheme.bodySmall,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Penanda kecil untuk menampilkan mood/hasil pada item daftar craving.
+class _PenandaDetail extends StatelessWidget {
+  const _PenandaDetail({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 4,
+      children: [
+        Icon(icon, size: 14, color: colorScheme.primary),
+        Flexible(
+          child: Text(
+            label,
+            style: textTheme.bodySmall,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );

@@ -4,7 +4,7 @@ description: Panduan model dan state Freezed menggunakan abstract class - wajib 
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
+  commit-terakhir: "4823fe3e7f4deae674fc8e805a4c3e19fea9fcf4"
   model: "kilo-auto/free"
 ---
 

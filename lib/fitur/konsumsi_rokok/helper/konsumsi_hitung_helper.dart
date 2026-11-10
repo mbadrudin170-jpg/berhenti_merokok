@@ -14,12 +14,16 @@ class KonsumsiHitungHelper {
     if (list.isEmpty) return const {};
     final map = <String, int>{};
     for (final m in list) {
-      final lokal = m.tanggal.toLocal();
-      final key =
-          '${lokal.year}-${lokal.month.toString().padLeft(2, '0')}-${lokal.day.toString().padLeft(2, '0')}';
+      final key = kunciTanggal(m.tanggal);
       map[key] = (map[key] ?? 0) + m.jumlah;
     }
     return map;
+  }
+
+  /// Kunci tanggal `yyyy-MM-dd` dari [tanggal] (waktu lokal).
+  static String kunciTanggal(DateTime tanggal) {
+    final lokal = tanggal.toLocal();
+    return '${lokal.year}-${lokal.month.toString().padLeft(2, '0')}-${lokal.day.toString().padLeft(2, '0')}';
   }
 
   /// Total seluruh konsumsi batang rokok.
@@ -28,15 +32,45 @@ class KonsumsiHitungHelper {
     return list.fold(0, (sum, m) => sum + m.jumlah);
   }
 
-  /// Rata-rata konsumsi per hari dalam [hari] hari terakhir.
-  static double rataRataHarian(List<KonsumsiRokokModel> list, {int hari = 7}) {
-    if (list.isEmpty) return 0.0;
+  /// Rata-rata konsumsi per hari atas [hari] hari kalender terakhir.
+  ///
+  /// Hari tanpa catatan dihitung 0. Ini menggantikan perhitungan lama yang
+  /// hanya merata-ratakan hari yang punya catatan.
+  static double rataRataHarian(List<KonsumsiRokokModel> list, {int hari = 7}) =>
+      rataRataKalender(list, hari: hari);
+
+  /// Rata-rata konsumsi per hari atas [hari] hari kalender terakhir.
+  ///
+  /// Hari tanpa catatan dihitung 0. Mengembalikan 0.0 bila [hari] <= 0.
+  static double rataRataKalender(
+    List<KonsumsiRokokModel> list, {
+    int hari = 7,
+  }) {
+    if (hari <= 0) return 0.0;
     final ringkasan = ringkasanHarian(list);
-    final keys = ringkasan.keys.toList()..sort();
-    final relevantKeys = keys.take(hari).toList();
-    if (relevantKeys.isEmpty) return 0.0;
-    final total = relevantKeys.fold(0, (sum, k) => sum + (ringkasan[k] ?? 0));
-    return total / relevantKeys.length;
+    final now = DateTime.now();
+    final hariIni = DateTime(now.year, now.month, now.day);
+    var total = 0;
+    for (var i = 0; i < hari; i++) {
+      final d = hariIni.subtract(Duration(days: i));
+      total += ringkasan[kunciTanggal(d)] ?? 0;
+    }
+    return total / hari;
+  }
+
+  /// Jumlah hari yang punya catatan dalam [hari] hari kalender terakhir.
+  /// Mengembalikan 0 bila [hari] <= 0.
+  static int jumlahHariTercatat(List<KonsumsiRokokModel> list, {int hari = 7}) {
+    if (hari <= 0) return 0;
+    final ringkasan = ringkasanHarian(list);
+    final now = DateTime.now();
+    final hariIni = DateTime(now.year, now.month, now.day);
+    var jumlah = 0;
+    for (var i = 0; i < hari; i++) {
+      final d = hariIni.subtract(Duration(days: i));
+      if (ringkasan.containsKey(kunciTanggal(d))) jumlah += 1;
+    }
+    return jumlah;
   }
 
   /// Rentang UTC hari ini untuk query langsung ke database.
@@ -51,18 +85,10 @@ class KonsumsiHitungHelper {
   }
 
   /// Konsumsi hari ini berdasarkan waktu lokal perangkat.
-  static int konsumsiHariIni(List<KonsumsiRokokModel> list) {
-    final hariIni = DateTime.now();
-    final key =
-        '${hariIni.year}-${hariIni.month.toString().padLeft(2, '0')}-${hariIni.day.toString().padLeft(2, '0')}';
-    return ringkasanHarian(list)[key] ?? 0;
-  }
+  static int konsumsiHariIni(List<KonsumsiRokokModel> list) =>
+      ringkasanHarian(list)[kunciTanggal(DateTime.now())] ?? 0;
 
   /// Konsumsi pada [tanggal] tertentu berdasarkan waktu lokal.
-  static int konsumsiTanggal(List<KonsumsiRokokModel> list, DateTime tanggal) {
-    final lokal = tanggal.toLocal();
-    final key =
-        '${lokal.year}-${lokal.month.toString().padLeft(2, '0')}-${lokal.day.toString().padLeft(2, '0')}';
-    return ringkasanHarian(list)[key] ?? 0;
-  }
+  static int konsumsiTanggal(List<KonsumsiRokokModel> list, DateTime tanggal) =>
+      ringkasanHarian(list)[kunciTanggal(tanggal)] ?? 0;
 }

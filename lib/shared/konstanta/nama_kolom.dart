@@ -62,10 +62,35 @@ class NamaKolom {
   /// Kolom catatan craving.
   static const String catatan = 'catatan';
 
+  /// Kolom durasi craving dalam menit.
+  static const String durasiMenit = 'durasi_menit';
+
+  /// Kolom suasana hati saat craving.
+  static const String mood = 'mood';
+
+  /// Kolom strategi yang dicoba saat craving.
+  static const String strategi = 'strategi';
+
+  /// Kolom hasil dari craving.
+  static const String hasil = 'hasil';
+
   /// Kolom teks alasan berhenti.
   static const String teks = 'teks';
 
   // Kolom tabel konsumsi_rokok.
   /// Kolom flag slip/relapse konsumsi rokok.
   static const String isSlip = 'is_slip';
+
+  // Kolom tabel sos_intervensi.
+  /// Kolom jenis intervensi SOS (napas_478, timer_3_menit, distraksi).
+  static const String jenisIntervensi = 'jenis_intervensi';
+
+  /// Kolom nama aktivitas distraksi yang dipilih (nullable).
+  static const String detail = 'detail';
+
+  /// Kolom hasil intervensi (berkurang, tetap, belum_selesai; nullable).
+  static const String hasilIntervensi = 'hasil_intervensi';
+
+  /// Kolom referensi entri diary craving (FK logis, nullable).
+  static const String diaryCravingId = 'diary_craving_id';
 }

@@ -16,4 +16,7 @@ class NamaTabel {
 
   /// Tabel pencatatan konsumsi rokok aktual.
   static const String konsumsiRokok = 'konsumsi_rokok';
+
+  /// Tabel riwayat intervensi SOS Craving.
+  static const String sosIntervensi = 'sos_intervensi';
 }

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DiaryCravingModel {
 
- String get id; DateTime get tanggal; PemicuEnum get pemicu; int get intensitas; String? get catatan; DateTime get dibuat;
+ String get id; DateTime get tanggal; PemicuEnum get pemicu; int get intensitas; String? get catatan; int? get durasiMenit; MoodCravingEnum? get mood; StrategiCravingEnum? get strategi; HasilCravingEnum? get hasil; DateTime get dibuat;
 /// Create a copy of DiaryCravingModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $DiaryCravingModelCopyWith<DiaryCravingModel> get copyWith => _$DiaryCravingMode
 @override
 bool operator ==(Object other) {
   final _this = this as DiaryCravingModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DiaryCravingModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.pemicu, _this.pemicu) || other.pemicu == _this.pemicu)&&(identical(other.intensitas, _this.intensitas) || other.intensitas == _this.intensitas)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DiaryCravingModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.pemicu, _this.pemicu) || other.pemicu == _this.pemicu)&&(identical(other.intensitas, _this.intensitas) || other.intensitas == _this.intensitas)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.durasiMenit, _this.durasiMenit) || other.durasiMenit == _this.durasiMenit)&&(identical(other.mood, _this.mood) || other.mood == _this.mood)&&(identical(other.strategi, _this.strategi) || other.strategi == _this.strategi)&&(identical(other.hasil, _this.hasil) || other.hasil == _this.hasil)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
 }
 
 
 @override
 int get hashCode {
   final _this = this as DiaryCravingModel;
-  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.pemicu,_this.intensitas,_this.catatan,_this.dibuat);
+  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.pemicu,_this.intensitas,_this.catatan,_this.durasiMenit,_this.mood,_this.strategi,_this.hasil,_this.dibuat);
 }
 
 @override
 String toString() {
   final _this = this as DiaryCravingModel;
-  return 'DiaryCravingModel(id: ${_this.id}, tanggal: ${_this.tanggal}, pemicu: ${_this.pemicu}, intensitas: ${_this.intensitas}, catatan: ${_this.catatan}, dibuat: ${_this.dibuat})';
+  return 'DiaryCravingModel(id: ${_this.id}, tanggal: ${_this.tanggal}, pemicu: ${_this.pemicu}, intensitas: ${_this.intensitas}, catatan: ${_this.catatan}, durasiMenit: ${_this.durasiMenit}, mood: ${_this.mood}, strategi: ${_this.strategi}, hasil: ${_this.hasil}, dibuat: ${_this.dibuat})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $DiaryCravingModelCopyWith<$Res>  {
   factory $DiaryCravingModelCopyWith(DiaryCravingModel value, $Res Function(DiaryCravingModel) _then) = _$DiaryCravingModelCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, DateTime dibuat
+ String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, int? durasiMenit, MoodCravingEnum? mood, StrategiCravingEnum? strategi, HasilCravingEnum? hasil, DateTime dibuat
 });
 
 
@@ -68,14 +68,18 @@ class _$DiaryCravingModelCopyWithImpl<$Res>
 
 /// Create a copy of DiaryCravingModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? dibuat = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? durasiMenit = freezed,Object? mood = freezed,Object? strategi = freezed,Object? hasil = freezed,Object? dibuat = null,}) {
   return _then(DiaryCravingModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
 as DateTime,pemicu: null == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
 as PemicuEnum,intensitas: null == intensitas ? _self.intensitas : intensitas // ignore: cast_nullable_to_non_nullable
 as int,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as String?,durasiMenit: freezed == durasiMenit ? _self.durasiMenit : durasiMenit // ignore: cast_nullable_to_non_nullable
+as int?,mood: freezed == mood ? _self.mood : mood // ignore: cast_nullable_to_non_nullable
+as MoodCravingEnum?,strategi: freezed == strategi ? _self.strategi : strategi // ignore: cast_nullable_to_non_nullable
+as StrategiCravingEnum?,hasil: freezed == hasil ? _self.hasil : hasil // ignore: cast_nullable_to_non_nullable
+as HasilCravingEnum?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -161,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  int? durasiMenit,  MoodCravingEnum? mood,  StrategiCravingEnum? strategi,  HasilCravingEnum? hasil,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DiaryCravingModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.durasiMenit,_that.mood,_that.strategi,_that.hasil,_that.dibuat);case _:
   return orElse();
 
 }
@@ -182,10 +186,10 @@ return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  int? durasiMenit,  MoodCravingEnum? mood,  StrategiCravingEnum? strategi,  HasilCravingEnum? hasil,  DateTime dibuat)  $default,) {final _that = this;
 switch (_that) {
 case _DiaryCravingModel():
-return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.durasiMenit,_that.mood,_that.strategi,_that.hasil,_that.dibuat);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +206,10 @@ return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  int? durasiMenit,  MoodCravingEnum? mood,  StrategiCravingEnum? strategi,  HasilCravingEnum? hasil,  DateTime dibuat)?  $default,) {final _that = this;
 switch (_that) {
 case _DiaryCravingModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.durasiMenit,_that.mood,_that.strategi,_that.hasil,_that.dibuat);case _:
   return null;
 
 }
@@ -217,7 +221,7 @@ return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catat
 
 
 class _DiaryCravingModel extends DiaryCravingModel {
-  const _DiaryCravingModel({required this.id, required this.tanggal, required this.pemicu, this.intensitas = 3, this.catatan, required this.dibuat}): super._();
+  const _DiaryCravingModel({required this.id, required this.tanggal, required this.pemicu, this.intensitas = 3, this.catatan, this.durasiMenit, this.mood, this.strategi, this.hasil, required this.dibuat}): super._();
   
 
 @override final  String id;
@@ -225,6 +229,10 @@ class _DiaryCravingModel extends DiaryCravingModel {
 @override final  PemicuEnum pemicu;
 @override@JsonKey() final  int intensitas;
 @override final  String? catatan;
+@override final  int? durasiMenit;
+@override final  MoodCravingEnum? mood;
+@override final  StrategiCravingEnum? strategi;
+@override final  HasilCravingEnum? hasil;
 @override final  DateTime dibuat;
 
 /// Create a copy of DiaryCravingModel
@@ -237,18 +245,18 @@ _$DiaryCravingModelCopyWith<_DiaryCravingModel> get copyWith => __$DiaryCravingM
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DiaryCravingModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.pemicu, pemicu) || other.pemicu == pemicu)&&(identical(other.intensitas, intensitas) || other.intensitas == intensitas)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DiaryCravingModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.pemicu, pemicu) || other.pemicu == pemicu)&&(identical(other.intensitas, intensitas) || other.intensitas == intensitas)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.durasiMenit, durasiMenit) || other.durasiMenit == durasiMenit)&&(identical(other.mood, mood) || other.mood == mood)&&(identical(other.strategi, strategi) || other.strategi == strategi)&&(identical(other.hasil, hasil) || other.hasil == hasil)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,tanggal,pemicu,intensitas,catatan,dibuat);
+    return Object.hash(runtimeType,id,tanggal,pemicu,intensitas,catatan,durasiMenit,mood,strategi,hasil,dibuat);
 }
 
 @override
 String toString() {
-    return 'DiaryCravingModel(id: $id, tanggal: $tanggal, pemicu: $pemicu, intensitas: $intensitas, catatan: $catatan, dibuat: $dibuat)';
+    return 'DiaryCravingModel(id: $id, tanggal: $tanggal, pemicu: $pemicu, intensitas: $intensitas, catatan: $catatan, durasiMenit: $durasiMenit, mood: $mood, strategi: $strategi, hasil: $hasil, dibuat: $dibuat)';
 }
 
 
@@ -259,7 +267,7 @@ abstract mixin class _$DiaryCravingModelCopyWith<$Res> implements $DiaryCravingM
   factory _$DiaryCravingModelCopyWith(_DiaryCravingModel value, $Res Function(_DiaryCravingModel) _then) = __$DiaryCravingModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, DateTime dibuat
+ String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, int? durasiMenit, MoodCravingEnum? mood, StrategiCravingEnum? strategi, HasilCravingEnum? hasil, DateTime dibuat
 });
 
 
@@ -276,14 +284,18 @@ class __$DiaryCravingModelCopyWithImpl<$Res>
 
 /// Create a copy of DiaryCravingModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? dibuat = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? durasiMenit = freezed,Object? mood = freezed,Object? strategi = freezed,Object? hasil = freezed,Object? dibuat = null,}) {
   return _then(_DiaryCravingModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
 as DateTime,pemicu: null == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
 as PemicuEnum,intensitas: null == intensitas ? _self.intensitas : intensitas // ignore: cast_nullable_to_non_nullable
 as int,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as String?,durasiMenit: freezed == durasiMenit ? _self.durasiMenit : durasiMenit // ignore: cast_nullable_to_non_nullable
+as int?,mood: freezed == mood ? _self.mood : mood // ignore: cast_nullable_to_non_nullable
+as MoodCravingEnum?,strategi: freezed == strategi ? _self.strategi : strategi // ignore: cast_nullable_to_non_nullable
+as StrategiCravingEnum?,hasil: freezed == hasil ? _self.hasil : hasil // ignore: cast_nullable_to_non_nullable
+as HasilCravingEnum?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }

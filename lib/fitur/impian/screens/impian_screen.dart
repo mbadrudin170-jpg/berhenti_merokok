@@ -9,6 +9,9 @@ import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -108,8 +111,9 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   Widget build(BuildContext context) {
     final impianAsync = ref.watch(impianProvider);
     final biodataAsync = ref.watch(biodataProvider);
+    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
     L.i(
-      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
+      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}, konsumsiAsync.isLoading=${konsumsiAsync.isLoading}, hasError=${konsumsiAsync.hasError}',
     );
 
     if (impianAsync.isLoading) {
@@ -143,7 +147,18 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
       'listImpian.length=${listImpianAsli.length}, totalJumlah=${impianState.totalJumlah}',
     );
 
-    // Saldo terkumpul = uang yang dihemat dari tidak merokok (berdasarkan biodata).
+    // Catatan konsumsi dipakai untuk saldo aktual ("dari catatan"). Bila belum
+    // ada (atau gagal dimuat), progress memakai estimasi baseline biodata.
+    var konsumsiList = const <KonsumsiRokokModel>[];
+    if (konsumsiAsync.isLoading) {
+      L.w('konsumsiAsync loading');
+    } else if (konsumsiAsync.hasError) {
+      L.w('konsumsiAsync error=${konsumsiAsync.error}');
+    } else {
+      konsumsiList = konsumsiAsync.requireValue.listKonsumsi;
+    }
+
+    // Saldo terkumpul: estimasi dari biodata dan aktual dari catatan konsumsi.
     BiodataModel? biodata;
     if (biodataAsync.isLoading) {
       L.w('biodataAsync loading');
@@ -152,8 +167,21 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     } else {
       biodata = biodataAsync.requireValue;
     }
-    final uangDihemat = biodata?.uangDihemat ?? 0;
-    L.i('uangDihemat=$uangDihemat');
+    final uangEstimasi = biodata == null
+        ? 0.0
+        : MetrikBerhentiHelper.hitungUangDihematEstimasi(biodata);
+    final uangAktual = biodata == null
+        ? 0.0
+        : MetrikBerhentiHelper.hitungUangDihematAktual(biodata, konsumsiList);
+    final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
+      konsumsiList,
+    );
+    final pakaiAktual = hariTercatat > 0;
+    // Progres impian: aktual bila ada catatan, fallback estimasi.
+    final saldoUntukProgres = pakaiAktual ? uangAktual : uangEstimasi;
+    L.i(
+      'uangEstimasi=$uangEstimasi, uangAktual=$uangAktual, hariTercatat=$hariTercatat, pakaiAktual=$pakaiAktual, saldoUntukProgres=$saldoUntukProgres',
+    );
 
     final List<ImpianModel> listImpian = listImpianAsli.sorted((a, b) {
       switch (_sortImpian) {
@@ -166,17 +194,20 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         case SortImpian.jumlahZa:
           return b.jumlah.compareTo(a.jumlah);
         case SortImpian.mendekatiTerkumpulAz:
-          final sisaA = ImpianProgresHelper.sisa(uangDihemat, a.jumlah);
-          final sisaB = ImpianProgresHelper.sisa(uangDihemat, b.jumlah);
+          final sisaA = ImpianProgresHelper.sisa(saldoUntukProgres, a.jumlah);
+          final sisaB = ImpianProgresHelper.sisa(saldoUntukProgres, b.jumlah);
           return sisaA.compareTo(sisaB);
         case SortImpian.mendekatiTerkumpulZa:
-          final sisaA = ImpianProgresHelper.sisa(uangDihemat, a.jumlah);
-          final sisaB = ImpianProgresHelper.sisa(uangDihemat, b.jumlah);
+          final sisaA = ImpianProgresHelper.sisa(saldoUntukProgres, a.jumlah);
+          final sisaB = ImpianProgresHelper.sisa(saldoUntukProgres, b.jumlah);
           return sisaB.compareTo(sisaA);
       }
     });
     final jumlahTercapai = listImpian
-        .where((item) => ImpianProgresHelper.tercapai(uangDihemat, item.jumlah))
+        .where(
+          (item) =>
+              ImpianProgresHelper.tercapai(saldoUntukProgres, item.jumlah),
+        )
         .length;
     L.i('jumlahTercapai=$jumlahTercapai/${listImpian.length}');
 
@@ -188,7 +219,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
       if (!mounted) return;
       for (final item in listImpian) {
         final sudahTercapai = ImpianProgresHelper.tercapai(
-          uangDihemat,
+          saldoUntukProgres,
           item.jumlah,
         );
         if (sudahTercapai && !_sudahDiraikan.contains(item.id)) {
@@ -234,7 +265,12 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           child: Column(
             spacing: 8,
             children: [
-              _buildSaldoTerkumpul(uangDihemat),
+              _buildSaldoTerkumpul(
+                uangEstimasi,
+                uangAktual,
+                pakaiAktual,
+                hariTercatat,
+              ),
               Text(
                 '$jumlahTercapai dari ${listImpian.length} impian tercapai',
                 style: Theme.of(context).textTheme.titleMedium
@@ -249,15 +285,15 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                       'item.id=${item.id}, item.nama=${item.nama}, item.jumlah=${item.jumlah}',
                     );
                     final rasio = ImpianProgresHelper.rasio(
-                      uangDihemat,
+                      saldoUntukProgres,
                       item.jumlah,
                     );
                     final sudahTercapai = ImpianProgresHelper.tercapai(
-                      uangDihemat,
+                      saldoUntukProgres,
                       item.jumlah,
                     );
                     final sisa = ImpianProgresHelper.sisa(
-                      uangDihemat,
+                      saldoUntukProgres,
                       item.jumlah,
                     );
                     return Card(
@@ -274,6 +310,10 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                             VisualTabunganImpian(
                               rasio: rasio,
                               tercapai: sudahTercapai,
+                              pakaiAktual: pakaiAktual,
+                              labelSaldo: pakaiAktual
+                                  ? 'Progres dari catatan (berdasarkan $hariTercatat hari tercatat)'
+                                  : 'Progres estimasi dari biodata',
                             ),
                             if (sudahTercapai)
                               Text(
@@ -324,31 +364,87 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     );
   }
 
-  Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
-    L.i('saldoTerkumpul=$saldoTerkumpul');
+  Widget _buildSaldoTerkumpul(
+    double estimasi,
+    double aktual,
+    bool pakaiAktual,
+    int hariTercatat,
+  ) {
+    L.i(
+      'estimasi=$estimasi, aktual=$aktual, pakaiAktual=$pakaiAktual, hariTercatat=$hariTercatat',
+    );
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         // Jarak seragam antar-anak Row diatur dengan properti spacing
         // (optimasi_ui.md #4), bukan SizedBox individual.
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
           spacing: 8,
           children: [
-            const Icon(Icons.savings_outlined),
-            Column(
+            Text(
+              'Saldo terkumpul',
+              style: Theme.of(context).textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 12,
               children: [
-                const Text('Saldo terkumpul'),
-                Text(
-                  FormatUang.formatRupiah(saldoTerkumpul),
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                const Icon(Icons.savings_outlined),
+                _SaldoItem(
+                  label: 'Estimasi',
+                  nilai: FormatUang.formatRupiah(estimasi),
+                ),
+                _SaldoItem(
+                  label: 'Dari catatan',
+                  nilai: pakaiAktual
+                      ? FormatUang.formatRupiah(aktual)
+                      : 'Belum ada catatan',
                 ),
               ],
+            ),
+            Text(
+              pakaiAktual
+                  ? 'Aktual berdasarkan $hariTercatat hari tercatat. Estimasi dari kebiasaan harian biodata.'
+                  : 'Belum ada catatan konsumsi. Menampilkan estimasi dari kebiasaan harian biodata.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Item saldo dengan label sumber angka ("Estimasi" / "Dari catatan").
+class _SaldoItem extends StatelessWidget {
+  const _SaldoItem({required this.label, required this.nilai});
+
+  final String label;
+  final String nilai;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: 4,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(color: colorScheme.onSurfaceVariant),
+        ),
+        Text(
+          nilai,
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      ],
     );
   }
 }

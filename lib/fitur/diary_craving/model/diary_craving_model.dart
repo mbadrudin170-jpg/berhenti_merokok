@@ -1,4 +1,7 @@
+import 'package:berhenti_merokok/fitur/diary_craving/enum/hasil_craving_enum.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/mood_craving_enum.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/strategi_craving_enum.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -15,6 +18,10 @@ abstract class DiaryCravingModel with _$DiaryCravingModel {
     required PemicuEnum pemicu,
     @Default(3) int intensitas,
     String? catatan,
+    int? durasiMenit,
+    MoodCravingEnum? mood,
+    StrategiCravingEnum? strategi,
+    HasilCravingEnum? hasil,
     required DateTime dibuat,
   }) = _DiaryCravingModel;
 
@@ -36,6 +43,19 @@ abstract class DiaryCravingModel with _$DiaryCravingModel {
         defaultValue: 3,
       ),
       catatan: ParserUtil.parseStringOrNull(row[NamaKolom.catatan]),
+      durasiMenit: ParserUtil.parseIntOrNull(row[NamaKolom.durasiMenit]),
+      mood: ParserUtil.safeParseEnum(
+        MoodCravingEnum.values,
+        ParserUtil.parseStringOrNull(row[NamaKolom.mood]),
+      ),
+      strategi: ParserUtil.safeParseEnum(
+        StrategiCravingEnum.values,
+        ParserUtil.parseStringOrNull(row[NamaKolom.strategi]),
+      ),
+      hasil: ParserUtil.safeParseEnum(
+        HasilCravingEnum.values,
+        ParserUtil.parseStringOrNull(row[NamaKolom.hasil]),
+      ),
       dibuat:
           ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
           DateTime.now(),
@@ -50,6 +70,10 @@ abstract class DiaryCravingModel with _$DiaryCravingModel {
       NamaKolom.pemicu: pemicu.name,
       NamaKolom.intensitas: intensitas,
       NamaKolom.catatan: catatan,
+      NamaKolom.durasiMenit: durasiMenit,
+      NamaKolom.mood: mood?.name,
+      NamaKolom.strategi: strategi?.name,
+      NamaKolom.hasil: hasil?.name,
       NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
     };
   }

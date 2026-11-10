@@ -4,8 +4,8 @@ description: Panduan parsing field nullable integer dari database memakai parseI
 metadata:
   kategori: "custom"
   versi: "1.0.3"
-  commit-terakhir: "c9f96b2debb9e678513229c5a4a68a062e3a8afc"
-  model: "GPT-6"
+  commit-terakhir: "4823fe3e7f4deae674fc8e805a4c3e19fea9fcf4"
+  model: "kilo-auto/free"
 ---
 
 # Parsing Field Nullable Integer dari Database Menggunakan parseIntOrNull
