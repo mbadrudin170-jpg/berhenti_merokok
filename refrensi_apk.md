@@ -72,19 +72,7 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 
 ### Prioritas Tinggi
 
-#### 1. Pencatatan Konsumsi Rokok Aktual dan Riwayat Harian
-
-- **Kondisi proyek:** Biodata menyimpan jumlah rokok per hari sebagai baseline; belum ditemukan modul atau model khusus untuk merekam setiap kejadian merokok/jumlah aktual per tanggal.
-- **Referensi:** [SmokingYou](https://github.com/bodyaant/SmokingYou), [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), [TrackLess](https://github.com/poorangryman/trackless-public), [SWay](https://play.google.com/store/apps/details?id=com.stopsmoke.metodshamana).
-- **Implementasi yang dapat dipelajari:** Pencatatan satu ketukan, cap waktu, jumlah harian, interval antarrokok, biaya aktual, dan riwayat yang dapat dikoreksi.
-- **Tujuan:** Membuat data kebiasaan menjadi data aktual, bukan hanya perkiraan dari biodata.
-- **Manfaat:** Menjadi fondasi yang dapat dipakai oleh tapering, laporan, analisis pemicu, kalender, dan hitungan uang.
-- **Catatan desain:** Sediakan dua cara input: tombol cepat untuk satu kejadian dan koreksi jumlah harian untuk pengguna yang tidak ingin mencatat satu per satu. Hindari membuat proses pencatatan menjadi beban.
-- **Ketergantungan:** Model dan tabel SQLite baru, migrasi database, repository/provider, UI input dan riwayat, serta cadangan JSON.
-- **Risiko:** Catatan yang tidak lengkap dapat menghasilkan statistik menyesatkan. Tampilkan status data yang belum dicatat dan jangan menyamakan “tidak ada catatan” dengan “tidak merokok”.
-- **Alasan prioritas:** Data aktual adalah prasyarat bagi beberapa optimasi besar lainnya.
-
-#### 2. Riwayat Slip yang Tidak Menghapus Progres Kumulatif
+#### 1. Riwayat Slip yang Tidak Menghapus Progres Kumulatif
 
 - **Kondisi proyek:** Belum ditemukan entri slip/relapse khusus pada model biodata atau modul fitur yang diperiksa. Kalender dan counter smoke-free saat ini bergantung pada tanggal berhenti.
 - **Referensi:** [SmokeFree: Quit Smoking Log — ClearStack](https://play.google.com/store/apps/details?id=com.clearstackapps.smokefree), [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke), [Nonic](https://github.com/bllfoad/nonic), [Qwit](https://play.google.com/store/apps/details?id=stopSmokingDemo.team.geny), [Quit Smoking : Tracker & Timer — H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [Lungo](https://trylungo.com/).
@@ -96,7 +84,7 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 - **Ketergantungan:** Pencatatan aktual, model/tabel dan migrasi, penyesuaian perhitungan dashboard, kalender, badge, impian, dan backup.
 - **Alasan prioritas:** Memperbaiki ketepatan data dan mendukung retensi pengguna setelah mengalami slip.
 
-#### 3. Analisis Diary Craving Berbasis Perilaku
+#### 2. Analisis Diary Craving Berbasis Perilaku
 
 - **Kondisi proyek:** Diary saat ini mencatat tanggal, pemicu, intensitas, dan catatan bebas. Belum ditemukan pencatatan durasi craving, mood, strategi yang dicoba, serta hasil strategi.
 - **Referensi:** [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [TrackLess](https://github.com/poorangryman/trackless-public), [SmokingYou](https://github.com/bodyaant/SmokingYou), [SmokeFree Log — ClearStack](https://clearstackapps.com/apps/smokefree), [Nonic](https://github.com/bllfoad/nonic).
@@ -109,7 +97,7 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 
 ### Prioritas Sedang
 
-#### 4. Rencana Tapering Berbasis Konsumsi Aktual dan Interval
+#### 3. Rencana Tapering Berbasis Konsumsi Aktual dan Interval
 
 - **Kondisi proyek:** Data telah memiliki mode bertahap, penurunan mingguan, tanggal mulai tapering, dan target rokok harian yang dihitung. Belum ditemukan pencatatan konsumsi aktual yang dapat membuktikan target tercapai.
 - **Referensi:** [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [SmokingYou](https://github.com/bodyaant/SmokingYou), [SWay](https://play.google.com/store/apps/details?id=com.stopsmoke.metodshamana), [Quit Smoking Gradually: Alive](https://play.google.com/store/apps/details?id=com.franciscogaribay.quitsmokingalive), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy).
@@ -119,7 +107,7 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 - **Catatan:** Jangan mengubah tanggal berhenti atau target secara otomatis tanpa memberi tahu dan meminta keputusan pengguna. Rencana tapering bukan jaminan berhenti dan tidak menggantikan nasihat tenaga kesehatan.
 - **Ketergantungan:** Fitur pencatatan konsumsi aktual.
 
-#### 5. Check-in Harian Singkat
+#### 4. Check-in Harian Singkat
 
 - **Kondisi proyek:** Pengingat harian tersedia, tetapi belum ditemukan alur check-in harian yang merekam mood, tingkat craving, konsumsi aktual, dan strategi yang dilakukan.
 - **Referensi:** [Nonic](https://github.com/bllfoad/nonic), [Lungo](https://trylungo.com/), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy), [QuitNow!](https://www.quitnow.app/id/).
@@ -128,7 +116,7 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 - **Saran:** Maksimal beberapa input singkat, dapat dilewati, dan tidak menghalangi akses Dashboard. Jangan membuat pengguna merasa bersalah ketika melewatkan hari.
 - **Ketergantungan:** Model check-in, penyimpanan lokal, dan kemungkinan integrasi dengan analitik diary.
 
-#### 6. Widget Layar Beranda Android
+#### 5. Widget Layar Beranda Android
 
 - **Kondisi proyek:** Belum ditemukan implementasi widget Android pada kode proyek.
 - **Referensi:** [SmokingYou](https://github.com/bodyaant/SmokingYou), [TrackLess](https://github.com/poorangryman/trackless-public), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [Qwit](https://play.google.com/store/apps/details?id=stopSmokingDemo.team.geny), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy).
@@ -138,7 +126,7 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 - **Ketergantungan:** Integrasi native Android/App Widget, mekanisme update, komunikasi data Flutter-native, dan pengujian launcher/perangkat.
 - **Batasan:** Jangan meniru iOS Live Activities atau WidgetKit. Fitur widget yang tersedia pada aplikasi lintas platform harus dipastikan benar-benar mendukung Android.
 
-#### 7. Pengingat Berbasis Pola Craving
+#### 6. Pengingat Berbasis Pola Craving
 
 - **Kondisi proyek:** Pengingat harian dengan waktu tetap sudah tersedia.
 - **Referensi:** [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [SmokingYou](https://github.com/bodyaant/SmokingYou), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy), [Qwit](https://play.google.com/store/apps/details?id=stopSmokingDemo.team.geny).
@@ -147,7 +135,7 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 - **Saran:** Mulai dari pilihan jam rawan berdasarkan riwayat pengguna, jam tenang, frekuensi maksimum, dan opsi nonaktif. Jangan menyimpulkan pola personal dari data yang terlalu sedikit.
 - **Ketergantungan:** Data diary/konsumsi yang cukup, izin notifikasi Android, dan pengaturan preferensi.
 
-#### 8. Notifikasi Berkelanjutan dengan Aksi Cepat
+#### 7. Notifikasi Berkelanjutan dengan Aksi Cepat
 
 - **Kondisi proyek:** Belum ditemukan notifikasi berkelanjutan dengan tombol aksi untuk pencatatan rokok atau craving. Pengingat terjadwal sudah ada.
 - **Referensi:** [SmokingYou](https://github.com/bodyaant/SmokingYou).
@@ -233,6 +221,8 @@ Bagian ini menjadi dasar agar rekomendasi tidak mengusulkan ulang fitur yang seb
 - **Peluang optimasi:** Check-in pagi, pengingat milestone, jam tenang, pilihan jenis notifikasi, dan pengingat terkait pola craving jika pengguna menyetujuinya.
 - **Saran:** Buat kontrol frekuensi yang mudah dipahami, tampilkan pratinjau contoh pesan, dan izinkan pengguna menonaktifkan masing-masing kategori. Jangan mengirim pengingat adaptif jika jumlah data belum cukup.
 - **Tujuan:** Relevansi lebih tinggi tanpa mengurangi kendali pengguna.
+
+✅ PRD dibuat: `prd/optimasi-notifikasi-pengingat-harian.md`
 
 #### 6. Cadangan JSON — Pratinjau dan Pilihan Pemulihan
 

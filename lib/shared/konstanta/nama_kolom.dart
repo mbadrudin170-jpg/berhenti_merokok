@@ -64,4 +64,8 @@ class NamaKolom {
 
   /// Kolom teks alasan berhenti.
   static const String teks = 'teks';
+
+  // Kolom tabel konsumsi_rokok.
+  /// Kolom flag slip/relapse konsumsi rokok.
+  static const String isSlip = 'is_slip';
 }

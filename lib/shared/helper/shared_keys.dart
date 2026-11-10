@@ -16,4 +16,16 @@ class SharedKeys {
 
   /// Kunci untuk menyimpan menit pengingat harian.
   static const String notifikasiMenit = 'notifikasi_menit';
+
+  /// Kunci untuk menyimpan status aktif check-in pagi.
+  static const String notifikasiCheckinPagi = 'notifikasi_checkin_pagi';
+
+  /// Kunci untuk menyimpan jam check-in pagi.
+  static const String notifikasiCheckinPagiJam = 'notifikasi_checkin_pagi_jam';
+
+  /// Kunci untuk menyimpan menit check-in pagi.
+  static const String notifikasiCheckinPagiMenit = 'notifikasi_checkin_pagi_menit';
+
+  /// Kunci untuk menyimpan status aktif pengingat pola craving.
+  static const String notifikasiPolaCraving = 'notifikasi_pola_craving';
 }
