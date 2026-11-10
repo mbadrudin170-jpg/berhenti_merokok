@@ -29,16 +29,13 @@
 
 Proyek sudah memiliki fondasi utama yang jauh lebih lengkap daripada aplikasi quit tracker dasar: profil dan rencana tapering, dashboard, pencatatan konsumsi harian, penanda slip, diary craving, SOS, kalender, milestone kesehatan, badge, tabungan impian, pengingat, serta backup lokal. Karena itu, menambah halaman yang mengulang kemampuan tersebut bukan prioritas.
 
-Peluang terbesar adalah **menghubungkan data yang sudah dikumpulkan agar semua angka dan visualisasi menceritakan kondisi yang sama**. Modul konsumsi menyimpan jumlah, tanggal, catatan, dan status slip. Namun kalender smoke-free saat ini masih menghitung hari dari tanggal mulai berhenti pada biodata dan tidak membaca catatan konsumsi. Angka smoke-free, estimasi rokok yang dihindari, uang dihemat, serta progres tapering perlu mempunyai definisi yang jelas dan konsisten dengan log aktual.
+Peluang terbesar adalah **menghubungkan data yang sudah dikumpulkan agar semua angka dan visualisasi menceritakan kondisi yang sama**. Modul konsumsi menyimpan jumlah, tanggal, catatan, dan status slip. Angka smoke-free, estimasi rokok yang dihindari, uang dihemat, serta progres tapering perlu mempunyai definisi yang jelas dan konsisten dengan log aktual.
 
 Temuan utama:
 
 1. **P1 — Integrasi konsumsi aktual dengan seluruh metrik.** Gunakan log konsumsi untuk membandingkan target tapering, konsumsi harian, rokok yang dihindari, uang yang tidak dibelanjakan, streak sejak konsumsi terakhir, dan progres kumulatif. Referensi: [SmokingYou](https://github.com/bodyaant/SmokingYou), [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
-2. **P1 — Kalender dan slip harus berbasis catatan.** Penanda slip sudah tersedia di model konsumsi, tetapi kalender hanya membaca tanggal berhenti. Bedakan hari yang terkonfirmasi bebas rokok, hari dengan konsumsi/slip, hari tanpa catatan, dan hari yang sedang mengikuti tapering. Referensi: [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking), [NoMore](https://play.google.com/store/apps/details?id=com.appfactory.breakfree), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), dan [ClearStack](https://clearstackapps.com/apps/smokefree).
-3. **P1 — Diary craving perlu menyimpan strategi dan hasil.** Data saat ini mencatat waktu, pemicu, intensitas, dan catatan; belum ada durasi, suasana hati, tindakan koping, atau hasil. Referensi: [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [TrackLess](https://github.com/poorangryman/trackless-public), [Nonic](https://github.com/bllfoad/nonic), dan [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking).
-4. **P2 — Widget Android.** Widget home screen untuk counter, ringkasan, atau pintasan SOS/log akan mengurangi langkah akses. Referensi kuat: [SmokingYou](https://github.com/bodyaant/SmokingYou), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
-5. **P2 — Simpan hasil intervensi SOS dan check-in singkat.** SOS sudah tersedia; nilai tambahnya adalah mengingat teknik yang dicoba dan apakah membantu, bukan menambah katalog aktivitas panjang. Check-in mood harian dapat bersifat opsional dan singkat. Referensi: [Quit Smoking Now – Tracker](https://play.google.com/store/apps/details?id=com.mifasuse.quitsmokingnow), [Qwit](https://play.google.com/store/apps/details?id=stopSmokingDemo.team.geny), dan [Nonic](https://github.com/bllfoad/nonic).
-6. **P3 — Gamifikasi lanjutan, AI coach, dan komunitas.** Referensi seperti [Quitrise](https://play.google.com/store/apps/details?id=com.matrissoftware.Quitrise), [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife), [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking), dan [Pace Android](https://github.com/ravipurohit1991/pace) memberi inspirasi. Namun fitur tersebut menambah beban konten, privasi, moderasi, biaya, atau ketergantungan jaringan; letakkan setelah data inti akurat.
+2. **P2 — Widget Android.** Widget home screen untuk counter, ringkasan, atau pintasan SOS/log akan mengurangi langkah akses. Referensi kuat: [SmokingYou](https://github.com/bodyaant/SmokingYou), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
+3. **P3 — Gamifikasi lanjutan, AI coach, dan komunitas.** Referensi seperti [Quitrise](https://play.google.com/store/apps/details?id=com.matrissoftware.Quitrise), [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife), [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking), dan [Pace Android](https://github.com/ravipurohit1991/pace) memberi inspirasi. Namun fitur tersebut menambah beban konten, privasi, moderasi, biaya, atau ketergantungan jaringan; letakkan setelah data inti akurat.
 
 Seluruh rekomendasi merupakan bahan sortir, bukan keputusan implementasi. Prioritas mempertimbangkan celah produk, manfaat, kesesuaian Android, kebutuhan offline-first, serta biaya pemeliharaan.
 
@@ -52,13 +49,11 @@ Bagian ini membedakan fitur yang sudah ada dari peluang optimasi. Pemeriksaan di
 | Navigasi utama | Empat destinasi: Dashboard, Biodata, Impian, dan Lainnya. Tab dibangun secara lazy dan dipertahankan dengan IndexedStack. | `lib/home.dart` | Pertahankan empat destinasi utama sampai ada bukti kebutuhan navigasi baru. |
 | Dashboard | Menampilkan counter smoke-free, kartu SOS, progres/uang dihemat, target, impian, milestone, badge, dan ringkasan lain. | `lib/fitur/dashboard/screens/dashboard_screen.dart` | Jangan mengusulkan kartu SOS atau ringkasan progres sebagai fitur baru. Evaluasi ulang kepadatan dan akurasi angkanya. |
 | Biodata dan tapering | Menyimpan kebiasaan awal, harga dan isi bungkus, tanggal mulai, mode seketika/bertahap, penurunan per minggu, serta target harian. | `lib/fitur/biodata/model/biodata_model.dart`; `lib/fitur/biodata/screens/form_biodata.dart` | Target tapering sudah ada; peluangnya adalah membandingkan target dengan konsumsi aktual. |
-| Konsumsi rokok | Sudah ada model dengan `tanggal`, `jumlah`, `isSlip`, `catatan`, dan `dibuat`; daftar dikelompokkan per hari, ada quick log +1, tambah/ubah catatan, pemilihan tanggal, serta penanda slip. | `lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart`; `lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart`; `lib/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart` | Bukan fitur baru. Optimasi utama: hubungkan catatan ke counter, tapering, kalender, tabungan, dan analitik; pertimbangkan koreksi/undo log yang mudah. |
+| Konsumsi rokok | Sudah ada model dengan `tanggal`, `jumlah`, `isSlip`, `catatan`, dan `dibuat`; daftar dikelompokkan per hari, ada quick log +1, tambah/ubah catatan, pemilihan tanggal, serta penanda slip. | `lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart`; `lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart`; `lib/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart` | Bukan fitur baru. Optimasi utama: hubungkan catatan ke counter, tapering, tabungan, dan analitik; pertimbangkan koreksi/undo log yang mudah. |
 | Perhitungan konsumsi | Helper menyediakan total, ringkasan harian, rata-rata, konsumsi hari ini, dan konsumsi tanggal tertentu. | `lib/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart` | Data aktual sudah dapat diringkas; pastikan rentang rata-rata benar-benar merujuk ke hari kalender terakhir, termasuk hari tanpa catatan bila diperlukan. |
 | Perhitungan progres | `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` berasal dari parameter biodata dan tanggal berhenti. | `lib/fitur/biodata/model/biodata_model.dart` | Bedakan baseline/estimasi dari hasil aktual. Satu rumus bersama diperlukan untuk Dashboard, Impian, Badge, dan laporan. |
 | Impian/tabungan | CRUD impian, pengurutan, saldo terkumpul berbasis uang dihemat, progress, dan perayaan target sudah ada. | `lib/fitur/impian/` | Jangan menambahkan wishlist lagi; perjelas saldo estimasi vs aktual dan sumber perubahan saldo. |
-| SOS Craving | Kartu akses di Dashboard; layar memiliki napas 4-7-8, timer tiga menit, distraksi, serta pengingat alasan berhenti. | `lib/fitur/sos_craving/screens/sos_craving_screen.dart`; `lib/fitur/dashboard/screens/dashboard_screen.dart` | Optimalkan kecepatan akses dan pencatatan hasil strategi. Jangan membangun ulang SOS. |
-| Diary Craving | Model menyimpan tanggal/waktu, pemicu, intensitas 1–5, catatan opsional, dan waktu dibuat; tersedia tambah, ubah, hapus. Helper menentukan jam teratas setelah minimal tiga entri. | `lib/fitur/diary_craving/model/diary_craving_model.dart`; `lib/fitur/diary_craving/helper/pola_craving_helper.dart`; `lib/fitur/diary_craving/screens/form_diary_craving.dart` | Perluasan yang masuk akal: durasi, mood, strategi koping, hasil, dan ringkasan periode setelah data cukup. |
-| Kalender smoke-free | Menandai rentang tanggal mulai berhenti sampai hari ini berdasarkan biodata; layar tidak membaca provider konsumsi rokok. | `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart` | Ini celah integrasi penting: tampilan kalender belum mencerminkan log konsumsi/slip. |
+| SOS Craving | Kartu akses di Dashboard; layar memiliki napas 4-7-8, timer tiga menit, distraksi, serta pengingat alasan berhenti. Riwayat intervensi tersimpan setelah setiap penyelesaian. | `lib/fitur/sos_craving/screens/sos_craving_screen.dart`; `lib/fitur/dashboard/screens/dashboard_screen.dart` | Pencatatan hasil intervensi sudah terimplementasi. Jangan membangun ulang SOS. |
 | Pemulihan kesehatan | Menampilkan milestone dan waktu/progres menuju milestone berikutnya. | `lib/fitur/pemulihan_kesehatan/`; `lib/shared/konstanta/milestone_kesehatan.dart` | Sumber, tanggal pembaruan, dan sifat estimasi harus jelas; bukan diagnosis personal. |
 | Badge | Badge berdasarkan hari smoke-free, rokok yang dihindari, uang dihemat, dan impian yang tercapai. | `lib/fitur/badge/` | Pastikan kondisi badge mengikuti metrik yang telah diselaraskan dengan konsumsi aktual dan slip. |
 | Notifikasi | Pengingat harian, pilihan waktu, aktivasi/nonaktivasi, check-in pagi, dan pengingat pola craving telah mempunyai dasar implementasi/pengaturan sesuai platform. | `lib/fitur/pengaturan/`; `lib/shared/notifikasi/notifikasi_service.dart` | Perluasan harus kontekstual, dapat dikendalikan, dan tidak membanjiri pengguna. |
@@ -149,29 +144,9 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 - **Saran:** Tentukan satu definisi untuk setiap metrik. Jika data harian belum lengkap, beri label estimasi dan jelaskan rentang/asumsinya. Gunakan satu helper/perhitungan bersama untuk Dashboard, Impian, Badge, kalender, dan ringkasan.
 - **Tujuan:** Meningkatkan kepercayaan pengguna pada statistik serta menghindari angka yang bertentangan antarhalaman.
 
-#### 2. Hubungkan Kalender Smoke-Free dengan Log Konsumsi dan Penanda Slip
-
-> **Status: PRD sudah dibuat — lihat `prd/kalender_smoke_free_log_konsumsi.md` (10 November 2026).**
-
-- **Kondisi proyek:** Model konsumsi mendukung `isSlip`, tetapi kalender yang diperiksa hanya membaca tanggal berhenti dari biodata dan tidak membaca daftar konsumsi.
-- **Referensi:** [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [NoMore](https://play.google.com/store/apps/details?id=com.appfactory.breakfree), [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking), dan [ClearStack](https://clearstackapps.com/apps/smokefree).
-- **Peluang optimasi:** Bedakan hari yang terkonfirmasi bebas rokok, hari dengan catatan konsumsi/slip, hari tanpa catatan, dan hari dalam rencana tapering. Pisahkan streak sejak rokok terakhir dari jumlah hari/progres kumulatif.
-- **Saran:** Tetapkan aturan status kalender secara eksplisit. Jangan otomatis memberi status bebas rokok pada tanggal yang tidak memiliki log. Ketika pengguna mengetuk tanggal, tampilkan catatan yang mendasari status tersebut.
-- **Tujuan:** Membuat kalender menggambarkan riwayat yang jujur dan mendorong pencatatan tanpa menghukum pengguna.
-
 ### Prioritas Sedang
 
-#### 3. Diary Craving — Catat Strategi, Durasi, dan Hasil
-
-> **Status: PRD sudah dibuat — lihat `prd/diary_craving_strategi_durasi_hasil.md` (10 November 2026).**
-
-- **Kondisi proyek:** Model saat ini berisi tanggal/waktu, pemicu, intensitas, dan catatan bebas. Analisis jam teratas baru tersedia setelah minimal tiga entri.
-- **Referensi:** [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [TrackLess](https://github.com/poorangryman/trackless-public), [Nonic](https://github.com/bllfoad/nonic), dan [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking).
-- **Peluang optimasi:** Tambahkan durasi craving, suasana hati, tindakan yang dicoba, dan hasilnya sebagai data opsional. Tampilkan pola 7/30 hari, jam rawan, pemicu berulang, serta strategi yang paling sering membantu.
-- **Saran:** Pertahankan form utama singkat. Letakkan detail tambahan sebagai pilihan opsional dan izinkan pengguna menyimpan tanpa menulis catatan panjang. Tampilkan insight hanya ketika jumlah data memadai.
-- **Tujuan:** Mengubah diary menjadi sumber wawasan perilaku yang dapat ditindaklanjuti.
-
-#### 4. Konsumsi Rokok — Koreksi, Undo, dan Ringkasan yang Lebih Jelas
+#### 2. Konsumsi Rokok — Koreksi, Undo, dan Ringkasan yang Lebih Jelas
 
 - **Kondisi proyek:** Sudah tersedia quick log +1, ringkasan per hari, form jumlah/tanggal, penanda slip, dan catatan.
 - **Referensi:** [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app), [SmokingYou](https://github.com/bodyaant/SmokingYou), [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), dan [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20).
@@ -179,19 +154,13 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 - **Saran:** Pertahankan satu ketukan sebagai tindakan utama. Detail pemicu atau alasan boleh menjadi pilihan lanjutan, bukan syarat setiap pencatatan. Pastikan mengubah entri tidak menggandakan hitungan harian.
 - **Tujuan:** Mengurangi kesalahan input dan membuat data konsumsi cukup andal untuk perhitungan lain.
 
-#### 5. SOS Craving — Simpan Hasil Intervensi
+#### 3. SOS Craving — Simpan Hasil Intervensi
 
-> **Status: PRD sudah dibuat — lihat `prd/sos_craving_simpan_hasil_intervensi.md` (10 November 2026).**
-
-- **Kondisi proyek:** Napas 4-7-8, timer tiga menit, dan distraksi sudah tersedia. Riwayat permanen mengenai intervensi yang dipilih dan apakah berhasil belum tampak pada model diary saat ini.
-- **Referensi:** [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [QUIT SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking), [Quit Smoking Now – Tracker](https://play.google.com/store/apps/details?id=com.mifasuse.quitsmokingnow), dan [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy).
-- **Peluang optimasi:** Setelah latihan selesai, tawarkan satu pertanyaan opsional: “Apakah dorongan merokok berkurang?” Simpan jenis intervensi, waktu, dan hasil; tautkan ke pemicu diary bila pengguna setuju.
-- **Saran:** Jangan meminta form panjang saat craving. Pertahankan satu tindakan mulai yang mudah terlihat dan sediakan opsi keluar/reset yang tidak membingungkan.
-- **Tujuan:** Mengetahui teknik apa yang paling membantu pengguna dan menyempurnakan dukungan berdasarkan data pribadi.
+> **Status: Sudah diimplementasikan.** Tabel `sos_intervensi` tersedia dengan migrasi v11, riwayat intervensi disimpan setelah setiap penyelesaian SOS, dan opsi tautan ke diary craving tersedia.
 
 ### Prioritas Rendah
 
-#### 6. Notifikasi — Kontrol Waktu dan Frekuensi
+#### 4. Notifikasi — Kontrol Waktu dan Frekuensi
 
 - **Kondisi proyek:** Pengingat harian, check-in pagi, dan pengingat pola craving memiliki dasar pengaturan pada platform yang mendukung.
 - **Referensi:** [SmokingYou](https://github.com/bodyaant/SmokingYou), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy), [Qwit](https://play.google.com/store/apps/details?id=stopSmokingDemo.team.geny), dan [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking).
@@ -199,7 +168,7 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 - **Saran:** Minta persetujuan sebelum pengingat adaptif, sediakan nonaktif per kategori, dan jangan membuat keputusan dari jumlah data yang sangat sedikit.
 - **Tujuan:** Meningkatkan relevansi tanpa menambah gangguan.
 
-#### 7. Backup JSON — Pratinjau dan Ekspor CSV
+#### 5. Backup JSON — Pratinjau dan Ekspor CSV
 
 - **Kondisi proyek:** Ekspor/pemulihan JSON sudah tersedia; pemulihan mengganti data lama setelah konfirmasi.
 - **Referensi:** [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app), [SmokingYou](https://github.com/bodyaant/SmokingYou), dan [TrackLess](https://github.com/poorangryman/trackless-public).
@@ -207,7 +176,7 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 - **Saran:** Pertahankan pemulihan ganti sebagai tindakan eksplisit. Sebelum menambah merge, definisikan aturan benturan data dan tampilkan ringkasan perubahan. Jangan mengorbankan proses pemulihan atomik.
 - **Tujuan:** Mengurangi risiko kehilangan data dan memudahkan pengguna memindahkan/menganalisis catatan.
 
-#### 8. Badge dan Tabungan — Dasarkan pada Data yang Akurat
+#### 6. Badge dan Tabungan — Dasarkan pada Data yang Akurat
 
 - **Kondisi proyek:** Badge, impian, dan progress tabungan sudah ada. Saldo bersumber dari angka uang dihemat yang dihitung dari biodata.
 - **Referensi:** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke), [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app), [Quitrise](https://play.google.com/store/apps/details?id=com.matrissoftware.Quitrise), dan [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife).
@@ -242,39 +211,19 @@ Pola di bawah merangkum tampilan yang terlihat pada screenshot, README, atau des
 - **Saran:** Fokus pada pembatalan log terbaru, konfirmasi perubahan yang berdampak pada metrik, dan kejelasan tanggal catatan. Hindari membuat pengguna mengisi form panjang setiap kali mencatat satu batang.
 - **Tujuan:** Meningkatkan konsistensi dan kualitas data harian.
 
-#### 3. Kalender dengan Status yang Bisa Dibedakan
-
-- **Referensi:** [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking), [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), dan [NoMore](https://play.google.com/store/apps/details?id=com.appfactory.breakfree).
-- **Pola UI:** Kalender menjadi ringkasan historis yang bisa dibuka per hari.
-- **Pola UX:** Warna/status harus mempunyai arti dan tidak menyamakan hari tanpa catatan dengan hari yang terverifikasi bebas rokok.
-- **Pola layout:** Kalender bulanan, legenda sederhana, ringkasan jumlah hari per status, lalu detail catatan ketika tanggal diketuk.
-- **Kondisi proyek:** Kalender saat ini memakai rentang tanggal berhenti; status tidak diturunkan dari log konsumsi.
-- **Saran:** Tentukan status “bebas rokok”, “ada konsumsi/slip”, “belum dicatat”, dan “tapering” serta simbol/label yang dapat dipahami tanpa hanya mengandalkan warna.
-- **Tujuan:** Membuat riwayat visual akurat dan tidak menyesatkan.
-
 ### Prioritas Sedang
 
-#### 4. Diary Craving dengan Input Bertahap
-
-- **Referensi:** [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [ClearStack](https://clearstackapps.com/apps/smokefree), [Nonic](https://github.com/bllfoad/nonic), dan [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking).
-- **Pola UI:** Pemicu, intensitas, durasi, coping, mood, dan hasil dikelompokkan; catatan bebas menjadi pilihan tambahan.
-- **Pola UX:** Pengguna dapat mengisi hal penting dengan cepat dan melengkapi detail bila diperlukan.
-- **Pola layout:** Field inti di bagian awal, detail opsional yang ringkas, serta tombol simpan yang konsisten.
-- **Kondisi proyek:** Form sudah memiliki pemicu, intensitas, tanggal/waktu, dan catatan opsional.
-- **Saran:** Tambahkan detail secara bertahap; hindari menampilkan semua pertanyaan sekaligus. Pastikan pilihan dapat dipahami dan tap target nyaman.
-- **Tujuan:** Meningkatkan mutu analitik tanpa membuat proses pencatatan terasa berat.
-
-#### 5. Penanda Slip dengan Bahasa Netral
+#### 3. Penanda Slip dengan Bahasa Netral
 
 - **Referensi:** [QuitWin](https://play.google.com/store/apps/details?id=com.elevatedev.quitwin), [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking), [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke), dan [ClearStack](https://clearstackapps.com/apps/smokefree).
 - **Pola UI:** Catatan slip adalah bagian dari riwayat, dengan penjelasan singkat tentang dampaknya terhadap counter.
 - **Pola UX:** Pengguna dapat melaporkan kejadian secara jujur tanpa merasa seluruh pencapaian sebelumnya dihapus.
 - **Pola layout:** Toggle/opsi slip sudah ada dalam form konsumsi; penjelasan dan tampilan ringkas harus menguraikan apa yang akan berubah.
-- **Kondisi proyek:** Model dan form konsumsi telah mempunyai penanda slip. Kalender dan perhitungan progres belum terhubung dengannya.
+- **Kondisi proyek:** Model dan form konsumsi telah mempunyai penanda slip. Perhitungan progres belum terhubung dengannya.
 - **Saran:** Gunakan istilah yang netral, bedakan streak saat ini dengan progres kumulatif, dan jangan memakai warna merah sebagai satu-satunya penanda. Tampilkan perubahan metrik sebelum pengguna menyimpan bila dampaknya besar.
 - **Tujuan:** Membangun rasa aman untuk mencatat dan mempertahankan keterlibatan.
 
-#### 6. Widget Android yang Sederhana dan Adaptif
+#### 4. Widget Android yang Sederhana dan Adaptif
 
 - **Referensi:** [SmokingYou](https://github.com/bodyaant/SmokingYou), [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), dan [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy).
 - **Pola UI:** Beberapa ukuran widget menyajikan informasi dengan kepadatan berbeda; ukuran kecil fokus pada satu angka/tindakan, ukuran lebih besar menunjukkan ringkasan.
@@ -286,7 +235,7 @@ Pola di bawah merangkum tampilan yang terlihat pada screenshot, README, atau des
 
 ### Prioritas Rendah
 
-#### 7. Statistik dan Insight dengan Filter Periode
+#### 5. Statistik dan Insight dengan Filter Periode
 
 - **Referensi:** [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), [TrackLess](https://github.com/poorangryman/trackless-public), [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
 - **Pola UI:** Ringkasan metrik, filter 7/30 hari, grafik, lalu detail riwayat.
@@ -296,7 +245,7 @@ Pola di bawah merangkum tampilan yang terlihat pada screenshot, README, atau des
 - **Saran:** Bangun setelah data cukup dan definisi metrik stabil. Tampilkan empty state bila data kurang; jangan menyimpulkan pola dari beberapa catatan.
 - **Tujuan:** Membantu pengguna menemukan perubahan yang dapat ditindaklanjuti.
 
-#### 8. Impian/Tabungan dengan Visual yang Tidak Menyesatkan
+#### 6. Impian/Tabungan dengan Visual yang Tidak Menyesatkan
 
 - **Referensi:** [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app), [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke), [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife), dan [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking).
 - **Pola UI:** Wishlist, tabungan, piggy bank, atau objek visual tumbuh mengikuti progres.
@@ -306,7 +255,7 @@ Pola di bawah merangkum tampilan yang terlihat pada screenshot, README, atau des
 - **Saran:** Pertahankan pola visual yang telah ada. Prioritaskan label “estimasi uang dihemat” dan jelaskan sumber angka; jangan menyiratkan uang telah benar-benar masuk rekening/tabungan.
 - **Tujuan:** Menjaga motivasi dan transparansi.
 
-#### 9. Navigasi dan Empty State
+#### 7. Navigasi dan Empty State
 
 - **Referensi:** [Quitter](https://github.com/brandonp2412/quitter), [SmokingYou](https://github.com/bodyaant/SmokingYou), dan [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke).
 - **Pola UI:** Beberapa area utama di navigasi bawah; pengaturan dan alat sekunder ditempatkan di halaman terkelompok.
@@ -494,15 +443,13 @@ Berikut adalah pola dari screenshot resmi/README dan deskripsi publik. Ini bukan
 | Urutan | Rekomendasi | Jenis | Nilai utama | Ketergantungan utama |
 |---:|---|---|---|---|
 | 1 | Integrasikan konsumsi aktual dengan dashboard, tapering, streak, tabungan, dan badge | Optimasi | Menjadikan angka aplikasi konsisten dengan data perilaku. | Definisi metrik dan satu sumber perhitungan bersama. |
-| 2 | Hubungkan kalender dengan log konsumsi dan penanda slip | Optimasi | Kalender merepresentasikan kejadian, bukan hanya tanggal mulai. | Provider konsumsi, aturan status harian, dan UI legenda. |
-| 3 | Tambahkan durasi/strategi/hasil pada diary craving | Optimasi | Insight pemicu dan teknik coping menjadi lebih berguna. | Model, migrasi, form, penyimpanan, dan analitik. |
-| 4 | Undo/koreksi cepat untuk konsumsi | Optimasi | Menekan kesalahan input dan memperbaiki keandalan riwayat. | Notifier, UI feedback, dan aturan perubahan metrik. |
-| 5 | Widget home screen Android | Fitur baru | Akses cepat ke progres, SOS, atau log. | Native Android AppWidget/Glance, sinkronisasi, pengujian launcher. |
-| 6 | Simpan hasil penggunaan SOS dan check-in singkat | Optimasi/fitur baru | Mengetahui dukungan yang benar-benar membantu. | Model lokal dan form minimal. |
-| 7 | Penyempurnaan backup: preview, CSV, merge aman | Optimasi | Mengurangi risiko kehilangan dan memudahkan analisis data. | Validasi versi dan aturan konflik data. |
-| 8 | Shareable progress card | Fitur baru | Memudahkan berbagi progres secara terkendali. | Rendering gambar dan Android Sharesheet. |
-| 9 | Gamifikasi lanjutan/mini-game | Fitur baru | Menambah variasi motivasi dan coping. | Desain, aksesibilitas, pemeliharaan. |
-| 10 | AI coach dan komunitas | Fitur baru | Dukungan personal dan sosial tambahan. | Cloud/backend, biaya, privasi, keselamatan, moderasi. |
+| 2 | Undo/koreksi cepat untuk konsumsi | Optimasi | Menekan kesalahan input dan memperbaiki keandalan riwayat. | Notifier, UI feedback, dan aturan perubahan metrik. |
+| 3 | Widget home screen Android | Fitur baru | Akses cepat ke progres, SOS, atau log. | Native Android AppWidget/Glance, sinkronisasi, pengujian launcher. |
+| 4 | Simpan hasil penggunaan SOS dan check-in singkat | Optimasi/fitur baru | Mengetahui dukungan yang benar-benar membantu. | Model lokal dan form minimal. |
+| 5 | Penyempurnaan backup: preview, CSV, merge aman | Optimasi | Mengurangi risiko kehilangan dan memudahkan analisis data. | Validasi versi dan aturan konflik data. |
+| 6 | Shareable progress card | Fitur baru | Memudahkan berbagi progres secara terkendali. | Rendering gambar dan Android Sharesheet. |
+| 7 | Gamifikasi lanjutan/mini-game | Fitur baru | Menambah variasi motivasi dan coping. | Desain, aksesibilitas, pemeliharaan. |
+| 8 | AI coach dan komunitas | Fitur baru | Dukungan personal dan sosial tambahan. | Cloud/backend, biaya, privasi, keselamatan, moderasi. |
 
 
 ## G. Verifikasi dan Keterbatasan
@@ -517,7 +464,7 @@ Berikut adalah pola dari screenshot resmi/README dan deskripsi publik. Ini bukan
 - **UI/UX:** Screenshot dan deskripsi toko memberi petunjuk komposisi layar, tetapi tidak membuktikan keseluruhan flow, aksesibilitas, performa, atau usability pada semua ukuran perangkat. Tidak semua aplikasi dipasang/dicoba langsung.
 - **Data kesehatan:** Klaim milestone WHO/CDC/NHS, skor paru, atau waktu hidup yang didapat kembali harus diperiksa ke sumber medis resmi sebelum digunakan. Sajikan sebagai informasi umum/estimasi, bukan diagnosis atau prediksi personal.
 - **Privasi:** Aplikasi yang menggunakan AI/cloud, akun, komunitas, atau iklan tidak otomatis cocok untuk proyek offline-first. Evaluasi izin, kebijakan data, akses pihak ketiga, biaya operasional, dan kebutuhan pengguna.
-- **Pemeriksaan proyek:** README dan file terkait konsumsi, diary craving, helper, serta kalender diperiksa pada branch `master`. Ditemukan bahwa konsumsi dan penanda slip sudah ada; kalender belum membaca provider konsumsi. Tidak ada kode aplikasi yang diubah, APK dibangun, emulator dijalankan, atau aplikasi kompetitor diinstal dalam tugas riset ini.
+- **Pemeriksaan proyek:** README dan file terkait konsumsi, diary craving, helper, serta kalender diperiksa pada branch `master`. Ditemukan bahwa konsumsi dan penanda slip sudah ada. Tidak ada kode aplikasi yang diubah, APK dibangun, emulator dijalankan, atau aplikasi kompetitor diinstal dalam tugas riset ini.
 
 ---
 

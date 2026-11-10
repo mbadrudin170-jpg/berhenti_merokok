@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -101,9 +103,9 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
               Expanded(
                 child: TabBarView(
                   children: [
-                    _Napas478View(textTheme: textTheme),
-                    const _TimerCravingView(),
-                    const _DistraksiView(),
+                    _Napas478View(textTheme: textTheme, ref: ref),
+                    _TimerCravingView(ref: ref),
+                    _DistraksiView(ref: ref),
                   ],
                 ),
               ),
@@ -117,9 +119,10 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
 
 /// Latihan napas 4-7-8: tarik 4 detik, tahan 7 detik, hembuskan 8 detik.
 class _Napas478View extends StatefulWidget {
-  const _Napas478View({required this.textTheme});
+  const _Napas478View({required this.textTheme, required this.ref});
 
   final TextTheme textTheme;
+  final WidgetRef ref;
 
   @override
   State<_Napas478View> createState() => _Napas478ViewState();
@@ -192,6 +195,16 @@ class _Napas478ViewState extends State<_Napas478View> {
     });
     L.i('napas 4-7-8 selesai, siklus=$_siklus');
     AppToast.sukses(context, 'Latihan napas selesai. Anda hebat!');
+    unawaited(
+      tampilkanDanSimpanHasilIntervensi(
+        context: context,
+        ref: widget.ref,
+        jenisIntervensi: JenisIntervensiSos.napas_478,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan bottom sheet hasil intervensi napas: $e $s');
+        return null;
+      }),
+    );
   }
 
   void _henti() {
@@ -323,7 +336,9 @@ class _Napas478ViewState extends State<_Napas478View> {
 
 /// Timer craving 3 menit.
 class _TimerCravingView extends StatefulWidget {
-  const _TimerCravingView();
+  const _TimerCravingView({required this.ref});
+
+  final WidgetRef ref;
 
   @override
   State<_TimerCravingView> createState() => _TimerCravingViewState();
@@ -381,6 +396,16 @@ class _TimerCravingViewState extends State<_TimerCravingView> {
     AppToast.sukses(
       context,
       '3 menit berlalu. Craving biasanya singkat. Anda berhasil!',
+    );
+    unawaited(
+      tampilkanDanSimpanHasilIntervensi(
+        context: context,
+        ref: widget.ref,
+        jenisIntervensi: JenisIntervensiSos.timer_3_menit,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan bottom sheet hasil intervensi timer: $e $s');
+        return null;
+      }),
     );
   }
 
@@ -483,7 +508,9 @@ class _TimerCravingViewState extends State<_TimerCravingView> {
 
 /// Daftar distraksi sederhana.
 class _DistraksiView extends StatefulWidget {
-  const _DistraksiView();
+  const _DistraksiView({required this.ref});
+
+  final WidgetRef ref;
 
   @override
   State<_DistraksiView> createState() => _DistraksiViewState();
@@ -491,6 +518,7 @@ class _DistraksiView extends StatefulWidget {
 
 class _DistraksiViewState extends State<_DistraksiView> {
   int _berhasil = 0;
+  String? _aktivitasTerpilih;
 
   static const List<String> _aktivitas = [
     'Minum segelas air putih',
@@ -521,6 +549,17 @@ class _DistraksiViewState extends State<_DistraksiView> {
     });
     L.i('distraksi berhasil, total=$_berhasil');
     AppToast.sukses(context, 'Craving berhasil dilewati!');
+    unawaited(
+      tampilkanDanSimpanHasilIntervensi(
+        context: context,
+        ref: widget.ref,
+        jenisIntervensi: JenisIntervensiSos.distraksi,
+        detail: _aktivitasTerpilih,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan bottom sheet hasil intervensi distraksi: $e $s');
+        return null;
+      }),
+    );
   }
 
   @override
@@ -563,6 +602,9 @@ class _DistraksiViewState extends State<_DistraksiView> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     L.i('distraksi dipilih: $aktivitas');
+                    setState(() {
+                      _aktivitasTerpilih = aktivitas;
+                    });
                     AppToast.info(context, aktivitas);
                   },
                 );

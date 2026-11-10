@@ -15,6 +15,7 @@ const List<String> tabelCadangan = <String>[
   NamaTabel.diaryCraving,
   NamaTabel.alasanBerhenti,
   NamaTabel.konsumsiRokok,
+  NamaTabel.sosIntervensi,
 ];
 
 /// Exception ketika berkas cadangan tidak valid.

@@ -8,7 +8,7 @@
 8. lalu buatkan atau perbarui isi file prd nya di folder \`prd\` di root.
 9. harus sertakan path dan baris ke file \`referensi_apk.md\` nya di file prd ini.
 10. hanya boleh mengedit file prd terkait saja.
-11. file yang harus dibaca :
+11. file yang harus dibaca dan patuhi isinya :
 
 - AGENTS.md
 
@@ -17,4 +17,5 @@
 14. selalu berikan saya pertanyaan dengan menggunakan tool question yang dimiliki kilo sampai prd nya final.
 15. suruh AI agar langsung membuat prd nya saja,
 16. sambil diskusi sambil perbaiki prd nya.
-17.
+17. pindahkan seluruh isi file yang berkaitan dengan fitur yang akan dibuatkan prd nya ke file prd nya.
+18. baca file format_PRD.md untuk mengikuti aturan format penulisan isi PRD.
