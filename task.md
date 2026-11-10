@@ -104,7 +104,7 @@ Tidak ada temuan.
 
 #### Task 3
 
-- Status: dilewati
+- Status: batal
 - Alasan: Task ini duplikat dengan Task 4 di Kelompok 1 yang sudah selesai dikerjakan (menghapus penandaan `dynamic` eksplisit pada `impianProvider` dan parameter method). File `dashboard_screen.dart` sudah diperbaiki di Kelompok 1 Task 4.
 - Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
 - Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
@@ -157,7 +157,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Navigasi `Nav.to(context, FormImpian(impian: impian))` dijalankan melalui `unawaited()` tanpa penanganan error (baris 114). Jika Future navigasi gagal, error tidak ditangani. Pola ini melanggar skill `penanganan-error-unawaited` yang mewajibkan `catchError` atau `try/catch` untuk Future yang dilepas.
 - Solusi: Tambahkan penanganan error pada Future navigasi sesuai pola di skill `.agents/skills/custom/penanganan-error-unawaited/SKILL.md`. Catat kegagalan menggunakan logger proyek dan sesuaikan nilai balik handler dengan tipe Future dari `Nav.to`.
 - Aturan dilanggar: [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)
@@ -168,7 +168,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Dua `Column` pada tampilan error menggunakan `const SizedBox(height: 8)` hanya untuk mengatur jarak antaranak (baris 41 dan 67). Skill spacing mewajibkan properti `spacing` pada `Column` untuk jarak antaranak yang seragam.
 - Solusi: Tambahkan `spacing: 8` pada kedua `Column` tersebut dan hapus `SizedBox(height: 8)` yang hanya berfungsi sebagai jarak.
 - Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
@@ -189,7 +189,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Ringkasan menggabungkan seluruh kategori di luar tiga teratas menjadi baris berlabel `Lainnya` (baris 108-110 dan 250-254), sementara `PemicuEnum.lainnya` juga merupakan kategori pilihan pengguna dengan label yang sama. Jika kategori enum tersebut masuk tiga teratas, UI dapat menampilkan dua baris bernama `Lainnya`. Jika tidak masuk tiga teratas, jumlah kategori itu tercampur dalam agregat kategori lain sehingga arti label tidak jelas.
 - Solusi: Bedakan label kategori enum `PemicuEnum.lainnya` dari label agregat kategori di luar tiga teratas, misalnya gunakan `Kategori lain` untuk agregat. Pastikan jumlah yang ditampilkan tetap mencakup setiap entri tepat satu kali.
 - Aturan dilanggar: Konsistensi label dan makna agregasi data pada ringkasan pemicu.
@@ -198,7 +198,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Tiga navigasi memakai `unawaited(Nav.to(...))` tanpa penanganan error: tombol tambah pada empty state (baris 118), navigasi dari item daftar (baris 167-169), dan tombol tambah pada daftar (baris 181). Jika Future navigasi gagal, error dapat menjadi unhandled. Pola ini sudah ada sebelum commit yang dievaluasi, tetapi masih terdapat pada berkas yang berubah.
 - Solusi: Tambahkan `.catchError(...)` pada setiap Future navigasi dan catat kegagalan melalui `L.e`. Sesuaikan nilai balik handler dengan tipe Future dari `Nav.to`.
 - Aturan dilanggar: [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md), [pola-ux](.agents/skills/custom/pola-ux/SKILL.md)
@@ -209,7 +209,7 @@ Tidak ada temuan.
 
 #### Task 3
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: `_BarisPemicu` menggunakan `const SizedBox(width: 8)` hanya untuk memberi jarak antara ikon dan teks di dalam `Row` (baris 278-282). Skill spacing mewajibkan penggunaan properti `Row.spacing` untuk jarak seragam antar-anak.
 - Solusi: Tambahkan `spacing: 8` pada `Row` dan hapus `SizedBox(width: 8)`.
 - Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
@@ -218,7 +218,7 @@ Tidak ada temuan.
 
 #### Task 4
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Comparator pada `entriPemicu.sort((a, b) => b.value.compareTo(a.value))` hanya membandingkan jumlah. Saat dua kategori memiliki jumlah sama, comparator mengembalikan `0`; API Dart menyatakan `List.sort` tidak menjamin urutan stabil. Jika seri terjadi di batas tiga kategori teratas, anggota `topPemicu` dan agregat kategori lain dapat berubah urutannya.
 - Solusi: Tambahkan tie-breaker deterministik, misalnya membandingkan `PemicuEnum.index` ketika jumlah sama. Pastikan pemilihan tiga kategori teratas konsisten.
 - Aturan dilanggar: Determinisme pengurutan hasil ketika nilai pembanding sama. Referensi: [Dart List.sort](https://api.flutter.dev/flutter/dart-core/List/sort.html).
@@ -227,7 +227,7 @@ Tidak ada temuan.
 
 #### Task 5
 
-- Status: Belum dikerjakan
+- Status: kerjakan
 - Masalah: Logging `L.i` masih dilakukan pada jalur `build()` untuk status `cravingAsync` (baris 66-68), jumlah daftar (baris 98), dan di `itemBuilder` (baris 143-146). Logging ini dapat berulang setiap rebuild atau saat item daftar dibangun kembali sehingga menambah noise. Temuan ini sudah ada sebelum commit yang dievaluasi.
 - Solusi: Hapus atau pindahkan log dari `build()` dan `itemBuilder`; pertahankan log pada titik yang tidak berfrekuensi tinggi seperti `initState`, `dispose`, atau handler aksi bila masih diperlukan.
 - Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
@@ -262,7 +262,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `17d53cf` menambahkan logging `L.i('konsumsiAsync.isLoading=..., hasError=...')` di dalam method `build()` (baris 88-89) pada `dashboard_screen.dart`. Log di jalur `build()` dapat dipanggil berulang setiap rebuild, menambah noise log.
 - Solusi: Hapus log `konsumsiAsync.isLoading/hasError` dari `build()`; pindahkan ke titik tidak berfrekuensi tinggi seperti `initState` atau handler aksi bila masih diperlukan.
 - Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
@@ -271,7 +271,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `17d53cf` menambahkan logging `L.i('konsumsiHariIni=..., targetHariIni=..., sedangTapering=..., melebihiTarget=...')` di dalam method widget `_buildCardKonsumsiHariIni` (baris 357-361) yang dipanggil dari `build()`. Log di jalur build dapat dipanggil berulang.
 - Solusi: Hapus log dari method widget yang dipanggil `build()`; pindahkan ke titik tidak berfrekuensi tinggi.
 - Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
@@ -289,7 +289,7 @@ Tidak ada temuan.
 
 #### Task 4
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `17d53cf` menggunakan `const SizedBox(height: 8)` (baris 381) pada `Column` yang sudah memiliki `spacing: 8` pada `dashboard_screen.dart`. Skill spacing mewajibkan properti `spacing` pada `Column` untuk jarak antaranak seragam.
 - Solusi: Hapus `SizedBox(height: 8)` yang redundan; gunakan `spacing` pada `Column` untuk jarak yang seragam.
 - Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
@@ -298,7 +298,7 @@ Tidak ada temuan.
 
 #### Task 5
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `17d53cf` menambahkan logging `L.i('konsumsiAsync=$konsumsiAsync')` di dalam method `build()` (baris 24) pada `konsumsi_rokok_screen.dart`. Logging seluruh objek `AsyncValue` di jalur build dapat dipanggil berulang.
 - Solusi: Hapus log dari `build()`; pindahkan ke titik tidak berfrekuensi tinggi.
 - Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
@@ -325,7 +325,7 @@ Tidak ada temuan.
 
 #### Task 8
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `17d53cf` menggunakan `const SizedBox(height: 8)` (baris 214) pada `Column` yang sudah memiliki `spacing: 12` di `form_konsumsi_rokok.dart`. Skill spacing mewajibkan properti `spacing` pada `Column`.
 - Solusi: Hapus `SizedBox(height: 8)` yang redundan; gunakan `spacing` pada `Column`.
 - Aturan dilanggar: [spacing](.agents/skills/custom/spacing/SKILL.md)
@@ -334,7 +334,7 @@ Tidak ada temuan.
 
 #### Task 9
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `1788a1c` menggunakan `unawaited(Nav.to(...))` tanpa penanganan `catchError` pada 3 tombol navigasi di `toxin_pelacakan_screen.dart` (baris 212-213, 248-249, 283-284). Jika Future navigasi gagal, error tidak ditangani.
 - Solusi: Tambahkan `.catchError(...)` pada setiap Future navigasi dan catat kegagalan menggunakan `L.e`. Sesuaikan nilai balik handler dengan tipe Future dari `Nav.to`.
 - Aturan dilanggar: [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)
@@ -343,7 +343,7 @@ Tidak ada temuan.
 
 #### Task 10
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `17d53cf` menggunakan `parseInt` dengan `defaultValue` pada field yang nullable di `konsumsi_rokok_model.dart` (`fromSqflite` baris 27-28). Nilai `null` dari database dapat dibaca sebagai `0` atau `1` bukan tetap `null`.
 - Solusi: Gunakan `parseIntOrNull` untuk field nullable agar `null` tetap `null`, sesuai skill `parsing-nullable-int`.
 - Aturan dilanggar: [parsing-nullable-int](.agents/skills/custom/parsing-nullable-int/SKILL.md)
@@ -390,7 +390,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `1788a1c` melakukan logging `L.i('biodata=$biodata, rokokTidakDiHisap=$rokokTidakDiHisap')` pada `toxin_pelacakan_screen.dart` (baris 87) yang mencatat seluruh objek `BiodataModel`. Dapat membocorkan data sensitif pengguna ke log.
 - Solusi: Hapus logging objek `biodata` lengkap; log hanya field non-sensitif seperti `rokokTidakDiHisap` bila diperlukan.
 - Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md), [keamanan-aplikasi](.agents/skills/custom/keamanan-aplikasi/SKILL.md)
