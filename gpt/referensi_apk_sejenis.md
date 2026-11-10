@@ -3,8 +3,8 @@
 3. setelah mendapatkan hasil perbarui isi file \`refrensi_apk.md\` di root proyek.
 4. file yang wajib di baca terlebih dahulu :
 
-- [README.md](http://README.md)
-- [AGENTS.md](http://AGENTS.md)
+- README.md
+- AGENTS.md
 - apk_serupa.md
 
 5. Fitur :
