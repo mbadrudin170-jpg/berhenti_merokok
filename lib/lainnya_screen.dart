@@ -6,6 +6,7 @@ import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/konsumsi_rokok_scr
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/pengaturan/screens/pengaturan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
+import 'package:berhenti_merokok/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -49,6 +50,10 @@ class LainnyaScreen extends StatelessWidget {
             _buildTombolCustom(
               () => Nav.to(context, const KonsumsiRokokScreen()),
               'Konsumsi Rokok',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const ToxinPelacakanScreen()),
+              'Pelacakan Toxin',
             ),
           ],
         ),
