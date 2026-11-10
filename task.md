@@ -352,36 +352,36 @@ Tidak ada temuan.
 
 #### Task 11
 
-- Status: belum
+- Status: batal
 - Masalah: `flutter_local_notifications ^23.0.0` di `pubspec.yaml` memerlukan Flutter SDK 3.44.0 minimum (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi SDK yang dapat menyebabkan build gagal atau perilaku tidak terduga.
 - Solusi: Verifikasi versi Flutter SDK yang terinstall dan pertimbangkan untuk menurunkan `flutter_local_notifications` ke versi yang kompatibel, atau naikkan batasan SDK project jika memungkinkan.
 - Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
 - File bermasalah: [pubspec.yaml](pubspec.yaml#L18)
-- Prompt:
+- Prompt: biarkan saja 
 
 #### Task 12
 
-- Status: belum
+- Status: batal
 - Masalah: `flutter_easyloading ^4.0.2` di `pubspec.yaml` memerlukan Flutter 3.27.0+ dan Dart 3.6.0+ (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi.
 - Solusi: Verifikasi versi Flutter/Dart SDK yang terinstall dan pastikan kompatibel dengan versi paket yang digunakan.
 - Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
 - File bermasalah: [pubspec.yaml](pubspec.yaml#L17)
-- Prompt:
+- Prompt: biarkan saja
 
 #### Task 13
 
-- Status: belum
+- Status: batal
 - Masalah: `share_plus ^13.3.1` di `pubspec.yaml` memerlukan Flutter >=3.38.1 dan Dart >=3.10.0 (per dokumentasi pub.dev), sedangkan batasan project adalah `sdk: ^3.13.7`. Potensi ketidakkocokan versi.
 - Solusi: Verifikasi versi Flutter SDK yang terinstall dan pastikan kompatibel dengan `share_plus`.
 - Aturan dilanggar: kompatibilitas versi SDK/paket dengan dokumentasi pub.dev
 - File bermasalah: [pubspec.yaml](pubspec.yaml#L27)
-- Prompt:
+- Prompt: biarkan saja
 
 ## Sedang
 
 #### Task 1
 
-- Status: belum
+- Status: kerjakan
 - Masalah: Commit `17d53cf` melakukan logging `L.i('catatCepat model=$model')` pada `konsumsi_rokok_notifier.dart` (baris 54) yang mencatat seluruh objek model. Dapat menambah noise log dan potensi membocorkan data.
 - Solusi: Kurangi detail log atau hapus log model lengkap; log hanya ID atau ringkasan non-sensitif bila diperlukan.
 - Aturan dilanggar: [logging-debug](.agents/skills/custom/logging-debug/SKILL.md)
