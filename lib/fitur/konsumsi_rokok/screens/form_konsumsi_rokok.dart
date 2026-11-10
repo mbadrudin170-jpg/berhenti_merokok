@@ -211,7 +211,6 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
                   minLines: 2,
                   maxLines: 4,
                 ),
-                const SizedBox(height: 8),
                 FilledButton(onPressed: _simpan, child: const Text('Simpan')),
               ],
             ),

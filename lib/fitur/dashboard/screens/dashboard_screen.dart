@@ -85,13 +85,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       return _buildBiodataNull();
     }
     final konsumsiAsync = ref.watch(konsumsiRokokProvider);
-    L.i(
-      'konsumsiAsync.isLoading=${konsumsiAsync.isLoading}, hasError=${konsumsiAsync.hasError}',
-    );
     final impianAsync = ref.watch(impianProvider);
-    L.i(
-      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
-    );
     final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
     final nama = biodata.nama;
     L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
@@ -354,9 +348,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final warnaProgres = melebihiTarget
         ? const Color(0xFFFF9800)
         : const Color(0xFF4CAF50);
-    L.i(
-      'konsumsiHariIni=$konsumsiHariIni, targetHariIni=$targetHariIni, sedangTapering=$sedangTapering, melebihiTarget=$melebihiTarget',
-    );
 
     return Card(
       child: Padding(
@@ -378,7 +369,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   color: warnaProgres,
                 ),
               ),
-              const SizedBox(height: 8),
               LinearProgressIndicator(
                 value: targetHariIni > 0
                     ? (konsumsiHariIni / targetHariIni).clamp(0.0, 1.0)

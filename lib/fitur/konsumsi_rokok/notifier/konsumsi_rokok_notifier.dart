@@ -51,7 +51,7 @@ class KonsumsiRokokNotifier extends _$KonsumsiRokokNotifier {
       catatan: catatan,
       dibuat: DateTime.now().toUtc(),
     );
-    L.i('catatCepat model=$model');
+    L.i('catatCepat jumlah=1, isSlip=$isSlip');
     try {
       final dataLama = await future;
       final op = const SqfliteOp();

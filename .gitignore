@@ -46,3 +46,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Backup task files (local only, don't commit)
+.backup_task/
+*.bak
+*.backup
+*.sebelum_*

@@ -24,8 +24,10 @@ abstract class KonsumsiRokokModel with _$KonsumsiRokokModel {
     return KonsumsiRokokModel(
       id: ParserUtil.parseString(row[NamaKolom.id]),
       tanggal: (tanggalValue ?? DateTime.now()).toLocal(),
+      // jumlah non-nullable di Dart → pakai parseInt dengan defaultValue 1 saat DB null
       jumlah: ParserUtil.parseInt(row[NamaKolom.jumlah], defaultValue: 1),
-      isSlip: ParserUtil.parseInt(row[NamaKolom.isSlip], defaultValue: 0) == 1,
+      // isSlip non-nullable bool di Dart → pakai parseBool dengan defaultValue false saat DB null
+      isSlip: ParserUtil.parseBool(row[NamaKolom.isSlip], defaultValue: false),
       catatan: ParserUtil.parseStringOrNull(row[NamaKolom.catatan]),
       dibuat: (dibuatValue ?? DateTime.now()).toLocal(),
     );

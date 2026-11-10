@@ -63,9 +63,6 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
   @override
   Widget build(BuildContext context) {
     final cravingAsync = ref.watch(diaryCravingProvider);
-    L.i(
-      'cravingAsync.isLoading=${cravingAsync.isLoading}, hasError=${cravingAsync.hasError}',
-    );
 
     if (cravingAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -95,7 +92,6 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
 
     final state = cravingAsync.requireValue;
     final list = state.listCraving;
-    L.i('list.length=${list.length}');
 
     // Hitung frekuensi pemicu untuk ringkasan analisis pemicu.
     final Map<PemicuEnum, int> freqPemicu = {};
@@ -103,7 +99,13 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
       freqPemicu[c.pemicu] = (freqPemicu[c.pemicu] ?? 0) + 1;
     }
     final entriPemicu = freqPemicu.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+      ..sort((a, b) {
+        final cmp = b.value.compareTo(a.value);
+        if (cmp != 0) return cmp;
+        // Tie-breaker deterministik: urutkan berdasarkan index enum saat jumlah sama,
+        // agar topPemicu dan agregat konsisten di seluruh rebuild (List.sort tidak stabil).
+        return a.key.index.compareTo(b.key.index);
+      });
     final topPemicu = entriPemicu.take(3).toList();
     final jumlahLainnya = entriPemicu.skip(3).fold<int>(
       0,
@@ -115,7 +117,15 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
         appBar: AppBar(title: const Text('Diary Craving')),
         body: const _EmptyDiaryCraving(),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => unawaited(Nav.to(context, const FormDiaryCraving())),
+          onPressed: () => unawaited(
+                    Nav.to(context, const FormDiaryCraving()).catchError((
+                      Object e,
+                      StackTrace s,
+                    ) {
+                      L.e('Gagal navigasi ke Form Diary Craving: $e $s');
+                      return null;
+                    }),
+                  ),
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -140,9 +150,6 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
                   itemCount: list.length,
                   itemBuilder: (context, index) {
                     final item = list[index];
-                    L.i(
-                      'item.id=${item.id}, item.pemicu=${item.pemicu}, item.intensitas=${item.intensitas}',
-                    );
                     return Card(
                       key: ValueKey(item.id),
                       child: ListTile(
@@ -165,7 +172,13 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
                           onPressed: () => unawaited(_hapus(item)),
                         ),
                         onTap: () => unawaited(
-                          Nav.to(context, FormDiaryCraving(craving: item)),
+                          Nav.to(context, FormDiaryCraving(craving: item)).catchError((
+                            Object e,
+                            StackTrace s,
+                          ) {
+                            L.e('Gagal navigasi ke Form Diary Craving: $e $s');
+                            return null;
+                          }),
                         ),
                       ),
                     );
@@ -178,7 +191,15 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(Nav.to(context, const FormDiaryCraving())),
+        onPressed: () => unawaited(
+          Nav.to(context, const FormDiaryCraving()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Form Diary Craving: $e $s');
+            return null;
+          }),
+        ),
         child: const Icon(CupertinoIcons.add),
       ),
     );
@@ -247,10 +268,10 @@ class _RingkasanPemicu extends StatelessWidget {
                 jumlah: e.value,
               ),
             ),
-            if (jumlahLainnya > 0)
+                if (jumlahLainnya > 0)
               _BarisPemicu(
                 icon: Icons.more_horiz,
-                label: 'Lainnya',
+                label: 'Kategori lain',
                 jumlah: jumlahLainnya,
               ),
           ],
@@ -276,9 +297,9 @@ class _BarisPemicu extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Row(
+      spacing: 8,
       children: [
         Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 8),
         Expanded(
           child: Text(
             label,

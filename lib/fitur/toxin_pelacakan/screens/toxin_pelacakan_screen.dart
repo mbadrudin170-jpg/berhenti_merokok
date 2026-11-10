@@ -84,7 +84,7 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
     }
 
     final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
-    L.i('biodata=$biodata, rokokTidakDiHisap=$rokokTidakDiHisap');
+    L.i('rokokTidakDiHisap=$rokokTidakDiHisap');
 
     if (rokokTidakDiHisap == 0) {
       return _buildBelumAdaRokokDiHindari();
@@ -210,7 +210,13 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
                 ),
                 OutlinedButton(
                   onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                    Nav.to(context, const FormBiodata(buatPertama: false)).catchError((
+                      Object e,
+                      StackTrace s,
+                    ) {
+                      L.e('Gagal navigasi ke Form Biodata: $e $s');
+                      return null;
+                    }),
                   ),
                   child: const Text('Isi Biodata'),
                 ),
@@ -246,7 +252,13 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
                 ),
                 OutlinedButton(
                   onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                    Nav.to(context, const FormBiodata(buatPertama: false)).catchError((
+                      Object e,
+                      StackTrace s,
+                    ) {
+                      L.e('Gagal navigasi ke Form Biodata: $e $s');
+                      return null;
+                    }),
                   ),
                   child: const Text('Isi Biodata'),
                 ),
@@ -281,7 +293,13 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
                 ),
                 OutlinedButton(
                   onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                    Nav.to(context, const FormBiodata(buatPertama: false)).catchError((
+                      Object e,
+                      StackTrace s,
+                    ) {
+                      L.e('Gagal navigasi ke Form Biodata: $e $s');
+                      return null;
+                    }),
                   ),
                   child: const Text('Isi Biodata'),
                 ),

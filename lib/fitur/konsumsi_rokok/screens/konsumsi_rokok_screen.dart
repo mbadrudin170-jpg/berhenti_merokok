@@ -21,7 +21,6 @@ class _KonsumsiRokokScreenState extends ConsumerState<KonsumsiRokokScreen> {
   @override
   Widget build(BuildContext context) {
     final konsumsiAsync = ref.watch(konsumsiRokokProvider);
-    L.i('konsumsiAsync=$konsumsiAsync');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Konsumsi Rokok')),
