@@ -14,14 +14,14 @@ class KonsumsiHitungHelper {
     if (list.isEmpty) return const {};
     final map = <String, int>{};
     for (final m in list) {
-      final key = _kunciTanggal(m.tanggal);
+      final key = kunciTanggal(m.tanggal);
       map[key] = (map[key] ?? 0) + m.jumlah;
     }
     return map;
   }
 
   /// Kunci tanggal `yyyy-MM-dd` dari [tanggal] (waktu lokal).
-  static String _kunciTanggal(DateTime tanggal) {
+  static String kunciTanggal(DateTime tanggal) {
     final lokal = tanggal.toLocal();
     return '${lokal.year}-${lokal.month.toString().padLeft(2, '0')}-${lokal.day.toString().padLeft(2, '0')}';
   }
@@ -53,7 +53,7 @@ class KonsumsiHitungHelper {
     var total = 0;
     for (var i = 0; i < hari; i++) {
       final d = hariIni.subtract(Duration(days: i));
-      total += ringkasan[_kunciTanggal(d)] ?? 0;
+      total += ringkasan[kunciTanggal(d)] ?? 0;
     }
     return total / hari;
   }
@@ -68,7 +68,7 @@ class KonsumsiHitungHelper {
     var jumlah = 0;
     for (var i = 0; i < hari; i++) {
       final d = hariIni.subtract(Duration(days: i));
-      if (ringkasan.containsKey(_kunciTanggal(d))) jumlah += 1;
+      if (ringkasan.containsKey(kunciTanggal(d))) jumlah += 1;
     }
     return jumlah;
   }
@@ -86,9 +86,9 @@ class KonsumsiHitungHelper {
 
   /// Konsumsi hari ini berdasarkan waktu lokal perangkat.
   static int konsumsiHariIni(List<KonsumsiRokokModel> list) =>
-      ringkasanHarian(list)[_kunciTanggal(DateTime.now())] ?? 0;
+      ringkasanHarian(list)[kunciTanggal(DateTime.now())] ?? 0;
 
   /// Konsumsi pada [tanggal] tertentu berdasarkan waktu lokal.
   static int konsumsiTanggal(List<KonsumsiRokokModel> list, DateTime tanggal) =>
-      ringkasanHarian(list)[_kunciTanggal(tanggal)] ?? 0;
+      ringkasanHarian(list)[kunciTanggal(tanggal)] ?? 0;
 }

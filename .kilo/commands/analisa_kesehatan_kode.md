@@ -7,7 +7,7 @@
 - contoh ada 10 commit, commit 5, adalah commit terakhir yang tercatat di file catatan.md, nah berarti kita tentukan commit yang akan dievaluasi berarti commit 6 dan 10, ketika sudah menentukan commit yang akan dievaluasi ketika ada commit baru misalnya commit 11 maka commit 11 abaikan jangan ikut dimasukkan ke daftar commit yang akan dievaluasi.
 - setiap commit selalu baca dari yang terlama ke terbaru dulu.
 
-6. tujuannya yaitu untuk menentukan dari riwayat commit itu code mana yang saya inginkan, lalu perbarui atau tambahkan skill custom agar skills ini bisa saya gunakan untuk semua proyek flutter saya.karena kode yang saya commit sudah pasti sesuai dengan paket dan sdk flutter. serta sudah pasti code yang di commit itu sudah saya analisa.
+6. tujuannya yaitu untuk menentukan dari riwayat commit itu code mana Kuyang saya inginkan, lalu perbarui atau tambahkan skill custom agar skills ini bisa saya gunakan untuk semua proyek flutter saya.karena kode yang saya commit sudah pasti sesuai dengan paket dan sdk flutter. serta sudah pasti code yang di commit itu sudah saya analisa.
 7. kalau sudah menemukan cukup perbarui skill yang ada di folder `.agents/skills/custom`
 8. tapi harus baca dulu file `.agents/rules/global/aturan_skill.md` agar cara penulisan serta yang lainnya sesuai dengan yang saya inginkan.
 9. setelah itu perbarui isi file `catatan.md` yang ada di root agar memperbarui terakhir commit apa yang dievaluasi, agar tugas selanjut nya tidak kehilangan arah.

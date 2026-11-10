@@ -163,16 +163,6 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 - **Saran:** Pertahankan pemulihan ganti sebagai tindakan eksplisit. Sebelum menambah merge, definisikan aturan benturan data dan tampilkan ringkasan perubahan. Jangan mengorbankan proses pemulihan atomik.
 - **Tujuan:** Mengurangi risiko kehilangan data dan memudahkan pengguna memindahkan/menganalisis catatan.
 
-#### 6. Badge dan Tabungan — Dasarkan pada Data yang Akurat
-
-- **Kondisi proyek:** Badge, impian, dan progress tabungan sudah ada. Saldo bersumber dari angka uang dihemat yang dihitung dari biodata.
-- **Referensi:** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke), [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app), [Quitrise](https://play.google.com/store/apps/details?id=com.matrissoftware.Quitrise), dan [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife).
-- **Peluang optimasi:** Setelah metrik konsumsi diselaraskan, tambahkan pencapaian untuk konsistensi pencatatan, strategi craving yang dicoba, atau target tapering yang tercapai.
-- **Saran:** Tunjukkan bahwa tabungan bersifat estimasi bila tidak benar-benar memindahkan uang. Jangan menghapus badge atau progres historis hanya karena slip. Hindari gamifikasi yang mempermalukan pengguna.
-- **Tujuan:** Memberi reward yang sesuai dengan usaha aktual tanpa memanipulasi makna uang atau hari bebas rokok.
-- **PRD:** `prd/badge_tabungan_data_akurat.md` (dibuat 10 Nov 2026)
-
-
 ## C. Rekomendasi UI, UX, dan Layout
 
 Pola di bawah merangkum tampilan yang terlihat pada screenshot, README, atau deskripsi publik. Karena aplikasi tidak seluruhnya dipasang dan diuji langsung, pola interaksi yang tidak ditunjukkan sumber tidak dinyatakan sebagai fakta.

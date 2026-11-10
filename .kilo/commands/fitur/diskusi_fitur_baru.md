@@ -10,7 +10,8 @@
 10. hanya boleh mengedit file prd terkait saja.
 11. file yang harus dibaca dan patuhi isinya :
 
-- AGENTS.md
+- [AGENTS.md](http://AGENTS.md)
+- format_PRD
 
 12. lalu tandai isi bagian refrensi_apk sebagai sudah dibuatkan prd nya.
 13. jangan ubah code dart satu pun.
@@ -18,4 +19,4 @@
 15. suruh AI agar langsung membuat prd nya saja,
 16. sambil diskusi sambil perbaiki prd nya.
 17. pindahkan seluruh isi file yang berkaitan dengan fitur yang akan dibuatkan prd nya ke file prd nya.
-18. baca file format_PRD.md untuk mengikuti aturan format penulisan isi PRD.
+18. semua penulisan prd wajib sesuai dengan aturan yang ada di `format_PRD`
