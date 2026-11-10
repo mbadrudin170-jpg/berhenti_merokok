@@ -4,7 +4,7 @@ description: Panduan ekstraksi logika perhitungan turunan yang diduplikasi ke ek
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "19f43e510b1478a43c5f0594efeef6f83b6c0299"
+  commit-terakhir: "1788a1ce22765ac0614eb3e3ed9e9f164aa49572"
   model: "kilo-auto/free"
 ---
 

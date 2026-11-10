@@ -4,7 +4,7 @@ description: Panduan standar flutter_local_notifications v23.0.0 Flutter - cek p
 metadata:
   kategori: "custom"
   versi: "2.0.0"
-  commit-terakhir: "774431dbf61bb330d548785e8d47597c5bdcd123"
+  commit-terakhir: "17d53cf0e771674ca50a2649a99fcb4f919a4a19"
   model: "kilo-auto/free"
 ---
 

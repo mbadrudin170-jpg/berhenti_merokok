@@ -4,7 +4,7 @@ description: Panduan migrasi skema database SQLite - naikkan versi, update onCre
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
+  commit-terakhir: "17d53cf0e771674ca50a2649a99fcb4f919a4a19"
   model: "kilo-auto/free"
 ---
 
