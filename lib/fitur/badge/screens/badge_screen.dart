@@ -1,7 +1,8 @@
 import 'package:berhenti_merokok/fitur/badge/helper/badge_helper.dart';
-import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -30,8 +31,11 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
   Widget build(BuildContext context) {
     final biodataAsync = ref.watch(biodataProvider);
     final impianAsync = ref.watch(impianProvider);
+    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
 
-    if (biodataAsync.isLoading || impianAsync.isLoading) {
+    if (biodataAsync.isLoading ||
+        impianAsync.isLoading ||
+        konsumsiAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (biodataAsync.hasError) {
@@ -88,9 +92,38 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
         ),
       );
     }
+    if (konsumsiAsync.hasError) {
+      L.e(
+        'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
+      );
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pencapaian')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  const Text('Gagal memuat data konsumsi'),
+                  OutlinedButton(
+                    onPressed: () {
+                      final _ = ref.refresh(konsumsiRokokProvider);
+                    },
+                    child: const Text('Coba lagi'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     final biodata = biodataAsync.requireValue;
     final impianState = impianAsync.requireValue;
+    final konsumsiList = konsumsiAsync.requireValue.listKonsumsi;
 
     if (biodata == null) {
       return Scaffold(
@@ -110,9 +143,19 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
     }
 
     // Hitung progres smoke-free.
-    final hariSmokeFree = biodata.hariBerhenti;
-    final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
-    final uangDihemat = biodata.uangDihemat;
+    // Badge berbasis hari tetap baseline; badge berbasis rokok/uang memakai
+    // aktual bila ada catatan konsumsi, fallback ke baseline bila belum ada.
+    final hariSmokeFree = MetrikBerhentiHelper.hitungHariBerhenti(biodata);
+    final adaCatatan = konsumsiList.isNotEmpty;
+    final rokokTidakDiHisap = adaCatatan
+        ? MetrikBerhentiHelper.hitungRokokDihindariAktual(biodata, konsumsiList)
+        : MetrikBerhentiHelper.hitungRokokTidakDiHisapEstimasi(biodata);
+    final uangDihemat = adaCatatan
+        ? MetrikBerhentiHelper.hitungUangDihematAktual(biodata, konsumsiList)
+        : MetrikBerhentiHelper.hitungUangDihematEstimasi(biodata);
+    L.i(
+      'hariSmokeFree=$hariSmokeFree, adaCatatan=$adaCatatan, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat',
+    );
 
     // Hitung impian tercapai.
     int impianTercapai = 0;

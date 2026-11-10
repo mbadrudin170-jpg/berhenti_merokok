@@ -19,6 +19,13 @@ class BadgePencapaian {
 }
 
 /// Menghitung daftar badge berdasarkan progres smoke-free pengguna.
+///
+/// [hariSmokeFree] bersifat **baseline** (kumulatif sejak tanggal mulai
+/// berhenti); slip tidak menghapus progres. [rokokTidakDiHisap] dan
+/// [uangDihemat] adalah **aktual bila ada catatan konsumsi, fallback ke
+/// baseline (biodata) bila belum ada** — keputusan sumber angka berada di
+/// pemanggil (mis. `BadgeScreen` lewat `MetrikBerhentiHelper`). Badge
+/// historis tidak dihapus karena slip.
 List<BadgePencapaian> hitungBadge({
   required int hariSmokeFree,
   required int rokokTidakDiHisap,

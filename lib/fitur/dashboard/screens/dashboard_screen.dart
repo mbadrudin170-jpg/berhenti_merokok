@@ -11,6 +11,7 @@ import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
@@ -145,7 +146,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
               _buildCardSosCraving(),
-              _buildCardProgres(biodata),
+              _buildCardProgres(biodata, konsumsiAsync),
               _buildCardKonsumsiHariIni(biodata, konsumsiAsync),
               _buildCardTargetSmokeFree(biodata),
               _buildCardRingkasanImpian(biodata, impianAsync),
@@ -281,16 +282,39 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildCardProgres(BiodataModel biodata) {
-    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-    final jumlahRokokPerHari = biodata.jumlahRokokPerHari;
-    final hargaPerBungkus = biodata.hargaRokokPerBungkus;
+  /// Kartu progres: baseline (estimasi dari biodata) dan aktual (dari catatan
+  /// konsumsi) ditampilkan berdampingan dengan label eksplisit.
+  Widget _buildCardProgres(
+    BiodataModel biodata,
+    AsyncValue<KonsumsiRokokState> konsumsiAsync,
+  ) {
+    final hariBerhenti = MetrikBerhentiHelper.hitungHariBerhenti(biodata);
+    final rokokEstimasi = MetrikBerhentiHelper.hitungRokokTidakDiHisapEstimasi(
+      biodata,
+    );
+    final uangEstimasi = MetrikBerhentiHelper.hitungUangDihematEstimasi(
+      biodata,
+    );
 
-    final hariBerhenti = biodata.hariBerhenti;
-    final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
-    final uangDihemat = biodata.uangDihemat;
+    final konsumsiList = konsumsiAsync.asData?.value.listKonsumsi;
+    final adaCatatan = konsumsiList != null && konsumsiList.isNotEmpty;
+    final hariTercatat = adaCatatan
+        ? MetrikBerhentiHelper.hitungJumlahHariTercatat(konsumsiList)
+        : 0;
+    final rokokAktual = adaCatatan
+        ? MetrikBerhentiHelper.hitungRokokDihindariAktual(biodata, konsumsiList)
+        : 0;
+    final uangAktual = adaCatatan
+        ? MetrikBerhentiHelper.hitungUangDihematAktual(biodata, konsumsiList)
+        : 0.0;
+
+    if (konsumsiAsync.hasError) {
+      L.e(
+        'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
+      );
+    }
     L.i(
-      'tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat',
+      'hariBerhenti=$hariBerhenti, rokokEstimasi=$rokokEstimasi, uangEstimasi=$uangEstimasi, adaCatatan=$adaCatatan, hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, uangAktual=$uangAktual',
     );
 
     return Card(
@@ -301,27 +325,84 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           spacing: 8,
           children: [
             Text(
-              'Uang dihemat',
+              'Lama berhenti (estimasi)',
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
-              FormatUang.formatRupiah(uangDihemat),
+              '$hariBerhenti hari',
               style: Theme.of(context).textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
-              'Rokok tidak dihisap',
+              'Uang dihemat (estimasi)',
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
-              '$rokokTidakDiHisap batang',
+              FormatUang.formatRupiah(uangEstimasi),
               style: Theme.of(context).textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
+            Text(
+              'Rokok tidak dihisap (estimasi)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '$rokokEstimasi batang',
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            if (konsumsiAsync.isLoading)
+              Text(
+                'Menghitung dari catatan…',
+                style: Theme.of(context).textTheme.bodySmall,
+              )
+            else if (konsumsiAsync.hasError)
+              Text(
+                'Catatan konsumsi gagal dimuat; menampilkan estimasi.',
+                style: Theme.of(context).textTheme.bodySmall,
+              )
+            else if (!adaCatatan)
+              Text(
+                'Belum ada catatan konsumsi — aktual tersedia setelah Anda '
+                'mencatat.',
+                style: Theme.of(context).textTheme.bodySmall,
+              )
+            else ...[
+              const Divider(),
+              Text(
+                'Dari catatan ($hariTercatat hari tercatat)',
+                style: Theme.of(context).textTheme.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Uang dihemat (dari catatan)',
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                FormatUang.formatRupiah(uangAktual),
+                style: Theme.of(context).textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Rokok dihindari (dari catatan)',
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '$rokokAktual batang',
+                style: Theme.of(context).textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
           ],
         ),
       ),

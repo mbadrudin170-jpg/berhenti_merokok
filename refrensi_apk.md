@@ -33,9 +33,8 @@ Peluang terbesar adalah **menghubungkan data yang sudah dikumpulkan agar semua a
 
 Temuan utama:
 
-1. **P1 — Integrasi konsumsi aktual dengan seluruh metrik.** Gunakan log konsumsi untuk membandingkan target tapering, konsumsi harian, rokok yang dihindari, uang yang tidak dibelanjakan, streak sejak konsumsi terakhir, dan progres kumulatif. Referensi: [SmokingYou](https://github.com/bodyaant/SmokingYou), [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
-2. **P2 — Widget Android.** Widget home screen untuk counter, ringkasan, atau pintasan SOS/log akan mengurangi langkah akses. Referensi kuat: [SmokingYou](https://github.com/bodyaant/SmokingYou), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
-3. **P3 — Gamifikasi lanjutan, AI coach, dan komunitas.** Referensi seperti [Quitrise](https://play.google.com/store/apps/details?id=com.matrissoftware.Quitrise), [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife), [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking), dan [Pace Android](https://github.com/ravipurohit1991/pace) memberi inspirasi. Namun fitur tersebut menambah beban konten, privasi, moderasi, biaya, atau ketergantungan jaringan; letakkan setelah data inti akurat.
+1. **P2 — Widget Android.** Widget home screen untuk counter, ringkasan, atau pintasan SOS/log akan mengurangi langkah akses. Referensi kuat: [SmokingYou](https://github.com/bodyaant/SmokingYou), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke), [Flamy](https://play.google.com/store/apps/details?id=net.offlinefirst.flamy), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
+2. **P3 — Gamifikasi lanjutan, AI coach, dan komunitas.** Referensi seperti [Quitrise](https://play.google.com/store/apps/details?id=com.matrissoftware.Quitrise), [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife), [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking), dan [Pace Android](https://github.com/ravipurohit1991/pace) memberi inspirasi. Namun fitur tersebut menambah beban konten, privasi, moderasi, biaya, atau ketergantungan jaringan; letakkan setelah data inti akurat.
 
 Seluruh rekomendasi merupakan bahan sortir, bukan keputusan implementasi. Prioritas mempertimbangkan celah produk, manfaat, kesesuaian Android, kebutuhan offline-first, serta biaya pemeliharaan.
 
@@ -132,18 +131,6 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 
 ## B. Rekomendasi Optimasi Fitur yang Sudah Ada
 
-### Prioritas Tinggi
-
-#### 1. Satukan Perhitungan Baseline, Konsumsi Aktual, Streak, dan Tabungan
-
-> **Status: PRD sudah dibuat — lihat `prd/satukan_perhitungan_baseline_aktual.md` (10 November 2026).**
-
-- **Kondisi proyek:** Konsumsi harian sudah tercatat dan dapat diringkas. Namun counter, jumlah rokok tidak dihisap, dan uang dihemat masih dihitung dari parameter baseline biodata serta tanggal berhenti.
-- **Referensi:** [SmokingYou](https://github.com/bodyaant/SmokingYou), [Smoking Tracker](https://github.com/pintargasper/SmokingTracker), [SmokingWeaner](https://play.google.com/store/apps/details?id=smoking.android.smokingweaner20), [Quit Smoking Go](https://play.google.com/store/apps/details?id=com.shosin_labs.qsmoking), dan [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app).
-- **Peluang optimasi:** Pisahkan baseline kebiasaan, target tapering, konsumsi tercatat, estimasi yang dihindari, dan uang yang secara estimatif tidak dibelanjakan. Jangan menganggap tidak adanya log sebagai bukti bahwa pengguna tidak merokok.
-- **Saran:** Tentukan satu definisi untuk setiap metrik. Jika data harian belum lengkap, beri label estimasi dan jelaskan rentang/asumsinya. Gunakan satu helper/perhitungan bersama untuk Dashboard, Impian, Badge, kalender, dan ringkasan.
-- **Tujuan:** Meningkatkan kepercayaan pengguna pada statistik serta menghindari angka yang bertentangan antarhalaman.
-
 ### Prioritas Sedang
 
 #### 2. Konsumsi Rokok — Koreksi, Undo, dan Ringkasan yang Lebih Jelas
@@ -183,6 +170,7 @@ Fitur yang tercantum di sini belum ditemukan sebagai kemampuan utuh pada kode pr
 - **Peluang optimasi:** Setelah metrik konsumsi diselaraskan, tambahkan pencapaian untuk konsistensi pencatatan, strategi craving yang dicoba, atau target tapering yang tercapai.
 - **Saran:** Tunjukkan bahwa tabungan bersifat estimasi bila tidak benar-benar memindahkan uang. Jangan menghapus badge atau progres historis hanya karena slip. Hindari gamifikasi yang mempermalukan pengguna.
 - **Tujuan:** Memberi reward yang sesuai dengan usaha aktual tanpa memanipulasi makna uang atau hari bebas rokok.
+- **PRD:** `prd/badge_tabungan_data_akurat.md` (dibuat 10 Nov 2026)
 
 
 ## C. Rekomendasi UI, UX, dan Layout
@@ -442,7 +430,6 @@ Berikut adalah pola dari screenshot resmi/README dan deskripsi publik. Ini bukan
 
 | Urutan | Rekomendasi | Jenis | Nilai utama | Ketergantungan utama |
 |---:|---|---|---|---|
-| 1 | Integrasikan konsumsi aktual dengan dashboard, tapering, streak, tabungan, dan badge | Optimasi | Menjadikan angka aplikasi konsisten dengan data perilaku. | Definisi metrik dan satu sumber perhitungan bersama. |
 | 2 | Undo/koreksi cepat untuk konsumsi | Optimasi | Menekan kesalahan input dan memperbaiki keandalan riwayat. | Notifier, UI feedback, dan aturan perubahan metrik. |
 | 3 | Widget home screen Android | Fitur baru | Akses cepat ke progres, SOS, atau log. | Native Android AppWidget/Glance, sinkronisasi, pengujian launcher. |
 | 4 | Simpan hasil penggunaan SOS dan check-in singkat | Optimasi/fitur baru | Mengetahui dukungan yang benar-benar membantu. | Model lokal dan form minimal. |

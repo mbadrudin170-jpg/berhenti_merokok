@@ -92,9 +92,21 @@ abstract class BiodataModel with _$BiodataModel {
   }
 }
 
-/// Ekstensi perhitungan turunan dari [BiodataModel] agar logika `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` hanya ditulis sekali dan konsisten di seluruh halaman (dashboard, impian, badge).
+/// Ekstensi perhitungan turunan **baseline/estimasi** dari [BiodataModel].
+///
+/// Angka di sini murni dari biodata (`jumlahRokokPerHari × hariBerhenti` dan
+/// turunannya), **bukan** dari catatan konsumsi aktual. Angka ini wajib
+/// diberi label "estimasi" di UI dan bukan bukti bahwa pengguna tidak
+/// merokok. Untuk metrik aktual berbasis catatan, gunakan
+/// `MetrikBerhentiHelper` di `lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart`.
+///
+/// Perhitungan didelegasikan ke helper bersama melalui getter ini agar satu
+/// definisi per metrik tetap terjaga. Hari ini, `hariBerhenti` adalah sumber
+/// tunggal rumus hari smoke-free yang dipakai seluruh halaman (dashboard,
+/// impian, badge).
 extension BiodataModelPerhitungan on BiodataModel {
-  /// Hari smoke-free, dinormalisasi agar tidak terpengaruh komponen waktu.
+  /// Hari smoke-free (**baseline**), dinormalisasi agar tidak terpengaruh
+  /// komponen waktu. Bukan bukti dari catatan konsumsi.
   int get hariBerhenti {
     final tanggalBerhenti = tanggalMulaiBerhentiMerokok;
     if (tanggalBerhenti == null) return 0;
@@ -110,9 +122,13 @@ extension BiodataModelPerhitungan on BiodataModel {
   }
 
   /// Jumlah rokok yang tidak dihisap selama periode smoke-free.
+  ///
+  /// **Estimasi baseline** dari biodata, bukan dari catatan konsumsi.
   int get rokokTidakDiHisap => jumlahRokokPerHari * hariBerhenti;
 
   /// Uang yang dihemat dari tidak merokok.
+  ///
+  /// **Estimasi baseline** dari biodata, bukan dari catatan konsumsi.
   double get uangDihemat {
     if (batangPerBungkus == 0) return 0;
     return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
