@@ -1,5 +1,5 @@
 
-1. saya ingin chat gpt agar bisa menganalisa semua riwayat commit terbaru setelah riwayat terakhir yang dievaluasi, untuk mengetahui riwayat terakhir yang di evaluasi cukup lihat isi file [`catatan.md`](http://catatan.md) saja.  
+1. saya ingin kamu agar bisa menganalisa semua riwayat commit terbaru setelah riwayat terakhir yang dievaluasi, untuk mengetahui riwayat terakhir yang di evaluasi cukup lihat isi file [`catatan.md`](http://catatan.md) saja.  
 2. jika semisal isi [`catatan.md`](http://catatan.md) nya masih kosong gpt cukup ambil 5 commit terbaru saja dulu untuk data awal, baru setelah itu gunakan commit terakhir dievaluasi.  
 3. karena di `catatan,md` terdapat banyak catatan gpt cukup lihat commit terakhir yang berjudul `# Evaluasi Skill dari commit`.  
 4. jika ada commit baru saat sedang evaluasi abaikan commit baru itu, untuk tugas berikutnya saja.  
