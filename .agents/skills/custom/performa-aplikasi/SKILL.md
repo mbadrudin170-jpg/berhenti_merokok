@@ -1,6 +1,6 @@
 ---
 name: performa-aplikasi
-description: Aturan performa aplikasi - widget rebuild minimal, const constructor, listview builder, image caching, async gap, memory leak prevention, profilng.
+description: Aturan performa aplikasi Flutter - widget rebuild minimal, const constructor, ListView/GridView builder (lazy loading), image & asset caching, async gap & microtask yielding, memory leak prevention, const & final optimization, database query optimization, build size optimization, dan profiling & monitoring.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -12,13 +12,63 @@ metadata:
 
 Skill ini mendokumentasikan aturan performa yang wajib diterapkan di proyek ini.
 
-## 1. Minimal Widget Rebuild
+## Cakupan yang Di-Cover
 
-### Aturan
-- **WAJIB** gunakan `const` constructor dimana mungkin (widget stateless, immutable data).
-- **WAJIB** isolasi widget yang rebuild sering (Timer, Animation) ke widget terpisah (lihat `isolasi-widget-timer`).
-- **WAJIB** gunakan `ref.watch(provider.select(...))` untuk hanya rebuild saat field tertentu berubah (lihat `riverpod-pola`).
-- **DILARANG** `setState` di widget parent besar untuk update kecil → extract ke child widget.
+- Package: `package:flutter` (class `ListView`, `GridView`, `Image`, `CachedNetworkImage`, `Opacity`, `ClipRect`, `ClipRRect`, `Stack`, `Positioned`, `Timer`, `StreamSubscription`, `AnimationController`, `TextEditingController`, `ScrollController`), `package:flutter_riverpod` (class `ref`, `AsyncValue`, `select`), `package:compute` (fungsi `compute`)
+- Class: `ListView`, `GridView`, `Image`, `CachedNetworkImage`, `Timer`, `StreamSubscription`, `AnimationController`, `TextEditingController`, `ScrollController`, `AsyncValue`
+- Method: `ref.watch(provider.select(...))`, `compute()`, `Future.microtask()`, `SchedulerBinding.instance.scheduleTask()`, `timer.cancel()`, `subscription.cancel()`, `controller.dispose()`
+- Properti: `mounted`, `itemExtent`, `prototypeItem`, `cacheWidth`, `cacheHeight`, `memCacheWidth`, `memCacheHeight`
+
+## Aturan
+
+1. Wajib gunakan `const` constructor dimana mungkin (widget stateless, immutable data).
+2. Wajib isolasi widget yang rebuild sering (Timer, Animation) ke widget terpisah (lihat `isolasi-widget-timer`).
+3. Wajib gunakan `ref.watch(provider.select(...))` untuk hanya rebuild saat field tertentu berubah (lihat `riverpod-pola`).
+4. DILARANG `setState` di widget parent besar untuk update kecil → extract ke child widget.
+5. Wajib gunakan `ListView.builder` / `GridView.builder` untuk daftar panjang/dinamis.
+6. DILARANG `ListView(children: [...])` dengan list sudah di-materialize semua.
+7. Gunakan `itemExtent` / `prototypeItem` untuk performa scroll lebih baik.
+8. Wajib gunakan `Image.asset` / `Image.network` dengan `cacheWidth`/`cacheHeight` untuk downsample.
+9. DILARANG load image resolusi besar ke widget kecil tanpa downsample.
+10. Network image: pakai `cached_network_image` package untuk disk cache.
+11. Operasi berat (parse JSON besar, hitung statistik, query DB kompleks) wajib offload ke `compute()` / `Isolate` atau gunakan `Future.microtask` / `SchedulerBinding.instance.scheduleTask` untuk yield ke event loop.
+12. DILARANG blocking computation di main thread > 16ms (frame drop).
+13. Wajib `cancel()` Timer/StreamSubscription di `dispose()` (lihat `isolasi-widget-timer`).
+14. Wajib `dispose()` `AnimationController`, `TextEditingController`, `ScrollController`.
+15. Wajib cek `mounted` sebelum `setState` di async callback (lihat `isolasi-widget-timer`).
+16. Wajib `ref.listen` / `ref.listenManual` cleanup di `dispose` kalau pakai manual listen.
+17. DILARANG closure capture `BuildContext` di async gap lama.
+18. Wajib `const` untuk widget, list, map, object yang immutable.
+19. Wajib `final` untuk variable yang tidak di-reassign.
+20. Wajib `const` di `switch` expression / pattern matching case.
+21. Wajib `where` + `whereArgs` (parameterized query) - bukan string interpolation.
+22. Wajib index di kolom yang sering di-query (WHERE, JOIN, ORDER BY).
+23. Wajib `LIMIT` untuk query yang tidak butuh semua row.
+24. Gunakan `queryCursor` / `queryIterate` untuk result set besar (streaming).
+25. Wajib `--split-debug-info` / `--obfuscate` di release build (CI handle).
+26. DILARANG dependency tidak dipakai (cek `dart pub deps --style=compact`).
+27. DILARANG asset image tidak dipakai di `pubspec.yaml`.
+28. Gunakan `flutter build apk --analyze-size` untuk audit ukuran.
+29. Wajib test performa di device fisik (low-end) bukan hanya emulator.
+30. Gunakan `flutter run --profile` + DevTools (Performance, Memory, CPU tabs).
+31. Target: 60fps (16ms/frame), no jank > 50ms, memory stabil tidak naik terus.
+
+## Larangan
+
+- DILARANG `setState` di widget parent besar untuk update kecil.
+- DILARANG `ListView(children: [...])` dengan list sudah di-materialize semua.
+- DILARANG load image resolusi besar ke widget kecil tanpa downsample.
+- DILARANG blocking computation di main thread > 16ms.
+- DILARANG closure capture `BuildContext` di async gap lama.
+- DILARANG `Opacity` widget wrapping subtree besar (gunakan `color.withValues(alpha:)` di child).
+- DILARANG `ClipRect` / `ClipRRect` tanpa butuh (costly).
+- DILARANG `Stack` dengan banyak `Positioned` overlapping kompleks (pertimbangkan `CustomPainter`).
+- DILARANG `ListView` nested tanpa `shrinkWrap: true` + `physics: NeverScrollableScrollPhysics()`.
+- DILARANG `setState` di loop / callback cepat tanpa debounce.
+- DILARANG dependency tidak dipakai.
+- DILARANG asset image tidak dipakai di `pubspec.yaml`.
+
+## Contoh Benar
 
 ```dart
 // BENAR: const widget stateless
@@ -27,23 +77,7 @@ const _EmptyDiaryCraving();
 // BENAR: select hanya field yang butuh
 final nama = ref.watch(biodataProvider.select((v) => v.valueOrNull?.nama));
 
-// SALAH: watch full provider cuma butuh nama
-final biodata = ref.watch(biodataProvider); // Rebuild saat field lain berubah
-```
-
-### Referensi
-- `isolasi-widget-timer` skill
-- `riverpod-pola` skill (select optimization)
-
-## 2. ListView/GridView Builder (Lazy Loading)
-
-### Aturan
-- **WAJIB** gunakan `ListView.builder` / `GridView.builder` untuk daftar panjang/dinamis.
-- **DILARANG** `ListView(children: [...])` dengan list sudah di-materialize semua.
-- Gunakan `itemExtent` / `prototypeItem` untuk performa scroll lebih baik.
-
-```dart
-// BENAR: builder lazy
+// BENAR: ListView.builder lazy
 ListView.builder(
   itemCount: list.length,
   itemBuilder: (context, index) => ItemWidget(item: list[index]),
@@ -56,63 +90,25 @@ ListView.builder(
   itemBuilder: (context, index) => ItemWidget(item: list[index]),
 )
 
-// SALAH: children materialized semua
-ListView(children: list.map((e) => ItemWidget(item: e)).toList())
-```
-
-## 3. Image & Asset Caching
-
-### Aturan
-- **WAJIB** gunakan `Image.asset` / `Image.network` dengan `cacheWidth`/`cacheHeight` untuk downsample.
-- **DILARANG** load image resolusi besar (mis. 4000px) ke widget kecil (mis. 100px) tanpa downsample.
-- Asset image di `pubspec.yaml` `flutter: assets:` → otomatis dikemas & dicache.
-- Network image: pakai `cached_network_image` package untuk disk cache.
-
-```dart
-// Downsample asset
+// BENAR: Downsample asset image
 Image.asset(
   'assets/large_image.png',
-  cacheWidth: 200, // Resize di decode
+  cacheWidth: 200,
   cacheHeight: 200,
 )
 
-// Network dengan cache
+// BENAR: Network dengan cache
 CachedNetworkImage(
   imageUrl: url,
   memCacheWidth: 200,
   memCacheHeight: 200,
   placeholder: (_, _) => const CircularProgressIndicator(),
 )
-```
 
-## 4. Async Gap & Microtask Yielding
-
-### Aturan
-- Operasi berat (parse JSON besar, hitung statistik, query DB kompleks) **WAJIB** offload ke `compute()` / `Isolate` atau gunakan `Future.microtask` / `SchedulerBinding.instance.scheduleTask` untuk yield ke event loop.
-- **DILARANG** blocking computation di main thread > 16ms (frame drop).
-
-```dart
-// Offload ke isolate untuk JSON parse besar
+// BENAR: Offload ke isolate
 final data = await compute(parseJsonBesar, jsonString);
 
-// Atau yield ke event loop untuk batch processing
-for (final item in items) {
-  await Future.microtask(() => processItem(item));
-  // UI tetap responsif di antara item
-}
-```
-
-## 5. Memory Leak Prevention
-
-### Aturan
-- **WAJIB** `cancel()` Timer/StreamSubscription di `dispose()` (lihat `isolasi-widget-timer`).
-- **WAJIB** `dispose()` `AnimationController`, `TextEditingController`, `ScrollController`.
-- **WAJIB** cek `mounted` sebelum `setState` di async callback (lihat `isolasi-widget-timer`).
-- **WAJIB** `ref.listen` / `ref.listenManual` cleanup di `dispose` kalau pakai manual listen.
-- **DILARANG** closure capture `BuildContext` di async gap lama.
-
-```dart
-// BENAR: cleanup di dispose
+// BENAR: Cleanup di dispose
 @override
 void dispose() {
   _timer?.cancel();
@@ -121,43 +117,12 @@ void dispose() {
   super.dispose();
 }
 
-// BENAR: mounted check
+// BENAR: Mounted check
 _timer = Timer.periodic(Duration(seconds: 1), (_) {
   if (mounted) setState(() {});
 });
-```
 
-## 6. Const & Final Optimization
-
-### Aturan
-- **WAJIB** `const` untuk widget, list, map, object yang immutable.
-- **WAJIB** `final` untuk variable yang tidak di-reassign.
-- **WAJIB** `const` di `switch` expression / pattern matching case.
-
-```dart
-// BENAR
-const _EmptyDiaryCraving();
-final textTheme = Theme.of(context).textTheme;
-const padding = EdgeInsets.all(16);
-
-// Pattern matching const
-switch (status) {
-  case Status.loading: return const LoadingView();
-  case Status.error: return const ErrorView();
-  case Status.success: return SuccessView(data: data);
-}
-```
-
-## 7. Database Query Optimization
-
-### Aturan
-- **WAJIB** `where` + `whereArgs` (parameterized query) - bukan string interpolation.
-- **WAJIB** index di kolom yang sering di-query (WHERE, JOIN, ORDER BY).
-- **WAJIB** `LIMIT` untuk query yang tidak butuh semua row.
-- Gunakan `queryCursor` / `queryIterate` untuk result set besar (streaming).
-
-```dart
-// BENAR: parameterized + index + limit
+// BENAR: Parameterized query + index + limit
 final rows = await db.query(
   NamaTabel.craving,
   where: '${NamaKolom.tanggal} >= ? AND ${NamaKolom.tanggal} <= ?',
@@ -167,43 +132,32 @@ final rows = await db.query(
 )
 ```
 
-### Referensi
-- `sqflite-crud-and-transactions` skill
+## Contoh Salah
 
-## 8. Build Size Optimization
+```dart
+// DILARANG: Watch full provider cuma butuh nama
+final biodata = ref.watch(biodataProvider); // Rebuild saat field lain berubah
 
-### Aturan
-- **WAJIB** `--split-debug-info` / `--obfuscate` di release build (CI handle).
-- **DILARANG** dependency tidak dipakai (cek `dart pub deps --style=compact`).
-- **DILARANG** asset image tidak dipakai di `pubspec.yaml`.
-- Gunakan `flutter build apk --analyze-size` untuk audit ukuran.
+// DILARANG: ListView children materialized semua
+ListView(children: list.map((e) => ItemWidget(item: e)).toList())
 
-## 9. Profiling & Monitoring
+// DILARANG: Blocking computation di main thread
+final data = parseJsonBesar(jsonString); // Bisa frame drop
 
-### Aturan
-- **WAJIB** test performa di device fisik (low-end) bukan hanya emulator.
-- Gunakan `flutter run --profile` + DevTools (Performance, Memory, CPU tabs).
-- Target: 60fps (16ms/frame), no jank > 50ms, memory stabil tidak naik terus.
-- Log `L.i` untuk marking critical path timing (opsional).
+// DILARANG: Opacity wrapping subtree besar
+Opacity(
+  opacity: 0.5,
+  child: LargeWidgetTree(), // DILARANG
+)
 
-## 10. Larangan Performa
+// DILARANG: SetState di loop
+for (final item in items) {
+  setState(() {}); // DILARANG tanpa debounce
+}
+```
 
-- **DILARANG** `Opacity` widget wrapping subtree besar (gunakan `color.withValues(alpha:)` di child).
-- **DILARANG** `ClipRect` / `ClipRRect` tanpa butuh (costly).
-- **DILARANG** `Stack` dengan banyak `Positioned` overlapping kompleks (consider `CustomPainter`).
-- **DILARANG** `ListView` nested tanpa `shrinkWrap: true` + `physics: NeverScrollableScrollPhysics()`.
-- **DILARANG** `setState` di loop / callback cepat tanpa debounce.
+## Sumber Evaluasi
 
-## Referensi Aturan Sumber
-
-- `aturan_bersama.md` — Isolasi widget timer, type promotion, async handling
-- `isolasi-widget-timer` skill
-- `riverpod-pola` skill (select optimization)
-- `sqflite-crud-and-transactions` skill
-- `withvalues-opacity-warna` skill / `gaya` skill
-
-## Referensi Commit Terkait
-
-- `3b67d309` — Timer isolation, select optimization
-- `e659574` — Dashboard multiple provider select
-- `02aa6b29` — Lazy IndexedStack di Home
+- File: `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`
+- Class terkait: `ListView`, `GridView`, `Image`, `CachedNetworkImage`, `Timer`, `StreamSubscription`
+- Commit rujukan: `3b67d309` — Timer isolation, select optimization; `e659574` — Dashboard multiple provider select; `02aa6b29` — Lazy IndexedStack di Home

@@ -1,32 +1,29 @@
-# Aturan Inti: Pembuatan dan Pembaruan SKILL.md
+# Aturan Pembuatan dan Pembaruan SKILL.md
 
 ## 1. Cakupan
 
-1.1. Aturan ini berlaku setiap kali AI **membuat** atau **memperbarui** file `SKILL.md`.
-1.2. Skill sebisa mungkin harus bisa dipakai ulang oleh berbagai proyek Flutter milik pengguna, jadi hindari isi yang terikat pada satu proyek saja.
+Aturan ini berlaku saat AI **membuat** atau **memperbarui** file `SKILL.md`.
+Semua skill yang dibuat sebisa mungkin harus dapat digunakan oleh berbagai proyek Flutter milik pengguna (portabel lintas-proyek).
 
 ## 2. Lokasi dan Struktur
 
-2.1. Path skill: `.agents/skills/<kategori>/<nama-skill>/SKILL.md`
-2.2. Gunakan `skills` (jamak), bukan `skill`.
-2.3. Kategori default: `custom`.
-2.4. Struktur wajib:
+- Path skill: `.agents/skills/<kategori>/<nama-skill>/SKILL.md`
+- Wajib menggunakan folder `skills` (jamak), bukan `skill`
+- Kategori default: `custom`
+- Struktur wajib:
 
 ```
 .agents/skills/<kategori>/<nama-skill>/
-├── SKILL.md
-├── examples/
-│   ├── input-<varian>.dart
-│   └── output-<varian>.dart
-└── references/          (opsional)
-    └── <topik>.md
+└── SKILL.md
 ```
 
-## 3. Topik Wajib
+## 3. Topik Wajib (Referensi Format)
 
-Daftar di bawah adalah standar dan contoh. Untuk skill di luar daftar ini, AI wajib menyesuaikan topiknya.
+Setiap skill harus mengikuti standar format dan penulisan dari skill referensi yang sudah ada. Skill referensi ini digunakan sebagai acuan tata letak section, gaya bahasa, dan penggunaan backtick, bukan harus meniru isi secara harfiah.
 
-### 3.1. Topik UI
+### 3.1 Referensi Skill Topik UI
+
+Berikut adalah daftar skill referensi UI yang formatnya harus diikuti sebagai acuan:
 
 - `pola-ux/SKILL.md`
 - `pola-ui/SKILL.md`
@@ -35,84 +32,83 @@ Daftar di bawah adalah standar dan contoh. Untuk skill di luar daftar ini, AI wa
 - `spacing/SKILL.md`
 - `widget-custom/SKILL.md`
 
-### 3.2. Topik Non-UI
+### 3.2 Referensi Skill Topik Non-UI
 
 - `bug-runtime/SKILL.md`
-- `boilerplate/SKILL.md`
 
 ## 4. Nama Folder Skill
 
-4.1. Wajib **bahasa Indonesia**.
-4.2. Wajib **deskriptif**: menunjukkan isi skill, bukan nama generik.
-4.3. Wajib **kebab-case**, pemisah `-`.
-4.4. Dilarang: `_`, spasi, huruf besar, angka di awal, dan karakter selain `a-z`, `0-9`, `-`.
+Nama folder skill wajib memenuhi semua ketentuan berikut:
 
-## 5. Folder `examples/`
+1. Wajib **bahasa Indonesia**.
+2. Wajib **deskriptif** (menunjukkan isi skill, bukan nama generik).
+3. Wajib **kebab-case** (pemisah strip `-`).
+4. Dilarang menggunakan garis bawah (`_`).
+5. Dilarang menggunakan spasi.
+6. Dilarang huruf besar.
+7. Dilarang angka di awal nama.
+8. Dilarang karakter selain `a-z`, `0-9`, dan strip `-`.
 
-5.1. Setiap skill **wajib** punya folder `examples/`.
-5.2. Isi `examples/` hanya boleh file `.dart`. Ekstensi lain dilarang.
-5.3. Minimal **satu pasang** file: `input-<varian>.dart` + `output-<varian>.dart`.
-5.4. `<varian>` wajib kebab-case dan bahasa Indonesia.
-5.5. Setiap `input-<varian>.dart` wajib punya pasangan `output-<varian>.dart` dengan `<varian>` yang sama.
-5.6. `examples/` dilarang kosong.
-5.7. Isi pasangan file: `input` = kode awal atau kasus, `output` = kode hasil. File ini adalah potongan contoh: tidak harus bisa dikompilasi, dan dilarang di-import dari `lib/` atau `test/`.
-5.8. Rujukan commit wajib ditulis sebagai komentar di baris paling atas setiap file contoh:
+Contoh nama yang benar: `menambahkan-integration-test-flutter`, `material-app-tema-lokalisasi`, `flutter-local-notifikasi-push`.
 
-- `// commit: <hash-commit>`
-- `// commit: belum-ada-commit` (jika belum ada commit rujukan)
+Contoh nama yang salah: `integration_test`, `Integration Test`, `01-test`, `my-skill`, `skill_test`.
 
-## 6. Folder `references/` (Opsional)
+## 5. Sumber Isi (Berdasarkan Riwayat Commit)
 
-6.1. Dibuat hanya jika skill butuh rujukan pola atau teori.
-6.2. Isinya file `.md` dengan nama kebab-case.
+Semua isi `SKILL.md` wajib **mengikuti riwayat commit code** pengguna.
 
-## 7. Sumber Isi
+### 5.1 Pengambilan Sumber
 
-7.1. Semua isi `SKILL.md` dan `examples/` wajib **mengikuti riwayat commit** kode pengguna.
-7.2. AI hanya boleh membaca dari commit yang sudah ada: `git log`, `git show`, `git diff <commit>`.
-7.3. AI **dilarang** memakai:
+AI hanya boleh membaca dari commit yang sudah ada menggunakan perintah git seperti:
 
-- file yang belum di-commit (working directory)
-- perubahan di staging (`git diff --cached`)
-- file untracked
-  7.4. "Commit yang berkaitan" = commit yang menyentuh file atau folder yang berhubungan dengan topik skill.
+- `git log`
+- `git show <commit>`
+- `git diff <commit>`
 
-### 7.5. Jika ada commit yang berkaitan
+### 5.2 Dilarang Mengambil Dari
 
-- Isi `SKILL.md` dan `examples/` disusun dari commit tersebut.
-- Setiap file contoh di `examples/` wajib mencantumkan **hash commit** sesuai 5.8.
-- Jika ada beberapa commit berkaitan dengan pola berbeda, pilih pola dari **commit terbaru yang relevan**, kecuali pengguna menentukan lain.
-- `SKILL.md` boleh mencantumkan hash commit (opsional).
+- File yang belum di-commit (working directory / working tree)
+- Perubahan yang masih di staging (`git diff --cached`)
+- File untracked
 
-### 7.6. Jika tidak ada commit yang berkaitan
+### 5.3 Commit yang Berkaitan
 
-- AI **wajib menambahkan skill baru**, dengan rancangan `SKILL.md` dan `examples/` yang disusun AI.
-- File contoh pada skill baru **tidak wajib** berisi hash commit, tapi wajib memakai `belum-ada-commit` sesuai 5.8 sebagai tanda belum ada commit rujukan.
+"Commit yang berkaitan" berarti commit yang menyentuh file atau folder yang berhubungan dengan topik skill.
 
-### 7.7. Larangan mengarang
+- Jika ada commit yang berkaitan: isi `SKILL.md` disusun dari commit tersebut.
+- Jika ada beberapa commit yang berkaitan dan polanya berbeda: AI memilih pola dari **commit terbaru yang relevan**, kecuali pengguna menentukan lain.
+- Jika **tidak ada** commit yang berkaitan: AI **dilarang mengarang** pola, gaya, atau contoh. AI wajib berhenti dan menanyakan kepada pengguna bagaimana ingin melanjutkan (contoh: memberikan contoh dari SDK resmi, atau menunda pembuatan skill sampai ada commit yang relevan).
 
-Di luar kondisi 7.6, AI dilarang mengarang pola, gaya, atau contoh yang tidak pernah muncul di riwayat commit.
+### 5.4 Referensi Commit
 
-## 8. Frontmatter
+`SKILL.md` boleh mencantumkan hash commit sebagai rujukan (opsional).
 
-8.1. Setiap `SKILL.md` wajib punya frontmatter di paling atas file.
-8.2. Dibungkus `---` di baris pertama dan `---` setelah field terakhir.
-8.3. Atribut level atas HANYA boleh berasal dari daftar yang didukung Code OSS agents:
-`argument-hint`, `compatibility`, `context`, `description`, `disable-model-invocation`, `license`, `metadata`, `name`, `user-invocable`.
-Dilarang menulis atribut lain di level atas (misalnya `kategori`, `versi`, `commit-terakhir`, `model`), karena akan memunculkan error.
-8.4. Atribut level atas yang wajib:
+## 6. Pelanggaran Aturan
 
-- `name`: sama dengan nama folder skill (kebab-case, bahasa Indonesia)
-- `description`: ringkasan isi skill, satu kalimat
-- `metadata`: berisi data tambahan sesuai 8.5
-  8.5. Isi `metadata` (semua nilai wajib berupa string, pakai tanda kutip):
-- `kategori`: sesuai folder kategori (default `"custom"`)
-- `versi`: format semver, contoh `"1.0.0"`. Wajib terus bertambah setiap skill diubah, tidak boleh tetap atau turun.
-- `commit-terakhir`: hash commit rujukan, atau `"belum-ada-commit"` jika belum ada
-- `model` (opsional): jika dicantumkan, wajib diisi dengan model AI yang sedang mengedit skill saat itu, dan diperbarui setiap kali skill diedit
-  8.6. `description` dan `name` tetap di level atas, bukan di dalam `metadata`.
-  8.7. Dilarang menulis komentar di dalam frontmatter.
-  8.8. Contoh:
+- Jika menemukan skill lama yang melanggar aturan ini, AI wajib **melaporkan kepada pengguna dan mengusulkan perbaikan** melalui komentar/pesan sebelum melakukan rename atau restructure.
+- AI dilarang membiarkan pelanggaran tetap tanpa ditindaklanjuti. Jika pelanggaran ditemukan, AI harus memberitahu pengguna dan menunggu arahan sebelum melanjutkan perubahan apapun pada skill tersebut.
+
+## 7. Front Matter (YAML)
+
+Setiap `SKILL.md` wajib memiliki frontmatter di paling atas file, dibungkus dengan `---` pada baris pertama dan `---` setelah field terakhir.
+
+### 7.1 Field Wajib
+
+| Field                      | Keterangan                                                    |
+| -------------------------- | ------------------------------------------------------------- |
+| `name`                     | Sama dengan nama folder skill (kebab-case, bahasa Indonesia)  |
+| `description`              | Deskripsi yang sangat detail                                  |
+| `metadata.kategori`        | Sesuai folder kategori (default `"custom"`)                   |
+| `metadata.versi`           | Format semver, contoh `"1.0.0"`                               |
+| `metadata.commit-terakhir` | Hash commit rujukan, atau `"belum-ada-commit"` jika belum ada |
+
+### 7.2 Field Opsional
+
+| Field            | Keterangan                                                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `metadata.model` | Jika dicantumkan, wajib diisi dengan model AI yang sedang mengedit skill saat itu, dan diperbarui setiap kali skill diedit |
+
+### 7.3 Contoh Front Matter
 
 ```yaml
 ---
@@ -126,12 +122,204 @@ metadata:
 ---
 ```
 
-## 9. Sinkronisasi
+## 8. Aturan Penulisan Deskripsi Skill
 
-9.1. Update `SKILL.md` → wajib periksa dan perbarui `examples/` jika langkah, input, atau output berubah.
-9.2. Update `examples/` → wajib pastikan `SKILL.md` masih konsisten.
-9.3. Setiap perubahan isi skill → naikkan `metadata.versi`, perbarui `metadata.model` ke model AI yang sedang mengedit (jika field itu dipakai), dan perbarui `metadata.commit-terakhir` jika rujukannya berubah.
+Deskripsi skill (bagian `description` dan paragasan pengantar) wajib mencakup poin-poin berikut:
 
-## 10. Pelanggaran
+1. **Kapan digunakan (trigger/use case)** — jelaskan skenario spesifik yang memerlukan skill ini.
+2. **Apa yang di-cover** — cakupan fungsi, class, package, atau versi yang relevan (contoh: `flutter_local_notifications` v22.3.3).
+3. **Apa yang harus dihindari** — jangan digunakan untuk UI web, jangan diedit manual file generated, dll.
+4. **Langkah kerja (workflow)** — urutan tindakan yang wajib diikuti, misal `pub get` → `build_runner` → verifikasi `dart analyze`.
+5. **Referensi ke file terkait** — path file atau folder yang relevan dengan topik skill dan digunakan sebagai acuan saat menerapkan skill tersebut.
 
-10.1. Jika menemukan skill lama yang melanggar aturan ini, AI wajib **melapor dan mengusulkan perbaikan** sebelum
+## 9. Format Lengkap `SKILL.md`
+
+Setiap section di bawah ini **wajib ada** dalam setiap `SKILL.md`. Tidak perlu folder `examples` terpisah — contoh kode langsung di dalam `SKILL.md`. Gunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi. Gunakan backtick `` ` `` untuk nama class, properti, method, dan package.
+
+### 9.1 YAML Frontmatter (awal file)
+
+```yaml
+---
+name: material-app-tema-lokalisasi
+description: Panduan konfigurasi MaterialApp dan WidgetsApp - tema (theme, darkTheme, themeMode), lokalisasi (locale, supportedLocales, localizationsDelegates), serta ScrollBehavior.
+metadata:
+  kategori: "custom"
+  versi: "1.0.0"
+  commit-terakhir: "<hash-commit>"
+  model: "kilo-auto/free"
+---
+```
+
+### 9.2 Judul dan Intro
+
+```markdown
+# Konfigurasi MaterialApp, Tema, dan Lokalisasi
+
+Mengatur `MaterialApp` / `WidgetsApp` dengan tema gelap/terang, locale, supportedLocales, dan localizationsDelegates untuk aplikasi multi-bahasa.
+```
+
+- H1 = judul skill
+- Paragraf berikutnya = penjelasan singkat tujuan skill
+
+### 9.3 `## Cakupan yang Di-Cover`
+
+Daftar bullet dengan kategori: Package, Class, Enum, Properti, Method.
+
+```markdown
+## Cakupan yang Di-Cover
+
+- Package: `package:flutter` (file `lib/src/widgets/material/app.dart`, `lib/src/widgets/app.dart`)
+- Class: `MaterialApp`, `WidgetsApp`, `ThemeMode`, `ThemeData`, ...
+- Enum: `ThemeMode.system`, `ThemeMode.light`, `ThemeMode.dark`
+- Properti: `theme`, `darkTheme`, ...
+- Method: `basicLocaleListResolution`, `Theme.of`, ...
+```
+
+### 9.4 `## Aturan`
+
+Daftar berurutan (numbered list) yang harus diikuti saat menerapkan skill ini.
+
+```markdown
+## Aturan
+
+1. `MaterialApp` membungkus `WidgetsApp` ...
+2. Salah satu dari `home`, `routes`, `onGenerateRoute`, atau `builder` harus non-null.
+   ...
+```
+
+### 9.5 `## Larangan`
+
+Daftar bullet yang dimulai dengan `DILARANG` atau menjelaskan hal yang tidak boleh dilakukan.
+
+```markdown
+## Larangan
+
+- `darkTheme` dengan brightness bukan `Brightness.dark`.
+- `MaterialApp` tanpa `home`, `routes`, `onGenerateRoute`, atau `builder`.
+  ...
+```
+
+### 9.6 `## Contoh Benar`
+
+Satu blok kode Dart dengan implementasi yang benar.
+
+````markdown
+## Contoh Benar
+
+```dart
+MaterialApp(
+  ...
+);
+```
+````
+
+````
+
+### 9.7 `## Contoh Salah`
+
+Satu atau lebih blok kode Dart dengan komentar `// DILARANG` atau `// salah: ...` yang menjelaskan mengapa salah.
+
+```markdown
+## Contoh Salah
+
+```dart
+// darkTheme tanpa brightness dark
+darkTheme: ThemeData(primaryColor: Colors.blue), // salah: brightness default light
+````
+
+```dart
+// supportedLocales kosong
+supportedLocales: [], // assert error
+```
+
+````
+
+### 9.8 `## Sumber Evaluasi`
+
+Daftar file sumber dan class terkait untuk verifikasi.
+
+```markdown
+## Sumber Evaluasi
+
+- File: `lib/path/to/file.dart`
+- Class terkait: `NamaClass1`, `NamaClass2`
+- Commit rujukan: `<hash-commit>`
+```
+
+## 10. Contoh Lengkap `SKILL.md` (Template Siap Salin)
+
+Berikut adalah contoh lengkap yang dapat langsung disalin sebagai template untuk skill baru:
+
+````markdown
+---
+name: nama-skill-bahasa-indonesia
+description: Deskripsi sangat detail tentang kapan skill ini digunakan, apa yang di-cover, apa yang dihindari, langkah kerja, dan referensi file terkait.
+metadata:
+  kategori: "custom"
+  versi: "1.0.0"
+  commit-terakhir: "<hash-commit>"
+  model: "nama-model-ai"
+---
+
+# Judul Skill dalam Bahasa Indonesia
+
+Penjelasan singkat tujuan skill dalam satu atau dua paragraf.
+
+## Cakupan yang Di-Cover
+
+- Package: `package:nama_package`
+- Class: `NamaClass1`, `NamaClass2`
+- Enum: `EnumNilai1`, `EnumNilai2`
+- Properti: `propertiSatu`, `propertiDua`
+- Method: `namaMethodSatu`, `namaMethodDua`
+
+## Aturan
+
+1. Aturan pertama yang harus diikuti.
+2. Aturan kedua yang harus diikuti.
+3. Aturan ketiga yang harus diikuti.
+
+## Larangan
+
+- DILARANG melakukan sesuatu yang melanggar pola.
+- DILARANG menggunakan properti tanpa validasi yang sesuai.
+
+## Contoh Benar
+
+```dart
+// Implementasi yang benar sesuai aturan skill
+NamaClass(
+  propertiSatu: nilai,
+);
+```
+
+## Contoh Salah
+
+```dart
+// DILARANG: implementasi yang tidak sesuai
+NamaClass(
+  propertiSatu: null, // salah: properti wajib diisi
+);
+```
+
+## Sumber Evaluasi
+
+- File: `path/to/file.dart`
+- Class terkait: `NamaClass1`, `NamaClass2`
+```
+
+## 11. Checklist Sebelum Menyelesaikan SKILL.md
+
+Sebelum mengakhiri pembuatan atau pembaruan `SKILL.md`, verifikasi semua poin berikut:
+
+- [ ] File berada di `.agents/skills/<kategori>/<nama-skill>/SKILL.md`
+- [ ] Nama folder menggunakan kebab-case, bahasa Indonesia, deskriptif
+- [ ] Tidak ada underscore, spasi, huruf besar, angka di awal, atau karakter selain `a-z0-9-`
+- [ ] Front matter YAML lengkap dengan field wajib (`name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.commit-terakhir`)
+- [ ] Semua section wajib ada (Judul/Intro, Cakupan, Aturan, Larangan, Contoh Benar, Contoh Salah, Sumber Evaluasi)
+- [ ] Isi mengikuti riwayat commit yang relevan (tidak diarang dari working directory/staging/untracked)
+- [ ] Deskripsi mencakup trigger, cakupan, larangan, workflow, dan referensi file
+- [ ] Bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi
+- [ ] Backtick digunakan untuk class, properti, method, package
+- [ ] Jika menemukan pelanggaran pada skill lama, telah melaporkan dan mengusulkan perbaikan
+```

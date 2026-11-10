@@ -61,7 +61,7 @@ abstract class BiodataModel with _$BiodataModel {
       tanggalMulaiTapering: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiTapering],
       )?.toLocal(),
-      targetSmokeFreeHari: ParserUtil.parseInt(
+      targetSmokeFreeHari: ParserUtil.parseIntOrNull(
         row[NamaKolom.targetSmokeFreeHari],
       ),
     );

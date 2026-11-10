@@ -9,6 +9,10 @@ import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/impian_screen.dart';
+import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
@@ -80,10 +84,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (biodata == null) {
       return _buildBiodataNull();
     }
+    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
     final impianAsync = ref.watch(impianProvider);
-    L.i(
-      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
-    );
     final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
     final nama = biodata.nama;
     L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
@@ -144,6 +146,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               _buildCardSosCraving(),
               _buildCardProgres(biodata),
+              _buildCardKonsumsiHariIni(biodata, konsumsiAsync),
               _buildCardTargetSmokeFree(biodata),
               _buildCardRingkasanImpian(biodata, impianAsync),
               _buildCardAlasanBerhenti(),
@@ -174,10 +177,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       teksProgres = '$hariBerhenti dari $target hari';
     }
 
-    L.i(
-      'targetSmokeFreeHari=$target, tanggalBerhenti=$tanggalBerhenti, hariBerhenti=$hariBerhenti, teksProgres=$teksProgres',
-    );
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -204,7 +203,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   /// Membangun kartu ringkasan impian (jumlah total dan tercapai) untuk dashboard.
   Widget _buildCardRingkasanImpian(
     BiodataModel biodata,
-    AsyncValue<dynamic> impianAsync,
+    AsyncValue<ImpianState> impianAsync,
   ) {
     final uangDihemat = biodata.uangDihemat;
     String subtitle;
@@ -323,6 +322,67 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               style: Theme.of(context).textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Kartu konsumsi rokok aktual hari ini dibandingkan target tapering.
+  ///
+  /// Jika sedang tapering: tampilkan "X / Y batang" dengan progress bar dan
+  /// warna kondisional (hijau jika dalam target, oranye jika melebihi).
+  /// Jika tidak tapering: tampilkan "Hari Ini: X batang".
+  Widget _buildCardKonsumsiHariIni(
+    BiodataModel biodata,
+    AsyncValue<KonsumsiRokokState> konsumsiAsync,
+  ) {
+    final konsumsiHariIni = konsumsiAsync.asData != null
+        ? KonsumsiHitungHelper.konsumsiHariIni(
+            konsumsiAsync.asData!.value.listKonsumsi,
+          )
+        : 0;
+    final sedangTapering = biodata.sedangTapering;
+    final targetHariIni = biodata.targetRokokHariIni;
+    final melebihiTarget = konsumsiHariIni > targetHariIni;
+    final warnaProgres = melebihiTarget
+        ? const Color(0xFFFF9800)
+        : const Color(0xFF4CAF50);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              'Konsumsi Hari Ini',
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            if (sedangTapering) ...[
+              Text(
+                '$konsumsiHariIni / $targetHariIni batang',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: warnaProgres,
+                ),
+              ),
+              LinearProgressIndicator(
+                value: targetHariIni > 0
+                    ? (konsumsiHariIni / targetHariIni).clamp(0.0, 1.0)
+                    : 0,
+                color: warnaProgres,
+                backgroundColor: warnaProgres.withValues(alpha: 0.2),
+              ),
+            ] else ...[
+              Text(
+                'Hari Ini: $konsumsiHariIni batang',
+                style: Theme.of(context).textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
           ],
         ),
       ),

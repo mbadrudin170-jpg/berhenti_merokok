@@ -34,12 +34,12 @@ class DetailImpianScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Gagal memuat data impian'),
-                  const SizedBox(height: 8),
-                  OutlinedButton(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    const Text('Gagal memuat data impian'),
+                    OutlinedButton(
                     onPressed: () {
                       final _ = ref.refresh(impianProvider);
                     },
@@ -60,12 +60,12 @@ class DetailImpianScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Gagal memuat data biodata'),
-                  const SizedBox(height: 8),
-                  OutlinedButton(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    const Text('Gagal memuat data biodata'),
+                    OutlinedButton(
                     onPressed: () {
                       final _ = ref.refresh(biodataProvider);
                     },
@@ -111,7 +111,15 @@ class DetailImpianScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(CupertinoIcons.pencil),
             onPressed: () =>
-                unawaited(Nav.to(context, FormImpian(impian: impian))),
+                unawaited(
+                  Nav.to(context, FormImpian(impian: impian)).catchError((
+                    Object e,
+                    StackTrace s,
+                  ) {
+                    L.e('Gagal navigasi ke Form Impian: $e $s');
+                    return null;
+                  }),
+                ),
           ),
         ],
       ),

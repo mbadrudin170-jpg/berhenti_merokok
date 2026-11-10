@@ -1,6 +1,6 @@
 ---
 name: gaya
-description: Panduan styling: penggunaan withValues untuk opacity warna, konsistensi warna tema, dan aturan warna hardcode vs ColorScheme.
+description: Panduan styling warna dan tema Flutter - wajib menggunakan withValues(alpha:) untuk opacity (bukan withOpacity yang deprecated), warna UI harus diambil dari ColorScheme/tema, hardcode warna hanya diperbolehkan untuk status semantic yang harus sama di light/dark mode (hijau sukses, merah error, kuning warning), dan EasyLoading wajib dilengkapi catchError pada unawaited.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -10,18 +10,38 @@ metadata:
 
 # Panduan Styling (Gaya)
 
-Skill ini mendokumentasikan aturan styling warna dan tema berdasarkan implementasi nyata.
+Skill ini mendokumentasikan aturan styling warna dan tema berdasarkan implementasi nyata di proyek Flutter. Semua aturan wajib diikuti untuk menjaga konsistensi visual antara mode terang dan gelap, serta menghindari API yang sudah deprecated.
 
-## 1. Opacity Warna: `withValues` (WAJIB)
+## Cakupan yang Di-Cover
 
-### Aturan
-- **WAJIB** gunakan `warna.withValues(alpha: ...)` untuk mengatur opacity.
-- **DILARANG** gunakan `warna.withOpacity(...)` (deprecated sejak Flutter 3.47+).
-- Konsisten di seluruh widget.
+- Package: `package:flutter` (class `Color`, `ThemeData`, `ColorScheme`, `Brightness`), `package:flutter_easyloading` (class `EasyLoading`, `EasyLoadingMaskType`)
+- Class: `Color`, `ThemeData`, `ColorScheme`, `Brightness`, `EasyLoading`, `EasyLoadingMaskType`, `AlwaysStoppedAnimation`
+- Enum: `Brightness.light`, `Brightness.dark`, `EasyLoadingMaskType.black`, `EasyLoadingMaskType.none`
+- Properti: `Color.alpha`, `ColorScheme.primary`, `ColorScheme.surface`, `ColorScheme.onSurface`, `ColorScheme.primaryContainer`, `ThemeData.brightness`, `ThemeData.colorScheme`
+- Method: `Color.withValues(alpha:)`, `Color.withOpacity()`, `Theme.of(context)`, `EasyLoading.show()`, `EasyLoading.dismiss()`
 
-### Contoh
+## Aturan
+
+1. Wajib menggunakan `warna.withValues(alpha: ...)` untuk mengatur opacity warna.
+2. DILARANG menggunakan `warna.withOpacity(...)` karena deprecated sejak Flutter 3.47+.
+3. Wajib menggunakan warna dari `Theme.of(context).colorScheme` untuk teks dan komponen UI agar menyesuaikan mode terang/gelap.
+4. Hardcode warna (HEX/RGBA) hanya diperbolehkan jika warna harus tetap sama di kedua mode tema (mis. brand color, status semantic: hijau sukses, merah error, kuning warning).
+5. DILARANG mengubah nilai HEX/RGBA yang sudah ada menjadi referensi `ColorScheme` jika warna memang harus tetap.
+6. `EasyLoading.show()` dan `EasyLoading.dismiss()` yang dipanggil dengan `unawaited()` wajib dilengkapi `.catchError(...)` untuk menangani error.
+7. Mask type untuk operasi blocking wajib menggunakan `EasyLoadingMaskType.black`.
+8. Konsisten menggunakan `withValues` di seluruh widget, tidak boleh bercampur dengan `withOpacity`.
+
+## Larangan
+
+- DILARANG `withOpacity()` → gunakan `withValues(alpha:)`.
+- DILARANG hardcode warna untuk komponen yang harus ikut tema (primary, surface, onSurface, dll.).
+- DILARANG `EasyLoading.show/dismiss` tanpa `.catchError()` pada `unawaited()`.
+- DILARANG mencampur `withValues` dan `withOpacity` dalam satu file/widget.
+
+## Contoh Benar
+
 ```dart
-// BENAR
+// Opacity dengan withValues (WAJIB)
 Container(
   color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
 )
@@ -31,67 +51,18 @@ LinearProgressIndicator(
 )
 Colors.black.withValues(alpha: 0.5), // Overlay modal
 
-// SALAH (deprecated)
-warna.withOpacity(0.2)
-```
+// Warna dari ColorScheme untuk UI umum
+Text('Judul', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))
+Card(color: Theme.of(context).colorScheme.surfaceContainerHighest)
+FilledButton(onPressed: ..., child: Text('Simpan'))
 
-### Referensi Commit
-- `3b67d309` — `warna.withValues(alpha: 0.2)` di `SosCravingScreen`
-
-## 2. Warna Tema vs Hardcode
-
-### Aturan
-- **WAJIB** gunakan warna dari `Theme.of(context).colorScheme` untuk teks & komponen UI agar menyesuaikan mode terang/gelap.
-- **DIPERBOLEHKAN** warna hardcode (HEX/RGBA) **hanya** jika warna **harus tetap sama** di kedua mode tema (mis. brand color, status color semantic: hijau sukses, merah error, kuning warning).
-- **DILARANG** mengubah nilai HEX/RGBA yang sudah ada menjadi referensi `ColorScheme` jika memang harus tetap.
-
-### Contoh
-```dart
-// MENGIKUTI TEMA (WAJIB untuk UI umum)
-Text('Judul', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-Card(color: Theme.of(context).colorScheme.surfaceContainerHighest),
-FilledButton(onPressed: ..., child: Text('Simpan')), // Otomatis pakai ColorScheme
-
-// HARDCODE DIPERBOLEHKAN (harus sama di light/dark)
-Container(color: const Color(0xFF4CAF50), child: ...), // Brand green
+// Hardcode hanya untuk status semantic yang harus sama di light/dark
+Container(color: const Color(0xFF4CAF50), child: ...), // Brand green / sukses
 Icon(Icons.check_circle, color: const Color(0xFF4CAF50)), // Status sukses
 Icon(Icons.error, color: const Color(0xFFEF5350)), // Status error
 Icon(Icons.warning, color: const Color(0xFFFF9800)), // Status warning
 
-// Progress bar warna kondisional (semantic)
-final warnaProgres = sudahTercapai ? Colors.green : Theme.of(context).colorScheme.primary;
-```
-
-### Referensi Commit
-- `3b67d309` — Warna progress bar kondisional (hijau/primary)
-- `c7337d1` — `VisualTabunganImpian` warna semantic
-
-## 3. Chip Status Pencapaian
-
-### Pola
-Gunakan `Chip` dengan warna background semantic untuk status:
-```dart
-// Tercapai - hijau
-Chip(
-  label: Text('Tercapai!', style: TextStyle(color: Colors.green)),
-  backgroundColor: Color(0xFFE8F5E9), // Green 50
-)
-
-// Belum - primary
-Chip(
-  label: Text('Belum', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-)
-```
-
-## 4. Loading Overlay (EasyLoading)
-
-### Aturan
-- Gunakan `flutter_easyloading` sesuai konfigurasi proyek.
-- **WAJIB** `.catchError(...)` pada `unawaited(EasyLoading.show/dismiss)`.
-- Mask type: `EasyLoadingMaskType.black` untuk operasi blocking.
-
-```dart
+// EasyLoading dengan catchError pada unawaited
 unawaited(
   EasyLoading.show(
     status: 'Memproses...',
@@ -100,16 +71,24 @@ unawaited(
 );
 ```
 
----
+## Contoh Salah
 
-## Larangan
+```dart
+// DILARANG: withOpacity deprecated
+warna.withOpacity(0.2)
 
-- **DILARANG** `withOpacity()` → gunakan `withValues(alpha:)`.
-- **DILARANG** hardcode warna untuk komponen yang harus ikut tema.
-- **DILARANG** `EasyLoading.show/dismiss` tanpa `.catchError()` pada `unawaited()`.
+// DILARANG: Hardcode primary color (harus ikut tema)
+final primary = const Color(0xFF2196F3);
 
-## Referensi Aturan Terkait
+// DILARANG: Semua warna hardcode (tidak support dark mode)
+Container(color: Colors.blue, child: Text('...', style: TextStyle(color: Colors.white)))
 
-- `aturan_bersama.md` — withValues Opacity
-- `aturan_khusus.md` — Standar Notifikasi, Visualisasi Progres
-- `optimasi_ui.md` — Penggunaan Warna dan Tema
+// DILARANG: EasyLoading tanpa catchError
+unawaited(EasyLoading.show(status: 'Memproses...'));
+```
+
+## Sumber Evaluasi
+
+- File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/impian/widget/visual_tabungan_impian.dart`
+- Class terkait: `Color`, `ThemeData`, `ColorScheme`, `Brightness`, `EasyLoading`, `EasyLoadingMaskType`, `AlwaysStoppedAnimation`
+- Commit rujukan: `3b67d309` — `warna.withValues(alpha: 0.2)` di `SosCravingScreen`; `c7337d1` — `VisualTabunganImpian` warna semantic

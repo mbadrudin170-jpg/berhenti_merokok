@@ -34,7 +34,7 @@ class NamaKolom {
   static const String penurunanPerMinggu = 'penurunan_per_minggu';
 
   /// Kolom tanggal mulai rencana penurunan (tapering).
-  static const String tanggalMulaiTapering = 'Tanggal_mulai_tapering';
+  static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
 
   /// Kolom target smoke-free (hari) pada biodata.
   static const String targetSmokeFreeHari = 'target_smoke_free_hari';
@@ -64,4 +64,8 @@ class NamaKolom {
 
   /// Kolom teks alasan berhenti.
   static const String teks = 'teks';
+
+  // Kolom tabel konsumsi_rokok.
+  /// Kolom flag slip/relapse konsumsi rokok.
+  static const String isSlip = 'is_slip';
 }

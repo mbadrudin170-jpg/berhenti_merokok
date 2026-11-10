@@ -1,6 +1,6 @@
 ---
 name: build-runner-codegen
-description: Build runner dan code generation - freezed, riverpod generator, build_runner commands, watch mode, delete-conflicting-outputs, generated files jangan diedit manual.
+description: Build runner dan code generation Flutter - Freezed, Riverpod generator, build_runner commands (build, watch), watch mode, delete-conflicting-outputs, file generated (`.g.dart`, `.freezed.dart`, `.mocks.dart`) dilarang diedit manual, dan konfigurasi build.yaml.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -10,18 +10,36 @@ metadata:
 
 # Build Runner & Code Generation
 
-Skill ini mendokumentasikan penggunaan `build_runner` untuk code generation (Freezed, Riverpod, JSON serializable, Mockito).
+Skill ini mendokumentasikan penggunaan `build_runner` untuk code generation (Freezed, Riverpod, JSON serializable, Mockito) di proyek Flutter.
 
-## 1. Kapan Harus Jalankan build_runner
+## Cakupan yang Di-Cover
 
-### Wajib jalankan setelah:
-- Ubah/tambah model **Freezed** (file `.freezed.dart` / `.g.dart`)
-- Ubah/tambah **Riverpod Notifier** (`@riverpod` / `@Riverpod` → `.g.dart`)
-- Ubah/tambah **Mockito** `@GenerateMocks`
-- Ubah/tambah **JSON Serializable** `@JsonSerializable`
-- Pull branch yang ada perubahan generated files
+- Package: `package:build_runner` (class `BuildRunner`), `package:freezed` (annotation `@freezed`), `package:riverpod_annotation` (annotation `@riverpod`, `@Riverpod`), `package:json_annotation` (annotation `@JsonSerializable`), `package:mockito` (annotation `@GenerateMocks`)
+- Class: `BuildRunner`, `Freezed`, `RiverpodGenerator`, `JsonSerializable`, `GenerateMocks`
+- File generated: `*.g.dart`, `*.freezed.dart`, `*.mocks.dart`
+- Method: `dart run build_runner build`, `dart run build_runner watch`
 
-## 2. Command Standar
+## Aturan
+
+1. Wajib jalankan `build_runner build` setelah:
+   - Ubah/tambah model Freezed (file `.freezed.dart` / `.g.dart`)
+   - Ubah/tambah Riverpod Notifier (`@riverpod` / `@Riverpod` → `.g.dart`)
+   - Ubah/tambah Mockito `@GenerateMocks`
+   - Ubah/tambah JSON Serializable `@JsonSerializable`
+   - Pull branch yang ada perubahan generated files
+2. Wajib pakai flag `--delete-conflicting-outputs` untuk menghindari error "conflicting outputs".
+3. File generated (`.g.dart`, `.freezed.dart`, `.mocks.dart`) DILARANG diedit manual.
+4. Perubahan hanya di source (`.dart` biasa), lalu jalankan `build_runner`.
+5. Jika conflict, hapus file generated lalu `build_runner build --delete-conflicting-outputs`.
+
+## Larangan
+
+- DILARANG edit file `.g.dart` / `.freezed.dart` / `.mocks.dart` manual.
+- DILARANG commit file generated tanpa source changes (review diff).
+- DILARANG `build_runner` tanpa `--delete-conflicting-outputs` (kecuali clean build pertama).
+- DILARANG ignore generated files di `.gitignore` (harus di-commit untuk CI).
+
+## Contoh Benar
 
 ```bash
 # Build sekali (clean rebuild)
@@ -31,30 +49,8 @@ dart run build_runner build --delete-conflicting-outputs
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-### Flag `--delete-conflicting-outputs`
-- **WAJIB** dipakai untuk menghindari error "conflicting outputs" saat file generated sudah ada tapi beda hash.
-- Tanpa flag ini, build_runner akan error jika file generated sudah ada dan beda.
-
-## 3. File Generated - JANGAN DIEDIT MANUAL
-
-### Pola nama file generated:
-| Source | Generated |
-|--------|-----------|
-| `model.freezed.dart` | `model.freezed.dart`, `model.g.dart` |
-| `@riverpod` class | `provider.g.dart` |
-| `@GenerateMocks` | `mocks.mocks.dart` |
-| `@JsonSerializable` | `model.g.dart` |
-
-### Aturan
-- **DILARANG** edit file `.g.dart` / `.freezed.dart` / `.mocks.dart` manual.
-- Perubahan **HANYA** di source (`.dart` biasa), lalu jalankan `build_runner`.
-- Jika conflict, hapus file generated lalu `build_runner build --delete-conflicting-outputs`.
-
-## 4. Konfigurasi build.yaml
-
-File `build.yaml` di root project mengatur builder options:
-
 ```yaml
+# build.yaml di root project
 targets:
   $default:
     builders:
@@ -68,54 +64,18 @@ targets:
             # Opsi riverpod
 ```
 
-### Referensi Commit
-- `3b67d309` — Freezed models + Riverpod generator setup
+## Contoh Salah
 
-## 5. Troubleshooting Umum
-
-### "Conflicting outputs"
 ```bash
-# Hapus generated files lalu rebuild
-rm -f lib/**/*.g.dart lib/**/*.freezed.dart test/**/*.mocks.dart
-dart run build_runner build --delete-conflicting-outputs
+# DILARANG: Tanpa --delete-conflicting-outputs
+dart run build_runner build
+
+# DILARANG: Edit file generated manual
+# File: model.g.dart (DIUBAH SECARA MANUAL!) - DILARANG
 ```
 
-### "Invalid constant" / "Constant evaluation error"
-- Pastikan Freezed constructor pakai `const` dan field final.
-- Cek import cycle (generated file import source yang import generated).
+## Sumber Evaluasi
 
-### Riverpod generator not generating
-- Pastikan `@riverpod` / `@Riverpod` di class, bukan di method.
-- Class harus `extends _$ClassName` (generated).
-- Jalankan `build_runner` setelah save file.
-
-### Freezed: "The getter 'valueOrNull' isn't defined"
-- Pastikan model pakai `abstract class` dengan Freezed union/sealed.
-- `AsyncValue` Riverpod sudah punya `valueOrNull` (bukan Freezed).
-
-## 6. CI/CD Integration
-
-GitHub Actions (`.github/workflows/build-apk.yml`) otomatis jalanin:
-```yaml
-- name: Generate code
-  run: dart run build_runner build --delete-conflicting-outputs
-```
-
-Local development: gunakan `watch` mode agar otomatis regenerate.
-
-## 7. Larangan
-
-- **DILARANG** commit file generated tanpa source changes (review diff).
-- **DILARANG** edit `.g.dart` / `.freezed.dart` manual.
-- **DILARANG** `build_runner` tanpa `--delete-conflicting-outputs` (kecuali clean build pertama).
-- **DILARANG** ignore generated files di `.gitignore` (harus di-commit untuk CI).
-
-## Referensi Aturan Sumber
-
-- `aturan_bersama.md` — Generated files never edited by hand, change source + run build_runner
-- `model-state-freezed-abstract` skill — Freezed abstract class pattern
-
-## Referensi Commit Terkait
-
-- `3b67d309` — Setup Freezed + Riverpod generator
-- `be04199e` — Mockito generate mocks
+- File: `build.yaml`, `lib/**/*.freezed.dart`, `lib/**/*.g.dart`, `test/**/*.mocks.dart`
+- Class terkait: `BuildRunner`, `Freezed`, `RiverpodGenerator`
+- Commit rujukan: `3b67d309` — Freezed models + Riverpod generator setup; `be04199e` — Mockito generate mocks

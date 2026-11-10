@@ -2,9 +2,11 @@ import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_s
 import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
 import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
 import 'package:berhenti_merokok/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/pengaturan/screens/pengaturan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
+import 'package:berhenti_merokok/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -44,6 +46,14 @@ class LainnyaScreen extends StatelessWidget {
             _buildTombolCustom(
               () => Nav.to(context, const KalenderSmokeFreeScreen()),
               'Kalender Smoke-Free',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const KonsumsiRokokScreen()),
+              'Konsumsi Rokok',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const ToxinPelacakanScreen()),
+              'Pelacakan Toxin',
             ),
           ],
         ),

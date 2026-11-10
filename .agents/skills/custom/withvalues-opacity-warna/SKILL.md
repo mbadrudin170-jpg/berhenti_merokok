@@ -1,6 +1,6 @@
 ---
 name: withvalues-opacity-warna
-description: Indeks - merujuk ke skill 'gaya' untuk aturan withValues opacity. Use 'gaya' skill for complete styling guidance including withValues, theme colors, chip status, loading overlay.
+description: Indeks aturan withValues untuk opacity warna di Flutter - merujuk ke skill 'gaya' untuk panduan lengkap styling. Wajib menggunakan warna.withValues(alpha: ...) untuk opacity, DILARANG menggunakan warna.withOpacity() yang deprecated sejak Flutter 3.47+.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -10,38 +10,54 @@ metadata:
 
 # Indeks: withValues Opacity Warna
 
-**Skill ini hanyalah indeks.** Gunakan skill **`gaya`** untuk panduan lengkap styling termasuk:
+**Skill ini hanyalah indeks.** Gunakan skill **`gaya`** untuk panduan lengkap styling termasuk withValues opacity, warna tema vs hardcode, chip status pencapaian, dan loading overlay EasyLoading.
 
-| Topik                                                                                              | Lokasi di skill `gaya`           |
-| -------------------------------------------------------------------------------------------------- | -------------------------------- |
-| **withValues opacity** (WAJIB, `withOpacity` deprecated)                                           | Bagian 1: Opacity Warna          |
-| **Warna tema vs Hardcode** (ColorScheme untuk UI umum, hardcode hanya untuk brand/status semantic) | Bagian 2: Warna Tema vs Hardcode |
-| **Chip Status Pencapaian** (hijau/primary dengan backgroundColor semantic)                         | Bagian 3: Chip Status Pencapaian |
-| **Loading Overlay (EasyLoading)** (unawaited + catchError, maskType.black)                         | Bagian 4: Loading Overlay        |
+## Cakupan yang Di-Cover
 
-## Ringkasan Aturan withValues (dari `gaya`)
+- Package: `package:flutter` (class `Color`, `ThemeData`, `ColorScheme`, `AlwaysStoppedAnimation`)
+- Class: `Color`, `ThemeData`, `ColorScheme`, `AlwaysStoppedAnimation`
+- Method: `Color.withValues(alpha:)`, `Color.withOpacity()`, `Theme.of(context)`
 
-- **WAJIB** gunakan `warna.withValues(alpha: ...)` untuk mengatur opacity.
-- **DILARANG** gunakan `warna.withOpacity(...)` (deprecated sejak Flutter 3.47+).
-- Konsisten di seluruh widget.
+## Aturan
+
+1. Wajib menggunakan `warna.withValues(alpha: ...)` untuk mengatur opacity warna.
+2. DILARANG menggunakan `warna.withOpacity(...)` karena deprecated sejak Flutter 3.47+.
+3. Konsisten menggunakan `withValues` di seluruh widget, tidak boleh bercampur dengan `withOpacity`.
+4. Untuk panduan lengkap (warna tema vs hardcode, chip status, loading overlay), lihat skill `gaya`.
+
+## Larangan
+
+- DILARANG `withOpacity()` → gunakan `withValues(alpha:)`.
+- DILARANG mencampur `withValues` dan `withOpacity` dalam satu file/widget.
+
+## Contoh Benar
 
 ```dart
-// BENAR
-Container(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1))
-LinearProgressIndicator(backgroundColor: warnaProgres.withValues(alpha: 0.2))
-Colors.black.withValues(alpha: 0.5) // Overlay modal
-
-// SALAH (deprecated)
-warna.withOpacity(0.2)
+// BENAR: withValues untuk opacity
+Container(
+  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+)
+LinearProgressIndicator(
+  backgroundColor: warnaProgres.withValues(alpha: 0.2),
+  valueColor: AlwaysStoppedAnimation(warnaProgres),
+)
+Colors.black.withValues(alpha: 0.5), // Overlay modal
 ```
 
-## Referensi Commit
+## Contoh Salah
 
-- `3b67d309` — `warna.withValues(alpha: 0.2)` di `SosCravingScreen`
-- `c7337d1` — `VisualTabunganImpian` warna semantic
+```dart
+// DILARANG: withOpacity deprecated
+warna.withOpacity(0.2)
 
-## Referensi Aturan Sumber
+// DILARANG: Campur withValues dan withOpacity
+Container(color: warnaA.withValues(alpha: 0.1))
+Container(color: warnaB.withOpacity(0.2)) // SALAH! Bercampur dengan withValues di atas
+```
 
-- `aturan_bersama.md` — withValues Opacity
-- `aturan_khusus.md` — Standar Notifikasi, Visualisasi Progres
-- `optimasi_ui.md` — Penggunaan Warna dan Tema
+## Sumber Evaluasi
+
+- File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/impian/widget/visual_tabungan_impian.dart`
+- Class terkait: `Color`, `ThemeData`, `ColorScheme`, `AlwaysStoppedAnimation`
+- Commit rujukan: `3b67d309` — `warna.withValues(alpha: 0.2)` di `SosCravingScreen`; `c7337d1` — `VisualTabunganImpian` warna semantic
+- Skill lengkap: `gaya`

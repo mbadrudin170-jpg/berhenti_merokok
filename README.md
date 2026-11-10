@@ -1,264 +1,291 @@
 # Berhenti Merokok
 
-Aplikasi mobile pendamping proses berhenti merokok yang membantu pengguna mencatat data pribadi, memantau progres smoke-free, mengelola impian (tujuan) yang ingin dicapai, serta menyediakan bantuan cepat saat mengalami dorongan merokok. Aplikasi dibangun dengan Flutter dan berjalan secara luring (*offline-first*) dengan penyimpanan lokal berbasis SQLite. Aplikasi juga mendukung penjadwalan pengingat harian melalui notifikasi lokal.
+Aplikasi Flutter pendamping proses berhenti merokok yang membantu pengguna mencatat data pribadi, memantau progres *smoke-free*, mencatat dorongan merokok, mengelola impian, serta mengakses dukungan cepat saat muncul keinginan untuk merokok. Aplikasi berjalan dengan pendekatan *offline-first* menggunakan penyimpanan lokal (SQLite dan preferensi lokal), dengan dukungan notifikasi pengingat harian sesuai kemampuan platform.
 
 ## Tujuan Aplikasi
 
-Aplikasi ini dirancang untuk mendukung pengguna yang sedang berupaya berhenti merokok dengan menyediakan:
+Berdasarkan implementasi yang tersedia, aplikasi ini bertujuan untuk:
 
-- Pencatatan biodata pengguna, termasuk riwayat merokok, tanggal mulai berhenti merokok, dan mode berhenti (seketika atau bertahap/tapering).
-- Pemantauan progres smoke-free secara real-time: durasi berhenti, uang yang dihemat, dan jumlah rokok yang tidak dihisap.
-- Pengelolaan daftar impian (tujuan) beserta target jumlah dan target tanggal, dengan progres berbasis saldo terkumpul.
-- Pencatatan dorongan merokok (*craving*) beserta pemicu dan intensitasnya.
-- Kalender smoke-free yang menandai hari-hari tanpa rokok.
-- Pemulihan kesehatan berbasis milestone durasi smoke-free.
-- Pencapaian (*badge*) berdasarkan progres pengguna.
-- Bantuan cepat (SOS Craving) saat dorongan merokok muncul.
-- Pengingat harian melalui notifikasi lokal.
-- Penyesuaian tampilan tema aplikasi (sistem, terang, gelap).
-- Penyediaan data dummy untuk keperluan pengujian dan pengembangan.
+- Membantu pengguna mencatat biodata dan parameter kebiasaan merokok.
+- Memantau progres sejak tanggal mulai berhenti merokok secara berkelanjutan.
+- Menyediakan pencatatan konsumsi rokok aktual, termasuk kondisi *slip*.
+- Mencatat dorongan merokok (*craving*) beserta pemicu, intensitas, dan catatan.
+- Menyediakan dukungan motivasi dan intervensi cepat (SOS Craving, alasan berhenti).
+- Mengelola impian/target sebagai tujuan pemanfaatan dana yang dihemat.
+- Menyajikan informasi pemulihan kesehatan, pencapaian (*badge*), kalender *smoke-free*, dan estimasi zat berbahaya yang dihindari.
+- Menyediakan cadangan dan pemulihan data lokal serta utilitas data dummy untuk keperluan pengujian.
 
 ## Fitur Utama
 
-### 1. Biodata Pengguna
+### 1. Onboarding dan Biodata Pengguna
+- Alur awal aplikasi: jika biodata belum ada, pengguna diarahkan ke formulir biodata (`FormBiodata` dengan mode pembuatan awal).
+- Penyimpanan dan pembaruan data biodata, meliputi:
+  - Nama dan tanggal lahir.
+  - Jumlah rokok per hari, harga rokok per bungkus, dan jumlah batang per bungkus.
+  - Tanggal mulai merokok dan tanggal mulai berhenti merokok.
+  - Target *smoke-free* (hari).
+- Mendukung dua mode berhenti merokok (`ModeBerhenti`):
+  - **Seketika**.
+  - **Bertahap (tapering)** dengan parameter penurunan per minggu dan tanggal mulai *tapering*.
+- Data biodata disimpan di tabel SQLite `biodata` dan dikelola melalui *notifier* Riverpod.
+- Perhitungan turunan (berbasis ekstensi model biodata) digunakan secara konsisten di berbagai layar, antara lain:
+  - Hari *smoke-free* (normalisasi tanggal, tanpa komponen waktu).
+  - Jumlah rokok yang tidak dihisap.
+  - Estimasi uang yang dihemat.
+  - Target rokok hari ini untuk mode *tapering* (dengan klamping agar tidak negatif dan tidak melebihi jumlah rokok per hari).
 
-- Menyimpan dan menampilkan data biodata pengguna: nama, tanggal lahir, jumlah rokok per hari, harga rokok per bungkus, batang per bungkus, tanggal mulai merokok, dan tanggal mulai berhenti merokok.
-- Mendukung alur pertama kali (onboarding): pengguna baru diarahkan ke formulir biodata sebelum masuk ke aplikasi.
-- Mendukung mode ubah: biodata yang sudah ada dapat diperbarui tanpa membuat data baru.
-- Data disimpan secara lokal di SQLite dan dimuat ulang saat aplikasi dijalankan.
-- Formulir menggunakan validasi (`GlobalKey<FormState>`) dengan pemeriksaan nilai positif sebelum penyimpanan.
+### 2. Dashboard
+- Menampilkan ringkasan progres pengguna, termasuk durasi berhenti merokok dan metrik terkait yang dihitung dari biodata.
+- Menyediakan akses cepat ke bantuan SOS Craving dari bilah aplikasi.
+- Menyediakan navigasi ke fitur pendukung seperti pemulihan kesehatan dan pencapaian (sesuai implementasi layar dashboard).
+- Pembaruan waktu/durasi yang bersifat periodik diisolasi pada widget terpisah agar pembaruan tidak memicu *rebuild* seluruh halaman.
 
-### 2. Mode Berhenti (Seketika / Bertahap)
+### 3. Pemulihan Kesehatan
+- Menampilkan daftar *milestone* pemulihan kesehatan berdasarkan durasi *smoke-free*.
+- Cakupan *milestone* yang didefinisikan dalam konstanta aplikasi: dari **20 menit** hingga **15 tahun**, lengkap dengan judul dan deskripsi manfaat.
+- Status *milestone* ditentukan dari durasi *smoke-free* pengguna (tercapai/belum) dan dapat menampilkan *milestone* berikutnya.
 
-- Mendukung dua mode berhenti merokok:
-  - **Seketika**: target rokok per hari tetap sama dengan jumlah rokok per hari.
-  - **Bertahap (tapering)**: target rokok per hari menurun secara kumulatif berdasarkan minggu yang telah berlalu sejak tanggal mulai penurunan.
-- Mode bertahap memerlukan nilai penurunan per minggu (bilangan bulat positif) dan tanggal mulai penurunan yang valid.
-- Target rokok dihitung dengan rumus `target = jumlahRokokPerHari - (penurunanPerMinggu * mingguBerlalu)`, dengan klamping agar tidak kurang dari nol dan tidak melebihi jumlah rokok per hari.
-- Jika tanggal mulai berada di masa depan, jumlah minggu yang telah berlalu dianggap nol sampai tanggal tersebut tercapai.
+### 4. Pencapaian (*Badge*)
+- Menghitung dan menampilkan daftar pencapaian berdasarkan progres pengguna.
+- Kategori pencapaian yang dihitung dalam helper aplikasi meliputi:
+  - Durasi *smoke-free* (mis. 1, 3, 7, 14, 30, 90, 180, 365 hari).
+  - Jumlah rokok yang tidak dihisap (mis. 100, 500, 1000 batang).
+  - Uang yang dihemat (mis. Rp100.000, Rp500.000, Rp1.000.000).
+  - Jumlah impian tercapai (mis. 1 dan 3 impian).
+- Menampilkan ringkasan pencapaian yang telah diraih dan kondisi kosong ketika data pendukung belum tersedia.
 
-### 3. Dashboard
+### 5. Kalender *Smoke-Free*
+- Menampilkan kalender bulanan dengan penandaan hari-hari *smoke-free* sejak tanggal mulai berhenti merokok.
+- Menyediakan navigasi antarbulan.
+- Menampilkan ringkasan progres berdasarkan data biodata.
+- Menangani kondisi data belum lengkap (mis. biodata atau tanggal mulai berhenti belum tersedia) dengan tampilan/pesan yang sesuai.
 
-- Menampilkan durasi berhenti merokok secara real-time (hari, jam, menit, detik) dengan pembaruan per detik pada widget terisolasi agar tidak memicu rebuild seluruh halaman.
-- Menampilkan uang yang dihemat dan jumlah rokok yang tidak dihisap selama periode smoke-free.
-- Menampilkan informasi kerugian saat merokok: total rokok yang dihisap, uang yang terbuang, dan waktu hidup yang hilang.
-- Menyediakan kartu milestone pemulihan kesehatan (navigasi ke halaman Pemulihan Kesehatan) dan kartu pencapaian (navigasi ke halaman Pencapaian).
-- Menampilkan sapaan nama pengguna.
-- Menyediakan tombol SOS Craving pada app bar.
+### 6. Impian (Tujuan)
+- Pengelolaan daftar impian: tambah, ubah, hapus, dan lihat detail impian.
+- Data impian mencakup informasi seperti nama, jumlah target, target tanggal, dan waktu pembuatan (sesuai model/tabel impian).
+- Menampilkan progres/visualisasi tabungan impian berbasis saldo terkumpul (uang dihemat dari tidak merokok).
+- Menyediakan pengurutan daftar impian (`SortImpian`) dengan opsi:
+  - Nama A-Z / Z-A.
+  - Jumlah terkecil / terbesar.
+  - Paling mendekati terkumpul / sisa terbesar.
+- Menampilkan kondisi kosong ketika belum ada impian.
 
-### 4. Pemulihan Kesehatan
+### 7. Alasan Berhenti
+- Pencatatan dan pengelolaan daftar alasan berhenti merokok (tambah, ubah, hapus).
+- Data disimpan pada tabel `alasan_berhenti`.
+- Alasan terbaru dapat ditampilkan sebagai penguat motivasi pada layar SOS Craving (kartu "Ingat alasanmu") ketika data tersedia.
 
-- Menampilkan daftar milestone pemulihan kesehatan berdasarkan durasi smoke-free (20 menit hingga 15 tahun), beserta deskripsi manfaat pada setiap milestone.
-- Setiap milestone ditandai status tercapai atau belum.
-- Menampilkan header durasi smoke-free yang diperbarui setiap detik pada widget terisolasi.
+### 8. Diary Craving
+- Pencatatan entri dorongan merokok (*craving*) dengan atribut seperti tanggal kejadian, pemicu, intensitas, catatan, dan waktu dibuat (sesuai model/implementasi).
+- Mendukung tambah, ubah, dan hapus entri.
+- Menampilkan daftar riwayat dan kondisi kosong ketika belum ada catatan.
+- Tersedia analisis sederhana pola jam *craving* melalui `PolaCravingHelper`:
+  - Menghitung jam lokal teratas dari data entri.
+  - Jam teratas hanya ditentukan jika jumlah entri memenuhi ambang minimum (≥ 3 entri).
 
-### 5. Pencapaian (Badge)
+### 9. Konsumsi Rokok
+- Pencatatan konsumsi rokok harian aktual pada tabel `konsumsi_rokok`.
+- Mendukung pencatatan cepat (*quick log* +1 batang) dari layar konsumsi.
+- Menyediakan formulir entri konsumsi dan penyajian ringkasan harian.
+- Dapat menandai kondisi *slip* pada entri konsumsi (ditampilkan sebagai penanda pada ringkasan/daftar).
 
-- Menghitung dan menampilkan daftar badge berdasarkan progres pengguna: durasi smoke-free, jumlah rokok yang tidak dihisap, uang yang dihemat, dan jumlah impian tercapai.
-- Menampilkan ringkasan jumlah badge tercapai dari total badge.
-- Menampilkan state kosong (informasi) apabila biodata belum lengkap.
+### 10. SOS Craving
+- Layar bantuan cepat saat dorongan merokok muncul dengan tiga tab:
+  - **Napas 4-7-8** (latihan pernapasan terstruktur).
+  - **Timer 3 Menit**.
+  - **Distraksi** (daftar aktivitas pengalihan).
+- Menampilkan kartu pengingat alasan berhenti terbaru (jika tersedia) sebagai penguat motivasi.
 
-### 6. Kalender Smoke-Free
+### 11. Pelacakan Toxin
+- Menampilkan estimasi zat berbahaya yang dihindari berdasarkan jumlah rokok yang tidak dihisap (diturunkan dari progres biodata).
+- Perhitungan dilakukan oleh helper murni (`ToxinHitungHelper`) menggunakan daftar referensi statis dan faktor ilustratif per batang rokok.
+- Zat yang dimodelkan antara lain: Tar, Nikotin, Karbon Monoksida, Formaldehida, Bensen, Ammonia, dan Arsen, beserta jenis zat, kuantitas dihindari, efek singkat, dan sumber referensi umum.
+- Menampilkan keadaan khusus ketika biodata belum ada, tanggal mulai berhenti belum ditetapkan, atau belum ada rokok yang dihindari.
+- Layar mencantumkan penafian bahwa data merupakan perkiraan ilustratif berdasarkan referensi kesehatan umum (WHO/CDC/AHA/ACS), bukan klaim medis aplikasi.
 
-- Menampilkan kalender bulanan yang menandai hari-hari smoke-free sejak tanggal mulai berhenti merokok.
-- Menyediakan navigasi bulan sebelumnya dan berikutnya.
-- Menampilkan ringkasan progres smoke-free.
+### 12. Pengaturan dan Notifikasi
+- **Tema aplikasi**: pilihan tema Sistem, Terang, atau Gelap dengan penyimpanan preferensi.
+- **Pengingat harian** (pada platform yang mendukung):
+  - Aktivasi/nonaktivasi, pemilihan waktu, dan penjadwalan ulang saat aplikasi dimulai jika aktif.
+  - Uji coba notifikasi langsung.
+- **Check-in pagi** (pada platform yang mendukung):
+  - Aktivasi/nonaktivasi dan pemilihan waktu pengingat.
+- **Pengingat pola craving** (pada platform yang mendukung):
+  - Aktivasi/nonaktivasi berdasarkan jam *craving* teratas dari data diary.
+  - Jika data diary belum cukup (kurang dari ambang minimum), preferensi dapat disimpan tanpa penjadwalan waktu otomatis.
+- **Penanganan izin dan perilaku platform**:
+  - Permintaan izin notifikasi dilakukan sesuai platform yang didukung implementasi.
+  - Navigasi saat notifikasi ditekan ditangani melalui *payload* dan *navigator key*, termasuk pemeriksaan *launch details* saat aplikasi dibuka dari kondisi tertentu (sesuai dukungan platform).
+  - Zona waktu perangkat dideteksi menggunakan `flutter_timezone` dengan fallback ke `Asia/Jakarta` bila deteksi/lokasi zona waktu gagal.
+- **Keterbatasan platform notifikasi terjadwal**: penjadwalan/pengaturan notifikasi terjadwal tidak ditampilkan atau tidak didukung pada platform Web, Linux, dan Windows (sesuai pemeriksaan platform dalam kode).
 
-### 7. Impian (Tujuan)
+### 13. Cadangan dan Ekspor Data
+- Layar **Cadangan & Ekspor Data** untuk:
+  - **Ekspor** data lokal ke berkas cadangan JSON.
+  - **Pemulihan** data dari berkas cadangan JSON.
+- Cakupan data cadangan (versi format saat ini: 1) meliputi tabel: `biodata`, `impian`, `diary_craving`, dan `alasan_berhenti`.
+- Ekspor/pemulihan berkas hanya tersedia pada platform yang didukung implementasi (bukan Web). Pada platform tidak didukung, layar menampilkan pesan bahwa fitur tidak tersedia.
+- Proses pemulihan:
+  - Memvalidasi berkas/payload cadangan sebelum diterapkan.
+  - Meminta konfirmasi pengguna (termasuk konfirmasi destruktif karena data lama diganti).
+  - Melakukan pemulihan secara atomik (transaksi basis data) dan menyegarkan *provider* terkait setelah berhasil.
+- Penanganan kesalahan dilakukan dengan umpan balik kepada pengguna dan pencatatan log.
 
-- Menampilkan daftar impian dengan nama, jumlah target, dan target tanggal.
-- Mendukung penambahan, pengubahan, dan penghapusan impian.
-- Menyediakan halaman detail impian dengan aksi ubah.
-- Menampilkan state kosong ("Belum ada impian") beserta tombol tambah untuk menambah impian pertama.
-- Setiap item daftar memiliki identitas stabil (`ValueKey`) agar posisi scroll dan identitas item tetap konsisten.
-- Daftar menggunakan `ListView.separated` untuk efisiensi pada jumlah data yang besar.
-- Mendukung pengurutan (sort) impian melalui bottom sheet (mendekati terkumpul, dan lainnya).
-- Menampilkan saldo terkumpul (uang yang dihemat dari tidak merokok) dan progress bar serta teks "Sisa" pada setiap item impian berbasis saldo terkumpul.
-- Menampilkan total jumlah impian.
+### 14. Data Dummy
+- Layar utilitas untuk memasukkan, menghapus, dan mereset data dummy (biodata dan impian).
+- Operasi dijalankan dengan konfirmasi pengguna dan indikator proses.
+- Setelah operasi, *provider* terkait diperbarui agar antarmuka menampilkan data terbaru.
 
-### 8. SOS Craving
-
-- Halaman bantuan cepat saat dorongan merokok muncul, dengan tiga tab:
-  - Latihan napas 4-7-8 (tarik 4 detik, tahan 7 detik, hembus 8 detik) sebanyak 4 siklus.
-  - Timer craving 3 menit.
-  - Daftar distraksi untuk membantu pengguna melewati dorongan merokok.
-
-### 9. Diary Craving
-
-- Mencatat dorongan merokok (*craving*) dengan pemicu (kategori), intensitas (1-5), catatan, dan tanggal kejadian.
-- Mendukung penambahan, pengubahan, dan penghapusan catatan craving.
-- Menampilkan state kosong ("Belum ada catatan craving") beserta tombol tambah.
-- Setiap item daftar memiliki identitas stabil (`ValueKey`).
-- Daftar menggunakan `ListView.separated`.
-
-### 10. Notifikasi Pengingat Harian
-
-- Menyediakan pengingat harian terjadwal pada jam dan menit yang dipilih pengguna, dengan payload untuk navigasi saat notifikasi ditekan.
-- Mendukung permintaan izin notifikasi per platform (Web, Android, iOS, macOS).
-- Mendukung uji coba notifikasi langsung.
-- Menyimpan status aktif dan waktu pengingat melalui `SharedPreferences`.
-- Menjadwalkan ulang pengingat saat aplikasi dibuka apabila aktif.
-- Menangani tiga kondisi lifecycle aplikasi saat notifikasi ditekan (foreground, background, terminated) melalui `getNotificationAppLaunchDetails()`.
-- Menggunakan zona waktu perangkat (dengan fallback `Asia/Jakarta`) agar pengingat mengikuti waktu lokal pengguna.
-- ID notifikasi uji coba terpisah dari ID pengingat utama.
-- Fitur pengingat terjadwal tidak ditampilkan pada platform yang tidak mendukung (Web, Linux, Windows).
-
-### 11. Pengaturan
-
-- Halaman pengaturan menyediakan pemilihan tema aplikasi (Sistem, Terang, Gelap) melalui menu popup.
-- Menyediakan pengaturan pengingat harian: toggle aktif/nonaktif, pemilih waktu, dan uji coba notifikasi.
-- Penanganan error pada aksi dicatat melalui logger proyek.
-
-### 12. Data Dummy
-
-- Menyediakan operasi masukkan, hapus, dan reset data dummy untuk biodata dan impian.
-- Data dummy menggunakan tanggal relatif terhadap waktu sekarang agar tetap realistis.
-- Sebelum memasukkan data dummy biodata, data biodata yang ada dihapus agar data dummy menjadi satu-satunya biodata yang terbaca (karena `ambilSatu` mengembalikan baris pertama).
-- Dialog konfirmasi ditampilkan sebelum operasi dijalankan, dengan pesan yang menjelaskan konsekuensi penggantian biodata.
-- Setelah operasi dummy, provider data diperbarui sehingga UI menampilkan data terbaru.
-
-### 13. Navigasi Utama
-
-- Tab utama: Dashboard, Biodata, Impian, dan Lainnya.
-- Inisialisasi tab secara *lazy*: tab hanya dibangun saat pertama kali dipilih, lalu state-nya dipertahankan melalui `IndexedStack`.
-- Layar "Lainnya" menyediakan akses ke Pengaturan, Dummy, SOS Craving, Pemulihan Kesehatan, Diary Craving, dan Kalender Smoke-Free.
+### 15. Navigasi Utama dan Layar Lainnya
+- Navigasi tab utama menggunakan `NavigationBar` dengan empat tujuan: **Dashboard**, **Biodata**, **Impian**, dan **Lainnya**.
+- Inisialisasi tab bersifat *lazy*: tab dibangun saat pertama kali dipilih dan dipertahankan menggunakan `IndexedStack`.
+- Layar **Lainnya** menyediakan akses ke: Pengaturan, Dummy, SOS Craving, Pemulihan Kesehatan, Diary Craving, Alasan Berhenti, Kalender *Smoke-Free*, Konsumsi Rokok, dan Pelacakan Toxin.
 
 ## Teknologi yang Digunakan
 
-### Framework dan Bahasa
+### Bahasa dan Kerangka Kerja
+- **Dart** (SDK: `^3.13.7`)
+- **Flutter** (Material Design, `uses-material-design: true`)
 
-- **Flutter** (SDK `^3.13.7`)
-- **Dart**
-
-### Dependensi Utama (pubspec.yaml)
-
-| Paket | Kegunaan |
+### Dependensi Utama (`pubspec.yaml`)
+| Paket | Kegunaan (berdasarkan penggunaan proyek) |
 | --- | --- |
-| `flutter_riverpod` | Pengelolaan state reaktif |
-| `riverpod_annotation` / `riverpod_generator` | Generator provider dan notifier |
-| `freezed_annotation` / `freezed` | State dan model immutable |
-| `sqflite` | Database SQLite lokal |
-| `sqflite_common_ffi_web` | Dukungan SQLite pada platform web |
-| `shared_preferences` | Penyimpanan preferensi sederhana (tema, notifikasi) |
-| `flutter_easyloading` | Overlay loading pada aksi simpan |
-| `adaptive_dialog` | Dialog konfirmasi adaptif |
+| `flutter_riverpod`, `riverpod_annotation` | Manajemen state reaktif dan anotasi provider/notifier |
+| `freezed_annotation` | Model/state *immutable* (dengan kode hasil *generate*) |
+| `sqflite` | Basis data SQLite lokal |
+| `sqflite_common_ffi_web` | Dukungan SQLite pada platform Web |
+| `shared_preferences` | Penyimpanan preferensi lokal (tema, pengaturan notifikasi, dll.) |
 | `flutter_local_notifications` | Notifikasi lokal dan penjadwalan |
-| `flutter_timezone` | Deteksi zona waktu perangkat |
-| `timezone` | Pengolahan zona waktu (`TZDateTime`) |
-| `collection` | Utilitas koleksi (`sorted`, `firstWhereOrNull`, `maxBy`) |
-| `cupertino_icons` | Ikon Cupertino |
-| `share_global_saya` (path lokal) | Widget dan helper reusable (`InputTeks`, `Nav`, `AppToast`, `L`, `ParserUtil`, `FormatUang`, `FormatTanggal`, dll.) |
-
-### Dependensi Transitif yang Digunakan Langsung dalam Kode
-
-| Paket | Kegunaan |
-| --- | --- |
-| `uuid` | Pembuatan ID unik (impian, diary craving, biodata) |
-| `material_ui` | Komponen UI adaptif (tema, lokalisasi) |
+| `flutter_timezone`, `timezone` | Deteksi dan pengelolaan zona waktu untuk penjadwalan notifikasi |
+| `flutter_easyloading` | Indikator pemuatan (*overlay loading*) |
+| `adaptive_dialog` | Dialog konfirmasi adaptif |
+| `file_picker`, `path_provider` | Pemilihan/lokasi dan penulisan berkas cadangan |
+| `share_plus` | Dependensi tersedia untuk kemampuan berbagi (tercantum di proyek) |
+| `restart_app` | Dependensi tersedia untuk mekanisme restart aplikasi (tercantum di proyek) |
+| `collection` | Utilitas koleksi |
+| `cupertino_icons` | Ikon gaya Cupertino |
+| `share_global_saya` (path lokal `../share_global_saya`) | Komponen/utilitas bersama yang digunakan aplikasi (mis. navigasi, utilitas *toast*, logging, parser/format, komponen UI bersama) |
 
 ### Dependensi Pengembangan
-
 | Paket | Kegunaan |
 | --- | --- |
-| `build_runner` | Menjalankan generator kode |
-| `freezed` | Generator state/model |
-| `riverpod_generator` | Generator provider/notifier |
-| `flutter_lints` | Linting kode |
-| `flutter_test` | Pengujian widget |
+| `build_runner` | Menjalankan *code generation* |
+| `riverpod_generator` | Generator provider/notifier Riverpod |
+| `freezed` | Generator model/state Freezed |
+| `flutter_lints` | Aturan analisis statis/lint |
+| `flutter_test` | Kerangka pengujian Flutter |
 
-## Arsitektur
+> Catatan: proyek ini menggunakan berkas hasil *generate* (`*.g.dart`, `*.freezed.dart`) yang merupakan bagian dari basis kode.
 
-Proyek mengikuti pola berlapis (layered) yang memisahkan tanggung jawab:
+## Arsitektur dan Pendekatan Implementasi
 
-- **UI (screens/pages)**: menampilkan data dan menangani interaksi pengguna.
-- **Notifier (Riverpod)**: pengelolaan state dan logika bisnis, termasuk operasi database.
-- **State (Freezed)**: representasi state immutable.
-- **Model (Freezed)**: representasi data dengan factory `fromSqflite` dan metode `toSqflite`.
-- **Shared**: konstanta skema database (`NamaTabel`, `NamaKolom`), operasi CRUD generik (`SqfliteOp`), dan helper bersama (logging `L`, parser, format).
+- **Pemisahan tanggung jawab per fitur**: kode diorganisasi di bawah `lib/fitur/<nama_fitur>/` (mis. `model`, `notifier`, `state`, `screens`, `helper`, `enum`, `widget` sesuai kebutuhan fitur).
+- **Manajemen state**: Riverpod (*notifier/provider*) dengan pola pemuatan data asinkron dan penanganan kondisi *loading/error/data* pada antarmuka.
+- **Model dan state *immutable***: Freezed digunakan untuk model/state, termasuk konversi data SQLite (`fromSqflite`/`toSqflite`) pada model yang relevan.
+- **Penyimpanan lokal**:
+  - SQLite sebagai penyimpanan data utama terstruktur.
+  - `SharedPreferences` untuk preferensi dan pengaturan sederhana.
+- **Layanan notifikasi terpusat**: inisialisasi, permintaan izin, penjadwalan, pembatalan, dan penanganan interaksi notifikasi dikelola melalui `NotifikasiService`.
+- **Utilitas dan konstanta bersama**: skema/tabel/kolom basis data, operasi SQLite, kunci preferensi, dan konstanta domain dikelola di `lib/shared/`.
+- **Logging dan umpan balik pengguna**: operasi penting mencatat log (`L`) dan menampilkan umpan balik (mis. *toast*/indikator pemuatan) sesuai alur fitur.
 
-Prinsip utama:
+## Struktur Proyek (Ringkasan)
 
-- *Offline-first*: seluruh data utama disimpan di SQLite lokal.
-- State management menggunakan Riverpod dengan generator.
-- State dan model menggunakan Freezed (immutable).
-- Penanganan `AsyncValue` mengikuti urutan loading → error → data, dengan early return.
-- Operasi asynchronous dibungkus `try/catch`, dicatat dengan logger `L`, dan diteruskan dengan `rethrow`.
-- Perhitungan turunan (hari smoke-free, rokok tidak dihisap, uang dihemat, target tapering) didefinisikan sekali pada ekstensi model (`BiodataModelPerhitungan`) agar konsisten di seluruh layar.
-- Widget yang diperbarui secara berkala (timer per detik) diisolasi ke widget terpisah (`StatefulWidget`) dengan pembatalan timer di `dispose()`.
-- Normalisasi tanggal (`DateTime(year, month, day)`) sebelum perbandingan/perhitungan berbasis hari.
-- Guard pembagian dengan nol pada perhitungan yang melakukan pembagian.
-
-## Struktur Proyek
-
-```
+```text
 lib/
-├── app.dart                 # Widget root (App), tema, routing awal
-├── main.dart                # Titik masuk aplikasi
-├── home.dart                # Navigasi tab utama (lazy, IndexedStack)
-├── lainnya_screen.dart      # Layar "Lainnya"
+├── app.dart                     # Widget root aplikasi, tema, lokalisasi, penentuan home awal
+├── main.dart                    # Entry point: inisialisasi binding, DB, notifikasi, ProviderScope
+├── home.dart                    # Navigasi tab utama (lazy + IndexedStack)
+├── lainnya_screen.dart          # Menu akses ke fitur tambahan
 ├── fitur/
-│   ├── badge/               # Pencapaian (helper, screens)
-│   ├── biodata/             # Biodata (enum, model, notifier, screens)
-│   ├── dashboard/           # Dashboard (notifier, state, screens)
-│   ├── diary_craving/       # Diary craving (enum, model, notifier, state, screens)
-│   ├── dummy/               # Data dummy (data, helper, screens)
-│   ├── impian/              # Impian (enum, model, notifier, state, screens)
-│   ├── kalender_smoke_free/ # Kalender smoke-free (screens)
-│   ├── pemulihan_kesehatan/ # Pemulihan kesehatan (screens)
-│   ├── pengaturan/          # Pengaturan (screens)
-│   ├── sos_craving/         # SOS craving (screens)
-│   └── tema/                # Enum dan notifier tema
+│   ├── alasan_berhenti/         # Alasan berhenti (model, notifier, state, screens)
+│   ├── badge/                   # Pencapaian/badge (helper, screens)
+│   ├── biodata/                 # Biodata & mode berhenti (enum, model, notifier, screens)
+│   ├── cadangan/                # Cadangan & ekspor/pemulihan data (helper, screens)
+│   ├── dashboard/               # Dashboard (notifier, state, screens)
+│   ├── diary_craving/           # Diary craving & pola (enum, helper, model, notifier, state, screens)
+│   ├── dummy/                   # Data dummy (data, helper, screens)
+│   ├── impian/                  # Impian/target tabungan (enum, helper, model, notifier, state, screens, widget)
+│   ├── kalender_smoke_free/     # Kalender smoke-free (screens)
+│   ├── konsumsi_rokok/          # Pencatatan konsumsi rokok (helper, model, notifier, state, screens)
+│   ├── pemulihan_kesehatan/     # Milestone pemulihan (helper, screens)
+│   ├── pengaturan/              # Pengaturan tema & notifikasi (screens)
+│   ├── sos_craving/             # Bantuan cepat craving (screens)
+│   ├── tema/                    # Preferensi tema (enum, notifier)
+│   └── toxin_pelacakan/         # Estimasi toxin dihindari (helper, model, screens, state)
 └── shared/
-    ├── db/sqflite/          # AppDatabase, SqfliteOp
-    ├── helper/              # SharedKeys
-    ├── konstanta/           # NamaTabel, NamaKolom, MilestoneKesehatan
-    └── notifikasi/          # NotifikasiService
+    ├── db/sqflite/              # Inisialisasi/migrasi database dan operasi SQLite
+    ├── helper/                  # Kunci preferensi bersama
+    ├── konstanta/               # Konstanta tabel, kolom, milestone kesehatan
+    └── notifikasi/              # Layanan notifikasi lokal
 ```
 
 ## Penyimpanan Data
 
-- **SQLite** (`berhenti_merokok.db`) melalui `sqflite` untuk data utama (biodata, impian, diary craving).
-- **SharedPreferences** untuk preferensi sederhana (tema, status dan waktu pengingat harian).
-- Tanggal dan waktu disimpan dalam format UTC ISO8601 dan dikonversi ke waktu lokal saat ditampilkan.
-- Skema database saat ini berada pada versi 6, dengan migrasi bertahap untuk penambahan tabel/kolom.
-- Pada platform web, SQLite menggunakan `sqflite_common_ffi_web` (file `sqlite3.wasm` dan `sqflite_sw.js` pada folder `web/`).
+- **SQLite** (`berhenti_merokok.db`, versi skema saat ini: **9**):
+  - `biodata`: data profil dan parameter berhenti merokok.
+  - `impian`: daftar impian/target.
+  - `diary_craving`: catatan dorongan merokok.
+  - `alasan_berhenti`: alasan berhenti merokok.
+  - `konsumsi_rokok`: pencatatan konsumsi rokok aktual (termasuk indeks pada kolom tanggal).
+- **SharedPreferences**: menyimpan preferensi seperti tema dan pengaturan notifikasi (pengingat harian, check-in pagi, pola *craving*, waktu terkait).
+- **Format waktu**: tanggal/waktu pada data yang disimpan ke SQLite dikonversi ke representasi UTC (ISO 8601) dan ditampilkan kembali sesuai kebutuhan antarmuka.
+- **Dukungan Web (penyimpanan SQLite)**: pada platform Web, inisialisasi menggunakan `databaseFactoryFfiWeb` dengan aset pendukung `web/sqlite3.wasm` dan `web/sqflite_sw.js` yang tersedia di repositori.
 
 ## Menjalankan Aplikasi
 
 ### Prasyarat
-
-- Flutter SDK (sesuai `environment.sdk: ^3.13.7`)
-- Dart SDK
+- Flutter SDK yang kompatibel dengan batasan proyek (`environment.sdk: ^3.13.7`).
+- Dart SDK yang sesuai dengan Flutter SDK tersebut.
+- Dependensi lokal `share_global_saya` tersedia pada path `../share_global_saya` (sesuai konfigurasi `pubspec.yaml`).
 
 ### Langkah
-
 1. Pasang dependensi:
    ```bash
    flutter pub get
    ```
-2. Jalankan generator kode (jika diperlukan):
+2. (Jika diperlukan, setelah mengubah model/notifier yang menggunakan *code generation*) jalankan generator:
    ```bash
    dart run build_runner build --delete-conflicting-outputs
    ```
-3. Jalankan aplikasi:
+3. Jalankan aplikasi pada perangkat/emulator yang tersedia:
    ```bash
    flutter run
    ```
 
-> Pengujian aplikasi saat ini dilakukan melalui Web Server. Kompatibilitas Android tetap menjadi target utama. Build APK dilakukan melalui GitHub Actions.
+## Pengujian
+
+Repositori ini memiliki berkas pengujian di direktori `test/`, antara lain:
+- `test/widget_test.dart`
+- `test/notifikasi_service_test.dart`
+- `test/progres_milestone_helper_test.dart`
+
+Pengujian dapat dijalankan menggunakan perintah Flutter standar (mis. `flutter test`) pada lingkungan yang telah dikonfigurasi dengan benar.
 
 ## Lokalisasi
 
-- Aplikasi mendukung locale Indonesia (`id_ID`).
-- Komponen sistem (Material/Cupertino) mengikuti locale yang didukung melalui `flutter_localizations`.
+- Aplikasi mengonfigurasi dukungan lokal **Indonesia** (`id_ID`).
+- Delegasi lokalisasi Material, Widgets, dan Cupertino disertakan dalam konfigurasi aplikasi.
+- Disediakan delegasi lokalisasi tambahan untuk kompatibilitas komponen tertentu yang membutuhkan dukungan locale Indonesia.
 
-## Platform dan Keterbatasan
+## Platform dan Keterbatasan yang Teridentifikasi
 
-- Aplikasi menargetkan Android sebagai platform utama.
-- Pengujian melalui Web Server tidak dapat dianggap sebagai bukti bahwa seluruh implementasi berjalan dengan benar di Android.
-- Fitur pengingat harian terjadwal tidak tersedia pada platform Web, Linux, dan Windows; pada platform tersebut pengaturan pengingat tidak ditampilkan.
-- Notifikasi uji coba dan pengingat harian menggunakan ikon aplikasi (`ic_launcher`).
+- **Target dan cakupan implementasi**: aplikasi dikembangkan sebagai aplikasi Flutter dengan penyimpanan lokal dan notifikasi; perilaku fitur bergantung pada dukungan platform runtime.
+- **Notifikasi terjadwal**: fitur pengingat terjadwal (pengingat harian, check-in pagi, pola *craving*) dibatasi/dinonaktifkan pada platform Web, Linux, dan Windows sesuai pemeriksaan dalam kode.
+- **Cadangan/ekspor berkas**: fitur cadangan dan pemulihan berkas tidak didukung pada platform Web; ketersediaan bergantung pada dukungan sistem berkas/pemilih berkas platform.
+- **Dependensi lokal**: pembangunan proyek memerlukan ketersediaan paket lokal `share_global_saya` pada path yang direferensikan.
+- **Informasi lisensi**: berkas lisensi eksplisit tidak ditemukan dalam repositori pada saat dokumentasi ini disusun.
 
-## Lisensi
+## Kelebihan Proyek (Berdasarkan Implementasi)
 
-Informasi lisensi tidak ditemukan dalam repositori.
+- **Cakupan fitur berhenti merokok yang komprehensif**: mencakup pemantauan progres, dukungan saat *craving* (SOS, diary, analisis pola sederhana), motivasi (alasan berhenti), serta visualisasi kemajuan (kalender, pemulihan kesehatan, pencapaian, pelacakan toxin estimatif).
+- **Dukungan mode berhenti fleksibel**: tersedia mode seketika dan *tapering* dengan perhitungan target harian berbasis parameter pengguna.
+- **Penyimpanan lokal terstruktur dan berversi**: penggunaan SQLite dengan migrasi skema bertahap (hingga versi 9) untuk evolusi data aplikasi.
+- **Mekanisme cadangan dan pemulihan**: ekspor/pemulihan data inti dalam format JSON dengan validasi dan pemulihan berbasis transaksi basis data.
+- **Pengingat kontekstual**: selain pengingat harian, tersedia check-in pagi dan pengingat berbasis pola jam *craving* (dengan syarat kecukupan data).
+- **Pengalaman penggunaan yang diperhatikan**: penanganan kondisi *loading/error/kosong*, konfirmasi untuk aksi penting/destruktif, umpan balik proses, serta navigasi tab yang efisien dengan inisialisasi *lazy*.
+- **Fondasi teknis modern**: pemanfaatan Riverpod, Freezed, *code generation*, dan pemisahan kode per fitur untuk menjaga keterbacaan dan pemeliharaan.
+
+## Catatan Keakuratan
+
+Dokumentasi ini disusun berdasarkan isi repositori yang dapat diperiksa (struktur direktori, konfigurasi proyek, dependensi, skema/konstanta, serta implementasi fitur pada kode sumber). Jika terdapat perilaku atau dukungan platform tambahan di luar yang teridentifikasi dalam kode saat ini, hal tersebut tidak dicantumkan dalam README ini.

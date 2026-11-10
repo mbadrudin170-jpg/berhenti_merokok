@@ -13,4 +13,7 @@ class NamaTabel {
 
   /// Tabel catatan alasan berhenti (reasons vault).
   static const String alasanBerhenti = 'alasan_berhenti';
+
+  /// Tabel pencatatan konsumsi rokok aktual.
+  static const String konsumsiRokok = 'konsumsi_rokok';
 }

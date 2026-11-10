@@ -1,6 +1,6 @@
 ---
 name: spacing
-description: Panduan spacing: penggunaan properti spacing pada Row/Column, SizedBox hanya untuk kebutuhan khusus, konsistensi jarak berdasarkan optimasi_ui.md.
+description: Panduan pengaturan jarak antar elemen UI di Flutter - wajib menggunakan properti spacing pada Row/Column untuk jarak seragam, SizedBox hanya untuk kebutuhan khusus yang tidak bisa ditangani spacing, padding tepi layar adalah tanggung jawab parent halaman bukan widget reusable, dan nilai spacing wajib mengikuti skala standar dari optimasi_ui.md.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -10,20 +10,37 @@ metadata:
 
 # Panduan Spacing (Jarak Antar Elemen)
 
-Skill ini mendokumentasikan aturan pengaturan jarak antar elemen UI berdasarkan `optimasi_ui.md` dan implementasi nyata.
+Skill ini mendokumentasikan aturan pengaturan jarak antar elemen UI berdasarkan `optimasi_ui.md` dan implementasi nyata di proyek Flutter. Tujuannya adalah menjaga konsistensi jarak antar elemen dan menghindari penggunaan `SizedBox` berulang untuk jarak standar.
 
-## 1. Properti `spacing` pada Row/Column (WAJIB)
+## Cakupan yang Di-Cover
 
-### Aturan
+- Package: `package:flutter` (class `Row`, `Column`, `Wrap`, `SizedBox`, `Padding`, `EdgeInsets`, `Card`, `Scaffold`, `SafeArea`)
+- Class: `Row`, `Column`, `Wrap`, `SizedBox`, `Padding`, `EdgeInsets`, `Card`, `Scaffold`, `SafeArea`
+- Properti: `Row.spacing`, `Column.spacing`, `Wrap.spacing`, `Wrap.runSpacing`, `SizedBox.height`, `SizedBox.width`, `Padding.padding`
+- Method: `EdgeInsets.all()`
 
-- **WAJIB** gunakan properti `spacing` pada `Row` dan `Column` untuk jarak antar anak yang seragam.
-- **DILARANG** menggunakan `SizedBox` berulang hanya untuk jarak standar antar anak.
-- Gunakan `SizedBox` **hanya** untuk kebutuhan jarak khusus yang tidak bisa ditangani `spacing`.
+## Aturan
 
-### Contoh
+1. Wajib menggunakan properti `spacing` pada `Row` dan `Column` untuk jarak seragam antar anak.
+2. DILARANG menggunakan `SizedBox` berulang hanya untuk jarak standar antar anak di `Row`/`Column`.
+3. `SizedBox` hanya boleh digunakan untuk kebutuhan jarak khusus yang tidak bisa ditangani `spacing`.
+4. Padding tepi layar adalah tanggung jawab container halaman/parent, bukan widget reusable.
+5. Widget reusable boleh punya padding internal untuk desain komponennya (mis. `Card` padding isi), tetapi dilarang mengambil alih tanggung jawab padding tepi layar.
+6. DILARANG padding ganda (parent sudah padding, anak juga padding tepi).
+7. Nilai padding wajib mengikuti `optimasi_ui.md`.
+8. Jarak antar elemen wajib serasi, proporsional, dan konsisten per `optimasi_ui.md`.
+
+## Larangan
+
+- DILARANG `SizedBox` berulang untuk jarak standar di `Row`/`Column`.
+- DILARANG widget reusable mengandung padding tepi layar.
+- DILARANG padding ganda (parent + anak keduanya padding tepi).
+- DILARANG nilai spacing acak tanpa acuan `optimasi_ui.md`.
+
+## Contoh Benar
 
 ```dart
-// BENAR: spacing property
+// BENAR: Column dengan spacing property
 Column(
   spacing: 16, // Jarak seragam 16 antar semua anak
   children: [
@@ -33,6 +50,7 @@ Column(
   ],
 )
 
+// BENAR: Row dengan spacing property
 Row(
   spacing: 12,
   children: [
@@ -42,34 +60,7 @@ Row(
   ],
 )
 
-// SALAH: SizedBox berulang
-Column(
-  children: [
-    Text('Judul'),
-    SizedBox(height: 16),
-    Text('Deskripsi'),
-    SizedBox(height: 16),
-    Text('Lainnya'),
-  ],
-)
-```
-
-### Referensi Commit
-
-- `3b67d309` — `Column(spacing: 8)` di `_EmptyDiaryCraving`, `VisualTabunganImpian`
-- `c7337d1` — `Column(spacing: 12)` di card impian
-- `e659574` — `Column(spacing: 8)` di kartu motivasi dashboard
-
-## 2. `SizedBox` Hanya untuk Kebutuhan Khusus
-
-### Kapan Boleh Pakai `SizedBox`
-
-- Jarak **tidak seragam** antar anak tertentu (mis. jarak besar sebelum tombol aksi).
-- Jarak di dalam widget yang **bukan** `Row`/`Column` (mis. `Container` padding internal).
-- Spacing horizontal di `Wrap` (gunakan `spacing` + `runSpacing` di `Wrap`).
-
-```dart
-// BENAR: SizedBox untuk jarak khusus (sebelum FAB)
+// BENAR: SizedBox hanya untuk jarak khusus (sebelum FAB)
 Column(
   spacing: 8,
   children: [
@@ -80,28 +71,14 @@ Column(
   ],
 )
 
-// BENAR: Wrap spacing
+// BENAR: Wrap dengan spacing + runSpacing
 Wrap(
   spacing: 8,
   runSpacing: 8,
   children: chips.map((c) => FilterChip(...)).toList(),
 )
-```
 
-## 3. Padding Tepi Layar (Screen Padding)
-
-### Aturan (dari `optimasi_ux.md` #10)
-
-- Padding tepi layar = tanggung jawab **container halaman/parent**, bukan widget reusable.
-- Widget reusable **BOLEH** punya padding internal untuk desain komponennya (mis. `Card` padding isi).
-- **DILARANG** widget reusable ambil alih tanggung jawab padding tepi layar.
-- **DILARANG** padding ganda (parent sudah padding, anak juga padding tepi).
-- Nilai padding **WAJIB** mengikuti `optimasi_ui.md`.
-
-### Struktur Benar
-
-```dart
-// Halaman (Parent) - bertanggung jawab padding tepi layar
+// BENAR: Halaman bertanggung jawab padding tepi layar
 Scaffold(
   body: SafeArea(
     child: Padding(
@@ -117,7 +94,7 @@ Scaffold(
   ),
 )
 
-// Widget Reusable (Card dengan padding internal)
+// Widget Reusable: Card dengan padding internal (bukan tepi layar)
 class RingkasanWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -131,42 +108,47 @@ class RingkasanWidget extends StatelessWidget {
 }
 ```
 
-### Referensi Commit
+## Contoh Salah
 
-- `3b67d309` — `_EmptyDiaryCraving` pakai `Padding(16)` di dalam `SafeArea`
-- `e659574` — Dashboard `Padding` di `SafeArea` → `ListView`
+```dart
+// DILARANG: SizedBox berulang di Column
+Column(
+  children: [
+    Text('Judul'),
+    SizedBox(height: 16),
+    Text('Deskripsi'),
+    SizedBox(height: 16),
+    Text('Lainnya'),
+  ],
+)
 
-## 4. Konsistensi Jarak (dari `optimasi_ux.md` #11)
+// DILARANG: Widget reusable punya padding tepi layar
+class _ImpianItem extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding( // SALAH! Ini padding tepi layar, bukan internal
+      padding: EdgeInsets.all(16),
+      child: Card(...),
+    );
+  }
+}
 
-### Aturan
+// DILARANG: Padding ganda (parent 16 + anak 16 = 32 total)
+Scaffold(
+  body: Padding(
+    padding: EdgeInsets.all(16),
+    child: ListView(children: [
+      Padding(
+        padding: EdgeInsets.all(16),
+        child: _ImpianItem(...), // DOUBLE PADDING!
+      ),
+    ]),
+  ),
+)
+```
 
-- Jarak antarelemen **WAJIB** serasi, proporsional, konsisten per `optimasi_ui.md`.
-- Bedakan jarak berdasarkan: hubungan antar elemen, kelompok konten, bagian halaman.
-- **DILARANG** jarak terlalu sempit (berhimpitan) atau terlalu lebar (tidak berkaitan).
-- **DILARANG** nilai padding/margin acak tanpa referensi desain.
+## Sumber Evaluasi
 
-### Skala Spacing Standar (contoh)
-
-| Konteks                           | Nilai | Penggunaan                                |
-| --------------------------------- | ----- | ----------------------------------------- |
-| `spacing` Row/Column dalam card   | 8     | Elemen terkait dekat (label+nilai)        |
-| `spacing` Row/Column antar card   | 12-16 | Kelompok konten terpisah                  |
-| `padding` Card/Container internal | 16    | Padding standar komponen                  |
-| `padding` Halaman (tepi layar)    | 16    | Mengikuti `optimasi_ui.md`                |
-| `runSpacing` Wrap chips           | 8     | Baris baru chip                           |
-| `SizedBox` khusus sebelum aksi    | 24    | Separator visual sebelum FAB/tombol utama |
-
----
-
-## Larangan
-
-- **DILARANG** `SizedBox` berulang untuk jarak standar di `Row`/`Column`.
-- **DILARANG** widget reusable mengandung padding tepi layar.
-- **DILARANG** padding ganda (parent + anak keduanya padding tepi).
-- **DILARANG** nilai spacing acak tanpa acuan `optimasi_ui.md`.
-
-## Referensi Aturan Terkait
-
-- `optimasi_ui.md` — Pengaturan Jarak, Padding Tepi Layar
-- `optimasi_ux.md` — Padding Tepi Layar (#10), Konsistensi Jarak (#11)
-- `aturan_bersama.md` — Penggunaan `spacing` Row/Column (Pemanfaatan Paket 3.1)
+- File: `lib/fitur/impian/widget/visual_tabungan_impian.dart`, `lib/fitur/impian/screens/impian_screen.dart`
+- Class terkait: `Row`, `Column`, `Wrap`, `SizedBox`, `Padding`, `EdgeInsets`, `Card`, `Scaffold`, `SafeArea`
+- Commit rujukan: `3b67d309` — `Column(spacing: 8)` di `_EmptyDiaryCraving`, `VisualTabunganImpian`; `c7337d1` — `Column(spacing: 12)` di card impian; `e659574` — `Column(spacing: 8)` di kartu motivasi dashboard

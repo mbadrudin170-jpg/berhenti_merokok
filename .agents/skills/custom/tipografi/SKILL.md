@@ -1,6 +1,6 @@
 ---
 name: tipografi
-description: Panduan tipografi: penggunaan textTheme, copyWith untuk customisasi, hierarki visual label/sub-label/nilai, dan penggunaan bold terarah.
+description: Panduan tipografi Flutter - wajib menggunakan Theme.of(context).textTheme sebagai referensi utama, copyWith() untuk customisasi (bold, warna, ukuran), hierarki visual label/sub-label/nilai dengan properti gaya yang berbeda per tingkat, bold terarah pada informasi utama, FontFeature.tabularFigures() untuk timer dan angka monetary, dan penanganan overflow dengan FittedBox/Flexible hanya pada bagian yang memerlukan.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -10,16 +10,36 @@ metadata:
 
 # Panduan Tipografi
 
-Skill ini mendokumentasikan aturan tipografi berdasarkan `optimasi_ui.md` dan implementasi nyata.
+Skill ini mendokumentasikan aturan tipografi berdasarkan `optimasi_ui.md` dan implementasi nyata di proyek Flutter.
 
-## 1. Referensi Utama: `textTheme`
+## Cakupan yang Di-Cover
 
-### Aturan
-- **WAJIB** gunakan `Theme.of(context).textTheme` sebagai referensi utama gaya teks.
-- **WAJIB** gunakan `copyWith()` untuk menyesuaikan (bold, warna, ukuran) dari style dasar tema.
-- **DILARANG** menentukan `fontSize`, `fontWeight`, `fontFamily` manual tanpa acuan `textTheme` (kecuali hardcode diperlukan khusus).
+- Package: `package:flutter` (class `ThemeData`, `TextTheme`, `TextStyle`, `FontFeature`, `TextOverflow`, `FittedBox`, `Flexible`, `Expanded`)
+- Class: `ThemeData`, `TextTheme`, `TextStyle`, `FontFeature`, `FittedBox`, `Flexible`, `Expanded`
+- Properti: `ThemeData.textTheme`, `TextStyle.fontSize`, `TextStyle.fontWeight`, `TextStyle.color`, `TextStyle.fontFeatures`, `TextOverflow.ellipsis`
+- Method: `Theme.of(context)`, `TextStyle.copyWith()`
 
-### Contoh
+## Aturan
+
+1. Wajib menggunakan `Theme.of(context).textTheme` sebagai referensi utama gaya teks.
+2. Wajib menggunakan `copyWith()` untuk menyesuaikan (bold, warna, ukuran) dari style dasar tema.
+3. DILARANG menentukan `fontSize`, `fontWeight`, `fontFamily` manual tanpa acuan `textTheme` (kecuali hardcode diperlukan khusus).
+4. Setiap tingkat teks wajib memiliki perbedaan minimal 1 properti gaya (ukuran, ketebalan, warna).
+5. DILARANG dua tingkat informasi berbeda menggunakan gaya identik.
+6. Wajib gunakan bold untuk judul halaman, informasi utama, nilai penting, elemen butuh penekanan.
+7. DILARANG bold pada seluruh teks.
+8. Wajib menggunakan `FontFeature.tabularFigures()` untuk timer, jam, dan angka monetary agar lebar digit sama.
+9. Wajib antisipasi teks panjang yang bisa overflow dengan `FittedBox` atau `Flexible` hanya pada bagian yang benar-benar butuh.
+
+## Larangan
+
+- DILARANG `TextStyle(fontSize: ..., fontWeight: ...)` manual tanpa `textTheme`.
+- DILARANG hierarki visual dengan gaya identik untuk tingkat berbeda.
+- DILARANG bold sembarangan tanpa hierarki jelas.
+- DILARANG `FittedBox`/`Flexible` di seluruh teks tanpa alasan.
+
+## Contoh Benar
+
 ```dart
 final textTheme = Theme.of(context).textTheme;
 
@@ -37,129 +57,48 @@ Text(
   style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
 )
 
-// SALAH: Manual tanpa acuan tema
-Text('Judul', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-Text('Nilai', style: TextStyle(fontSize: 18, color: Colors.blue)),
-```
-
-## 2. Hierarki Visual: Label → Sub-Label → Nilai
-
-### Aturan
-- Setiap tingkat teks **WAJIB** memiliki perbedaan minimal 1 properti gaya (ukuran, ketebalan, warna).
-- **DILARANG** dua tingkat informasi berbeda menggunakan gaya identik.
-- Gunakan `textTheme` sebagai dasar, `copyWith()` untuk variasi.
-
-### Pola Standar (Card Info)
-```dart
-final textTheme = Theme.of(context).textTheme;
-
+// Hierarki visual: Label → Sub-Label → Nilai
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   spacing: 4,
   children: [
-    // Level 1: Label (kecil, warna secondary/muted)
     Text('Total Pengeluaran', style: textTheme.bodySmall),
-    
-    // Level 2: Sub-Label (sedang, warna secondary)
-    Text('Pengeluaran bulan ini', 
-      style: textTheme.bodyMedium?.copyWith(
-        color: Theme.of(context).colorScheme.secondary,
-      ),
-    ),
-    
-    // Level 3: Nilai Utama (besar, bold, warna primary/onSurface)
-    Text('Rp500.000', 
-      style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-    ),
+    Text('Pengeluaran bulan ini', style: textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary)),
+    Text('Rp500.000', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
   ],
 )
-```
 
-### Referensi Commit
-- `c7337d1` — DetailImpianScreen hierarki label/sub-label/nilai
-- `e659574` — Dashboard kartu motivasi
-
-## 3. Penggunaan Bold Terarah
-
-### Aturan
-- **WAJIB** gunakan bold untuk: judul halaman, informasi utama, nilai penting, elemen butuh penekanan.
-- **DILARANG** bold pada seluruh teks.
-- **DILARANG** teks biasa lebih dominan dari informasi utama.
-- Konsisten pada bagian yang fungsi serupa.
-
-### Contoh
-```dart
-// BENAR: Bold terarah
+// Bold terarah
 Text('Hari ke-30', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)), // Nilai penting
 Text('Smoke-free', style: textTheme.bodyMedium), // Label biasa
 
-// SALAH: Semua bold
-Text('Label', style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-Text('Nilai', style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+// Tabular figures untuk timer/angka
+Text('$menit:$detik', style: textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold, fontFeatures: const [FontFeature.tabularFigures()]))
 ```
 
-## 4. Text Overflow Handling
-
-### Aturan
-- **WAJIB** antisipasi teks panjang yang bisa overflow.
-- Gunakan `FittedBox` atau `Flexible` **hanya** pada bagian yang benar-benar butuh.
-- **DILARANG** terapkan `FittedBox`/`Flexible` sembarangan di semua teks.
-
-### Contoh
-```dart
-// Hanya untuk teks yang WAJIB terlihat penuh (mis. judul card terbatas lebar)
-FittedBox(
-  fit: BoxFit.scaleDown,
-  alignment: Alignment.centerLeft,
-  child: Text(namaImpianPanjang, style: textTheme.titleMedium),
-)
-
-// Atau Flexible di Row
-Row(
-  children: [
-    Expanded(
-      child: Text(namaPanjang, style: textTheme.bodyMedium, overflow: TextOverflow.ellipsis),
-    ),
-    Icon(Icons.chevron_right),
-  ],
-)
-```
-
-## 5. Tabular Figures untuk Timer/Angka
-
-### Aturan
-- Timer, jam, angka monetary **WAJIB** pakai `FontFeature.tabularFigures()` agar lebar digit sama (tidak bergeser saat update).
+## Contoh Salah
 
 ```dart
-Text(
-  '$menit:$detik',
-  style: textTheme.displayMedium?.copyWith(
-    fontWeight: FontWeight.bold,
-    fontFeatures: const [FontFeature.tabularFigures()],
-  ),
-)
-Text(
-  FormatUang.format(uang),
-  style: textTheme.titleLarge?.copyWith(
-    fontFeatures: const [FontFeature.tabularFigures()],
-  ),
-)
+// DILARANG: Manual TextStyle tanpa textTheme
+Text('Judul', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))
+Text('Nilai', style: TextStyle(fontSize: 18, color: Colors.blue))
+
+// DILARANG: Hierarki dengan gaya identik
+final style = textTheme.bodyMedium;
+Text('Label', style: style)
+Text('Sub-Label', style: style)
+Text('Nilai', style: style)
+
+// DILARANG: Semua bold
+Text('Label', style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))
+Text('Nilai', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold))
+
+// DILARANG: FittedBox di semua teks tanpa alasan
+FittedBox(child: Text(semuaTeks))
 ```
 
-### Referensi Commit
-- `3b67d309` — `_TimerCravingView` pakai `tabularFigures`
-- `c7337d1` — `VisualTabunganImpian` nilai uang
+## Sumber Evaluasi
 
----
-
-## Larangan
-
-- **DILARANG** `TextStyle(fontSize: ..., fontWeight: ...)` manual tanpa `textTheme`.
-- **DILARANG** hierarki visual dengan gaya identik untuk tingkat berbeda.
-- **DILARANG** bold sembarangan tanpa hierarki jelas.
-- **DILARANG** `FittedBox`/`Flexible` di seluruh teks tanpa alasan.
-
-## Referensi Aturan Terkait
-
-- `optimasi_ui.md` — Pengaturan Tipografi, Text Overflow
-- `aturan_khusus.md` — Visualisasi Progres, Kartu Motivasi
+- File: `lib/fitur/impian/screens/detail_impian_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+- Class terkait: `ThemeData`, `TextTheme`, `TextStyle`, `FontFeature`, `FittedBox`, `Flexible`
+- Commit rujukan: `c7337d1` — DetailImpianScreen hierarki label/sub-label/nilai; `e659574` — Dashboard kartu motivasi; `3b67d309` — `_TimerCravingView` pakai tabularFigures; `c7337d1` — `VisualTabunganImpian` nilai uang

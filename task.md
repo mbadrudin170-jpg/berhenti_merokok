@@ -13,41 +13,7 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 2
-
-- Status: Belum dikerjakan
-- Masalah: Logging `L.i` ditambahkan di `_buildCardTargetSmokeFree(...)` (dipanggil dari `build()`) yang mencatat `targetSmokeFreeHari/tanggalBerhenti/hariBerhenti/teksProgres` (baris ~166-168). Log di jalur `build()` dapat terpanggil berulang dan menambah noise.
-- Solusi: Pindahkan/hapus log dari method yang dipanggil `build()`; log pada titik tidak berfrekuensi tinggi bila diperlukan.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L166-L168)
-- Prompt:
-
-#### Task 3
-
-- Status: Belum dikerjakan
-- Masalah: Commit `18cc24e` menambahkan `ref.watch(impianProvider)` di `build()` (baris 83) dengan logging `L.i('impianAsync.isLoading=..., hasError=...')` (baris 83-L86), serta logging `L.i` di dalam `_buildCardRingkasanImpian` (baris 211/215/226). Kedua berada di jalur `build()` yang dapat dipanggil berulang, menambah noise.
-- Solusi: Hapus log `impianAsync.isLoading/hasError` dari `build()`; pindahkan log `ringkasan impian: ...` ke titik tidak berfrekuensi tinggi (initState/dispose/aksi) atau hapus sama sekali.
-- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L16), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L272)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83-L86), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L211-L226)
-- Prompt:
-
-#### Task 4
-
-- Status: Belum dikerjakan
-- Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
-- Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
-- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L203-L206)
-- Prompt:
-
-#### Task 5
-
-- Status: Belum dikerjakan
-- Masalah: Commit `18cc24e` menghasilkan dua potong dead code: (1) variabel `total` dihitung dari `impianState.jumlahImpian` (baris 220) tetapi tidak pernah digunakan — `subtitle` menggunakan `total` hanya untuk pengecekan `total == 0`, kemudian mencetak `$tercapai dari $total`; (2) field `totalTercapai` diinisialisasi di `build()` (baris 84-L85) dengan nilai `listImpian.where(...).length` tetapi tidak pernah dibaca di mana pun. Keduanya tidak memberikan informasi dan dapat mengacaukan pembacaan code.
-- Solusi: Hapus variabel `total` (ganti `total == 0` dengan `listImpian.isEmpty` dan `$total` dengan `listImpian.length`), serta hapus field `totalTercapai` beserta inisialisasinya.
-- Aturan dilanggar: [optimasi_boilerplate.md](.agents/rules/global/optimasi_boilerplate.md#L45-L50) (hindari penulisan ulang/komputasi tidak perlu), [aturan_lainnya.md](.agents/rules/global/aturan_lainnya.md#L47-L50] (fokus pada kode yang diperlukan)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L84-L85), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L218-L233)
-- Prompt:
+---
 
 # Kelompok 2
 
@@ -95,23 +61,7 @@ Tidak ada temuan.
 
 ## Tinggi
 
-#### Task 1
-
-- Status: kerjakan
-- Masalah: Commit `adc85b5` mengubah nilai konstanta `NamaKolom.tanggalMulaiTapering` dari `'tanggal_mulai_tapering'` (snake_case) menjadi `'Tanggal_mulai_tapering'` (kapital `T`). Nilai ini tidak konsisten dengan konvensi snake_case kolom lain dan dengan nama kolom yang sudah dibuat di skema/migrasi (`tanggal_mulai_tapering`). Perbedaan kapitalisasi berisiko merusak baca/tulis tanggal mulai tapering (pemetaan ke kolom DB berbeda). Perubahan ini tampak tidak disengaja dan di luar tujuan commit (menambah target smoke-free).
-- Solusi: Kembalikan nilai konstanta menjadi `static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';`. Verifikasi tidak ada referensi lain yang bergantung pada kapitalisasi salah; bila skema/migrasi sudah memakai nilai lama (lowercase), pastikan konsisten.
-- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L95-L100), [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L139-L140), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L310-L311)
-- File bermasalah: [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart#L37)
-- Prompt:
-
-#### Task 2
-
-- Status: Belum dikerjakan
-- Masalah: `BiodataModel.fromSqflite` mem-parsing `targetSmokeFreeHari` (field nullable `int?`) menggunakan `ParserUtil.parseInt(...)` yang mengembalikan `defaultValue 0` ketika nilai DB `null` (terverifikasi: `share_global_saya/lib/src/utils/parser_util.dart` `parseInt` mengembalikan `defaultValue` untuk `null`). Akibatnya target yang tidak diset (`null`) dibaca sebagai `0`, sehingga UI/progres dapat menganggap target terset (bukan `null`) dan menampilkan perilaku yang tidak sesuai (mis. progres/validasi berbasis target).
-- Solusi: Gunakan `ParserUtil.parseIntOrNull(row[NamaKolom.targetSmokeFreeHari])` pada `fromSqflite` agar nilai `null` tetap `null`. Periksa juga apakah nilai `0` dari data lama (jika ada) perlu diperlakukan sebagai tidak diset sesuai kebutuhan bisnis (verifikasi sebelum memutuskan).
-- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L53-L55), [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L305-L315), [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L419-L420)
-- File bermasalah: [biodata_model.dart](lib/fitur/biodata/model/biodata_model.dart#L64-L66)
-- Prompt:
+Tidak ada temuan.
 
 ## Sedang
 
@@ -152,15 +102,7 @@ Tidak ada temuan.
 
 ## Rendah
 
-#### Task 3
-
-- Status: Dilewati
-- Alasan: File `dashboard_screen.dart` sedang terbuka di editor (Open tabs), sehingga tidak dapat diedit sesuai aturan #5 kerjakan_task.md.
-- Masalah: Commit `18cc24e` menggunakan `AsyncValue<dynamic>` secara eksplisit pada `ref.watch(impianProvider)` di `build()` (baris 83) dan pada parameter `_buildCardRingkasanImpian(BiodataModel biodata, AsyncValue<dynamic> impianAsync)` (baris 203-L206). Provider `impianProvider` mengembalikan `AsyncValue<ImpianState>` (terverifikasi di `.g.dart`), sehingga type inference sudah cukup dan penandaan `dynamic` tidak perlu — menambahkan `dynamic` secara eksplisit melanggar prinsip hindari `dynamic` ketika tipe dapat ditentukan secara jelas.
-- Solusi: Hapus penandaan `dynamic` — biarkan `final impianAsync = ref.watch(impianProvider);` (otomatis `AsyncValue<ImpianState>`) dan ganti parameter menjadi `AsyncValue<ImpianState> impianAsync` (atau hapus parameter sama sekali dan watch di dalam method, sesuai kebutuhan).
-- Aturan dilanggar: [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L51-L53)
-- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L83), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L203-L206)
-- Prompt: langsung saja cek isloading dan error sepertio biodataasync
+Tidak ada temuan.
 
 # Kelompok 9
 
@@ -194,3 +136,96 @@ Tidak ada temuan.
 - [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
 
 ## Rendah
+
+# Kelompok 13
+
+## File terdampak
+
+- [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
+
+## Tinggi
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+# Kelompok 14
+
+## File terdampak
+
+- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 15
+
+## file terdampak
+
+- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
+- [konsumsi_hitung_helper.dart](lib/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart)
+- [konsumsi_rokok_model.dart](lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart)
+- [konsumsi_rokok_notifier.dart](lib/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart)
+- [konsumsi_rokok_state.dart](lib/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart)
+- [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart)
+- [form_konsumsi_rokok.dart](lib/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart)
+- [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart)
+- [lainnya_screen.dart](lib/lainnya_screen.dart)
+- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
+- [shared_keys.dart](lib/shared/helper/shared_keys.dart)
+- [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart)
+- [nama_tabel.dart](lib/shared/konstanta/nama_tabel.dart)
+- [cadangan_helper.dart](lib/fitur/cadangan/helper/cadangan_helper.dart)
+- [toxin_hitung_helper.dart](lib/fitur/toxin_pelacakan/helper/toxin_hitung_helper.dart)
+- [toxin_model.dart](lib/fitur/toxin_pelacakan/model/toxin_model.dart)
+- [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart)
+- [toxin_pelacakan_state.dart](lib/fitur/toxin_pelacakan/state/toxin_pelacakan_state.dart)
+- [pubspec.yaml](pubspec.yaml)
+
+## Tinggi
+
+#### Task 3
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan warna hardcode `const Color(0xFFFF9800)` dan `const Color(0xFF4CAF50)` (baris 355-356) pada `dashboard_screen.dart` bukan dari `ColorScheme`/tema. Melangguarkan aturan styling warna yang wajib diambil dari tema.
+- Solusi: Ganti warna hardcode dengan `Theme.of(context).colorScheme` atau warna semantik dari tema (mis. `colorScheme.primary`, `colorScheme.error`, `colorScheme.surface`).
+- Aturan dilanggar: [gaya](.agents/skills/custom/gaya/SKILL.md)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L355-L356)
+- Prompt:
+
+#### Task 6
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan warna hardcode `Color(0xFFEF5350)` (baris 131 dan 139) pada `konsumsi_rokok_screen.dart` bukan dari `ColorScheme`/tema.
+- Solusi: Ganti dengan `Theme.of(context).colorScheme.error` atau warna semantik dari tema.
+- Aturan dilanggar: [gaya](.agents/skills/custom/gaya/SKILL.md)
+- File bermasalah: [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L131), [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L139)
+- Prompt:
+
+#### Task 7
+
+- Status: belum
+- Masalah: Commit `17d53cf` menggunakan warna hardcode `Colors.grey` (baris 175 dan 183) pada `_EmptyKonsumsiRokok` di `konsumsi_rokok_screen.dart` bukan dari `ColorScheme`/tema.
+- Solusi: Ganti dengan `Theme.of(context).colorScheme.onSurfaceVariant` atau warna semantik dari tema.
+- Aturan dilanggar: [gaya](.agents/skills/custom/gaya/SKILL.md)
+- File bermasalah: [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L175), [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart#L183)
+- Prompt:
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+Tidak ada temuan.

@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/cadangan/screens/cadangan_screen.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/helper/pola_craving_helper.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
 import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
@@ -25,6 +28,14 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
   bool _memuatNotifikasi = true;
   bool _sedangMemproses = false;
 
+  // Check-in pagi.
+  bool _checkinPagiAktif = false;
+  int _checkinPagiJam = 7;
+  int _checkinPagiMenit = 0;
+
+  // Pengingat pola craving.
+  bool _polaCravingAktif = false;
+
   @override
   void initState() {
     super.initState();
@@ -42,14 +53,24 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
       final aktif = await NotifikasiService.aktif();
       final jam = await NotifikasiService.jam();
       final menit = await NotifikasiService.menit();
+      final checkinPagiAktif = await NotifikasiService.aktifCheckinPagi();
+      final checkinPagiJam = await NotifikasiService.jamCheckinPagi();
+      final checkinPagiMenit = await NotifikasiService.menitCheckinPagi();
+      final polaCravingAktif = await NotifikasiService.aktifPolaCraving();
       if (!mounted) return;
       setState(() {
         _notifikasiAktif = aktif;
         _jam = jam;
         _menit = menit;
+        _checkinPagiAktif = checkinPagiAktif;
+        _checkinPagiJam = checkinPagiJam;
+        _checkinPagiMenit = checkinPagiMenit;
+        _polaCravingAktif = polaCravingAktif;
         _memuatNotifikasi = false;
       });
-      L.i('aktif=$aktif, jam=$jam, menit=$menit');
+      L.i(
+        'aktif=$aktif, jam=$jam, menit=$menit, checkinPagi=$checkinPagiAktif, polaCraving=$polaCravingAktif',
+      );
     } on Exception catch (e, s) {
       L.e('Gagal memuat preferensi notifikasi: $e $s');
       if (mounted) {
@@ -237,6 +258,263 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     }
   }
 
+  Future<void> _ubahCheckinPagi(bool value) async {
+    if (_sedangMemproses) return;
+    L.i('checkinPagi value=$value');
+    setState(() {
+      _sedangMemproses = true;
+      _checkinPagiAktif = value;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
+    );
+    try {
+      if (value) {
+        final izin = await NotifikasiService.mintaIzin();
+        if (!mounted) return;
+        if (!izin) {
+          setState(() {
+            _checkinPagiAktif = false;
+          });
+          AppToast.gagal(context, 'Izin notifikasi tidak diberikan');
+          return;
+        }
+        await NotifikasiService.jadwalkanCheckinPagi(
+          jam: _checkinPagiJam,
+          menit: _checkinPagiMenit,
+        );
+        if (!mounted) return;
+        AppToast.sukses(context, 'Check-in pagi diaktifkan');
+      } else {
+        await NotifikasiService.batalkanCheckinPagi();
+        if (!mounted) return;
+        AppToast.info(context, 'Check-in pagi dinonaktifkan');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah check-in pagi: $e $s');
+      if (mounted) {
+        final isIzin = e is IzinNotifikasiTidakDiberikanException;
+        try {
+          final aktifSekarang = await NotifikasiService.aktifCheckinPagi();
+          if (!mounted) return;
+          setState(() {
+            _checkinPagiAktif = aktifSekarang;
+          });
+        } on Exception catch (e2, s2) {
+          L.e('Gagal membaca status aktif check-in pagi: $e2 $s2');
+        }
+        if (isIzin) {
+          if (mounted) {
+            AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
+          }
+          try {
+            await _muatPreferensiNotifikasi();
+          } on Exception catch (e2, s2) {
+            L.e('Gagal memuat preferensi notifikasi: $e2 $s2');
+          }
+          if (!mounted) return;
+        } else if (mounted) {
+          AppToast.gagal(context, 'Gagal mengubah check-in pagi');
+        }
+      }
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _checkinPagiAktif = false;
+        });
+        AppToast.gagal(context, 'Platform tidak mendukung check-in pagi');
+      }
+    } finally {
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _pilihWaktuCheckinPagi() async {
+    if (_sedangMemproses) return;
+    L.i('checkinPagi jam=$_checkinPagiJam, menit=$_checkinPagiMenit');
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: _checkinPagiJam, minute: _checkinPagiMenit),
+    );
+    if (!mounted) return;
+    if (picked == null) return;
+    L.i('picked=${picked.hour}:${picked.minute}');
+    final jamLama = _checkinPagiJam;
+    final menitLama = _checkinPagiMenit;
+    final jamBaru = picked.hour;
+    final menitBaru = picked.minute;
+    setState(() {
+      _sedangMemproses = true;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
+    );
+    try {
+      if (_checkinPagiAktif) {
+        await NotifikasiService.jadwalkanCheckinPagi(
+          jam: jamBaru,
+          menit: menitBaru,
+        );
+        if (!mounted) return;
+        setState(() {
+          _checkinPagiJam = jamBaru;
+          _checkinPagiMenit = menitBaru;
+        });
+        AppToast.sukses(context, 'Waktu check-in pagi diperbarui');
+      } else {
+        await NotifikasiService.setWaktuCheckinPagi(jamBaru, menitBaru);
+        if (!mounted) return;
+        setState(() {
+          _checkinPagiJam = jamBaru;
+          _checkinPagiMenit = menitBaru;
+        });
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal memperbarui waktu check-in pagi: $e $s');
+      if (mounted) {
+        setState(() {
+          _checkinPagiJam = jamLama;
+          _checkinPagiMenit = menitLama;
+        });
+        AppToast.gagal(context, 'Gagal memperbarui waktu check-in pagi');
+      }
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _checkinPagiJam = jamLama;
+          _checkinPagiMenit = menitLama;
+        });
+        AppToast.gagal(context, 'Platform tidak mendukung check-in pagi');
+      }
+    } finally {
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _ubahPolaCraving(bool value) async {
+    if (_sedangMemproses) return;
+    L.i('polaCraving value=$value');
+    setState(() {
+      _sedangMemproses = true;
+      _polaCravingAktif = value;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Memproses...',
+        maskType: EasyLoadingMaskType.black,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading: $e $s');
+      }),
+    );
+    try {
+      if (value) {
+        final izin = await NotifikasiService.mintaIzin();
+        if (!mounted) return;
+        if (!izin) {
+          setState(() {
+            _polaCravingAktif = false;
+          });
+          AppToast.gagal(context, 'Izin notifikasi tidak diberikan');
+          return;
+        }
+        // Baca data diary craving untuk menghitung jam teratas.
+        final diaryAsync = ref.read(diaryCravingProvider);
+        final daftar = diaryAsync.asData?.value.listCraving ?? <DiaryCravingModel>[];
+        final jam = PolaCravingHelper.jamTeratas(daftar);
+        if (jam == null) {
+          // Data belum cukup, simpan preferensi aktif tanpa jadwal.
+          await NotifikasiService.setAktifPolaCraving(true);
+          if (!mounted) return;
+          AppToast.info(context, 'Pengingat pola craving aktif (data craving belum cukup)');
+        } else {
+          await NotifikasiService.jadwalkanPolaCraving(jam);
+          if (!mounted) return;
+          AppToast.sukses(context, 'Pengingat pola craving diaktifkan (jam $jam:00)');
+        }
+      } else {
+        await NotifikasiService.batalkanPolaCraving();
+        if (!mounted) return;
+        AppToast.info(context, 'Pengingat pola craving dinonaktifkan');
+      }
+    } on Exception catch (e, s) {
+      L.e('Gagal mengubah pola craving: $e $s');
+      if (mounted) {
+        final isIzin = e is IzinNotifikasiTidakDiberikanException;
+        try {
+          final aktifSekarang = await NotifikasiService.aktifPolaCraving();
+          if (!mounted) return;
+          setState(() {
+            _polaCravingAktif = aktifSekarang;
+          });
+        } on Exception catch (e2, s2) {
+          L.e('Gagal membaca status aktif pola craving: $e2 $s2');
+        }
+        if (isIzin) {
+          if (mounted) {
+            AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
+          }
+          try {
+            await _muatPreferensiNotifikasi();
+          } on Exception catch (e2, s2) {
+            L.e('Gagal memuat preferensi notifikasi: $e2 $s2');
+          }
+          if (!mounted) return;
+        } else if (mounted) {
+          AppToast.gagal(context, 'Gagal mengubah pola craving');
+        }
+      }
+    } on UnsupportedError catch (e, s) {
+      L.e('Platform tidak mendukung notifikasi: $e $s');
+      if (mounted) {
+        setState(() {
+          _polaCravingAktif = false;
+        });
+        AppToast.gagal(context, 'Platform tidak mendukung pola craving');
+      }
+    } finally {
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading: $e $s');
+        }),
+      );
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
+    }
+  }
+
   Future<void> _ujiNotifikasi() async {
     if (_sedangMemproses) return;
     L.i('uji notifikasi');
@@ -390,6 +668,67 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
                 },
           child: const Text('Uji coba notifikasi'),
         ),
+        const Divider(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Check-in Pagi',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Switch(
+              value: _checkinPagiAktif,
+              onChanged: _sedangMemproses
+                  ? null
+                  : (value) {
+                      unawaited(_ubahCheckinPagi(value));
+                    },
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Waktu: ${_checkinPagiJam.toString().padLeft(2, '0')}:${_checkinPagiMenit.toString().padLeft(2, '0')}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            OutlinedButton(
+              onPressed: _sedangMemproses
+                  ? null
+                  : () {
+                      unawaited(_pilihWaktuCheckinPagi());
+                    },
+              child: const Text('Ubah waktu'),
+            ),
+          ],
+        ),
+        const Divider(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Pengingat Pola Craving',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Switch(
+              value: _polaCravingAktif,
+              onChanged: _sedangMemproses
+                  ? null
+                  : (value) {
+                      unawaited(_ubahPolaCraving(value));
+                    },
+            ),
+          ],
+        ),
+        if (_polaCravingAktif)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              'Jadwal otomatis pada jam craving teratas (min. 3 entri diary).',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
       ],
     );
   }
