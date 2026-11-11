@@ -14,7 +14,7 @@ Digunakan untuk mengidentifikasi produk dan memberikan gambaran umum proyek. Inf
 **Aturan pengisian:**
 
 - Isi informasi berdasarkan kondisi dan identitas proyek yang sebenarnya.
-- Gunakan nama produk yang konsisten dengan proyek.
+- Gunakan nama yang konsisten dengan proyek.
 - Tuliskan platform dan versi yang menjadi target pengembangan.
 - Bedakan status dokumen dengan status implementasi.
 - Jangan mengarang informasi yang belum diketahui.
@@ -27,7 +27,7 @@ Digunakan untuk mengidentifikasi produk dan memberikan gambaran umum proyek. Inf
 - Versi:
 - Status pengembangan:
 
-## 3. Tujuan PRD
+## 2. Tujuan PRD
 
 **Konteks penggunaan:**
 Digunakan untuk menentukan hasil yang ingin dicapai dari dokumen PRD ini. Tujuan harus berhubungan langsung dengan kebutuhan dokumen.
@@ -42,7 +42,7 @@ Digunakan untuk menentukan hasil yang ingin dicapai dari dokumen PRD ini. Tujuan
 **Isi:**
 Jelaskan hasil dan manfaat yang ingin dicapai melalui dokumen PRD ini.
 
-## 6. Daftar Fitur
+## 3. Daftar Fitur
 
 **Konteks penggunaan:**
 Digunakan untuk melihat keseluruhan fitur produk dan menentukan tingkat kepentingannya.
@@ -54,7 +54,6 @@ Digunakan untuk melihat keseluruhan fitur produk dan menentukan tingkat kepentin
 - Hindari menggabungkan beberapa fitur berbeda dalam satu baris.
 - Pastikan fitur mendukung tujuan produk dan masuk dalam ruang lingkup.
 - Gunakan prioritas berdasarkan kepentingan kebutuhan produk.
-- Detail perilaku fitur dijelaskan pada bagian 7.
 
 | Fitur | Deskripsi | Prioritas   |
 | ----- | --------- | ----------- |
@@ -62,7 +61,7 @@ Digunakan untuk melihat keseluruhan fitur produk dan menentukan tingkat kepentin
 |       |           | Should Have |
 |       |           | Could Have  |
 
-## 8. Alur Pengguna
+## 4. Alur Pengguna
 
 **Konteks penggunaan:**
 Digunakan untuk menjelaskan urutan interaksi pengguna dengan aplikasi dari awal hingga tujuan tercapai.
@@ -80,7 +79,25 @@ Digunakan untuk menjelaskan urutan interaksi pengguna dengan aplikasi dari awal 
 **Isi:**
 Jelaskan langkah-langkah pengguna dalam menjalankan setiap proses utama aplikasi.
 
-## 20. File-File Terdampak
+## 5. Steps
+
+**Konteks penggunaan:**
+Digunakan untuk menjelaskan urutan langkah-langkah kerja yang harus diikuti dalam mengisi atau menerapkan PRD.
+
+**Aturan pengisian:**
+
+- Buat langkah-langkah yang spesifik dan dapat diikuti.
+- Gunakan numbered list untuk mempertahankan urutan.
+- Setiap langkah harus tidak ambigu dan dapat dikerjakan.
+- Jangan memasukkan langkah yang tidak relevan atau redundan.
+
+**Isi:**
+
+1. Langkah pertama yang harus dilakukan.
+2. Langkah kedua yang harus dilakukan.
+3. Langkah ketiga yang harus dilakukan.
+
+## 6. File-File Terdampak
 
 **Konteks penggunaan:**
 Digunakan untuk mengidentifikasi file proyek yang berkaitan dengan implementasi kebutuhan produk. Bagian ini menjadi gambaran awal cakupan perubahan kode.
