@@ -91,19 +91,6 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 - **Saran:** 3–5 pilihan mood + craving hari ini (ya/tidak/intensitas), tampil sesaat setelah buka aplikasi pada hari tertentu, bisa dilewati; simpan sebagai tabel ringan `check_in_harian`; jangan memaksa setiap hari.
 - **Prioritas:** Sedang.
 
-#### A4. SOS Craving — Tool Tambahan
-
-- **PRD:** [prd/sos_craving_tool_tambahan.md](prd/sos_craving_tool_tambahan.md) (Final, dibuat 2026-11-10, belum diimplementasikan)
-- **Tujuan fitur:** memperluas menu coping tanpa mengubah inti (napas 4-7-8 + timer 3 menit tetap).
-- **Referensi:** [QUIT SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (10 teknik napas + mini-game + Quity AI) · [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (SOS 4-7-8 + timer 3 menit + analisis pola craving) · [PuffGone](https://play.google.com/store/apps/details?id=com.puffgone.app) (toolkit SOS: 4-7-8, 5-4-3-2-1, tap game, brain math) · [Nicotine Free](https://apps.apple.com/us/app/nicotine-free-quit-vape-zyn/id6810766797) (jeda 90 detik) · [Quit Smoking Vaping & Nicotine](https://apps.apple.com/us/app/quit-smoking-vaping-nicotine/id6756565950) (4 jenis napas) · [Qwit](https://play.google.com/store/apps/details?id=stopSmokingDemo.team.geny) · [Stop Smoking Day Counter](https://play.google.com/store/apps/details?id=smokefree.daycounter.quitsmoking) · [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) (pursed-lip breathing + delay 5 menit).
-- **Tool tambahan yang terbukti di kompetitor dan mobile-capable:**
-  - Napas **box breathing** (4-4-4) dan **napas 90 detik** ([ZenQuit](https://play.google.com/store/apps/details?id=com.zenquit.habit), [Nicotine Free](https://apps.apple.com/us/app/nicotine-free-quit-vape-zyn/id6810766797)).
-  - **Grounding 5-4-3-2-1** ([Pace Android](https://github.com/ravipurohit1991/pace), [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker)).
-  - **Urge surfing timer 10–20 menit** ([Craving To Quit](https://play.google.com/store/apps/details?id=com.claritasmindsciences.CravingToQuit), [QuitNow Medicon](https://apps.apple.com/us/app/quitnow-stop-smoking/id6768372199)).
-  - **Timer 5/10 menit** selain 3 menit ([Cut Smoking](https://play.google.com/store/apps/details?id=com.nfm.aval024), [H2M](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke)).
-- **Saran:** satu tab SOS dengan kartu pilihan teknik; tetap offline, cepat, tanpa iklan; catat teknik yang dipakai ke `sos_intervensi` (sudah ada).
-- **Prioritas:** Sedang.
-
 #### A5. Grafik & Heatmap Tren (Statistik Konsumsi/Craving)
 
 - **Tujuan fitur:** tren 7/30/90 hari menggantikan angka statis; heatmap jam craving; donut pemicu.
@@ -143,6 +130,7 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 
 #### A10. Implementation Intentions (Jika–Maka) untuk Craving
 
+- **PRD:** [prd/implementation_intention_craving.md](prd/implementation_intention_craving.md) (Draft, dibuat 2026-11-10, belum diimplementasikan)
 - **Tujuan fitur:** pengguna menulis rencana "jika craving saat X, maka saya lakukan Y"; dibuktikan menurunkan slip dalam studi kebiasaan.
 - **Referensi:** [Pace Android](https://github.com/ravipurohit1991/pace) (Playbook if-then plans) · [Flamy — SOS Emergency Setup](https://apps.apple.com/us/app/quit-smoking-smoke-free-flamy/id1462887052) · [Intervensi CBT Craving To Quit](https://play.google.com/store/apps/details?id=com.claritasmindsciences.CravingToQuit) · [QuitNow Medicon — 9 hari, 8 latihan CBT](https://apps.apple.com/us/app/quitnow-stop-smoking/id6768372199).
 - **Saran:** layar kecil "Rencana Darurat Saya" (Jika …, Maka …) ditampilkan di kartu SOS; disimpan lokal; maks 3 rencana.
@@ -528,16 +516,15 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 | 6 | Kartu progres yang dapat dibagikan (A2) | Fitur baru | Motivasi sosial terkendali | share_plus (ada) + template |
 | 7 | Analitik: grafik tren + heatmap craving (A5/B6) | Fitur baru/optimasi | Insight yang bisa ditindaklanjuti | fl_chart (baru) + data cukup |
 | 8 | Check-in harian mood singkat (A3) | Fitur baru | Refleksi & deteksi risiko | Tabel `check_in_harian` |
-| 9 | Tool SOS tambahan: box breathing, grounding 5-4-3-2-1, urge-surfing 10–20 menit (A4) | Fitur baru/optimasi | Variasi coping yang terbukti | Implementasi layar + pencatatan |
-| 10 | Pengingat jam rawan berdasarkan pola (A13/B7) | Optimasi | Relevansi notifikasi | PolaCravingHelper + opt-in |
-| 11 | Backup CSV + pratinjau (B8) | Optimasi | Portabilitas & analisis | Ekspor sisi baca saja |
-| 12 | Mini-game distraksi (A7) | Fitur baru | Variasi motivasi | Matching-pairs sederhana |
-| 13 | Gamifikasi ringan (misi harian, opsional) (A9) | Fitur baru | Retensi opt-in | Sistem reward sederhana |
-| 14 | If-then plan (A10) & letters to future self (A11) | Fitur baru | Kedalaman motivasi | Layar kecil |
-| 15 | NRT tracker (A12) | Fitur baru | Lengkapnya rencana tapering | Model `nrt_entri` |
-| 16 | Pindahkan statistik sekunder ke layar Analitik terpisah dari Dashboard (lihat A5) | UX | Fokus; beban kognitif | Tinjau layar di HP kecil |
-| 17 | AI coach (A8) | Fitur baru | Dukungan personal (opsional) | Backend, biaya, privasi |
-| 18 | Komunitas (di luar offline-first) | Fitur baru | Dukungan sosial | Backend + moderasi; **bukan** rekomendasi utama |
+| 9 | Pengingat jam rawan berdasarkan pola (A13/B7) | Optimasi | Relevansi notifikasi | PolaCravingHelper + opt-in |
+| 10 | Backup CSV + pratinjau (B8) | Optimasi | Portabilitas & analisis | Ekspor sisi baca saja |
+| 11 | Mini-game distraksi (A7) | Fitur baru | Variasi motivasi | Matching-pairs sederhana |
+| 12 | Gamifikasi ringan (misi harian, opsional) (A9) | Fitur baru | Retensi opt-in | Sistem reward sederhana |
+| 13 | If-then plan (A10) & letters to future self (A11) | Fitur baru | Kedalaman motivasi | Layar kecil |
+| 14 | NRT tracker (A12) | Fitur baru | Lengkapnya rencana tapering | Model `nrt_entri` |
+| 15 | Pindahkan statistik sekunder ke layar Analitik terpisah dari Dashboard (lihat A5) | UX | Fokus; beban kognitif | Tinjau layar di HP kecil |
+| 16 | AI coach (A8) | Fitur baru | Dukungan personal (opsional) | Backend, biaya, privasi |
+| 17 | Komunitas (di luar offline-first) | Fitur baru | Dukungan sosial | Backend + moderasi; **bukan** rekomendasi utama |
 
 ---
 
@@ -570,4 +557,4 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 
 ---
 
-_Dokumen diperbarui 10 November 2026 berdasarkan riset seluruh 159 listing di `apk_serupa.md`, ditambah verifikasi ulang sampel tautan pada tanggal yang sama: Galaxy Store (#74–75) kini HTTP 200 (verifikasi ringan), Quit Tracker Uptodown (#78) berubah dari 410 menjadi 404, dan bagian C1 (usulan Dashboard Metrik Dominan) dihapus oleh pengguna bersamaan dengan penghapusan PRD `prd/dashboard_metrik_dominan.md`. Rekomendasi menunggu penyortiran dan keputusan pengguna. Tidak ada kode aplikasi yang diubah._
+_Dokumen diperbarui 11 November 2026 berdasarkan riset seluruh 159 listing di `apk_serupa.md`, ditambah verifikasi ulang sampel tautan pada tanggal yang sama: Galaxy Store (#74–75) kini HTTP 200 (verifikasi ringan), Quit Tracker Uptodown (#78) berubah dari 410 menjadi 404, dan bagian C1 (usulan Dashboard Metrik Dominan) dihapus oleh pengguna bersamaan dengan penghapusan PRD `prd/dashboard_metrik_dominan.md`. Pada 11 November 2026 bagian A4 (Tool SOS Tambahan) dihapus oleh pengguna setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/sos_craving_tool_tambahan.md`; baris rekomendasi "Tool SOS tambahan" pada tabel E digugurkan dan urutan nomor di bawah posisi 9 digeser naik. Rekomendasi menunggu penyortiran dan keputusan pengguna. Per 11 November 2026 kode `lib/fitur/sos_craving/` telah diimplementasikan sesuai PRD tersebut (menu kartu teknik + 7 teknik); dokumen ini hanya mencatat riset, bukan status implementasi._

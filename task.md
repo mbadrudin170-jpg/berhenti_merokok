@@ -423,3 +423,106 @@ Tidak ada temuan.
 - aturan dilanggar : [normalisasi-tanggal](.agents/skills/custom/normalisasi-tanggal/SKILL.md)
 - file bermasalah : [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
 - prompt :
+
+# Kelompok 23
+
+## file terdampak
+
+- [lainnya_screen.dart](lib/lainnya_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `65abc01` menulis `ontap: () => Nav.to(context, const ...Screen())` pada seluruh pintasan menu di `_ItemLainnya` (SOS Craving, Alasan Berhenti, Konsumsi Rokok, Diary Craving, Kalender Smoke-Free, Pemulihan Kesehatan, Pelacakan Toxin, Pengaturan, dan Dummy). `Nav.to` mengembalikan `Future<T?>` yang dibuang secara diam-diam: tidak dibungkus `unawaited()` dan tidak memiliki `.catchError(...)` yang mencatat `L.e`, sehingga error navigasi menjadi unhandled dan tanpa log. Pola `_buildTombolCustom(() => Nav.to(...))` sebelum commit memiliki kelemahan yang sama, tetapi commit ini menyalinnya ke struktur `_ItemLainnya` alih-alih memperbaikinya.
+- Solusi : Bungkus setiap pemanggilan dengan `unawaited(Nav.to(context, ...).catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke <nama halaman>: $e $s'); return null; }))`. Contoh: `ontap: () => unawaited(Nav.to(context, const SosCravingScreen()).catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke SOS Craving: $e $s'); return null; })),`. Lebih baik lagi: ekstrak helper bersama (mis. `_navigasi(BuildContext context, Widget page, String nama)`) agar pola aman ini tidak diulang di 10 tempat.
+- aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md), [kartu-motivasi-pintasan-dashboard](.agents/skills/custom/kartu-motivasi-pintasan-dashboard/SKILL.md)
+- file bermasalah : [lainnya_screen.dart](lib/lainnya_screen.dart#L32-L88)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 24
+
+## file terdampak
+
+- [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `65abc01` menambahkan `onCta: () => unawaited(Nav.to(context, const FormImpian()))` (baris 251) pada `EmptyStateView` tanpa `.catchError(...)`. Skill penanganan-error-unawaited melarang melepas `unawaited(...)` tanpa penanganan error, dan skill kartu-motivasi-pintasan-dashboard mewajibkan `.catchError()` pada navigasi pintasan dengan log `L.e`. Pola identik (tanpa `catchError`) sudah ada lebih dulu di baris 254 dan 370 dan sebaiknya diperbaiki sekalian.
+- Solusi : Tambahkan `.catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke Form Impian: $e $s'); return null; })` sebelum penutup kurung `unawaited`, contoh: `onCta: () => unawaited(Nav.to(context, const FormImpian()).catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke Form Impian: $e $s'); return null; })),`. Terapkan pola yang sama pada baris 254 dan 370.
+- aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md), [kartu-motivasi-pintasan-dashboard](.agents/skills/custom/kartu-motivasi-pintasan-dashboard/SKILL.md)
+- file bermasalah : [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L251), [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L254), [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L370)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+# Kelompok 25
+
+## file terdampak
+
+- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `fbcfada` menambahkan `_buildCaptionDariCatatan` yang mengembalikan `Text` telanjang dan diletakkan langsung sebagai anak `ListView` di antara `_buildRingkasan(biodata)` (Row berisi 3 kartu ringkasan) dan `_buildCardSosCraving()` (baris 119-121). Anak-anak `ListView` lain menjaga jarak lewat margin `Card`, tetapi `Text` tidak, sehingga caption `bodySmall` menempel rapat di bawah deretan kartu ringkasan dan rapat di atas kartu SOS Craving. Jarak antar elemen tidak serasi dan tidak mengikuti hierarki spasi yang dipakai layar lain.
+- Solusi : Beri caption jarak vertikal, misalnya bungkus dengan `Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(...))` di dalam `_buildCaptionDariCatatan`, atau sisipkan `const SizedBox(height: 8)` sebelum dan sesudah `_buildCaptionDariCatatan(...)` pada daftar anak `ListView`. Alternatif: gunakan `ListView` dengan jarak seragam untuk seluruh anak.
+- aturan dilanggar : [spacing](.agents/skills/custom/spacing/SKILL.md)
+- file bermasalah : [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L119-L121), [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L315-L363)
+- prompt :
+
+# Kelompok 26
+
+## file terdampak
+
+- [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart)
+- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
+- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
+- [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
+- [kalender_smoke_free_screen.dart](lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart)
+- [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart)
+- [pemulihan_kesehatan_screen.dart](lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart)
+- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
+- [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart)
+- [empty_state_view.dart](lib/shared/widget/empty_state_view.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+Tidak ada temuan.
+
