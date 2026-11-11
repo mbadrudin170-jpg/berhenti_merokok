@@ -510,7 +510,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : selesai
 - Masalah : Commit `db5dd32` menambahkan tabel `rencana_darurat` (skema v13) hanya di `_onUpgrade`, tetapi tidak di `_buatTabel` (onCreate). Instalasi baru pada versi 13 tidak akan memiliki tabel `rencana_darurat` sehingga query/insert ke tabel tersebut gagal pada pengguna baru. Melanggar aturan skill migrasi skema: onCreate wajib membuat seluruh tabel yang dibutuhkan aplikasi (termasuk tabel baru), dan tabel baru wajib dibuat baik di `onCreate` maupun di `onUpgrade`.
 - Solusi : Tambahkan blok `CREATE TABLE IF NOT EXISTS` untuk `rencana_darurat` ke `_buatTabel` (mis. setelah blok `sosIntervensi`). Contoh:
 
@@ -533,7 +533,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status : belum
+- Status : selesai
 - Masalah : Commit `db5dd32` menempatkan DDL `CREATE TABLE IF NOT EXISTS rencana_darurat` di dalam branch `oldVersion < 11` (cabang untuk `sos_intervensi` v11) sekaligus di branch `oldVersion < 13`. Penempatan di branch v11 salah versi (`rencana_darurat` adalah v13) dan menyebabkan duplikasi DDL untuk upgrade dari versi ≤10 (tabel dibuat dua kali; idempoten karena `IF NOT EXISTS`, tetapi menyesatkan dan berisiko drift bila skema tabel diubah di masa depan). Blok `oldVersion < 11` baru juga ber-indentasi ragged (isi tidak sejajar dengan `if`), mengikuti pola buruk blok `oldVersion < 9` yang sudah dilaporkan di Kelompok 20 Task 1 dan belum diperbaiki.
 - Solusi : Hapus blok `CREATE TABLE rencana_darurat` dari branch `oldVersion < 11` sehingga branch itu kembali hanya membuat `sos_intervensi`; biarkan pembuatan tabel `rencana_darurat` hanya di branch `oldVersion < 13` (dan di `onCreate` sesuai Kelompok 28 Task 1). Ratakan indentasi blok `oldVersion < 11` (dan `oldVersion < 9`) ke level yang sama dengan branch lain. Perhatikan juga temuan duplikasi `sos_intervensi` di Kelompok 20 Task 1 (masih belum).
 - aturan dilanggar : [migrasi-skema-sqlite](.agents/skills/custom/migrasi-skema-sqlite/SKILL.md)
@@ -582,7 +582,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : selesai
 - Masalah : Commit `db5dd32` menambahkan `RencanaDaruratModel` dan `RencanaDaruratState` dengan direktif `part '...freezed.dart'`, tetapi file generated (`rencana_darurat_model.freezed.dart`, `rencana_darurat_state.freezed.dart`) tidak ikut di-commit, padahal proyek ini meng-commit file generated (lihat file `*.freezed.dart` lain di `git ls-files`). Akibatnya kode pada commit tersebut gagal di-compile: `dart analyze` melaporkan `uri_does_not_exist` untuk kedua part file dan nama `_$RencanaDaruratModel` / `_$RencanaDaruratState` tidak terdefinisi.
 - Solusi : Jalankan `dart run build_runner build --delete-conflicting-outputs` lalu commit kedua file generated tersebut. Contoh: `git add lib/fitur/rencana_darurat/model/rencana_darurat_model.freezed.dart lib/fitur/rencana_darurat/state/rencana_darurat_state.freezed.dart`.
 - aturan dilanggar : [build-runner-codegen](.agents/skills/custom/build-runner-codegen/SKILL.md)
@@ -602,5 +602,69 @@ Tidak ada temuan.
 - Solusi : Ratakan indentasi blok tersebut mengikuti pola dua pemanggilan lain di file yang sama (baris 252 dan 263): `onPressed: () => unawaited(` lalu isi satu level lebih dalam, `child:` dan `),` sejajar dengan `onPressed:`.
 - aturan dilanggar : tidak ada (ketidakkonsistenan format)
 - file bermasalah : [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L385-L397)
+- prompt :
+
+---
+
+# Kelompok 31
+
+## file terdampak
+
+- [rencana_darurat_screen.dart](lib/fitur/rencana_darurat/screens/rencana_darurat_screen.dart)
+- [form_rencana_darurat.dart](lib/fitur/rencana_darurat/screens/form_rencana_darurat.dart)
+- [cadangan_screen.dart](lib/fitur/cadangan/screens/cadangan_screen.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `2462af8` menambahkan tabel `konsumsi_rokok`, `sos_intervensi`, dan `rencana_darurat` ke dalam `tabelCadangan` sehingga `CadanganHelper.pulihkanDariPayload` kini ikut menghapus dan mengisi ulang ketiga tabel tersebut saat pemulihan, tetapi `_refreshProviderSetelahRestore` di `cadangan_screen.dart` hanya me-`refresh` `biodataProvider`, `impianProvider`, `diaryCravingProvider`, dan `alasanBerhentiProvider`. Akibatnya, layar yang memantau `konsumsiRokokProvider` (mis. kalender smoke-free, impian, dashboard), `sosIntervensiProvider` (sheet hasil intervensi SOS), dan `rencanaDaruratProvider` (kartu rencana darurat di SOS Craving, layar rencana darurat) tetap menampilkan data lama setelah pemulihan cadangan hingga aplikasi dimuat ulang. Melanggar aturan skill ekspor/pemulihan cadangan: setelah pemulihan berhasil wajib menyegarkan seluruh provider yang terkait data yang dipulihkan agar UI tidak basi.
+- Solusi : Tambahkan refresh untuk `konsumsiRokokProvider`, `sosIntervensiProvider`, dan `rencanaDaruratProvider` pada `_refreshProviderSetelahRestore` dengan pola try/catch `L.e` yang sama. Contoh:
+
+  ```dart
+  try {
+    final _ = ref.refresh(konsumsiRokokProvider);
+  } on Exception catch (e, s) {
+    L.e('Gagal refresh konsumsiRokokProvider: $e $s');
+  }
+  try {
+    final _ = ref.refresh(sosIntervensiProvider);
+  } on Exception catch (e, s) {
+    L.e('Gagal refresh sosIntervensiProvider: $e $s');
+  }
+  try {
+    final _ = ref.refresh(rencanaDaruratProvider);
+  } on Exception catch (e, s) {
+    L.e('Gagal refresh rencanaDaruratProvider: $e $s');
+  }
+  ```
+
+- aturan dilanggar : [ekspor-pemulihan-cadangan](.agents/skills/custom/ekspor-pemulihan-cadangan/SKILL.md)
+- file bermasalah : [cadangan_screen.dart](lib/fitur/cadangan/screens/cadangan_screen.dart#L243-L265)
+- prompt :
+
+## Rendah
+
+#### Task 2
+
+- Status : belum
+- Masalah : Commit `2462af8` melepas `unawaited(_hapus(item))` pada `onPressed` `IconButton` hapus di `rencana_darurat_screen.dart` tanpa `.catchError(...)`. Di dalam `_hapus`, pemanggilan `showOkCancelAlertDialog` berada di luar blok `try`, sehingga exception dari dialog (mis. kegagalan platform channel) menjadi error async yang tidak tertangani. Melanggar aturan skill penanganan error unawaited: Future yang dilepas dengan `unawaited()` wajib memiliki `catchError` yang mencatat via `L.e`. (Catatan: pola serupa sudah ada di layar lain, tetapi commit `2462af8` memperkenalkan instance baru.)
+- Solusi : Bungkus pemanggilan `_hapus(item)` dengan `catchError`. Contoh: `onPressed: () => unawaited(_hapus(item).catchError((Object e, StackTrace s) { L.e('Gagal menghapus rencana darurat: $e $s'); return null; })),` atau pindahkan `showOkCancelAlertDialog` ke dalam blok `try` pada `_hapus`.
+- aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)
+- file bermasalah : [rencana_darurat_screen.dart](lib/fitur/rencana_darurat/screens/rencana_darurat_screen.dart#L158), [rencana_darurat_screen.dart](lib/fitur/rencana_darurat/screens/rencana_darurat_screen.dart#L47-L62)
+- prompt :
+
+#### Task 3
+
+- Status : belum
+- Masalah : Commit `2462af8` melepas `unawaited(_simpan())` pada `onPressed` `OutlinedButton` simpan di `form_rencana_darurat.dart` tanpa `.catchError(...)`. Di dalam `_simpan`, pemanggilan `showOkCancelAlertDialog` dan `setState(() => _sedangMemproses = true)` berada di luar blok `try`, sehingga exception dari dialog (mis. kegagalan platform channel) menjadi error async yang tidak tertangani. Melanggar aturan skill penanganan error unawaited: Future yang dilepas dengan `unawaited()` wajib memiliki `catchError` yang mencatat via `L.e`.
+- Solusi : Bungkus pemanggilan `_simpan()` dengan `catchError`. Contoh: `onPressed: _sedangMemproses ? null : () => unawaited(_simpan().catchError((Object e, StackTrace s) { L.e('Gagal menyimpan rencana darurat: $e $s'); return null; })),` atau pindahkan `showOkCancelAlertDialog` ke dalam blok `try` pada `_simpan`.
+- aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)
+- file bermasalah : [form_rencana_darurat.dart](lib/fitur/rencana_darurat/screens/form_rencana_darurat.dart#L196), [form_rencana_darurat.dart](lib/fitur/rencana_darurat/screens/form_rencana_darurat.dart#L62-L84)
 - prompt :
 

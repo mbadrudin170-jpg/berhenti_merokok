@@ -271,41 +271,47 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final aman = durasi.isNegative ? Duration.zero : durasi;
     final berikutnya = milestoneBerikutnya(aman);
     final sisa = berikutnya == null ? null : berikutnya.target - aman;
-    L.i('milestoneBerikutnya=${berikutnya?.judul}, rokokEstimasi=$rokokEstimasi, uangEstimasi=$uangEstimasi');
+    L.i(
+      'milestoneBerikutnya=${berikutnya?.judul}, rokokEstimasi=$rokokEstimasi, uangEstimasi=$uangEstimasi',
+    );
 
-    return Row(
-      spacing: 8,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: _KartuRingkasan(
-            judul: 'Uang dihemat (estimasi)',
-            nilai: FormatUang.formatRupiah(uangEstimasi),
-          ),
-        ),
-        Expanded(
-          child: _KartuRingkasan(
-            judul: 'Rokok dihindari (estimasi)',
-            nilai: '$rokokEstimasi batang',
-          ),
-        ),
-        Expanded(
-          child: _KartuRingkasan(
-            judul: 'Milestone berikutnya',
-            nilai: berikutnya?.judul ?? 'Semua tercapai',
-            keterangan: sisa == null ? null : 'Tersisa ${_formatDurasiSingkat(sisa)}',
-            onTap: () => unawaited(
-              Nav.to(context, const PemulihanKesehatanScreen()).catchError((
-                Object e,
-                StackTrace s,
-              ) {
-                L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
-                return null;
-              }),
+    return IntrinsicHeight(
+      child: Row(
+        spacing: 8,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _KartuRingkasan(
+              judul: 'Uang dihemat (estimasi)',
+              nilai: FormatUang.formatRupiah(uangEstimasi),
             ),
           ),
-        ),
-      ],
+          Expanded(
+            child: _KartuRingkasan(
+              judul: 'Rokok dihindari (estimasi)',
+              nilai: '$rokokEstimasi batang',
+            ),
+          ),
+          Expanded(
+            child: _KartuRingkasan(
+              judul: 'Milestone berikutnya',
+              nilai: berikutnya?.judul ?? 'Semua tercapai',
+              keterangan: sisa == null
+                  ? null
+                  : 'Tersisa ${_formatDurasiSingkat(sisa)}',
+              onTap: () => unawaited(
+                Nav.to(context, const PemulihanKesehatanScreen()).catchError((
+                  Object e,
+                  StackTrace s,
+                ) {
+                  L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
+                  return null;
+                }),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
