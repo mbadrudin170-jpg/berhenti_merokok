@@ -73,19 +73,6 @@ Digunakan untuk menentukan siapa yang akan menggunakan produk. Informasi ini men
 **Isi:**
 Jelaskan siapa pengguna aplikasi, kebutuhan mereka, dan masalah yang ingin diselesaikan.
 
-## 5. Ruang Lingkup
-
-**Konteks penggunaan:**
-Digunakan untuk membatasi pekerjaan agar pengembangan tidak melebar dan mencegah penambahan fitur di luar kebutuhan.
-
-**Aturan pengisian:**
-
-- Cantumkan kebutuhan dan fitur yang termasuk dalam pengembangan.
-- Cantumkan fitur atau kemampuan yang secara sengaja tidak dikerjakan.
-- Pastikan batasan sesuai tujuan produk.
-- Jangan mencantumkan fitur yang saling bertentangan antara kedua kategori.
-- Perbarui ruang lingkup jika terjadi perubahan keputusan produk.
-
 ## 6. Daftar Fitur
 
 **Konteks penggunaan:**
@@ -123,30 +110,6 @@ Digunakan untuk menjelaskan urutan interaksi pengguna dengan aplikasi dari awal 
 
 **Isi:**
 Jelaskan langkah-langkah pengguna dalam menjalankan setiap proses utama aplikasi.
-
-## 13. Persyaratan Nonfungsional
-
-**Konteks penggunaan:**
-Digunakan untuk menetapkan standar kualitas dan batasan operasional produk yang tidak secara langsung menjelaskan fungsi fitur.
-
-**Aturan pengisian:**
-
-- Cantumkan persyaratan yang benar-benar relevan dengan produk.
-- Gunakan ukuran atau kondisi yang dapat diuji jika memungkinkan.
-- Jelaskan kondisi yang harus dipenuhi aplikasi.
-- Bedakan kebutuhan wajib dengan kebutuhan tambahan.
-- Jangan membuat target angka tanpa dasar atau kebutuhan yang jelas.
-- Hindari mengulang persyaratan fungsional pada bagian ini.
-
-**Aspek yang perlu dipertimbangkan:**
-
-- Performa.
-- Keamanan.
-- Privasi.
-- Keandalan.
-- Kompatibilitas.
-- Skalabilitas.
-- Kemudahan pemeliharaan.
 
 ## 20. File-File Terdampak
 
