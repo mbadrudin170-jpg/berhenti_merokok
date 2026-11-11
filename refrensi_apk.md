@@ -6,7 +6,7 @@
 - **Repositori:** [mbadrudin170-jpg/berhenti_merokok](https://github.com/mbadrudin170-jpg/berhenti_merokok).
 - **Branch yang diteliti:** `master`.
 - **Path dokumen ini:** `refrensi_apk.md` di root proyek.
-- **Tanggal penelitian:** 10–11 November 2026 (analisis 9 listing baru selesai 11 November 2026; analisis 10 APK batch 2 selesai 11 November 2026).
+- **Tanggal penelitian:** 10–11 November 2026 (analisis 9 listing baru selesai 11 November 2026; analisis 10 APK batch 2 selesai 11 November 2026; analisis 10 APK batch 3 selesai 11 November 2026).
 - **Cakupan sumber:** seluruh **352 tautan listing** pada `apk_kompetitor.md` di root proyek (daftar awal 79 + riset lintas-store 10–11 November 2026). Setiap listing diperiksa via `webfetch`/`websearch` pada 10–11 November 2026, dan **seluruh 352 link di-probe ulang secara independen dengan curl pada 2026-11-11** (user agent Chrome, `-L`, `--max-time 20`): **321× HTTP 200, 25× HTTP 403, 5× HTTP 404, 1× HTTP 410**. Store: Google Play, Apple App Store, F-Droid/IzzyOnDroid, GitHub, Samsung Galaxy Store, Uptodown, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Xiaomi GetApps, Huawei AppGallery.
 - **Hasil verifikasi:** sekitar **340 dari 352 listing tersedia/terverifikasi** (321 link 200 + 25 link 403 anti-bot yang diverifikasi via web/mirror resmi pada 10–11 November 2026), **5 verifikasi ringan** di Samsung Galaxy Store (link 200 tetapi halaman hanya menampilkan judul; detail fitur tidak terbaca: #74 QuitDay, #75 QuitSave, plus 3 distribusi Galaxy lainnya — `csero.quit.smoking`, `com.myw.smoking`, `com.fullstack.quitsmoking`), **7 tidak terverifikasi** dan tidak dijadikan dasar rekomendasi: Breev (#29, 404), Quit Smoking Tracker: Stop it App Store KW (#35, 404; iTunes lookup `resultCount: 0`), ZeroSmoke (#44, 404; iTunes lookup `resultCount: 0`), Smoker Reducer (#54, listing eksak tidak ditemukan), QuitSM SlideME (#157, 403), Flamy Aptoide (#156, 403), Quit Tracker Uptodown (#78, **berputar 410↔404**: 410 pada 2026-11-11, 404 pada 2026-11-10 — tetap tidak terverifikasi). Quit Smoking (de.baumann, #21/#137) dan Smoke Reducer (#23) F-Droid hanya tersedia sebagai arsip; GitHub `Polymath-Saksh/SmokeFree` (#16, 404) terverifikasi via websearch sebagai web app Django non-mobile.
 - **Platform sasaran:** Android (APK/Flutter). Fitur yang hanya berjalan di Apple Watch, Live Activities, WidgetKit iOS, dan macOS **tidak** dijadikan rekomendasi implementasi. Referensi lintas platform tetap dicatat karena polanya dapat memberi ide produk.
@@ -1043,6 +1043,172 @@ Catatan: klaim "WHO-validated" (Kwit) dan "no data collected" (QUIT Smoking SOS)
 
 ---
 
+## Analisis Mendalam 10 APK (2026-11-11, Batch 3)
+
+**Lingkup:** 10 APK yang berstatus `Belum Dianalisa` pada `apk_kompetitor.md` — [Quitter](https://f-droid.org/en/packages/com.quitter.app) (F-Droid), [SmokeStop](https://play.google.com/store/apps/details?id=com.smokestop.tracker) (Play), [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app) (Play), [SmokeFree: Quit smoking slowly](https://play.google.com/store/apps/details?id=com.motivebite.smokefree.free) (Play), [QuitNow!](https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa) (Play), [No Smoke: Quit Smoking Today](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) (Play), [Qwit](https://qwit.app/fr/smoking/) (Play/App Store), [QuitNic AI](https://play.google.com/store/apps/details?hl=en_US&id=store.evsi.quitsmoke) (Play), [Lungo](https://trylungo.com/) (Play/App Store), [ExHale](https://f-droid.org/packages/net.retiolus.exhale/) (F-Droid).
+
+**Metode & verifikasi (2026-11-11):** seluruh 10 halaman store/repositori diambil via `webfetch` dan terbaca penuh. 8 link dikonfirmasi HTTP 200 langsung. Qwit diverifikasi via situs resmi pengembang (qwit.app). ExHale diverifikasi via F-Droid (halaman package terbuka penuh). Semua 10 APK dijadikan dasar rekomendasi. Klaim angka rating/unduhan adalah potret sesaat, bukan bukti kualitas. Fitur iOS-only (Watch, widget iOS) dicatat sebagai referensi pola saja, bukan rekomendasi implementasi Android.
+
+### A. Fitur Baru (dapat berjalan di mobile)
+
+#### Prioritas Tinggi
+
+##### A27. Skor Pemulihan Per Organ / Lung Health Score (real-time)
+
+- **Tujuan fitur:** memberikan skor kesehatan per organ (paru, jantung, sirkulasi, pernapasan) yang diperbarui secara real-time berdasarkan durasi bebas rokok, sehingga pengguna melihat manfaat fisik konkret setiap harinya.
+- **Referensi:** [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) — "Lung Health Score: watch your lungs heal in real time; personal lung health score updates as you log smoke-free days." · [Breathe](https://github.com/imaswath/Breathe) — "Physiological Recovery: Heart, Lungs, Blood, Nerves, Skin."
+- **Saran:** tambahkan skor pemulihan per organ di layar Pemulihan Kesehatan yang sudah ada; visualisasi progres pemulihan tiap organ (paru, jantung, sirkulasi, saraf, kulit) dengan warna yang berubah seiring waktu bebas rokok.
+- **Prioritas:** Tinggi.
+
+##### A28. Slip-as-Data / Non-Reset Streak (anti-shame slip)
+
+- **Tujuan fitur:** slip tidak menghapus streak atau progres kumulatif; dicatat sebagai data untuk analisis pola, sehingga pengguna tidak merasa gagal total dan lebih mudah kembali ke jalur.
+- **Referensi:** [QuitNic AI](https://play.google.com/store/apps/details?hl=en_US&id=store.evsi.quitsmoke) — "Slips without streak resets: If you smoke, log the slip and the trigger. Your progress is not erased. QuitNic AI treats slips as data, not failure." · [Lungo](https://trylungo.com/) — "Relapse without shame: A slip doesn't erase what you've built." · [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) — "Streak Shield system lets you protect your streak by completing healthy activities."
+- **Saran:** pada dialog konfirmasi slip, tambahkan opsi "catat slip tanpa reset streak"; pisahkan "streak saat ini" dari "perjalanan kumulatif"; tampilkan preview dampak slip (streak → 0, uang dihemat −X, perjalanan tetap) sebelum konfirmasi.
+- **Prioritas:** Tinggi.
+
+#### Prioritas Sedang
+
+##### A29. Savings Goals + Wishlist + Estimasi Tanggal Pencapaian Impian
+
+- **Tujuan fitur:** mengubah uang yang dihemat dari rokok menjadi target konkret (hadiah, liburan, gadget) dengan progress bar dan estimasi tanggal tercapai berdasarkan laju tabungan harian.
+- **Referensi:** [SmokeStop](https://play.google.com/store/apps/details?id=com.smokestop.tracker) — "Savings Goals: Set personal reward goals (e.g., New Phone, Vacation, Fitness Gear) and see how fast your saved money buys your dreams!" · [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app) — "Wishlist: Create a personalized wishlist and see exactly what you can buy or achieve with the money you've saved." · [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) — "Savings Goals: Turn your cigarette money into something you actually want."
+- **Saran:** pada layar Impian/Terjemahan, tambahkan progress bar berbasis saldo terkumpul; estimasi D-Day pencapaian dari rata-rata uang dihemat per hari; label wajib "estimasi".
+- **Prioritas:** Sedang.
+
+##### A30. AI Coach + Pelajaran CBT Ringkas (offline-first)
+
+- **Tujuan fitur:** dukungan berbasis AI yang kontekstual berdasarkan profil, pemicu, streak, slip; pelajaran CBT ringkas untuk mengelola craving tanpa ketergantungan layanan eksternal.
+- **Referensi:** [QuitNic AI](https://play.google.com/store/apps/details?hl=en_US&id=store.evsi.quitsmoke) — "Personal AI coach: The coach uses your profile, triggers, reason to quit, streak, slips, savings, peak craving hour, and active goal to give more relevant support." · "CBT-based lessons: Short lessons cover the first week, craving techniques, automatic habits, stress, urge surfing, the 4 Ds, HALT, withdrawal, relapse prevention."
+- **Saran:** tambahkan AI coach terpadu dengan konteks pengguna (pemicu, alasan berhenti, streak); pelajaran CBT singkat (4D, HALT, urge surfing) yang disimpan secara lokal untuk akses offline; label "dukungan motivasi, bukan saran medis."
+- **Prioritas:** Sedang.
+
+##### A31. Streak Shield / Perlindungan Streak saat Slip
+
+- **Tujuan fitur:** melindungi streak saat slip dengan aktivitas sehat pengganti (napas, minum air, jalan kaki), sehingga pengguna tidak merasa mulai dari nol setelah salah satu rokok.
+- **Referensi:** [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) — "Streak Shield system lets you protect your streak by completing healthy activities — so you never feel like starting over."
+- **Saran:** tambahkan opsi "Streak Shield" — saat slip, pengguna dapat menjaga streak dengan menyelesaikan aktivitas sehat singkat (pursed lip breathing 1 menit, minum air, 5 push-up) sebagai pengganti rokok.
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### A32. Virtual Plant / Metaphor Visual Progres (tanaman tumbuh sesuai streak)
+
+- **Tujuan fitur:** membuat progres berhenti merokok menjadi visual yang hidup (tanaman/pohon tumbuh seiring hari bebas rokok), sehingga pengalaman lebih personal dan memotivasi.
+- **Referensi:** [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app) — "Evolving Virtual Plant: Your progress is visual. As long as you stay smoke-free, your plant grows strong and healthy." · "Plant Nursery: Unlock unique plant species as you reach new milestones."
+- **Saran:** tambahkan elemen visual progres (pohon/tanaman virtual) di Dashboard yang berkembang seiring streak bertambah; opsi unlock item kosmetik dari uang yang dihemat.
+- **Prioritas:** Rendah.
+
+### B. Optimasi Fitur yang Sudah Ada
+
+#### Prioritas Tinggi
+
+##### B19. 4-4-6 Breathing + Craving Countdown Timer pada Layar SOS
+
+- **Tujuan optimasi:** menyediakan alat coping terstruktur (latihan napas 4-4-6 dan timer penundaan 5 menit) saat craving datang, tanpa harus buka layar terpisah.
+- **Referensi:** [QuitNic AI](https://play.google.com/store/apps/details?hl=en_US&id=store.evsi.quitsmoke) — "SOS craving support: talk to the AI coach, start guided 4-4-6 breathing, or distract your hands and mind with a mini-game." · [No Smoke](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) — "Craving SOS: use the built-in pursed lip breathing exercise to slow your breath... start a 5-minute delay timer."
+- **Saran:** pada layar SOS Craving yang sudah ada, tambahkan timer napas 4-4-6 dan countdown 5 menit; opsi "pengingat napas" setelah craving berlalu.
+- **Prioritas:** Tinggi.
+
+##### B20. Estimasi D-Day Pencapaian Impian dari Laju Tabungan
+
+- **Tujuan optimasi:** membuat target impian konkret dengan estimasi tanggal tercapai berdasarkan laju uang yang dihemat pengguna saat ini.
+- **Referensi:** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke) — "Reward Goal D-day: daftar keinginan + harga, estimasi tanggal tercapai dari laju tabungan." · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) — "personal rewards & savings projections."
+- **Saran:** tambahkan field opsional pada impian; hitung dari rata-rata uang dihemat per hari (fallback dari biodata); tampilkan "± tanggal tercapai" di kartu impian; label wajib "estimasi".
+- **Prioritas:** Sedang.
+
+##### B21. Daily Motivational Missions (misi harian kecil berbasis sains)
+
+- **Tujuan optimasi:** menjaga fokus dan motivasi pengguna melalui misi harian kecil yang terukur.
+- **Referensi:** [SmokeStop](https://play.google.com/store/apps/details?id=com.smokestop.tracker) — "Daily Motivational Missions: Fresh science-backed tips and psychological insights each day to keep you focused."
+- **Saran:** tambahkan misi harian (mis. "hari ini tidak merokok selama 6 jam", "catat 3 pemicu craving") dengan reward kecil; tampilkan di Dashboard sebagai kartu terpisah.
+- **Prioritas:** Rendah.
+
+### C. UI, UX & Layout — Pola yang Teridentifikasi
+
+#### Prioritas Tinggi
+
+##### C17. Progress Card / Share Card dengan Tema Customizable
+
+- **Aplikasi serupa:** [SmokeStop](https://play.google.com/store/apps/details?id=com.smokestop.tracker).
+- **Pola UI:** kartu progres resolusi tinggi dengan tema (Gold Champion, Neon, Diamond); tombol "Bagikan Progres" yang menampilkan streak, uang dihemat, hari bebas rokok.
+- **Pola UX:** berbagi ke teman dan keluarga untuk accountability; simpan ke galeri atau kirim via aplikasi pesan.
+- **Pola layout:** layar preview kartu progres dengan opsi tema sebelum share; bottom sheet opsi berbagi (WA, Telegram, email, simpan foto).
+- **Tujuan pola:** motivasi sosial terkendali + bukti sosial pencapaian.
+- **Saran:** tambahkan tombol "Bagikan Progres" di layar Dashboard/Pencapaian yang menghasilkan kartu progres berbasis data pengguna; opsi tema warna; simpan ke galeri atau share via share_plus.
+- **Prioritas:** Tinggi.
+
+##### C18. AppWidget/Glance Home Screen dengan Tombol SOS Cepat
+
+- **Aplikasi serupa:** [QuitNow!](https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa) (Wear OS tiles) · [SmokeStop](https://play.google.com/store/apps/details?id=com.smokestop.tracker) (home screen widget).
+- **Pola UI:** widget layar utama yang menampilkan streak, uang dihemat, hari bebas rokok; tombol cepat ke SOS Craving.
+- **Pola UX:** akses 1–2 ketuk ke informasi utama tanpa buka aplikasi penuh.
+- **Pola layout:** AppWidget/Glance Android (home screen dan layar kunci) dengan ukuran kecil/sedang/besar; tombol cepat "SOS" di dalam widget.
+- **Tujuan pola:** mengurangi friksi akses ke fitur utama; meningkatkan retensi melalui visibilitas progres.
+- **Saran:** tambahkan AppWidget Android dengan Glance untuk layar utama dan layar kunci; tampilkan streak, uang dihemat, dan tombol cepat ke SOS Craving.
+- **Prioritas:** Tinggi.
+
+#### Prioritas Sedang
+
+##### C19. Alasan Berhenti ("Why") + Wishlist Tabungan di Dashboard
+
+- **Aplikasi serupa:** [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app) — "Motivation List: Keep your 'Why' front and center." · "Wishlist: Create a personalized wishlist and see exactly what you can buy."
+- **Pola UI:** section "Alasan Saya Berhenti" dan "Wishlist Tabungan" yang tampil di layar utama; edit inline dari layar Impian.
+- **Pola UX:** alasan berhenti sebagai pengingat visual saat buka aplikasi; wishlist sebagai motivasi finansial konkret.
+- **Pola layout:** kartu ringkas di Dashboard bawah statistik utama; tombol edit yang arah ke layar Impian/Alasan Berhenti.
+- **Tujuan pola:** memperkuat komitmen awal + motivasi finansial yang terus terlihat.
+- **Saran:** tambahkan section "Alasan Saya Berhenti" dan "Wishlist Tabungan" di Dashboard; edit inline dari layar Impian yang sudah ada.
+- **Prioritas:** Sedang.
+
+##### C20. Personalisasi Warna & Tema Aplikasi
+
+- **Aplikasi serupa:** [Quitter](https://f-droid.org/en/packages/com.quitter.app) — "Personalise colours, themes, and optional features."
+- **Pola UI:** opsi warna primer, aksen, dan tema gelap/terang di layar Pengaturan.
+- **Pola UX:** pengguna merasa memiliki kendali atas tampilan aplikasi; preferensi disimpan secara lokal.
+- **Pola layout:** layar Pengaturan dengan palet warna interaktif; pratinjau tema real-time.
+- **Tujuan pola:** kenyamanan visual jangka panjang + retensi melalui personalisasi.
+- **Saran:** tambahkan opsi personalisasi warna tema (primer, aksen, gelap/terang) di layar Pengaturan; simpan preferensi secara lokal (SharedPreferences).
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### C21. Gamifikasi XP + Pixel Buddy / Mascot Virtual
+
+- **Aplikasi serupa:** [Lungo](https://trylungo.com/) — "Earn XP, build streaks and unlock rewards as you leave cigarettes or vapes behind." · "A check-in that feels like feeding a pet."
+- **Pola UI:** mascot virtual (katak piksel) di layar utama; XP bar, streak counter, item shop kosmetik (topi, furniture).
+- **Pola UX:** check-in harian seperti memberi makan hewan peliharaan virtual; unlock item kosmetik dari uang yang dihemat.
+- **Pola layout:** mascot di tengah layar utama; item shop sebagai layar terpisah; progres XP di atas mascot.
+- **Tujuan pola:** membuat progres berhenti merokok menjadi pengalaman bermain; motivasi intrinsik melalui pemeliharaan mascot.
+- **Saran:** tambahkan sistem XP + mascot virtual sederhana di Dashboard; unlock item kosmetik (hiasan) dari uang yang dihemat; check-in harian.
+- **Prioritas:** Rendah.
+
+### D. Katalog 10 APK Batch 3
+
+| Nama Aplikasi | Store | Rating | Unduhan | Fitur Utama | Model Bisnis | Privasi | Verifikasi |
+|---|---|---|---|---|---|---|---|
+| [Quitter](https://f-droid.org/en/packages/com.quitter.app) | F-Droid | n/a | n/a | 13 built-in habit journeys, custom tracker, journal, milestone reminders, tema personal, offline-first, open source | Gratis, open source (MIT), donasi | Tidak melacak, no account, data on-device | Terverifikasi (F-Droid halaman terbuka penuh) |
+| [SmokeStop](https://play.google.com/store/apps/details?id=com.smokestop.tracker) | Google Play | n/a | 10+ | Smoke-free stopwatch, money saved + savings goals, WHO health timeline, SOS craving + breathing, home widget, progress cards, daily missions | Iklan + in-app purchases | Device/other IDs; data dienkripsi transit; tidak bisa dihapus | Terverifikasi (HTTP 200 via webfetch) |
+| [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app) | Google Play | n/a | 5K+ | Virtual plant, plant nursery, real-time tracker, cigarette counter, savings calculator (1/5/10y), wishlist, motivation list, health timeline, micro-challenges, SOS button, community | In-app purchases (Premium) | Personal info, health & fitness; data dienkripsi; dapat dihapus | Terverifikasi (HTTP 200 via webfetch) |
+| [SmokeFree: Quit smoking slowly](https://play.google.com/store/apps/details?id=com.motivebite.smokefree.free) | Google Play | 4.6★ | 500K+ | Personalized quitting plan, automated tapering, daily progress, notification when allowed to smoke, quotes/images motivation, data sync | Iklan + in-app purchases | Personal info, photos/videos; data dienkripsi; dapat dihapus | Terverifikasi (HTTP 200 via webfetch) |
+| [QuitNow!](https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa) | Google Play | 4.9★ | 5M+ | Ex-smoker status, ex-smokers chat, live expert sessions, quit course, 80 milestones, WHO health indicators, QuitNow AI, books, Wear OS | Iklan + in-app purchases (Pro) | Personal info, messages; data dienkripsi; dapat dihapus | Terverifikasi (HTTP 200 via webfetch) |
+| [No Smoke: Quit Smoking Today](https://play.google.com/store/apps/details?id=com.havabee.nosmoke) | Google Play | n/a | 1K+ | Lung health score, money spent/saved, savings goals, smoke-free streak + Streak Shield, craving SOS + breathing, trigger tracking, body recovery milestones | In-app purchases | No data collected | Terverifikasi (HTTP 200 via webfetch) |
+| [Qwit](https://qwit.app/fr/smoking/) | Play / App Store | n/a | 500K+ | Smoke-free counter, health timeline, SOS tools, journal, goals, widgets, personal program, AI coach, community, allies, Wear OS | Gratis | Tidak disebut secara detail | Terverifikasi (situs resmi qwit.app) |
+| [QuitNic AI](https://play.google.com/store/apps/details?hl=en_US&id=store.evsi.quitsmoke) | Google Play | n/a | 1K+ | Quit tracker, body recovery milestones, SOS craving + AI coach + 4-4-6 breathing + mini-game, slips without reset, CBT lessons, progress + motivation, savings goals, local notifications | In-app purchases (Premium) | App activity, device IDs; data dienkripsi; tidak bisa dihapus | Terverifikasi (HTTP 200 via webfetch) |
+| [Lungo](https://trylungo.com/) | Play / App Store | n/a | n/a | Gamifikasi pixel frog, XP, streak, daily check-in, craving yoga (1 menit breathing), catch flies game, trigger insights, savings calculator, milestones, trophies, item shop | Gratis + Lungo Plus (opsional) | Privacy-first: no ads, no data selling; local + optional cloud sync with consent | Terverifikasi (situs resmi trylungo.com) |
+| [ExHale](https://f-droid.org/packages/net.retiolus.exhale/) | F-Droid | n/a | n/a | Track time since last smoked, cigarettes avoided, money saved, open source, offline-first | Gratis, open source (GPL v3), donasi | Tidak melacak, data on-device | Terverifikasi (F-Droid halaman terbuka penuh) |
+
+### F. Ringkasan Prioritas (Batch 3 — untuk penyortiran pengguna)
+
+| Prioritas | Temuan |
+|---|---|
+| Tinggi | A27 (skor pemulihan per organ) · A28 (slip-as-data / non-reset streak) · B19 (4-4-6 breathing + craving timer SOS) · C17 (progress card share) · C18 (AppWidget/Glance + tombol SOS) |
+| Sedang | A29 (savings goals + wishlist + D-Day) · A30 (AI coach + CBT) · A31 (Streak Shield) · B20 (estimasi D-Day impian) · B21 (daily missions) · C19 (alasan berhenti + wishlist Dashboard) · C20 (personalisasi warna tema) |
+| Rendah | A32 (virtual plant / metaphor visual) · C21 (gamifikasi XP + pixel buddy) |
+| Penguatan (referensi baru, item eksisting) | A1/C5/C10 (widget: SmokeStop home widget, QuitNow Wear OS) · A2 (share card: SmokeStop progress card) · A3 (check-in: Lungo daily check-in, QuitNow) · A6/A20 (slip: QuitNic AI, Lungo, No Smoke) · A7 (mini-game: QuitNic AI, Lungo catch flies) · A13 (pemicu: No Smoke trigger tracking) · A16 (CBT: QuitNic AI CBT lessons) · C4 (anti-shame slip: QuitNic AI, Lungo, No Smoke) · C11 (tabungan real-time: Quitchi wishlist, SmokeStop savings goals) |
+
+Catatan: Qwit dan Lungo tersedia di App Store serta Google Play; fitur iOS-only (Watch, widget iOS) dicatat sebagai referensi pola saja. QuitNic AI, SmokeStop, Quitchi, SmokeFree, dan No Smoke menggunakan iklan dan/atau in-app purchases — berbedakan dengan model gratis penuh proyek. ExHale dan Quitter adalah open source offline-first yang paling mirip dengan filosofi proyek.
+
+---
 ## E. Prioritas Gabungan (untuk penyortiran pengguna)
 
 | Urutan | Rekomendasi                                                                                           | Jenis               | Nilai utama                                        | Ketergantungan utama                            |

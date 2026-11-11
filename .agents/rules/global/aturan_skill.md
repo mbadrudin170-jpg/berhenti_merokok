@@ -187,7 +187,23 @@ Daftar berurutan (numbered list) yang harus diikuti saat menerapkan skill ini.
    ...
 ```
 
-### 9.5 `## Larangan`
+### 9.5 `## Steps` (Opsional)
+
+Daftar langkah-langkah berurutan yang menjelaskan urutan kerja (workflow) dalam menerapkan skill ini. Section ini **hanya ada jika aksi membutuhkan urutan kerja** yang jelas dan tidak dapat dijelaskan sekadar dalam section Aturan. Jika urutan kerja sudah cukup dijelaskan dalam section Aturan, section Steps tidak perlu ditambahkan.
+
+```markdown
+## Steps
+
+1. Langkah pertama yang harus dilakukan.
+2. Langkah kedua yang harus dilakukan.
+3. Langkah ketiga yang harus dilakukan.
+```
+
+- Gunakan numbered list untuk mempertahankan urutan.
+- Setiap langkah harus spesifik, dapat diikuti, dan tidak ambigu.
+- Jangan memasukkan langkah yang tidak relevan atau redundan dengan aturan.
+
+### 9.6 `## Larangan`
 
 Daftar bullet yang dimulai dengan `DILARANG` atau menjelaskan hal yang tidak boleh dilakukan.
 
@@ -199,7 +215,7 @@ Daftar bullet yang dimulai dengan `DILARANG` atau menjelaskan hal yang tidak bol
   ...
 ```
 
-### 9.6 `## Contoh Benar`
+### 9.7 `## Contoh Benar`
 
 Satu blok kode Dart dengan implementasi yang benar.
 
@@ -215,7 +231,7 @@ MaterialApp(
 
 ````
 
-### 9.7 `## Contoh Salah`
+### 9.8 `## Contoh Salah`
 
 Satu atau lebih blok kode Dart dengan komentar `// DILARANG` atau `// salah: ...` yang menjelaskan mengapa salah.
 
@@ -234,7 +250,7 @@ supportedLocales: [], // assert error
 
 ````
 
-### 9.8 `## Sumber Evaluasi`
+### 9.9 `## Sumber Evaluasi`
 
 Daftar file sumber dan class terkait untuk verifikasi.
 
@@ -279,6 +295,12 @@ Penjelasan singkat tujuan skill dalam satu atau dua paragraf.
 2. Aturan kedua yang harus diikuti.
 3. Aturan ketiga yang harus diikuti.
 
+## Steps
+
+1. Langkah pertama yang harus dilakukan (hanya jika aksi membutuhkan urutan kerja).
+2. Langkah kedua yang harus dilakukan.
+3. Langkah ketiga yang harus dilakukan.
+
 ## Larangan
 
 - DILARANG melakukan sesuatu yang melanggar pola.
@@ -316,7 +338,7 @@ Sebelum mengakhiri pembuatan atau pembaruan `SKILL.md`, verifikasi semua poin be
 - [ ] Nama folder menggunakan kebab-case, bahasa Indonesia, deskriptif
 - [ ] Tidak ada underscore, spasi, huruf besar, angka di awal, atau karakter selain `a-z0-9-`
 - [ ] Front matter YAML lengkap dengan field wajib (`name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.commit-terakhir`)
-- [ ] Semua section wajib ada (Judul/Intro, Cakupan, Aturan, Larangan, Contoh Benar, Contoh Salah, Sumber Evaluasi)
+- [ ] Semua section wajib ada (Judul/Intro, Cakupan, Aturan, Steps [jika diperlukan], Larangan, Contoh Benar, Contoh Salah, Sumber Evaluasi)
 - [ ] Isi mengikuti riwayat commit yang relevan (tidak diarang dari working directory/staging/untracked)
 - [ ] Deskripsi mencakup trigger, cakupan, larangan, workflow, dan referensi file
 - [ ] Bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi
