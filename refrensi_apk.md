@@ -6,12 +6,14 @@
 - **Repositori:** [mbadrudin170-jpg/berhenti_merokok](https://github.com/mbadrudin170-jpg/berhenti_merokok).
 - **Branch yang diteliti:** `master`.
 - **Path dokumen ini:** `refrensi_apk.md` di root proyek.
-- **Tanggal penelitian:** 10–11 November 2026 (analisis 9 listing baru selesai 11 November 2026).
+- **Tanggal penelitian:** 10–11 November 2026 (analisis 9 listing baru selesai 11 November 2026; analisis 10 APK batch 2 selesai 11 November 2026).
 - **Cakupan sumber:** seluruh **352 tautan listing** pada `apk_kompetitor.md` di root proyek (daftar awal 79 + riset lintas-store 10–11 November 2026). Setiap listing diperiksa via `webfetch`/`websearch` pada 10–11 November 2026, dan **seluruh 352 link di-probe ulang secara independen dengan curl pada 2026-11-11** (user agent Chrome, `-L`, `--max-time 20`): **321× HTTP 200, 25× HTTP 403, 5× HTTP 404, 1× HTTP 410**. Store: Google Play, Apple App Store, F-Droid/IzzyOnDroid, GitHub, Samsung Galaxy Store, Uptodown, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Xiaomi GetApps, Huawei AppGallery.
 - **Hasil verifikasi:** sekitar **340 dari 352 listing tersedia/terverifikasi** (321 link 200 + 25 link 403 anti-bot yang diverifikasi via web/mirror resmi pada 10–11 November 2026), **5 verifikasi ringan** di Samsung Galaxy Store (link 200 tetapi halaman hanya menampilkan judul; detail fitur tidak terbaca: #74 QuitDay, #75 QuitSave, plus 3 distribusi Galaxy lainnya — `csero.quit.smoking`, `com.myw.smoking`, `com.fullstack.quitsmoking`), **7 tidak terverifikasi** dan tidak dijadikan dasar rekomendasi: Breev (#29, 404), Quit Smoking Tracker: Stop it App Store KW (#35, 404; iTunes lookup `resultCount: 0`), ZeroSmoke (#44, 404; iTunes lookup `resultCount: 0`), Smoker Reducer (#54, listing eksak tidak ditemukan), QuitSM SlideME (#157, 403), Flamy Aptoide (#156, 403), Quit Tracker Uptodown (#78, **berputar 410↔404**: 410 pada 2026-11-11, 404 pada 2026-11-10 — tetap tidak terverifikasi). Quit Smoking (de.baumann, #21/#137) dan Smoke Reducer (#23) F-Droid hanya tersedia sebagai arsip; GitHub `Polymath-Saksh/SmokeFree` (#16, 404) terverifikasi via websearch sebagai web app Django non-mobile.
 - **Platform sasaran:** Android (APK/Flutter). Fitur yang hanya berjalan di Apple Watch, Live Activities, WidgetKit iOS, dan macOS **tidak** dijadikan rekomendasi implementasi. Referensi lintas platform tetap dicatat karena polanya dapat memberi ide produk.
 - **Metode:** webfetch langsung ke halaman toko/repositori/README; halaman yang gagal diakses diganti sumber alternatif (situs resmi pengembang, mirror store, pencarian web). Fitur iOS yang lolos disaring ke relevansi mobile/Android.
 - **Semua 352 listing (termasuk 9 listing baru 2026-11-11) sudah dianalisa fitur-fiturnya** melalui perintah `riset_kompetitor.md` pada 11 November 2026.
+- **Analisis 10 listing tambahan (2026-11-11, probe curl HTTP 200 untuk semua):** Kwit (Play), Smoke Free (Play), QuitSave (Play), QuitDay (Galaxy Store — verifikasi ringan), Progress Tracker (Play), Unsmoke (Play), FreeAir Coach (Play), Smoke Tracker (Play), Counter App (App Store), ClearDay Tracker (App Store). Detail fitur di bawah bagian "Analisis Mendalam 10 APK (2026-11-11)".
+- **Analisis 10 APK batch 2 (2026-11-11, probe curl HTTP 200 + GitHub API (semua `fork: false`) + iTunes lookup `resultCount: 1` untuk Kwit):** EasyQuit (Play), Quit Tracker / despDev (Play), QUIT Smoking SOS (Play), Kwit (App Store, `id525441365`), Breathing Room (GitHub, Flutter + sqflite + Riverpod), Nonic (GitHub, Flutter), Quit-Smoke-App (GitHub, Flutter), SmartQuit / BreatheFree V2 (GitHub, Flutter + Riverpod), Quitease (GitHub, Flutter + GetX), Breathe (GitHub, React Native + Expo). Detail fitur di bawah bagian "Analisis Mendalam 10 APK (2026-11-11, Batch 2)".
 
 ### Cara membaca dokumen ini
 
@@ -765,6 +767,282 @@ Kolom **Kode** = HTTP status dari probe curl independen pada 2026-11-11 (user ag
 
 ---
 
+## Analisis Mendalam 10 APK (2026-11-11)
+
+**Lingkup:** 10 APK yang berstatus `Belum Dianalisa` pada `apk_kompetitor.md` — Kwit (Play), Smoke Free - quit smoking now / portablepixels (Play), QuitSave (Play), QuitDay / 금연·금주 디데이 (Samsung Galaxy Store), Quit Smoking: Progress Tracker (Play), Unsmoke (Play), FreeAir Coach (Play), Quit Smoking - Smoke Tracker (Play), Quit Smoking - Counter App (App Store), Quit Smoking: ClearDay Tracker (App Store).
+
+**Metode & verifikasi (2026-11-11):** halaman resmi store diambil via `webfetch` dan terbaca penuh untuk 9 APK. Keduanya App Store diverifikasi `itunes.apple.com/lookup` (`id6746945120` dan `id6761815015`, `resultCount: 1`). Samsung Galaxy Store (`com.siwooeo.quitday` IDN & KOR) hanya menampilkan judul halaman (HTTP 200, halaman JS) → **verifikasi ringan; tidak dijadikan dasar rekomendasi fitur**. Klaim angka dari toko (unduhan/rating) adalah potret sesaat, bukan bukti kualitas.
+
+### A. Fitur Baru (dapat berjalan di mobile)
+
+#### Prioritas Sedang
+
+##### A20. Reduced Streak — Hari di Bawah Baseline Tetap Dihitung
+
+- **Tujuan fitur:** memberi nilai pada progres bertahap (*tapering*) — pengguna yang merokok lebih sedikit dari baseline hariannya tetap dihargai; mengurangi pola pikir "semua atau tidak sama sekali" tanpa menghapus streak bebas rokok.
+- **Referensi:** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke) — "Two Kinds of Streaks: smoke-free streak & reduced streak; smoking less than your baseline still counts as savings. No resets."
+- **Saran:** tambahkan `streakDikurangi` (hari berturut-turut konsumsi ≤ baseline/target harian) di samping streak bebas rokok; tampilkan keduanya pada Dashboard dan kaitkan dengan mode *tapering* yang sudah ada.
+- **Prioritas:** Sedang.
+
+##### A21. Estimasi Tanggal Pencapaian Impian (D-Day) dari Laju Tabungan
+
+- **Tujuan fitur:** membuat target impian konkret — aplikasi mengestimasi tanggal impian tercapai berdasarkan laju uang yang dihemat pengguna saat ini.
+- **Referensi:** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke) (Reward Goal D-day: daftar keinginan + harga, estimasi tanggal tercapai dari laju tabungan) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (personal rewards & savings projections) · [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (reward savings goals / savings jar).
+- **Saran:** tambahkan field opsional pada impian; hitung dari rata-rata uang dihemat per hari (fallback dari biodata); tampilkan "± tanggal tercapai" di kartu impian; label wajib "estimasi".
+- **Prioritas:** Sedang.
+
+### B. Optimasi Fitur yang Sudah Ada
+
+#### Prioritas Sedang
+
+##### B13. Laporan Progres Mingguan (Teks Ringkas / PDF Opsional)
+
+- **Tujuan:** refleksi mingguan terstruktur (hari bebas rokok, rokok dihindari, uang dihemat, jumlah craving, slip, pemicu teratas) tanpa membuka banyak layar.
+- **Referensi:** [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (weekly progress reports: smoke-free time, avoided cigarettes, savings, cravings, slips, common triggers) · [Quit Smoking - Smoke Tracker](https://play.google.com/store/apps/details?id=com.dailyapplabs.quitsmoke) (weekly PDF reports, fitur premium).
+- **Saran:** mulai dari ringkasan teks di layar Konsumsi/Analitik (tanpa dependensi baru); ekspor PDF sisi baca sebagai fase kedua bila diperlukan.
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### B14. SOS — Penghitung "Craving Berhasil Dilalui" + Catatan Substitusi Personal
+
+- **Tujuan:** umpan balik positif langsung di layar SOS; memperkuat *self-efficacy* pengguna saat melewati craving.
+- **Referensi:** [FreeAir Coach](https://play.google.com/store/apps/details?id=com.freeaircoach.app.twa) (SOS: satu pertanyaan kontekstual → aksi *grounding* 60 detik + substitusi personal + pengingat "how many cravings you've already beaten") · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (one-tap log craving + timer 5 menit + quick actions: minum air / tulis catatan; craving hari ini & 7 hari terakhir).
+- **Saran:** hasil intervensi SOS sudah tersimpan di tabel `sos_intervensi`; tampilkan hitungan "craving berhasil dilalui: N" pada layar SOS; tambahkan field substitusi opsional pada catatan intervensi.
+- **Prioritas:** Rendah.
+
+### C. UI, UX & Layout — Pola dari 10 APK
+
+#### Prioritas Sedang
+
+##### C11. Visual "Tabungan Mengisi Real-Time" (Jar/Koin/Pohon) untuk Counter & Impian
+
+- **Aplikasi serupa:** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke) (savings jar mengisi real-time di home screen) · [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (v1.12: pohon tumbuh sebagai home scene, tap-to-water = check-in harian; koin jatuh ke dalam jar setiap tabungan bertambah) · [Smoke Free (portablepixels)](https://play.google.com/store/apps/details?id=com.portablepixels.smokefree) (health improvement bars).
+- **Pola UI:** objek visual (jar/pohon/bar) yang terisi mengikuti uang dihemat secara real-time; angka besar terbaca; animasi ringan saat increment.
+- **Pola UX:** progres terasa konkret dan positif; check-in harian terasa seperti merawat sesuatu (ClearDay: menyiram pohon).
+- **Pola layout:** satu objek visual dominan di layar utama/widget; detail angka di layar terpisah.
+- **Saran:** perluas `VisualTabunganImpian` dengan animasi pengisian berbasis uang dihemat; buat opsional; jangan mengganti data dengan dekorasi; label "estimasi" tetap wajib.
+- **Prioritas:** Sedang.
+
+### D. Penguatan Temuan Sebelumnya (referensi baru dari 10 APK)
+
+- **A1/C5/C10 (widget):** [Kwit](https://play.google.com/store/apps/details?id=fr.kwit.android) (widget di-*rework*: refresh andal, tap membuka bagian aplikasi yang sesuai) · [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (widget home kecil/sedang/besar gratis, lock screen, StandBy, Control Center; "Craving Wave" 3 menit di lock screen/Dynamic Island) — mengonfirmasi pola *widget-first*; untuk Android gunakan padanan AppWidget/Glance, bukan fitur iOS.
+- **A6/A17/B5/B12/C4/C9 (anti-shame & slip):** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke) (slip tidak mereset; reduced streak) · [QuitDay](https://galaxystore.samsung.com/detail/com.siwooeo.quitday?cntyCd=IDN) (restart hitungan tanpa menghapus progres tertinggi; verifikasi ringan) · [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (slip = reset lembut; uang dihemat & rokok dihindari tetap dihitung dari tanggal mulai pertama) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (keep total progress, catat pemicu, pilih micro-goal 24 jam / 3 hari / 1 minggu) · [FreeAir Coach](https://play.google.com/store/apps/details?id=com.freeaircoach.app.twa) ("a slip is data, not failure"; longest streak dipertahankan; pengguna memilih apakah clock di-restart).
+- **A16 (CBT mandiri offline):** [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (CBT-based urge exercises: identifikasi pikiran yang terhubung dengan urge → periksa situasi → pilih coping response → catat yang membantu; 7-day quit preparation; daily pledge; reasons vault; craving/trigger/slip log dengan time, intensity, mood, trigger, coping strategy; weekly reports) — referensi terkuat untuk A16/B13; tanpa pengumpulan data (deklarasi data safety: no data collected/shared).
+- **A15/B11/B6 (pemicu & analisis puncak):** [Quit Smoking - Smoke Tracker](https://play.google.com/store/apps/details?id=com.dailyapplabs.quitsmoke) (pemicu: stres, kopi, setelah makan, mengemudi, istirahat kerja, sosial; analisis puncak harian/mingguan/bulanan/tahunan; statistik progres mingguan/bulanan/tahunan; data on-device, tanpa akun) · [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (laporan mingguan pemicu umum) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (grafik craving 7 hari).
+- **A18 (share card):** [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (share card streak + savings; bisa disimpan ke foto, dikirim ke teman) · [Smoke Free (portablepixels)](https://play.google.com/store/apps/details?id=com.portablepixels.smokefree) (bagikan keberhasilan dengan teman).
+- **B10 (label sumber kesehatan):** [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (sumber NHS/CDC pada halaman harian; disclaimer bahwa pemulihan bervariasi dan tidak berlaku untuk vape/NRT) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (timeline WHO/CDC) · [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (educational timeline, bukan penilaian medis personal).
+- **B2 (konsumsi aktual vs baseline):** [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke) (setiap rokok yang tidak dihisap dikonversi ke uang; kurang dari baseline tetap dihitung; tanpa reset) · [QuitDay](https://galaxystore.samsung.com/detail/com.siwooeo.quitday?cntyCd=IDN) (verifikasi ringan).
+- **A3 (check-in harian):** [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (tap-to-water = check-in harian, "rantai" hari) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (pesan motivasi harian + small daily goals, mis. jalan 10 menit) · [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (daily pledge).
+- **A12 (NRT tracker):** [Kwit](https://play.google.com/store/apps/details?id=fr.kwit.android) (kontrol NRT: gum/patch/e-cig; tracking konsumsi bertahap; pengurangan dosis terpersonalisasi) — memperkuat rekomendasi A12.
+- **A9 (gamifikasi lanjutan):** [Unsmoke](https://play.google.com/store/apps/details?id=com.cpp.unsmoke) (aplikasi berhenti merokok Indonesia berbasis AI: rencana pengurangan bertahap dipersonalisasi dari pola merokok, estimasi durasi program, daily challenges, badge milestone, leaderboard — 1K+ unduhan; leaderboard butuh backend; data safety: berbagi tidak ada, mengumpulkan lokasi/info pribadi + 7 lainnya) · [ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) (home scene pohon hidup sebagai metafora progres).
+- **Lokalisasi Indonesia:** [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (33 bahasa termasuk Indonesia) · [Unsmoke](https://play.google.com/store/apps/details?id=com.cpp.unsmoke) (Indonesia, PT Sinar Inovasi Nusantara) — relevan karena proyek memakai `id_ID`; konten kesehatan tetap perlu diverifikasi ke sumber resmi.
+
+### E. Detail per APK
+
+| APK | Skor & Unduhan | Fitur Kunci | Catatan Privasi (data safety store) | Verifikasi |
+| --- | --- | --- | --- | --- |
+| [Kwit](https://play.google.com/store/apps/details?id=fr.kwit.android) | 1M+; rating tidak terbaca penuh | Dashboard personal (hari/uang/rokok tidak dihisap), diary craving & relapse, kontrol NRT (gum/patch/e-cig, pengurangan bertahap), motivational cards, widget (di-rework), premium | Berbagi: info finansial & performa aplikasi; Mengumpulkan: info pribadi, aktivitas aplikasi, device ID; encrypted in transit | Terverifikasi (halaman terbaca; klaim "WHO-approved" adalah klaim pengembang — bukan verifikasi WHO) |
+| [Smoke Free - quit smoking now (portablepixels)](https://play.google.com/store/apps/details?id=com.portablepixels.smokefree) | 4.8★, 60.5K review, 1M+ | 40+ teknik terbukti, coach profesional (one-on-one), badge, quit log, tabungan, health improvement bars, bagikan keberhasilan, diary craving | Berbagi: info pribadi & pesan; Mengumpulkan: lokasi, info pribadi + 6 lainnya | Terverifikasi |
+| [QuitSave](https://play.google.com/store/apps/details?id=com.siwooeo.quitsmoke) | 10+ (baru) | Savings jar real-time, Reward Goal D-day (estimasi tanggal tercapai), 2 jenis streak (smoke-free & reduced), timeline pemulihan WHO/CDC, grafik mingguan/bulanan, pengingat harian lokal, backup/restore .zip, dark mode, EN/KO, tanpa akun | Berbagi: aktivitas aplikasi & device ID; encrypted in transit; "data can't be deleted" (deklarasi) | Terverifikasi |
+| [QuitDay / 금연·금주 디데이 (Galaxy Store)](https://galaxystore.samsung.com/detail/com.siwooeo.quitday?cntyCd=IDN) | tidak terbaca (halaman JS) | D-Day counter real-time, uang dihemat, tombol "tahan sekarang" (catat craving yang berhasil dilewati), timeline NHS/CDC, statistik & badge, restart tanpa reset progres tertinggi, tanpa akun/cloud, data lokal, tema terang/gelap, KO-EN (developer sama dengan QuitSave) | tidak terbaca (verifikasi ringan) | Verifikasi ringan (200 + judul saja) |
+| [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) | 100+; berbayar (~$6.98, promo) | 7-day quit preparation, craving rescue toolkit (4-7-8, box breathing, grounding), CBT-based urge exercises, daily pledge + reasons vault, craving/trigger/slip log, journal/mood, weekly insights report, achievements, coping strategies library | Tidak berbagi/mengumpulkan data (deklarasi) | Terverifikasi |
+| [Unsmoke](https://play.google.com/store/apps/details?id=com.cpp.unsmoke) | 1K+ | AI: rencana pengurangan bertahap dipersonalisasi dari pola merokok + estimasi durasi program; daily challenges; badge milestone; leaderboard; website unsmoke.id | Tidak berbagi; mengumpulkan lokasi, info pribadi + 7 lainnya | Terverifikasi |
+| [FreeAir Coach](https://play.google.com/store/apps/details?id=com.freeaircoach.app.twa) | 5+ (TWA / aplikasi web wrapper) | Didesain dokter paru (Eskender Beyene, MD, FCCP); AI coach 24/7 berbasis CBT/ACT/MI (45 sumber klinis); SOS satu-pertanyaan → grounding 60 detik + substitusi + penghitung craving berhasil; onboarding adaptif (quit now / cut down first / protect quit; tanpa quit date paksa); slip = data, bukan kegagalan (longest streak dipertahankan); $9.99/bln / $79.99/thn / lifetime; trial 30 hari tanpa kartu; FSA/HSA receipt | Tidak berbagi; mengumpulkan info pribadi, finansial + 2 lainnya (pesan AI dikirim ke layanan untuk generate respons); log craving disimpan on-device | Terverifikasi |
+| [Quit Smoking - Smoke Tracker](https://play.google.com/store/apps/details?id=com.dailyapplabs.quitsmoke) | 10+ | Log rokok per batang, riwayat harian/mingguan/bulanan/tahunan, pemicu (stres, kopi, setelah makan, mengemudi, istirahat kerja, sosial), analisis puncak merokok, grafik progres, premium: craving rescue tak terbatas + analisis pola lanjutan + PDF report mingguan; tanpa akun, data on-device | Tidak berbagi; mengumpulkan device ID | Terverifikasi |
+| [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) | tidak terbaca (iOS) | Live counter d/h/m/s, rokok tidak dihisap + waktu hidup kembali, badge 1d–1y, uang dihemat + personal rewards, craving one-tap + timer 5 menit + napas terpandu + quick actions (air/catatan), craving hari ini & 7 hari, timeline WHO/CDC (premium: jantung/paru), slip: keep total progress + pemicu + micro-goal 24j/3h/1m, pesan motivasi harian + small daily goals, jurnal, milestone notifications, AI coach (premium), 33 bahasa termasuk Indonesia, core offline | Data on-device; analytics/crash reporting anonim; ads di versi gratis | Terverifikasi (iTunes lookup `resultCount: 1`) |
+| [Quit Smoking: ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015) | tidak terbaca (iOS 17+) | Widget-first (home small/medium/large gratis, lock screen, StandBy, Control Center; Craving Wave 3 menit di lock screen/Dynamic Island), milestones 12j–1thn+ dengan pesan personal, share card (simpan ke foto/kirim teman), slip = reset lembut (uang & rokok dihindari tetap dihitung dari tanggal mulai pertama), home scene pohon hidup + tap-to-water check-in, jar tabungan, reward goals, sumber NHS/CDC, iCloud sync, tanpa akun, tanpa iklan | Tidak dikaitkan ke identitas; pembelian saja | Terverifikasi (iTunes lookup `resultCount: 1`) |
+
+### F. Ringkasan Prioritas (untuk penyortiran pengguna)
+
+| Prioritas | Temuan |
+| --- | --- |
+| Sedang | A20 (reduced streak) · A21 (estimasi D-Day impian) · B13 (laporan mingguan) · C11 (visual tabungan real-time) |
+| Rendah | B14 (SOS: penghitung craving berhasil + substitusi) |
+| Penguatan (referensi baru, item eksisting) | A1/C5/C10 (widget Kwit/ClearDay) · A6/A17/B5/B12/C4/C9 (anti-shame: QuitSave, QuitDay, ClearDay, Counter App, FreeAir Coach) · A16 (CBT mandiri: Progress Tracker) · A15/B11/B6 (pemicu & puncak: Smoke Tracker, Progress Tracker) · A18 (share card: ClearDay) · B10 (label sumber: ClearDay, Counter App) · A3 (check-in: ClearDay, Counter App) · A9 (Unsmoke, ClearDay) · A12 (Kwit/NRT) |
+
+Catatan: fitur iOS-only pada 10 APK (lock screen, StandBy, Dynamic Island, Control Center, iCloud sync, Apple Watch) dicatat sebagai **referensi pola saja**, bukan rekomendasi implementasi; padanan Android adalah AppWidget/Glance + pengingat lokal. Unsmoke dan FreeAir Coach melibatkan AI/layanan eksternal — bertentangan dengan prinsip offline-first proyek tanpa keputusan sadar; keduanya tetap dicatat sebagai referensi.
+
+---
+
+## Analisis Mendalam 10 APK (2026-11-11, Batch 2)
+
+**Lingkup:** 10 APK yang saat itu berstatus `Belum Dianalisa` pada `apk_kompetitor.md` — [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (Play), [Quit Tracker / despDev](https://play.google.com/store/apps/details?id=com.despdev.quitsmoking) (Play), [QUIT Smoking Cessation SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (Play), [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) (App Store), [Breathing Room](https://github.com/anindya127/Breathing-Room) (GitHub, Flutter + Riverpod + sqflite — stack serupa proyek), [Nonic](https://github.com/bllfoad/nonic) (GitHub, Flutter), [Quit-Smoke-App](https://github.com/trizin/Quit-Smoke-App) (GitHub, Flutter), [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (GitHub, Flutter + Riverpod + Firebase), [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) (GitHub, Flutter + GetX + Firebase), [Breathe](https://github.com/imaswath/Breathe) (GitHub, React Native + Expo).
+
+**Metode & verifikasi (2026-11-11):** seluruh 10 link di-probe curl HTTP 200 (user agent Chrome, `-L`, `--max-time 20`); metadata GitHub via API (semua `fork: false`, push terakhir 2024-09 s/d 2026-04); Kwit diverifikasi `https://itunes.apple.com/lookup?id=525441365` (`resultCount: 1`); README ketiga-toko baca penuh via `webfetch`; App_Blueprint.md Breathing Room terbaca. Angka rating/unduhan adalah potret sesaat, bukan bukti kualitas. Tidak ada listing pada batch ini yang termasuk verifikasi ringan; seluruh 10 APK dijadikan dasar rekomendasi. Klaim "WHO-validated" pada Kwit adalah klaim pengembang, bukan verifikasi WHO. Screenshot publik di repositori tidak dibuka satu per satu; pola UI disimpulkan dari deskripsi README/store.
+
+### A. Fitur Baru (dapat berjalan di mobile)
+
+#### Prioritas Sedang
+
+##### A22. Risk Score Harian 0–100 + Tips Kontekstual (offline)
+
+- **Tujuan fitur:** satu angka yang merangkum risiko craving hari ini dari 7 hari terakhir (urge/mood/craving/slip) plus satu saran kecil yang preskriptif; deteksi dini hari yang rawan sebelum craving muncul.
+- **Referensi:** [Nonic](https://github.com/bllfoad/nonic) — "Smart risk score: 0–100 insight from last 7 days of urges/moods/cravings; Actionable tips: context-sized advice based on current risk."
+- **Saran:** helper murni dari `diary_craving` (plus check-in/slip bila tersedia); tampilkan 1 kartu di Dashboard dengan label "estimasi pola, bukan diagnosis"; jika data < ambang minimum (≥ 3 entri, selaras `PolaCravingHelper`), tampilkan "data belum cukup"; jangan mengganggu alur utama.
+- **Prioritas:** Sedang.
+
+##### A23. Program Persiapan Terstruktur Pra-Berhenti (7–9 Hari)
+
+- **Tujuan fitur:** membangun kesiapan mental dan praktik coping sebelum quit date, bukan langsung "cold turkey"; menurunkan risiko slip pada minggu pertama.
+- **Referensi:** [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) — "9-day preparation program... based on Prochaska's Transtheoretical Model and cognitive behavioral therapy principles." · [Quit Tracker](https://play.google.com/store/apps/details?id=com.despdev.quitsmoking) (timeline manfaat + rewards menuju quit).
+- **Saran:** aktif hanya jika biodata menetapkan tanggal mulai berhenti di masa depan; 1 layar per hari (alasan, pemicu, rencana coping, pledge); konten lokal terkurasi (offline); tandai "materi edukasi, bukan saran medis"; dapat dilewati.
+- **Prioritas:** Sedang.
+
+##### A24. Tombol Panik "Acak dari Set Favorit" + Preferensi Intervensi SOS
+
+- **Tujuan fitur:** akses coping tercepat saat craving dengan teknik yang terbukti paling membantu pengguna itu sendiri; satu aksi dominan saat willpower rendah.
+- **Referensi:** [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) — "The centerpiece of the app — a pulsating emergency button that instantly launches a random intervention"; "Select your preferred interventions (minimum 3). Panic button only launches from your selected set." · [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (SOS action plan; 10 teknik pernapasan; mini-games) · [Breathe](https://github.com/imaswath/Breathe) (prominent "Craving SOS" button).
+- **Saran:** tambahkan preferensi intervensi di Pengaturan/SOS (checkbox teknik, minimal 3); tombol panik = FAB di layar SOS yang meluncurkan intervensi acak dari set; tercatat di `sos_intervensi` seperti teknik lain.
+- **Prioritas:** Sedang.
+
+##### A25. Teknik Grounding 5-4-3-2-1 & Box Breathing 4-4-4-4 di SOS
+
+- **Tujuan fitur:** menambah dua teknik coping mindfulness berbasis bukti ke kartu teknik SOS; selaras dengan struktur SOS yang sudah ada (napas 4-7-8, timer, distraksi).
+- **Referensi:** [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) — "Box Breathing — Haptic-guided 4-4-4-4 breathing rhythm to calm the nervous system"; "5-4-3-2-1 Grounding — Interactive sensory awareness exercise (5 things you see, 4 you hear, etc.)" · [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (guided breathing: 4-7-8, box breathing, alternate nostril, resonant breathing).
+- **Saran:** 2 teknik baru pada kartu teknik SOS yang sudah diimplementasikan: grounding 5-4-3-2-1 interaktif (input 5 hal dilihat / 4 didengar / dst.) dan box breathing 4-4-4-4 dengan haptic ringan; hasil disimpan ke `sos_intervensi`; offline sepenuhnya.
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### A26. Statistik Efektivitas Intervensi SOS (teknik mana yang berhasil)
+
+- **Tujuan fitur:** pengguna belajar coping mana yang paling efektif untuknya; memperkuat A24 (set favorit berbasis data, bukan hanya pilihan subjektif).
+- **Referensi:** [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) — "Intervention effectiveness tracking; Success rate visualization."
+- **Saran:** tambah kolom `berhasil` (nullable bool) pada `sos_intervensi` (migrasi skema, versi DB naik); tampilkan ringkasan kecil "teknik paling sering berhasil" di riwayat SOS; tetap opsional diisi.
+- **Prioritas:** Rendah (migrasi skema + beban input).
+
+### B. Optimasi Fitur yang Sudah Ada
+
+#### Prioritas Sedang
+
+##### B15. Statistik dengan Toggle Periode (Hari Ini / Minggu / Bulan / Tahun)
+
+- **Tujuan:** progres terbaca pada beberapa skala waktu tanpa layar baru; ringkasan konsisten dengan pola kompetitor.
+- **Referensi:** [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) — "Progress is shown for Today, This Week, This Month, and This Year." · [Breathing Room](https://github.com/anindya127/Breathing-Room) — Daily (hourly bar chart) / Weekly (Mon–Sun) / Monthly (30-day trend).
+- **Saran:** toggle chip (Hari ini / Minggu / Bulan / Tahun) pada layar Konsumsi atau Analitik; angka dari tabel yang ada; tampilan grafik butuh `fl_chart` (lihat A5).
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### B16. Notifikasi Pencapaian Berbasis Nominal Uang Dihemat (opt-in)
+
+- **Tujuan:** merayakan pencapaian tabungan, bukan hanya durasi; menambah momen "menang" yang mendorong retensi.
+- **Referensi:** [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) — "Get notified the moment you cross a milestone... Save $20 / $50 / $100 / $500 in money." · [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (money statistics + treat countdown).
+- **Saran:** opsi di Pengaturan: notifikasi saat akumulasi uang dihemat melewati ambang berjenjang (mis. Rp100rb / Rp500rb / Rp1jt, selaras badge uang); pakai `NotifikasiService`; default nonaktif; teks "estimasi lokal".
+- **Prioritas:** Rendah.
+
+##### B17. Indikator "Biaya Hari Ini" & Biaya-Per-Batang (opsional)
+
+- **Tujuan:** membuat biaya nyata kebiasaan merokok terlihat per hari; pelengkap metrik "uang dihemat".
+- **Referensi:** [Breathing Room](https://github.com/anindya127/Breathing-Room) — The Wallet: biaya per batang, "Spent Today", multi-currency (proyek cukup Rupiah). · [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (money statistics).
+- **Saran:** tampilkan "biaya hari ini: Rp X" di kartu Konsumsi (dari entri konsumsi); multi-currency tidak perlu; label "estimasi".
+- **Prioritas:** Rendah.
+
+##### B18. Kategori Badge Terstruktur (Streak / Reduction / Uang / Milestone)
+
+- **Tujuan:** koleksi badge terasa rapi dan tematik; memudahkan pengguna melihat jalur pencapaian berikutnya.
+- **Referensi:** [Breathing Room](https://github.com/anindya127/Breathing-Room) — "18 badges across 4 categories: Streaks, Reduction, Money, and Milestones" (contoh nama: "First Day Under Budget", "Week Warrior", "Triple Digits"). · [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) — 20 badge jalur ganda (rokok dihindari & hari berturut-turut).
+- **Saran:** kelompokkan layar Badge ke dalam 4 kategori (tambah kategori "Reduction" untuk mode *tapering*, mis. "Hari Pertama di Bawah Target" — beririsan A20); tambah 2–3 badge reduction; tanpa skema baru (badge dihitung dari helper yang ada).
+- **Prioritas:** Rendah.
+
+### C. UI, UX & Layout — Pola dari 10 APK
+
+#### Prioritas Sedang
+
+##### C12. SOS Berbeban Kognitif Rendah (high-contrast gelap, satu aksi dominan)
+
+- **Aplikasi serupa:** [Breathe](https://github.com/imaswath/Breathe) — "Dark UI/UX: A high-contrast, distraction-free interface designed to reduce cognitive load when willpower is low." · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) — tombol panik berdenyut (satu aksi dominan). · [Breathing Room](https://github.com/anindya127/Breathing-Room) — layar Simple Counter yang bersih tanpa aturan.
+- **Pola UI:** elemen minimal di layar kritis; satu CTA besar; teks singkat; kontras tinggi.
+- **Pola UX:** saat willpower rendah, keputusan harus sedikit; tanpa pilihan yang membingungkan.
+- **Pola layout:** hero tunggal di tengah layar; kontrol sekunder dikecilkan atau disembunyikan.
+- **Saran:** audit tema gelap layar SOS (napas/timer/distraksi): perbesar kontras, kurangi elemen sekunder, pastikan satu aksi dominan; jangan mengubah palet aplikasi di luar layar SOS.
+- **Prioritas:** Sedang.
+
+##### C14. Kartu Impian/Uang Dihemat: Progress Bar + Countdown "X Hari Lagi untuk Target"
+
+- **Aplikasi serupa:** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) — "Set a nice treat for yourself let the app help you see how long until you reach it." · [Quit Tracker](https://play.google.com/store/apps/details?id=com.despdev.quitsmoking) — rewards per langkah ("one step closer to quitting"). · [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) — share achievement card.
+- **Pola UI:** angka besar + progress bar + tanggal estimasi; satu fokus visual.
+- **Pola UX:** menabung terasa konkret dengan tenggat; motivasi pre-reward (lebih kuat daripada angka bebas).
+- **Pola layout:** kartu tunggal dominan di atas; detail di layar impian.
+- **Saran:** pada `VisualTabunganImpian`/kartu impian tampilkan "± X hari lagi" dari laju tabungan rata-rata (label "estimasi" wajib); reuse helper A21; tanpa dependency baru.
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### C13. Tampilan Jalur/Peta Perjalanan (game-map) untuk Milestone
+
+- **Aplikasi serupa:** [Breathing Room](https://github.com/anindya127/Breathing-Room) — "The Non-Smoker Path: A visual 'roadmap' or video-game-style level map... As your daily average drops, your avatar moves along a path. Along the path are Health Milestones." (12 milestone berbasis sains, 20 menit → 1 tahun, progress bar ke milestone berikutnya) · [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) — 10 health bars WHO beranimasi.
+- **Pola UI:** timeline vertikal bergaya game dengan node milestone; indikator progres ke node berikutnya.
+- **Pola UX:** pemulihan terasa sebagai perjalanan, bukan daftar statis; meningkatkan keterlibatan jangka panjang.
+- **Pola layout:** scroll vertikal node + garis progres; kompatibel dengan daftar teks sebagai fallback aksesibilitas.
+- **Saran:** tambah opsi toggle (Daftar ↔ Jalur) di layar Pemulihan Kesehatan; jalur dari milestone WHO yang sudah ada; animasi ringan; tetap tampilkan daftar teks untuk screen reader.
+- **Prioritas:** Rendah.
+
+##### C15. Kuis Onboarding Ringan (2–3 Pertanyaan) setelah Biodata
+
+- **Aplikasi serupa:** [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) — "a personal onboarding quiz". · [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) — onboarding pilih quit date + review ringkasan sebelum dashboard. · [Nonic](https://github.com/bllfoad/nonic) — profil lengkap (usia, jenis kelamin, IMT) untuk personalisasi.
+- **Pola UI:** kartu pertanyaan pilihan ganda; progress indicator; bisa dilewati.
+- **Pola UX:** personalisasi sejak menit pertama; menurunkan friksi awal tanpa memaksa.
+- **Pola layout:** langkah tambahan sebelum Dashboard; maksimal 2–3 pertanyaan.
+- **Saran:** 1–2 pertanyaan opsional (alasan utama berhenti; tingkat ketergantungan 1–10) untuk menyesuaikan konten/tips; simpan di SharedPreferences; jangan paksa.
+- **Prioritas:** Rendah.
+
+##### C16. Pemulihan Tubuh per Organ (paru/jantung/sirkulasi/saraf/kulit)
+
+- **Aplikasi serupa:** [Breathe](https://github.com/imaswath/Breathe) — "Physiological Recovery: Displays real-time metrics on how the body is healing (Heart, Lungs, Blood, Nerves, Skin)." · [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) — health countdown timer. · [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) — health improvement timeline.
+- **Pola UI:** bar/ikon per organ dengan status pemulihan; label sederhana.
+- **Pola UX:** membuat "tubuh membaik" lebih intuitif daripada daftar milestone berbasis waktu; hindari kesan klaim medis.
+- **Pola layout:** kartu ringkasan per organ; detail di layar terpisah.
+- **Saran:** kelompokkan entri `pemulihan_kesehatan` per sistem organ (paru/jantung/sirkulasi/umum) dengan ikon; tambah disclaimer "ilustrasi umum, bukan kondisi medis Anda"; tanpa data baru.
+- **Prioritas:** Rendah.
+
+### D. Penguatan Temuan Sebelumnya (referensi baru dari 10 APK)
+
+- **A1/C5/C10 (widget):** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (2 widget layar utama: uang dihemat + waktu sejak berhenti) · [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (Home Screen widget untuk streak) · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (**1x1 Panic Widget**, Material You, tap = intervensi acak) — pola "widget aksi cepat" (panik/log) makin menguatkan A1 sebagai prioritas tinggi; untuk Android gunakan AppWidget/Glance.
+- **A6/A20/B5/C4/C9 (anti-shame & slip):** [Quit Tracker](https://play.google.com/store/apps/details?id=com.despdev.quitsmoking) (review pengguna: "you can always try again"; slip tidak menghapus perjalanan) · [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (Slow Mode = rencana pengurangan tanpa tekanan) · [Breathing Room](https://github.com/anindya127/Breathing-Room) (Coach Mode: hari di bawah baseline tetap dihitung; "First Day Under Budget") — mengonfirmasi reduced streak (A20).
+- **A7 (mini-game distraksi):** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (Matching-Pairs, "scientifically proven 3 minute mark") · [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (2048, Match Pairs, Quick Math, associations, tic-tac-toe) · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (Whack-a-Crave, Memory Match 4x4, Quick Sketch doodling 60 detik).
+- **A8 (AI coach):** [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (Quity AI coach — memahami profil, pemicu, dan alasan; jawaban berbasis cerita pengguna; premium; deklarasi "no data collected" perlu skeptis untuk fitur AI yang mengirim teks ke server) · [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) (tidak ada AI coach; dukungan manusia premium). Proyek tetap disarankan offline-first; AI coach = prioritas rendah.
+- **A12 (NRT tracker):** [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) (patches/gum/lozenges di-log harian; tracking vape/refill; seksi "nicotine substitutes" didesain ulang v4.34.0 dengan aktivitas harian khusus; "You can now activate a nicotine substitute tracking program") — menguatkan A12; proyek bisa mulai dari mode *tapering* + tabel NRT sederhana.
+- **A13/B6/B7/B11/A15 (pola craving & analisis pemicu):** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (pie chart top triggers) · [Breathing Room](https://github.com/anindya127/Breathing-Room) (hourly bar chart untuk trigger times; weekly Mon–Sun; monthly 30-day trend — pakai `fl_chart`) · [Nonic](https://github.com/bllfoad/nonic) (risk score 0–100 dari 7 hari urge/mood/craving) · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (daily/weekly/monthly craving patterns; success rate).
+- **A16 (CBT mandiri offline):** [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) (craving management berbasis CBT: guided breathing, mini-games, instant motivation cards; 9-day program Prochaska + CBT) · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (Positive Reframing — CBT affirmation cards; Craving Surfing — mindfulness urge observation).
+- **A21 (estimasi D-Day impian):** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) ("see how long until you reach it" — treat countdown) · [Quit Tracker](https://play.google.com/store/apps/details?id=com.despdev.quitsmoking) (rewards from being one step closer).
+- **A2 (share card):** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (bagikan badge lewat screenshot) · [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) (share stats + achievement card ke teman) · [Quit-Smoke-App](https://github.com/trizin/Quit-Smoke-App) (belum disebut share; tidak diklaim).
+- **A3 (check-in harian):** [Nonic](https://github.com/bllfoad/nonic) (daily check-in mood + urge, one-per-day upsert, reminder 20:00 + milestone nudges terjadwal) · [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) ("daily activities" — setiap hari aksi sederhana yang memotivasi, sejak v4.27.1) · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (smart notifications: motivational, milestone, craving-pattern).
+- **A9 (gamifikasi):** [Breathing Room](https://github.com/anindya127/Breathing-Room) (18 badge / 4 kategori; avatar "Non-Smoker Path") · [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) (20 badge jalur ganda; lifetime 2 tahun) · [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) (achievements + milestone celebrations; daily activities) · [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (15 achievements).
+- **A5 (analitik/grafik):** [Breathing Room](https://github.com/anindya127/Breathing-Room) (`fl_chart`: hourly bar, weekly Mon–Sun, monthly 30-day line) · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (success rate visualization) — menguatkan perlunya `fl_chart` bila grafik dipilih.
+- **B13 (laporan mingguan):** [Breathing Room](https://github.com/anindya127/Breathing-Room) (ringkasan mingguan Mon–Sun) — tidak ada laporan PDF baru pada batch ini; item B13 tetap berlaku.
+- **C11 (visual tabungan real-time):** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (kantong uang dihemat "pockets grow") · [Breathing Room](https://github.com/anindya127/Breathing-Room) (wallet: spent today & saved per Coach Mode) — menguatkan C11.
+- **Backup/offline-first:** tidak ada temuan backup/restore lokal pada 10 APK ini (Kwit/SmartQuit/Quitease justru cloud Firestore/Firebase/akun; EasyQuit & Quit Tracker tidak menyebut backup lokal). Cadangan JSON lokal proyek tetap unik dan layak dipertahankan.
+- **Privasi & cloud:** [SmartQuit](https://github.com/ShreyNagda/smartquit) (Google Sign-In + Firestore sync; mode tamu tidak disebut) · [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) (guest mode anonim + link ke Google, progres tidak hilang) · [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (mendeklarasikan "No data collected" tapi Quity AI premium menyiratkan pemrosesan teks di server — klaim tidak terverifikasi) · [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) (Data Linked to You: identifiers, product interaction, email, crash — "not verified by Apple"; berlangganan £5.29–£137.99). Proyek offline-first tidak sebaiknya meniru pola akun/cloud.
+
+### E. Detail per APK
+
+| APK | Skor & Unduhan | Fitur Kunci | Catatan Privasi (data safety store) | Verifikasi |
+| --- | --- | --- | --- | --- |
+| [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) | 4.9★ · 106K reviews · 1M+ · update Agu 2026 | Slow Mode (rencana pengurangan kustom + 5 pengingat), health countdown, uang dihemat + treat countdown, pie chart trigger, Matching-Pairs game, 100+ badge (share screenshot), 30+ tema, personal motivations (diingat acak), 2 widget (uang & waktu), data lokal, tanpa login | Tidak berbagi ke pihak ketiga; mengumpulkan device ID; encrypted in transit; penghapusan bisa diminta | Terverifikasi (halaman terbaca penuh) |
+| [Quit Tracker (despDev)](https://play.google.com/store/apps/details?id=com.despdev.quitsmoking) | 4.6★ · 181K reviews · 5M+ · update Mar 2026 | Uang dihemat, waktu hidup kembali, rewards per langkah, timeline manfaat tubuh, health tab, rokok dihisap sebelum berhenti, quit date + waktu eksak, slip → "selalu bisa coba lagi" (review), diary, IAP; developer = despDev (sama dengan Quitzilla) | Berbagi: lokasi, app activity + 2; mengumpulkan: lokasi, financial info + 3; encrypted in transit; data tidak bisa dihapus | Terverifikasi (halaman terbaca penuh) |
+| [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) | 10K+ · in-app purchase · update Nov 2026 | 6 core tool: SOS action plan, 10 teknik pernapasan, mini-games (2048, Match Pairs, Quick Math, associations, tic-tac-toe), artikel berbasis riset, **Quity AI coach** (profil/pemicu/alasan; premium), progres (hari, uang, rokok dihindari, waktu kembali, 15 achievement, onboarding quiz, streak widget), dukungan vaping | Mendeklarasikan "No data shared / No data collected"; AI coach premium menyiratkan teks diproses layanan — klaim tidak terverifikasi | Terverifikasi (halaman terbaca penuh) |
+| [Kwit (iOS)](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) | 4.7★ · 1.2K ratings · 191MB · iOS 18.1+ · klaim 4.5M+ pengguna | CBT-based craving management (guided breathing, mini-games, instant motivation cards), real-time tracking (hari, uang, rokok dihindari, manfaat kesehatan), 9-day preparation (Prochaska + CBT), **NRT tracker** (patch/gum/lozenge harian; vape & refill; v4.34.0 redesign), achievements, **daily activities** (v4.27.1), educational library, community + expert consult (premium), widget (Play Store versi me-rework widget), 4.5M+ klaim | Data Linked to You: identifiers, product interaction, email, crash data — "not verified by Apple"; premium berlangganan | Terverifikasi (iTunes lookup `resultCount: 1`; halaman terbaca) |
+| [Breathing Room](https://github.com/anindya127/Breathing-Room) | 0★ (rilis baru) · MIT · Android 13+ | **Dual-mode** (Simple Counter / Coach Mode — Staircase algorithm turunkan limit harian), Wallet multi-currency (biaya/batang, spent today, saved), Time Machine (hourly bar / weekly Mon–Sun / monthly 30-day), 18 badge / 4 kategori, **Non-Smoker Path** (avatar game-map, 12 milestone sains 20 mnt–1 thn), Flutter + Riverpod + **sqflite + fl_chart + go_router**, tema terang/gelap/sistem, haptic, screenshot publik | Data lokal (README); tanpa akun | Terverifikasi (README + App_Blueprint.md terbaca; APK rilis v1.1.0 tersedia) |
+| [Nonic](https://github.com/bllfoad/nonic) | 1★ · MIT · Android | Daily check-in (mood + urge, **one-per-day upsert**), craving log (intensity/triggers/strategies), slip logging, **Smart risk score 0–100** (7 hari terakhir), tips kontekstual, health timeline (mnt→bln), savings tracker, notifikasi (check-in 20:00 + milestone terjadwal), UI glassmorphism Material 3 gelap, SOS 4-7-8 | Tanpa akun; data lokal (shared_preferences JSON) | Terverifikasi (README terbaca) |
+| [Quit-Smoke-App](https://github.com/trizin/Quit-Smoke-App) | 100★ · 41 forks · MIT · EN/TR/ES · Play Store | Countdown kesehatan, kantong uang dihemat, **reward tracking** ("reward yourself with the money you earned and keep track of it"), panduan berhenti hasil riset penulis, alasan berhenti, dibuat untuk ayah penulis | Data lokal; tersedia di Play Store (`com.jmsc.quitsmoke`) | Terverifikasi (README terbaca; 2 screenshot publik) |
+| [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) | 0★ · MIT · Flutter 3.2+ | **Panic Button** (random intervention; set minimal 3 pilihan pengguna), 10 intervensi (box breathing 4-4-4-4 haptic, **5-4-3-2-1 grounding**, guided visualization, positive reframing CBT, Whack-a-Crave, Quick Sketch, Memory Match, water prompt, craving surfing, progress reflection), progress dashboard, statistik (pola craving harian/mingguan/bulanan; **intervention effectiveness**; success rate), smart notifications, **1x1 Panic Widget** (Material You), Firebase sync + Google Sign-In, green wellness theme, Montserrat | Firebase Auth + Firestore (cloud sync; Google Sign-In); tanpa smartphone offline penuh | Terverifikasi (README terbaca) |
+| [Quitease](https://github.com/MUmer24/Quitease-Firebase-Application) | 1★ · MIT · Flutter 3.10+ | Timer live per detik, progres Today/Week/Month/Year, 20 badge jalur ganda (skipped cigs + days), **WHO 10 animated health bars**, **milestone + money notifications** ($20/$50/$100/$500), **guest mode + account linking** (anonim → Google, progres tidak hilang), share journey card, Poppins + Iconsax + Lottie | Firebase Auth + Firestore; analytics + crash reporting; guest mode mengurangi data tertaut | Terverifikasi (README terbaca) |
+| [Breathe](https://github.com/imaswath/Breathe) | 0★ · (lisensi tidak disebut) · RN + Expo | Timer live (h/m/s), financial motivator, **cravings outlasted counter**, prominent Craving SOS button, **Physiological Recovery** (Heart, Lungs, Blood, Nerves, Skin), milestone roadmap 20 mnt → bulan, dark high-contrast UI anti beban kognitif | README tidak menyebut backend; React Native + Expo (data lokal tersirat, tidak dieksplisitkan) | Terverifikasi (README terbaca) |
+
+### F. Ringkasan Prioritas (untuk penyortiran pengguna)
+
+| Prioritas | Temuan |
+| --- | --- |
+| Sedang | A22 (risk score 0–100 + tips) · A23 (program persiapan pra-berhenti) · A24 (panic button acak dari set favorit) · A25 (grounding 5-4-3-2-1 + box breathing) · B15 (toggle periode statistik) · C12 (SOS beban kognitif rendah) · C14 (countdown target impian) |
+| Rendah | A26 (efektivitas intervensi SOS) · B16 (notifikasi nominal uang) · B17 (biaya hari ini) · B18 (kategori badge) · C13 (jalur milestone game-map) · C15 (kuis onboarding) · C16 (pemulihan per organ) |
+| Penguatan (referensi baru, item eksisting) | A1/C5/C10 (widget: EasyQuit 2 widget, QUIT SOS streak widget, SmartQuit 1x1 Panic Widget) · A2 (share card: EasyQuit screenshot, Quitease share card) · A3 (check-in: Nonic upsert harian, Kwit daily activities) · A5 (fl_chart: Breathing Room, SmartQuit) · A6/A20 (slip: Quit Tracker, EasyQuit Slow Mode, Breathing Room Coach Mode) · A7 (mini-game: EasyQuit Matching-Pairs, QUIT SOS 5 games, SmartQuit Whack-a-Crave/Memory Match/Quick Sketch) · A12 (NRT: Kwit patch/gum/lozenge) · A13/A15/B6/B11 (pemicu & puncak: EasyQuit pie chart, Breathing Room hourly bar, Nonic risk score, SmartQuit patterns) · A16 (CBT: Kwit, SmartQuit Positive Reframing) · A21 (D-Day impian: EasyQuit treat countdown) · A9 (gamifikasi: Breathing Room Path, Quitease 2-track badges, Kwit achievements, QUIT SOS 15 achievements) · B13 (laporan mingguan: Breathing Room Mon–Sun) · C11 (tabungan real-time: EasyQuit pockets, Breathing Room wallet) |
+
+Catatan: klaim "WHO-validated" (Kwit) dan "no data collected" (QUIT Smoking SOS) adalah klaim pengembang, bukan verifikasi independen. Kwit, SmartQuit, dan Quitease mengandalkan akun/cloud — tetap dicatat sebagai referensi, bukan pola yang ditiru proyek offline-first. Screenshot publik repo (Breathing Room, Nonic, QuitEase) konsisten dengan deskripsi README tetapi tidak diuji di perangkat.
+
+---
+
 ## E. Prioritas Gabungan (untuk penyortiran pengguna)
 
 | Urutan | Rekomendasi                                                                                           | Jenis               | Nilai utama                                        | Ketergantungan utama                            |
@@ -786,6 +1064,25 @@ Kolom **Kode** = HTTP status dari probe curl independen pada 2026-11-11 (user ag
 |     15 | Pindahkan statistik sekunder ke layar Analitik terpisah dari Dashboard (lihat A5)                     | UX                  | Fokus; beban kognitif                              | Tinjau layar di HP kecil                        |
 |     16 | AI coach (A8)                                                                                         | Fitur baru          | Dukungan personal (opsional)                       | Backend, biaya, privasi                         |
 |     17 | Komunitas (di luar offline-first)                                                                     | Fitur baru          | Dukungan sosial                                    | Backend + moderasi; **bukan** rekomendasi utama |
+|     18 | Reduced streak: hari di bawah baseline tetap dihitung (A20)                                             | Fitur baru          | Progres tapering dihargai; anti-shame              | Perhitungan streak kedua                        |
+|     19 | Estimasi tanggal pencapaian impian (D-Day) dari laju tabungan (A21)                                    | Fitur baru          | Impian lebih konkret & memotivasi                  | Helper estimasi + label "estimasi"              |
+|     20 | Laporan progres mingguan teks/PDF (B13)                                                                | Optimasi            | Refleksi terstruktur seminggu sekali               | Ringkasan dari data yang ada; PDF opsional      |
+|     21 | Visual tabungan mengisi real-time (jar/koin/pohon) (C11)                                               | UX                  | Uang dihemat terasa nyata                          | Perluas VisualTabunganImpian; animasi ringan    |
+|     22 | SOS: penghitung craving berhasil dilalui + catatan substitusi (B14)                                    | Optimasi/UX         | Self-efficacy saat craving                         | Tabel `sos_intervensi` (ada)                    |
+|     23 | Risk score 0–100 + tips kontekstual harian (A22)                                                       | Fitur baru          | Deteksi dini hari yang rawan                       | Helper dari `diary_craving`; label estimasi     |
+|     24 | Tombol panik acak dari set intervensi favorit (A24)                                                    | Fitur baru          | Akses coping tercepat saat craving                 | Set preferensi + `sos_intervensi` (ada)         |
+|     25 | Teknik grounding 5-4-3-2-1 + box breathing 4-4-4-4 di SOS (A25)                                        | Fitur baru          | Coping mindfulness berbasis bukti (offline)        | Konten + UI kartu teknik SOS (ada)              |
+|     26 | Program persiapan terstruktur pra-berhenti 7–9 hari (A23)                                              | Fitur baru          | Kesiapan sebelum quit date; turunkan risiko slip   | Tanggal berhenti di biodata + konten lokal      |
+|     27 | Toggle periode statistik: hari ini/minggu/bulan/tahun (B15)                                            | Optimasi            | Progres terbaca multi-skala                        | Angka dari data ada; grafik butuh `fl_chart`    |
+|     28 | Kartu impian: countdown "X hari lagi" dari laju tabungan (C14)                                         | UX                  | Target impian lebih konkret                        | Helper A21 + label "estimasi"                   |
+|     29 | SOS berbeban kognitif rendah: audit kontras gelap, 1 aksi dominan (C12)                                | UX                  | Willpower rendah → tanpa distraksi                 | Audit tema gelap layar SOS                      |
+|     30 | Notifikasi pencapaian nominal uang (Rp100rb/500rb/1jt), opt-in (B16)                                    | Optimasi            | Momen "menang" tabungan                           | `NotifikasiService` + Pengaturan                |
+|     31 | Efektivitas intervensi SOS: kolom `berhasil` + ringkasan (A26)                                         | Optimasi            | Coping berbasis data pengguna sendiri               | Migrasi skema `sos_intervensi`                  |
+|     32 | Indikator "biaya hari ini" & biaya-per-batang (B17)                                                    | Optimasi            | Biaya nyata kebiasaan terlihat                     | Entri konsumsi; label estimasi                  |
+|     33 | Kategori badge terstruktur: streak/reduction/uang/milestone (B18)                                      | Optimasi            | Koleksi badge rapi & tematik                       | `BadgeHelper` + kategori tampilan               |
+|     34 | Tampilan jalur/peta perjalanan untuk milestone (C13)                                                   | UX                  | Pemulihan terasa sebagai perjalanan                | Milestone WHO (ada) + toggle tampilan           |
+|     35 | Kuis onboarding ringan 2–3 pertanyaan (C15)                                                            | UX                  | Personalisasi sejak menit pertama                   | SharedPreferences; opsional                      |
+|     36 | Pemulihan tubuh per organ (paru/jantung/sirkulasi) (C16)                                               | UX                  | "Tubuh membaik" lebih intuitif                     | Konstanta milestone + UI; disclaimer wajib      |
 
 ---
 
@@ -799,7 +1096,9 @@ Kolom **Kode** = HTTP status dari probe curl independen pada 2026-11-11 (user ag
 - **Kesehatan:** milestone WHO/CDC/NHS yang ditampilkan sebagai fakta wajib diverifikasi; aplikasi hanya menyajikan estimasi ilustratif.
 - **Platform:** Pace `s3gv` (Live Activities/WidgetKit) dan `quit-smoking-smoke-free` iOS-only tidak relevan untuk Android/Flutter; gunakan padanan Android bila ada.
 - **Screenshot:** UI/UX disimpulkan dari deskripsi/README publik; interaksi dan aksesibilitas pada perangkat fisik belum diverifikasi. Tidak ada APK kompetitor yang dipasang/diuji.
+- **Analisis 10 APK (2026-11-11, tambahan):** Kwit, Smoke Free (portablepixels), QuitSave, QuitDay (Galaxy Store — verifikasi ringan), Progress Tracker, Unsmoke, FreeAir Coach, Smoke Tracker, Counter App (App Store, iTunes `resultCount: 1`), ClearDay Tracker (App Store, iTunes `resultCount: 1`). Halaman store 9 APK terbaca penuh via webfetch; Galaxy Store hanya judul halaman (tidak dijadikan dasar rekomendasi fitur). Detail di bagian "Analisis Mendalam 10 APK (2026-11-11)".
 - **Analisis 9 listing baru (2026-11-11):** 2 Google Play (Quit Smoking - Smoke Tracker, Quit Smoking: Progress Tracker), 5 Apple App Store (Quit Smoking - Counter App, Habit U, QST, Quit Smoking: Vape Counter AI, Quit Smoking: ClearDay Tracker), 1 Samsung Galaxy Store (금연·금주 디데이 / Quit Day D-Day). Semua diverifikasi HTTP 200 (Galaxy Store: verifikasi ringan) dan iTunes lookup `resultCount: 1` untuk 5 App Store. Temuan utama: ClearDay (widget-first + slip-friendly + visual metaphor), Progress Tracker (CBT exercises + slip log without erasing journey + weekly insights), Counter App (slip-friendly micro-goal + craving toolkit), Smoke Tracker (trigger/peak analysis offline-first).
+- **Analisis 10 APK batch 2 (2026-11-11):** EasyQuit (Play, 4.9★/106K reviews/1M+), Quit Tracker / despDev (Play, 4.6★/181K/5M+), QUIT Smoking SOS (Play, 10K+), Kwit (App Store `id525441365`, 4.7★/1.2K, klaim 4.5M+ pengguna), Breathing Room (GitHub, 0★, MIT, Flutter + Riverpod + sqflite), Nonic (GitHub, 1★, MIT), Quit-Smoke-App (GitHub, 100★, MIT), SmartQuit / BreatheFree V2 (GitHub, 0★, MIT), Quitease (GitHub, 1★, MIT), Breathe (GitHub, 0★, RN + Expo). Semua link di-probe curl HTTP 200; GitHub `fork: false` (metadata API 2026-11-11); Kwit dikonfirmasi iTunes `resultCount: 1`. Halaman store 3 APK Play terbaca penuh; README 6 repo GitHub terbaca penuh (termasuk `App_Blueprint.md` Breathing Room); tidak ada listing berstatus verifikasi ringan pada batch ini, sehingga seluruh 10 APK dijadikan dasar rekomendasi. Klaim "WHO-validated" (Kwit) dan "no data collected" (QUIT SOS) diperlakukan sebagai klaim pengembang, bukan verifikasi. Temuan utama: Breathing Room (dual-mode Coach Mode Staircase + `fl_chart` + Non-Smoker Path avatar), Nonic (risk score 0–100 + one-per-day check-in upsert), SmartQuit (Panic Button + set intervensi favorit + 5-4-3-2-1 grounding), Kwit (9-day preparation Prochaska + CBT, NRT tracker patch/gum/lozenge), EasyQuit (Slow Mode + treat countdown + trigger pie chart), QUIT SOS (10 teknik pernapasan + Quity AI — referensi prioritas rendah).
 
 ---
 
@@ -821,4 +1120,10 @@ Kolom **Kode** = HTTP status dari probe curl independen pada 2026-11-11 (user ag
 
 **Tambahan Riset (2026-11-11, 91 listing):** Google Play: STOP PRO, Vape Stop, VapeAway, Quit Bad Habits Tracker, Quit Smoking 30, Unsmoke (Indonesia, AI+gamifikasi), Quit Day - Stop Smoking Helper (widget, 4D/2R), CLM CraveLess.Me, InnerSwitch (habit reversal, calendar heatmap), Stopify (4-7-8+box breathing), FreshBreath (widget), FreeAir Coach (dokter paru, AI Claude CBT+ACT+MI), NewBreath, Sluta Snusa, QuitMate (Smart Recovery CBT), ThrivePal, Sunflower Sober, nuumi (Bluetooth vaporizer), Clickotine (digital therapeutic), iCanQuitPlus (Fred Hutch/U Florida), Stop Smoke, Recigar (NRT tablet reminder); Apple App Store (40 app id terverifikasi itunes lookup `resultCount: 1` pada 2026-11-11): iQ, Inhale, iSmoke, Smoke Off, Smoke Broken, HalfPuff, Pouched Nicotine Pouch Tracker (heatmap), QuitFlow, StepQuit, NOBUZZ, NYZ (nicotine pouch protocol), Nicotina, Soufflinou, CraveLess.Me, Stoptober 2026, Fumi, Neir, Quitly, NoSmoke (Cactiva, Bahasa Indonesia), Quit & Save, Stop Smoking Arrêt du tabac; GitHub: SmokingNote, RewireApp-Android, SluttaClassic, UN-Toxic, Smokeless-Journey, quit-journey, Stopi; Tencent MyApp: 今日抽烟, 戒烟打卡挑战, Emoke; Xiaomi: 戒烟, 今日抽烟; Amazon: J'arrête de fumer, How To Stop Smoking On Your Own.
 
+**Analisis Mendalam 10 APK (2026-11-11):** Kwit (Play, fr.kwit.android), Smoke Free - quit smoking now (Play, com.portablepixels.smokefree), QuitSave (Play, com.siwooeo.quitsmoke), QuitDay / 금연·금주 디데이 (Galaxy Store, com.siwooeo.quitday — IDN & KOR, verifikasi ringan), Quit Smoking: Progress Tracker (Play, com.inspectorstudios.quitsmokingprogresstracker), Unsmoke (Play, com.cpp.unsmoke), FreeAir Coach (Play, com.freeaircoach.app.twa), Quit Smoking - Smoke Tracker (Play, com.dailyapplabs.quitsmoke), Quit Smoking - Counter App (App Store id6746945120), Quit Smoking: ClearDay Tracker (App Store id6761815015). Pembaruan status menjadi `Sudah Dianalisa` per baris di `apk_kompetitor.md`.
+
+**Analisis Mendalam 10 APK (batch 2, 2026-11-11):** EasyQuit (Play, com.herzberg.easyquitsmoking), Quit Tracker (Play, com.despdev.quitsmoking / despDev), QUIT Smoking Cessation SOS (Play, com.quitapp.quitsmoking), Kwit (App Store, gb/app/quit-smoking-for-good-kwit/id525441365), Breathing Room (GitHub, anindya127/Breathing-Room — Flutter + Riverpod + sqflite), Nonic (GitHub, bllfoad/nonic — Flutter), Quit-Smoke-App (GitHub, trizin/Quit-Smoke-App — Flutter), SmartQuit / BreatheFree V2 (GitHub, ShreyNagda/smartquit — Flutter + Riverpod), Quitease (GitHub, MUmer24/Quitease-Firebase-Application — Flutter + GetX + Firebase), Breathe (GitHub, imaswath/Breathe — React Native + Expo). Pembaruan status menjadi `Sudah Dianalisa` per baris di `apk_kompetitor.md`.
+
 _Dokumen diperbarui 11 November 2026 berdasarkan riset seluruh 352 listing di `apk_kompetitor.md` (awal 159 + Tambahan Riset 2026-11-10/11), dengan **probe curl independen seluruh 352 link pada 2026-11-11** (321×200, 25×403 anti-bot, 5×404, 1×410 berputar) dan iTunes lookup untuk dua App Store yang 404. Bagian D.7 menambahkan 193 listing yang sebelumnya tidak tercatat di dokumen ini. Galaxy Store: 5 link 200 (judul halaman saja → verifikasi ringan). Bagian C1 (usulan Dashboard Metrik Dominan) dihapus oleh pengguna bersamaan dengan penghapusan PRD `prd/dashboard_metrik_dominan.md`. Pada 11 November 2026 bagian A4 (Tool SOS Tambahan) dihapus oleh pengguna setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/sos_craving_tool_tambahan.md`; baris rekomendasi "Tool SOS tambahan" pada tabel E digugurkan dan urutan nomor di bawah posisi 9 digeser naik. Rekomendasi menunggu penyortiran dan keputusan pengguna. Per 11 November 2026 kode `lib/fitur/sos_craving/` telah diimplementasikan sesuai PRD tersebut (menu kartu teknik + 7 teknik); dokumen ini hanya mencatat riset, bukan status implementasi. Pada 11 November 2026 bagian A10 (Implementation Intentions / Jika–Maka) dihapus setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/implementation_intention_craving.md`; baris rekomendasi "If-then plan (A10) & letters to future self (A11)" pada tabel E dipersempit menjadi "Letters to future self (A11)" dan urutan nomor digeser naik. Bagian B1 (bug ekspor cadangan: `konsumsi_rokok` + `sos_intervensi` tidak diekspor) turut dianggap selesai karena diperbaiki sekaligus dalam implementasi A10 (payload `buatCadanganJson()` kini menulis seluruh tabel termasuk `rencana_darurat`; `tabelCadangan` mencantumkan 7 tabel); bagian B1 dihapus dan baris rekomendasi terkait pada tabel E digugurkan dengan urutan nomor digeser naik. Referensi fitur baru dari 193 listing tambahan (mis. FreeAir Coach, QuitBot, iCanQuitPlus, Clickotine, NichtraucherHelden/DiGA, Smoke Free/DiGA, Finito, Smoking Log, InnerSwitch, CLM CraveLess.Me, Recigar, Pouched Nicotine Pouch Tracker, Stopify, FreeAir Coach) ditambahkan pada bagian A/B/C; temuan terpenting = banyak aplikasi resmi pemerintah/klinis (NHS Quit Smoking, QuitGuide/NCI, Tabac info service, Pave NSW, HK Dept of Health, RespirApp) kini tercatat di katalog D.7 — layak ditinjau ulang sumber konten aplikasi sebelum menampilkan klaim kesehatan._
+
+_Pada 11 November 2026 (batch 2), 10 listing berstatus `Belum Dianalisa` dianalisa melalui perintah `riset_kompetitor.md` (EasyQuit, Quit Tracker / despDev, QUIT Smoking SOS, Kwit iOS, Breathing Room, Nonic, Quit-Smoke-App, SmartQuit / BreatheFree V2, Quitease, Breathe); detail di bagian "Analisis Mendalam 10 APK (2026-11-11, Batch 2)" (item A22–A26, B15–B18, C12–C16) dan baris E 23–36. Status Analisa per baris pada `apk_kompetitor.md` diubah menjadi `Sudah Dianalisa`. Semua halaman terbaca via webfetch/GitHub API (atau iTunes lookup untuk Kwit); tidak ada listing berstatus verifikasi ringan pada batch ini. Rekomendasi menunggu penyortiran dan keputusan pengguna._
