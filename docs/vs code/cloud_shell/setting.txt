@@ -1,6 +1,37 @@
+{
+  "window.menuBarVisibility": "classic",
+  "window.commandCenter": true,
+  "http.proxySupport": "off",
+  "workbench.startupEditor": "welcomePageInEmptyWorkbench",
+  "redhat.telemetry.enabled": false,
+  "workbench.layoutControl.enabled": false,
+  "window.autoDetectColorScheme": true,
+  "chat.disableAIFeatures": true,
+  "http.systemCertificatesNode": true,
+  "cloudcode.beta.enableBigqueryExplorer": false,
+  "terminal.integrated.defaultProfile.linux": "Google Cloud Shell",
+  "terminal.integrated.commandsToSkipShell": [
+    "kilo-code.new.agentManagerOpen",
+    "kilo-code.new.agentManager.showTerminal",
+    "kilo-code.new.agentManager.previousTerminal",
+    "kilo-code.new.agentManager.nextTerminal",
+  ],
+  "google.cloud.project": "gen-lang-client-0295831453",
+  "google.cloud.region": "asia-south1",
+  "jupyter.runStartupCommands": [
+    "import bigframes",
+    "%load_ext bigframes",
+    "bigframes.options.bigquery.project = \"gen-lang-client-0295831453\"",
+    "bigframes.options.bigquery.application_name = \"datacloud.code oss for cloud shell\"",
+  ],
+  "jupyter.jupyterLaunchTimeout": 300000,
+  "git.confirmSync": false,
+  "kilo-code.new.agentWorkStyle": "skipped",
+  "kilo-code.new.autoApprove.enabled": true,
 
   // Pengaturan custom
-  "git.autofetch": false,
+  "git.autofetch": true,
+  "git.autofetchPeriod": 60,
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.formatOnType": false,
@@ -74,3 +105,17 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
+  "kilo-code.new.showTaskTimeline": false,
+  "[skill]": {
+    "diffEditor.ignoreTrimWhitespace": true,
+  },
+  "json.schemaDownload.trustedDomains": {
+    "https://developer.microsoft.com/json-schemas/": true,
+    "https://json-schema.org/": true,
+    "https://json.schemastore.org/": true,
+    "https://raw.githubusercontent.com/devcontainers/spec/": true,
+    "https://raw.githubusercontent.com/microsoft/vscode/": true,
+    "https://schemastore.azurewebsites.net/": true,
+    "https://www.schemastore.org/": true,
+  },
+}
