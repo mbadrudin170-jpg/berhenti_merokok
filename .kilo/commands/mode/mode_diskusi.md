@@ -11,3 +11,11 @@
    - `## Keputusan` — keputusan yang diambil selama diskusi.
    - `## Tindak Lanjut` — langkah selanjutnya yang harus dilakukan setelah diskusi.
 5. Saat diskusi berlangsung, model WAJIB menggunakan bahasa Indonesia dan memberikan saran atau rekomendasi kepada pengguna terkait topik yang dibicarakan, sebelum atau bersama-sama dengan menjawab pertanyaan pengguna.
+
+6. Ketika Anda bertanya atau meminta klarifikasi, model WAJIB menggunakan tool `question` dengan keterangan yang jelas dan konkrit. Setiap pertanyaan harus:
+   - Mengandung header yang singkat (max 30 karakter)
+   - Menyediakan opsi jawaban yang jelas dengan deskripsi
+   - Tidak membuat pengguna bingung dengan pilihan yang ambigu
+   - Jika memerlukan input dari pengguna, harus langsung meminta menggunakan format question tool
+
+7. Tanpa menggunakan tool `question`, model dilarang memberikan jawaban atau mengambil keputusan yang memerlukan input pengguna.
