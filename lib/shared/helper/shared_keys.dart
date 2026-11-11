@@ -8,6 +8,9 @@ class SharedKeys {
   /// Kunci untuk menyimpan preferensi tema aplikasi.
   static const String tema = 'tema';
 
+  /// Kunci untuk menyimpan preferensi tema visual metafora impian.
+  static const String temaVisualImpian = 'tema_visual_impian';
+
   /// Kunci untuk menyimpan status aktif pengingat harian.
   static const String notifikasiHarian = 'notifikasi_harian';
 

@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/enum/tema_visual_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
+import 'package:berhenti_merokok/fitur/impian/helper/riwayat_tabungan_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 // Urutan paket alfabetis: notifier diurutkan sebelum screens, sesuai aturan import ordering.
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/tema_visual_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
@@ -26,6 +29,11 @@ class DetailImpianScreen extends ConsumerWidget {
     final impianAsync = ref.watch(impianProvider);
     final biodataAsync = ref.watch(biodataProvider);
     final konsumsiAsync = ref.watch(konsumsiRokokProvider);
+    // Tema visual metafora impian: bila gagal dimuat/invalid, gunakan
+    // tema default pertama.
+    final temaVisualAsync = ref.watch(temaVisualProvider);
+    final temaVisual = temaVisualAsync.asData?.value ?? TemaVisualImpian.toples;
+    L.i('temaVisual=$temaVisual');
 
     if (impianAsync.isLoading ||
         biodataAsync.isLoading ||
@@ -145,8 +153,12 @@ class DetailImpianScreen extends ConsumerWidget {
     final pakaiAktual = hariTercatat > 0;
     // Progres impian: aktual bila ada catatan, fallback estimasi.
     final saldoUntukProgres = pakaiAktual ? uangAktual : uangEstimasi;
+    // Riwayat penghematan per hari (aktual) dari catatan konsumsi.
+    final riwayatEntries = biodata == null
+        ? const <RiwayatTabunganEntry>[]
+        : RiwayatTabunganHelper.dariKonsumsi(biodata, konsumsiList);
     L.i(
-      'uangEstimasi=$uangEstimasi, uangAktual=$uangAktual, hariTercatat=$hariTercatat, pakaiAktual=$pakaiAktual, saldoUntukProgres=$saldoUntukProgres',
+      'uangEstimasi=$uangEstimasi, uangAktual=$uangAktual, hariTercatat=$hariTercatat, pakaiAktual=$pakaiAktual, saldoUntukProgres=$saldoUntukProgres, riwayatEntries.length=${riwayatEntries.length}',
     );
     final rasio = ImpianProgresHelper.rasio(saldoUntukProgres, impian.jumlah);
     final sudahTercapai = ImpianProgresHelper.tercapai(
@@ -181,9 +193,17 @@ class DetailImpianScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 12,
               children: [
+                if (impian.jumlah <= 0)
+                  Text(
+                    'Atur target impian terlebih dahulu',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 VisualTabunganImpian(
                   rasio: rasio,
                   tercapai: sudahTercapai,
+                  tema: temaVisual,
                   pakaiAktual: pakaiAktual,
                   labelSaldo: pakaiAktual
                       ? 'Progres dari catatan (berdasarkan $hariTercatat hari tercatat)'
@@ -242,7 +262,7 @@ class DetailImpianScreen extends ConsumerWidget {
                 ),
                 _buildItem(
                   context,
-                  'Progres',
+                  pakaiAktual ? 'Progres' : 'Progres (estimasi)',
                   '${(rasio * 100).toStringAsFixed(0)}%',
                 ),
                 _buildItem(
@@ -252,12 +272,120 @@ class DetailImpianScreen extends ConsumerWidget {
                       ? 'Dari catatan ($hariTercatat hari tercatat)'
                       : 'Estimasi (belum ada catatan)',
                 ),
-                _buildItem(context, 'Sisa', FormatUang.formatRupiah(sisa)),
+                _buildItem(
+                  context,
+                  pakaiAktual ? 'Sisa' : 'Sisa (estimasi)',
+                  FormatUang.formatRupiah(sisa),
+                ),
+                _buildSectionTitle(context, 'Tema visual'),
+                RadioGroup<TemaVisualImpian>(
+                  groupValue: temaVisual,
+                  onChanged: (TemaVisualImpian? nilai) {
+                    if (nilai == null) {
+                      L.w('tema visual yang dipilih null');
+                      return;
+                    }
+                    L.i('temaVisual dipilih=$nilai');
+                    unawaited(
+                      ref
+                          .read(temaVisualProvider.notifier)
+                          .set(nilai)
+                          .catchError((Object e, StackTrace s) {
+                            L.e('Gagal menyimpan tema visual impian: $e $s');
+                          }),
+                    );
+                  },
+                  child: Column(
+                    spacing: 0,
+                    children: [
+                      for (final tema in TemaVisualImpian.values)
+                        RadioListTile<TemaVisualImpian>(
+                          value: tema,
+                          title: Text(tema.label),
+                          secondary: Icon(tema.icon),
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                        ),
+                    ],
+                  ),
+                ),
+                _buildSectionTitle(context, 'Riwayat penghematan (dari catatan)'),
+                _buildRiwayat(context, riwayatEntries),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String teks) {
+    return Text(
+      teks,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildRiwayat(BuildContext context, List<RiwayatTabunganEntry> entri) {
+    if (entri.isEmpty) {
+      return const EmptyStateView(
+        ikon: CupertinoIcons.money_dollar_circle,
+        judul: 'Belum ada riwayat',
+        deskripsi:
+            'Riwayat penghematan per hari akan muncul di sini setelah Anda '
+            'mencatat konsumsi.',
+      );
+    }
+    const tabular = <FontFeature>[FontFeature.tabularFigures()];
+    return Column(
+      spacing: 8,
+      children: [
+        for (var i = 0; i < entri.length; i++) ...[
+          if (i > 0) const Divider(height: 1, thickness: 1),
+          _buildRiwayatItem(context, entri[i], tabular),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildRiwayatItem(
+    BuildContext context,
+    RiwayatTabunganEntry entri,
+    List<FontFeature> tabular,
+  ) {
+    final labelTanggal = FormatTanggal.formatDasar(entri.tanggal);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 2,
+      children: [
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: Text(
+                labelTanggal,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+            Text(
+              '+${FormatUang.formatRupiah(entri.nilai)}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontFeatures: tabular,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          '${entri.rokokDihindari} batang dihindari · Saldo ${FormatUang.formatRupiah(entri.saldoSetelah)}',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontFeatures: tabular,
+          ),
+        ),
+      ],
     );
   }
 

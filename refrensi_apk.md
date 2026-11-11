@@ -308,16 +308,6 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 
 ### Prioritas Rendah
 
-#### C7. Impian/Tabungan dengan Metafora Visual Opposional
-
-- **Aplikasi serupa:** [Quitchi](https://play.google.com/store/apps/details?id=com.quitchi.app) · [RootedLife](https://play.google.com/store/apps/details?id=com.neonbug.rootedlife) · [PuffGone](https://play.google.com/store/apps/details?id=com.puffgone.app) · [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) · [ZenQuit](https://play.google.com/store/apps/details?id=com.zenquit.habit) · [Quit Smoking Vaping & Nicotine](https://apps.apple.com/us/app/quit-smoking-vaping-nicotine/id6756565950) (idle clicker) · [LungO](https://trylungo.com/) (maskot).
-- **Pola UI:** objek tumbuh mengikuti progres; wishlist; warna sejuk; tidak ramai.
-- **Pola UX:** tujuan abstrak terasa konkret; tetap transparan (label "estimasi").
-- **Pola layout:** kartu impian + objek visual kecil; detail terpisah.
-- **Saran:** pertahankan progress bar; tambah opsi tema visual (mis. "Toples"/"Pohon"); jangan menggantikan data dengan dekorasi.
-- **PRD:** `prd/impian_metafora_visual.md`
-- **Prioritas:** Rendah.
-
 #### C8. Trigger & Peak Analysis UI (Teks + Donut Sederhana)
 
 - **Aplikasi serupa:** [Quit Smoking - Smoke Tracker](https://play.google.com/store/apps/details?id=com.dailyapplabs.quitsmoke) (analisis puncak merokok harian/mingguan/bulanan/tahunan; daftar pemicu dengan frekuensi) · [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (laporan mingguan pemicu craving umum) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (identifikasi pemicu dan pola craving).

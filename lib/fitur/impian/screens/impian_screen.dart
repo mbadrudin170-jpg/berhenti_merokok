@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/enum/sort_impian.dart';
+import 'package:berhenti_merokok/fitur/impian/enum/tema_visual_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/tema_visual_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
 import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
@@ -113,6 +115,11 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     final impianAsync = ref.watch(impianProvider);
     final biodataAsync = ref.watch(biodataProvider);
     final konsumsiAsync = ref.watch(konsumsiRokokProvider);
+    // Tema visual metafora impian: bila gagal dimuat/invalid, gunakan
+    // tema default pertama.
+    final temaVisualAsync = ref.watch(temaVisualProvider);
+    final temaVisual = temaVisualAsync.asData?.value ?? TemaVisualImpian.toples;
+    L.i('temaVisual=$temaVisual');
     L.i(
       'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}, konsumsiAsync.isLoading=${konsumsiAsync.isLoading}, hasError=${konsumsiAsync.hasError}',
     );
@@ -332,9 +339,20 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 4,
                           children: [
+                            if (item.jumlah <= 0)
+                              Text(
+                                'Atur target impian terlebih dahulu',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
+                              ),
                             VisualTabunganImpian(
                               rasio: rasio,
                               tercapai: sudahTercapai,
+                              tema: temaVisual,
                               pakaiAktual: pakaiAktual,
                               labelSaldo: pakaiAktual
                                   ? 'Progres dari catatan (berdasarkan $hariTercatat hari tercatat)'
