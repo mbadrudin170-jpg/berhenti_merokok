@@ -3,9 +3,9 @@ name: riverpod-pola
 description: Pola Riverpod standar - Notifier CRUD keepAlive, provider usage, Consumer/ref.watch/ref.read, family providers, autoDispose, overrides testing, ProviderScope & ProviderContainer, UncontrolledProviderScope, dan Vsync scheduleRefresh/scheduleDispose.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "50c1be708e595449fa2fd18e3491d4418943c565"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Pola Riverpod Standar
@@ -184,14 +184,22 @@ final data = async.requireValue; // atau async.asData?.value untuk opsional
 ### Referensi
 - `penanganan-async-data-kosong`, `penanganan-asyncvalue-berkali` skills
 
-## 9. Larangan
+## 9. `WidgetRef` Tidak Boleh Dioper ke Widget Anak
+
+### Aturan
+- DILARANG mengirim `WidgetRef` dari parent ke widget anak lewat konstruktor lalu menyimpannya di field `State` (melanggar siklus hidup element; `ref` terikat pada element pembuatnya dan bisa dipakai setelah element tidak aktif).
+- Widget anak yang butuh `ref` wajib `ConsumerStatefulWidget` + `ConsumerState` dan memakai `ref` bawaan langsung di callback/`build`.
+- Helper top-level boleh menerima `WidgetRef ref` sebagai parameter saat *pemanggilan* (bukan disimpan di field objek) — pola ini dipakai mis. `tampilkanDanSimpanHasilIntervensi(context: context, ref: ref, ...)`.
+- Widget teknik SOS yang interaktif (timer, animasi napas) diekstrak ke file terpisah `lib/fitur/sos_craving/widgets/*_view.dart` sebagai `ConsumerStatefulWidget` (contoh `napas_478_view.dart`, `timer_craving_view.dart`, `distraksi_view.dart`, `urge_surfing_view.dart`).
+
+## 10. Larangan
 
 - **DILARANG** `ref.watch` di luar `build` (callback, initState, effect).
 - **DILARANG** mutate state langsung (`state = ...`) di luar Notifier class.
 - **DILARANG** `ProviderScope` nested di widget (hanya di `main.dart` / `app.dart`).
 - **DILARANG** family parameter yang mutable (List, Map, custom object tanpa equality).
 
-## 10. ProviderScope & ProviderContainer
+## 11. ProviderScope & ProviderContainer
 
 ### Aturan
 1. Wajib memasang `ProviderScope` di root widget tree (biasanya `main.dart` atau `app.dart`) agar semua provider dapat diakses di seluruh aplikasi.
@@ -206,7 +214,7 @@ final data = async.requireValue; // atau async.asData?.value untuk opsional
 - DILARANG membuat `ProviderScope` nested di dalam widget lain (hanya diperbolehkan di `main.dart` / `app.dart`).
 - DILARANG memanggil `containerOf()` di konteks yang tidak memiliki `ProviderScope` sebagai ancester (akan melempar `StateError('No ProviderScope found')`).
 
-## 11. UncontrolledProviderScope
+## 12. UncontrolledProviderScope
 
 ### Aturan
 1. `UncontrolledProviderScope` expose `ProviderContainer` ke widget tree tanpa mengelola siklus hidupnya (tidak akan dispose container saat widget dihancurkan).
@@ -216,7 +224,7 @@ final data = async.requireValue; // atau async.asData?.value untuk opsional
 ### Larangan
 - DILARANG mengandalkan `UncontrolledProviderScope` untuk dispose container secara otomatis.
 
-## 12. Vsync & scheduleRefresh / scheduleDispose
+## 13. Vsync & scheduleRefresh / scheduleDispose
 
 ### Aturan
 1. `_UncontrolledProviderScopeState` mengimplementasikan `Vsync` untuk mengelola task refresh dan dispose melalui `setState` serta `Timer`.
@@ -237,3 +245,6 @@ final data = async.requireValue; // atau async.asData?.value untuk opsional
 
 - `3b67d309` — BiodataNotifier, AlasanBerhentiNotifier, dll.
 - `19f43e5` — BadgeScreen multiple provider handling
+- `a15acd9603fe5d1251afa4acc3817e7e9c1607b1` — SOS Craving: widget anak menerima `ref` via konstruktor (dilanggar)
+- `fbbb0906d08d2590caa8c7829595ea7fa4e513a5` — widget teknik SOS diekstrak ke file `*_view.dart` sebagai `ConsumerStatefulWidget`
+- `4dd0cdb5d101413a839c37c3dfb8c594aeef60c2` — `tampilkanDanSimpanHasilIntervensi` menerima `ref` sebagai parameter saat pemanggilan

@@ -3,9 +3,9 @@ name: isolasi-widget-timer
 description: Panduan mengisolasi widget yang diperbarui berkala (Timer.periodic) ke widget terpisah agar hanya widget tersebut yang rebuild, bukan seluruh halaman.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "fbbb0906d08d2590caa8c7829595ea7fa4e513a5"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Isolasi Widget yang Diperbarui Berkala (Timer/Animasi)
@@ -19,6 +19,7 @@ Widget yang diperbarui secara berkala (mis. `Timer.periodic` per detik) wajib di
 3. Di dalam callback timer, periksa `mounted` sebelum memanggil `setState`.
 4. Jangan menjalankan `Timer.periodic` pada widget yang mencakup seluruh halaman apabila hanya sebagian tampilan yang perlu diperbarui.
 5. Jangan membiarkan timer tetap aktif setelah widget tidak lagi terpasang.
+6. Widget teknik SOS yang interaktif (timer/animasi napas: Box Breathing, Napas 4-7-8, Napas 90 Detik, Grounding 5-4-3-2-1, Urge Surfing, Timer Craving, Distraksi) wajib diekstrak ke file terpisah `lib/fitur/sos_craving/widgets/*_view.dart` sebagai `ConsumerStatefulWidget` + `ConsumerState`, bukan kelas private di dalam file layar. Layar utama hanya menyimpan state `_teknikTerpilih` dan merender tampilan sesuai pilihan.
 
 ## Contoh Benar
 
@@ -76,5 +77,5 @@ class _HalamanState extends State<Halaman> {
 
 ## Sumber Evaluasi
 
-- Commit: `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`, `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
-- File: `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`
+- Commit: `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`, `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `fbbb0906d08d2590caa8c7829595ea7fa4e513a5` (ekstraksi widget teknik SOS ke `widgets/*_view.dart` sebagai `ConsumerStatefulWidget`)
+- File: `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/sos_craving/widgets/napas_478_view.dart`, `lib/fitur/sos_craving/widgets/napas_90_detik_view.dart`, `lib/fitur/sos_craving/widgets/box_breathing_view.dart`, `lib/fitur/sos_craving/widgets/grounding_54321_view.dart`, `lib/fitur/sos_craving/widgets/urge_surfing_view.dart`, `lib/fitur/sos_craving/widgets/timer_craving_view.dart`, `lib/fitur/sos_craving/widgets/distraksi_view.dart`

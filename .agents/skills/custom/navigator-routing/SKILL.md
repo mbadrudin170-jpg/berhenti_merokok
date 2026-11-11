@@ -3,9 +3,9 @@ name: navigator-routing
 description: Panduan navigasi dan routing Flutter - Navigator, Route, Page, MaterialApp.router, pushNamed, pop, onGenerateRoute, onUnknownRoute, restorablePushNamed.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "navigator.dart + app.dart"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "50c1be708e595449fa2fd18e3491d4418943c565"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Navigasi dan Routing Flutter
@@ -33,7 +33,10 @@ Mengelola navigasi antar layar menggunakan `Navigator`, `Route`, `Page`, dan `Ma
 9. Satu `Navigator` hanya boleh memiliki satu `routerConfig` atau satu kombinasi `routerDelegate`/`routeInformationParser`, tidak keduanya sekaligus.
 10. Gunakan `restorablePushNamed` jika route perlu dapat dipulihkan saat state restoration.
 11. `RouteSettings.arguments` untuk melewatkan data ke route yang dipush dengan nama.
-12. `initialRoute` hanya berlaku saat pertama kali widget dibuat; perubahan setelah itu tidak berpengaruh.
+12. Navigasi pintasan proyek memakai `Nav.to(...)` (helper `share_global_saya`) yang mengembalikan `Future`; setiap pemanggilan wajib `unawaited(...)` dengan `.catchError(...)` yang mencatat `L.e` dan `return null`.
+13. Untuk daftar item yang masing-masing menavigasi (mis. menu "Lainnya", kartu aksi), ekstrak pembungkus tunggal (mis. `_navigasi(BuildContext context, Widget page, String nama)`) yang berisi pola `unawaited(Nav.to(...).catchError(...))` — jangan mengulang closure catchError per item.
+14. Ratakan indentasi blok `onPressed: () => unawaited(...)` mengikuti pola lain di file yang sama (closure satu level lebih dalam, `child:`/penutup sejajar `onPressed:`).
+15. `initialRoute` hanya berlaku saat pertama kali widget dibuat; perubahan setelah itu tidak berpengaruh.
 
 ## Larangan
 
@@ -90,4 +93,6 @@ MaterialApp(home: HomeScreen(), routes: {'/': (context) => HomeScreen()}); // as
 ## Sumber Evaluasi
 
 - File: `/google/flutter/packages/flutter/lib/src/widgets/navigator.dart`, `/google/flutter/packages/flutter/lib/src/widgets/app.dart`
+- File proyek: `lib/lainnya_screen.dart` (`_navigasi`), `lib/fitur/impian/screens/impian_screen.dart` (indentasi `unawaited` pada FAB)
 - Class terkait: `Navigator`, `NavigatorState`, `Route`, `Page`, `MaterialApp`, `WidgetsApp`
+- Commit rujukan: `db5dd32f28e92346b9a8d3467fa9b2838e013a02` (pembungkus `_navigasi`), `50c1be708e595449fa2fd18e3491d4418943c565` (perapian indentasi `unawaited` pada FAB impian)

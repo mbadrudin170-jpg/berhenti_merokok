@@ -474,3 +474,10 @@ Hasil riset lanjutan lintas-store (Google Play, Apple App Store, GitHub, Tencent
 | --- | --- | --- | --- |
 | J’arrête de fumer | Aplikasi motivasi berhenti merokok berbahasa Prancis yang menekankan dorongan motivasi dan komitmen untuk memulai proses berhenti. Relevan dengan motivasi dan manajemen craving. | Amazon Appstore | [Buka Aplikasi](https://www.amazon.com/Jerome-Baucher-Jarr%C3%AAte-de-fumer/dp/B00G4F3SR2) |
 | How To Stop Smoking On Your Own - FREE | Panduan berhenti merokok mandiri: tips dasar, pengganti nikotin, hipnosis mandiri, dukungan, nutrisi, dan langkah mengelola kecanduan. Relevan dengan edukasi dan manajemen craving. | Amazon Appstore | [Buka Aplikasi](https://www.amazon.com/How-Stop-Smoking-Your-Own/dp/B00JGGEFIW) |
+
+# Status Analisa Fitur (per 2026-11-11)
+
+- Seluruh listing yang tercatat di file ini per 2026-11-11 (daftar awal 79 + Tambahan Riset 2026-11-10 + lanjutan 2026-11-10 + 2026-11-11; total 352 tautan) **sudah dianalisa fitur-fiturnya**. Hasil analisa didokumentasikan di `refrensi_apk.md` di root proyek (seksi A Rekomendasi Fitur Baru, B Optimasi Fitur, C UI/UX & Layout, D Katalog Semua 352 Listing, E Prioritas Gabungan, F Verifikasi & Keterbatasan).
+- Listing yang ditambahkan setelah 2026-11-11 **belum dianalisa fitur-fiturnya** sampai perintah `referensi_apk_sejenis.md` (atau perintah serupa) dijalankan dan section ini diperbarui dengan tanggal dan cakupan terbaru.
+- Perintah `cari_apk_serupa.md` hanya menambah listing baru; listing baru tersebut dianggap **belum dianalisa** sampai seksi ini diperbarui setelah analisa dijalankan.
+- Saat menjalankan analisa, listing yang sudah tercakup tanggal status ini tidak perlu dianalisa ulang kecuali pengguna meminta analisa ulang; fokus pada listing yang ditambahkan setelah tanggal status terakhir.

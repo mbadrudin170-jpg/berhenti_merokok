@@ -4,8 +4,8 @@ description: Panduan menambahkan log debug pada variabel dan parameter menggunak
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "be04199e5b44537ee1052a3815f5af8518308148"
-  model: "kilo-auto/free"
+  commit-terakhir: "fc8100ff6cd50280b6d7b4cd650c3a3314ca1d6f"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Logging Debug pada Variabel dan Parameter
@@ -25,6 +25,7 @@ Gunakan sistem logging yang sudah tersedia di proyek (`L.i()`, `L.w()`, `L.e()` 
 9. Jangan menggunakan `print()` sebagai pengganti logger yang tersedia.
 10. Pada `catch`, catat error dengan konteks proses yang gagal dan sertakan stack trace apabila tersedia: `L.e('Gagal ...: $e $s')`.
 11. Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali. Log pada `build()` dihindari apabila memungkinkan karena `build()` dapat dipanggil berulang dan menambah noise; prioritaskan log pada titik yang tidak berfrekuensi tinggi (initState, dispose, method helper, perhitungan). Log pada getter/properti turunan yang dapat dipanggil berulang saat `build()` (mis. `targetRokokHariIni`, label Enum) juga dihindari.
+12. Log debug satu-kali (mis. untuk verifikasi sementara di layar/helper) wajib dihapus saat commit cleanup (`chore(logging): hapus pernyataan log debug ...`); jangan biarkan log debug-sementara ikut ter-commit permanen. Log bermakna jangka panjang (initState, dispose, catch, ringkasan perhitungan) boleh dipertahankan.
 
 ## Larangan
 
@@ -65,5 +66,5 @@ print('data=$data'); // menggunakan print() alih-alih L.*
 
 ## Sumber Evaluasi
 
-- Commit: `f2859a0f7b8f6ebeb0befefffa8047a9c3173c04`, `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`, `c05f4460a316c3bf33aaad30fc1d8a32f66b9c5b`, `7b9e8d054624b8941c1f44b11551fe9ea57a54a1`, `be04199e5b44537ee1052a3815f5af8518308148`
+- Commit: `f2859a0f7b8f6ebeb0befefffa8047a9c3173c04`, `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`, `c05f4460a316c3bf33aaad30fc1d8a32f66b9c5b`, `7b9e8d054624b8941c1f44b11551fe9ea57a54a1`, `be04199e5b44537ee1052a3815f5af8518308148`, `fc8100ff6cd50280b6d7b4cd650c3a3314ca1d6f` (penghapusan log debug satu-kali di dashboard & pelacakan toxin)
 - File: `lib/fitur/dummy/helper/dummy_helper.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `.kilo/commands/tambah_log.md`

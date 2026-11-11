@@ -1,11 +1,11 @@
 ---
 name: widget-custom
-description: Indeks widget custom reusable di Flutter - merujuk ke skill spesifik untuk VisualTabunganImpian, timer widgets terisolasi, empty state widgets, error retry, dan loading view. Setiap widget custom wajib StatelessWidget, pure (tidak ada logika bisnis di dalam), aman untuk tema (ColorScheme), dan menggunakan Column.spacing bukan SizedBox berulang.
+description: Indeks widget custom reusable di Flutter - merujuk ke skill spesifik untuk VisualTabunganImpian, timer widgets terisolasi, EmptyStateView (empty state bersama), dan loading view. Setiap widget custom wajib StatelessWidget, pure (tidak ada logika bisnis di dalam), aman untuk tema (ColorScheme), dan menggunakan Column.spacing bukan SizedBox berulang.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "c7337d1519d495d0ccd022fb18d63f72d443866a"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "65abc0104fc8eec90cde9906c52d3f65cba13ba3"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Indeks Widget Custom Reusable
@@ -15,7 +15,7 @@ Skill ini berfungsi sebagai indeks/ringkasan yang merujuk ke skill spesifik untu
 ## Cakupan yang Di-Cover
 
 - Package: `package:flutter` (class `StatelessWidget`, `Card`, `Column`, `Row`, `Stack`, `FractionallySizedBox`, `SizedBox`, `Padding`, `SafeArea`, `CircularProgressIndicator`, `FilledButton`, `Icon`, `Text`, `Chip`, `LinearProgressIndicator`)
-- Class: `VisualTabunganImpian`, `_TimerCravingView`, `_HeaderPemulihan`, `_EmptyDiaryCraving`, `_PlaceholderAlasanBerhenti`, `_ErrorRetry`, `_LoadingView`, `ImpianProgresHelper`
+- Class: `VisualTabunganImpian`, `EmptyStateView`, `TimerCravingView` (dan `Napas478View`, `Napas90DetikView`, `BoxBreathingView`, `Grounding54321View`, `UrgeSurfingView`, `DistraksiView`), `_HeaderPemulihan`, `ImpianProgresHelper`
 - Properti: `rasio`, `saldo`, `target`, `spacing`, `padding`, `onRetry`
 - Method: `ImpianProgresHelper.rasio()`, `ImpianProgresHelper.tercapai()`, `ImpianProgresHelper.sisa()`, `ref.refresh()`
 
@@ -154,5 +154,5 @@ FractionallySizedBox(widthFactor: rasioTanpaClamp)
 ## Sumber Evaluasi
 
 - File: `lib/fitur/impian/widget/visual_tabungan_impian.dart`
-- Class terkait: `VisualTabunganImpian`, `_TimerCravingView`, `_HeaderPemulihan`, `_EmptyDiaryCraving`, `_PlaceholderAlasanBerhenti`, `_ErrorRetry`, `_LoadingView`, `ImpianProgresHelper`
-- Commit rujukan: `c7337d1` — `VisualTabunganImpian`, `ImpianProgresHelper`, `DetailImpianScreen`; `3b67d309` — `_TimerCravingView`, `_EmptyDiaryCraving`, `_ErrorRetry`, `_LoadingView`; `02aa6b29` — `_HeaderPemulihan`; `e659574` — `_PlaceholderAlasanBerhenti`
+- Class terkait: `VisualTabunganImpian`, `EmptyStateView`, `TimerCravingView` (dan sibling teknik SOS), `_HeaderPemulihan`, `ImpianProgresHelper`
+- Commit rujukan: `c7337d1` — `VisualTabunganImpian`, `ImpianProgresHelper`, `DetailImpianScreen`; `3b67d309` — `_TimerCravingView` (kini publik: `TimerCravingView` di `timer_craving_view.dart`), empty state diary craving (kini `EmptyStateView` bersama), `_ErrorRetry`/`_LoadingView` (sudah tidak ada di `lib/`); `02aa6b29` — `_HeaderPemulihan`; `e659574` — kartu SOS Craving & Alasan Berhenti di dashboard; `65abc0104fc8eec90cde9906c52d3f65cba13ba3` — `EmptyStateView` (menggantikan empty state custom per layar, lihat `empty-state-daftar`); `fbbb0906d08d2590caa8c7829595ea7fa4e513a5` — widget teknik SOS (`napas_478_view.dart`, dll.) sebagai `ConsumerStatefulWidget`
