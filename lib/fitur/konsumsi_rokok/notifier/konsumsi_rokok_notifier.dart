@@ -41,7 +41,8 @@ class KonsumsiRokokNotifier extends _$KonsumsiRokokNotifier {
   }
 
   /// Catat satu batang rokok pada hari ini (quick log, tanpa form).
-  Future<void> catatCepat({bool isSlip = false, String? catatan}) async {
+  /// Mengembalikan model entri yang baru dibuat untuk keperluan undo.
+  Future<KonsumsiRokokModel> catatCepat({bool isSlip = false, String? catatan}) async {
     final sekarang = DateTime.now().toUtc();
     final model = KonsumsiRokokModel(
       id: const Uuid().v4(),
@@ -69,6 +70,7 @@ class KonsumsiRokokNotifier extends _$KonsumsiRokokNotifier {
         ),
       );
       L.s('Konsumsi cepat berhasil dicatat');
+      return model;
     } on Exception catch (e, s) {
       L.e('Gagal catat cepat konsumsi: $e $s');
       rethrow;

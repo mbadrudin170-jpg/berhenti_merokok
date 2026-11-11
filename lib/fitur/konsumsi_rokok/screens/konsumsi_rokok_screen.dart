@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/daftar_entri_konsumsi_sheet.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
 import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,10 +24,29 @@ class _KonsumsiRokokScreenState extends ConsumerState<KonsumsiRokokScreen> {
       ref
           .read(konsumsiRokokProvider.notifier)
           .catatCepat()
-          .then((_) {
-            if (mounted) {
-              AppToast.sukses(context, 'Rokok dicatat (+1)');
-            }
+          .then((entri) {
+            if (!mounted) return;
+            // Tampilkan Snackbar dengan aksi "Urungkan" (U1)
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Rokok dicatat (+1)'),
+                action: SnackBarAction(
+                  label: 'Urungkan',
+                  onPressed: () => unawaited(
+                    ref
+                        .read(konsumsiRokokProvider.notifier)
+                        .hapus(entri.id)
+                        .catchError((Object e, StackTrace s) {
+                      L.e('Gagal undo quick log: $e $s');
+                      if (context.mounted) {
+                        AppToast.gagal(context, 'Gagal membatalkan catatan');
+                      }
+                    }),
+                  ),
+                ),
+                duration: const Duration(seconds: 10),
+              ),
+            );
           })
           .catchError((Object e, StackTrace s) {
             L.e('Gagal catat cepat konsumsi: $e $s');
@@ -125,6 +144,14 @@ class _DaftarKonsumsi extends StatelessWidget {
             ? entriHari.first.tanggal
             : null;
 
+        // Parse tanggalKey untuk dibawa ke bottom sheet
+        final parts = tanggalKey.split('-');
+        final tanggalWidget = DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        );
+
         return Card(
           key: ValueKey(tanggalKey),
           child: ListTile(
@@ -144,11 +171,11 @@ class _DaftarKonsumsi extends StatelessWidget {
             subtitle: Text(
               '$total batang${adaSlip ? '  •  SLIP' : ''}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: adaSlip
-                    ? const Color(0xFFEF5350)
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: adaSlip ? FontWeight.bold : FontWeight.normal,
-              ),
+                    color: adaSlip
+                        ? const Color(0xFFEF5350)
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: adaSlip ? FontWeight.bold : FontWeight.normal,
+                  ),
             ),
             trailing: adaSlip
                 ? const Icon(
@@ -160,11 +187,12 @@ class _DaftarKonsumsi extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                builder: (_) => FormKonsumsiRokok(
-                  konsumsi: entriHari.isNotEmpty ? entriHari.first : null,
+                builder: (_) => DaftarEntriKonsumsiSheet(
+                  tanggal: tanggalWidget,
+                  entriHari: entriHari,
                 ),
               ).catchError((Object e, StackTrace s) {
-                L.e('Gagal membuka form konsumsi: $e $s');
+                L.e('Gagal membuka daftar entri konsumsi: $e $s');
                 return null;
               }),
             ),

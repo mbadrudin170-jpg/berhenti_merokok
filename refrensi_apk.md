@@ -163,15 +163,6 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 - **Saran:** definisikan rumus bersama di satu helper; tampilkan "estimasi" vs "aktual" pada Dashboard; metrik tapering menampilkan target hari ini vs aktual.
 - **Prioritas:** Sedang.
 
-#### B3. Konsumsi — Undo & Koreksi Cepat
-
-**PRD:** prd/konsumsi_undo_koreksi_cepat.md (Final, dibuat 2026-11-11)
-
-- **Tujuan:** mengurangi kesalahan input quick log; koreksi tidak menjangkau form panjang.
-- **Referensi:** [My Tracking App](https://github.com/lorenzocaputodev/my_tracking_app) (undo entri/penghapusan) · [Pace Android](https://github.com/ravipurohit1991/pace) (undo 12 detik) · [NoMore](https://play.google.com/store/apps/details?id=com.appfactory.breakfree) (undo slip) · [Breathing Room](https://github.com/anindya127/Breathing-Room) · [SmokingYou](https://f-droid.org/en/packages/com.smokingtracker).
-- **Saran:** snackbar "Urungkan (10 detik)" setelah quick log; entri dapat diedit dari ketuk item riwayat; konfirmasi sebelum mengubah jumlah bila metrik terikat.
-- **Prioritas:** Sedang.
-
 #### B5. Slip — Tampilkan Dampak Sebelum Simpan + Bahasa Netral
 
 - **Tujuan:** preview perubahan metrik sebelum pengguna menyimpan slip; hapus bahasa menyalahkan.
@@ -230,7 +221,7 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 - **Pola UI:** tombol +1 menonjol (FAB); umpan balik instan setelah log; opsi undo langsung; detail jumlah/tanggal/catatan di layar terpisah.
 - **Pola UX:** tidak menuntut form untuk pencatatan harian; kesalahan dapat dibatalkan seketika.
 - **Pola layout:** FAB utama di Dashboard dan tab Konsumsi; bottom sheet umpan balik berisi tombol "Urungkan".
-- **Kondisi proyek:** quick log +1 ada; koreksi lewat form; undo belum ada (B3).
+- **Kondisi proyek:** quick log +1 ada; koreksi lewat form; undo sudah diimplementasikan (Snackbar "Urungkan" 10 detik, bottom sheet entri per tanggal, hapus per entri dengan undo).
 - **Tujuan pola:** data akurat → metrik lain bisa dipercaya.
 - **Prioritas:** Tinggi.
 
