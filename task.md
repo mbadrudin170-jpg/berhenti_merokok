@@ -248,7 +248,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `a15acd9` mendefinisikan enum value dengan gaya `snake_case` di beberapa enum baru (mis. `HasilCravingEnum.berhasil_menahan`, `HasilCravingEnum.belum_selesai`, `StrategiCravingEnum.napas_478`, `StrategiCravingEnum.tunda_5_menit`, `StrategiCravingEnum.alih_aktivitas`, `HasilIntervensiSos.belum_selesai`, `JenisIntervensiSos.timer_3_menit`) sedangkan enum value yang sudah dipakai proyek (`PemicuEnum.bauRokok`, `ModeBerhenti.seketika`, `StatusKalender.adaKonsumsi`) memakai `lowerCamelCase`. Nilai `.name` enum ini juga dipersistenkan ke kolom database (`mood`, `strategi`, `hasil`, `jenis_intervensi`, `hasil_intervensi`) sehingga inkonsistensi ikut tersimpan di data pengguna. (Value satu kata seperti `senang`, `stres`, `berkurang`, `distraksi`, `jalan`, `lainnya` tidak melanggar dan tidak perlu diubah.)
 - Solusi : Ubah enum value yang melanggar menjadi `lowerCamelCase` (mis. `berhasilMenahan`, `tetapMerokok`, `belumSelesai`, `napas478`, `minumAir`, `alihAktivitas`, `tunda5Menit`, `timer3Menit`), perbarui seluruh referensi literal di model, helper, layar, dan bottom sheet, lalu bila nilai `snake_case` sudah tersimpan di database tambahkan migrasi pada `onUpgrade` versi berikutnya untuk memetakan nilai lama ke nilai baru (mis. `UPDATE diary_craving SET strategi = 'berhasilMenahan' WHERE strategi = 'berhasil_menahan'`). Contoh benar: `enum HasilCravingEnum { berhasilMenahan, tetapMerokok, belumSelesai }`.
 - aturan dilanggar : [penamaan-konvensi](.agents/skills/custom/penamaan-konvensi/SKILL.md)
@@ -278,7 +278,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `a15acd9` mengimpor `package:uuid/uuid.dart` di `sos_intervensi_notifier.dart` (`const Uuid().v4()`), tetapi `uuid` tidak dideklarasikan di `pubspec.yaml`; `pubspec.lock` mencatat `uuid 4.6.0` sebagai dependensi `transitive` (dibawa oleh `share_global_saya`). Jika `share_global_saya` berhenti bergantung pada `uuid`, impor ini langsung gagal compile.
 - Solusi : Deklarasikan `uuid` sebagai dependensi langsung di `pubspec.yaml` sesuai versi yang terpasang (tervalidasi di pub.dev, https://pub.dev/packages/uuid, terpasang `4.6.0`): tambahkan `uuid: ^4.6.0` pada bagian `dependencies`. Ini sejalan dengan konvensi pub (dependensi langsung wajib dideklarasikan sendiri; versi `^4.6.0` cocok dengan constraint `share_global_saya`).
 - aturan dilanggar : tidak ada skill spesifik; rujukan dokumentasi paket pub.dev dan konvensi Dart/Flutter ("depend on the packages you directly import").
@@ -304,7 +304,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `a15acd9` melemparkan `WidgetRef` dari `SosCravingScreen` ke widget `StatefulWidget` anak lewat konstruktor (`_Napas478View({required this.ref})`, `_TimerCravingView({required this.ref})`, `_DistraksiView({required this.ref})`) dan menyimpannya di field State. `WidgetRef` terikat pada siklus hidup element pembuatnya, sehingga menyimpannya di objek lain berisiko dipakai setelah element tidak aktif/rebuild. Pola yang benar untuk akses `ref` di dalam `StatefulWidget` adalah `ConsumerStatefulWidget`.
 - Solusi : Ubah ketiga widget tersebut menjadi `ConsumerStatefulWidget` dan gunakan `ref` bawaan `ConsumerState` langsung di callback (timer selesai, napas selesai, distraksi selesai). Untuk helper `tampilkanDanSimpanHasilIntervensi` di `sheet_hasil_intervensi.dart`, pertahankan parameter `WidgetRef ref` yang dioper saat pemanggilan (bukan disimpan di field objek), atau lebih baik ambil `ref` di dalam `ConsumerWidget`/`ConsumerState` pemanggil saat callback dipicu. Contoh: `class _Napas478View extends ConsumerStatefulWidget { ... }` lalu `class _Napas478ViewState extends ConsumerState<_Napas478View> { ... }` dan panggil `tampilkanDanSimpanHasilIntervensi(context: context, ref: ref, ...)` dari dalam State tersebut.
 - aturan dilanggar : [riverpod-pola](.agents/skills/custom/riverpod-pola/SKILL.md)

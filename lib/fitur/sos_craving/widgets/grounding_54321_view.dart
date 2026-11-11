@@ -89,7 +89,7 @@ class _Grounding54321ViewState extends ConsumerState<Grounding54321View> {
       tampilkanDanSimpanHasilIntervensi(
         context: context,
         ref: ref,
-        jenisIntervensi: JenisIntervensiSos.grounding_54321,
+        jenisIntervensi: JenisIntervensiSos.grounding54321,
       ).catchError((Object e, StackTrace s) {
         L.e('Gagal menampilkan bottom sheet hasil intervensi grounding: $e $s');
         return null;

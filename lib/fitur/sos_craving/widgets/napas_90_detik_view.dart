@@ -84,7 +84,7 @@ class _Napas90DetikViewState extends ConsumerState<Napas90DetikView> {
       tampilkanDanSimpanHasilIntervensi(
         context: context,
         ref: ref,
-        jenisIntervensi: JenisIntervensiSos.napas_90_detik,
+        jenisIntervensi: JenisIntervensiSos.napas90Detik,
       ).catchError((Object e, StackTrace s) {
         L.e('Gagal menampilkan bottom sheet hasil intervensi napas 90 detik: $e $s');
         return null;

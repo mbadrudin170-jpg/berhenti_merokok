@@ -1,6 +1,6 @@
 # PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
-**Status Dokumen:** Draft
+**Status Dokumen:** Final
 
 **Status Implementasi:** Belum Diimplementasikan
 
@@ -48,17 +48,19 @@ Masalah yang ingin diselesaikan: aplikasi belum menyediakan mekanisme rencana if
 ### Termasuk
 - Pembuatan, pengubahan, penghapusan rencana if-then (Jika …, Maka …), maksimal 3 rencana tersimpan.
 - Penyimpanan lokal di tabel baru `rencana_darurat` (migrasi database versi 11 → 12).
-- Kartu tampilan rencana pada layar SOS Craving (di bawah kartu "Ingat alasanmu" / pada area yang disepakati saat diskusi) yang merangkum rencana tersimpan.
-- Layar kelola rencana (daftar + tambah + ubah + hapus) yang diakses dari kartu SOS dan/atau layar Lainnya.
-- Validasi masukan (if/then wajib terisi, batas panjang), penyimpanan melalui notifier Riverpod mengikuti pola `AlasanBerhentiNotifier`.
-- Pencatatan cadangan (backup) bila disepakati pada diskusi (lihat bagian 12 dan 18).
+- Kartu tampilan rencana pada layar SOS Craving, terpisah di bawah kartu "Ingat alasanmu", yang merangkum rencana tersimpan.
+- Layar kelola rencana (daftar + tambah + ubah + hapus) yang diakses dari kartu SOS Craving saja (tanpa entry di menu Lainnya).
+- Validasi masukan (if/then wajib terisi, maks 150 karakter), penyimpanan melalui notifier Riverpod mengikuti pola `AlasanBerhentiNotifier`.
+- Sinkron ke cadangan (backup) + perbaikan B1 sekaligus: `rencana_darurat`, `konsumsi_rokok`, dan `sos_intervensi` ikut terekspor dan terpulihkan pada `cadangan_helper.dart` (diputuskan 2026-11-10).
 
 ### Tidak Termasuk
 - Draft rencana otomatis oleh AI / LLM (Pace memakai AI coach; di luar prinsip offline-first, lihat juga A8 di `refrensi_apk.md:130-135`).
 - Notifikasi atau pengingat baru berbasis rencana (A13 `refrensi_apk.md:165-170` adalah fitur terpisah).
 - Integrasi dengan timer/napas SOS (rencana hanya ditampilkan, tidak men-trigger teknik lain otomatis).
 - Perubahan logika tapering, badge, impian, atau skema tabel yang sudah ada selain penambahan tabel baru.
-- Ekspor format selain JSON cadangan yang sudah ada; perbaikan bug ekspor cadangan (B1, `refrensi_apk.md:185-189`) adalah ruang lingkup terpisah.
+- Template contoh rencana bawaan (diputuskan 2026-11-10: tidak diperlukan; pengguna menulis sendiri).
+- Entry menu Lainnya untuk layar kelola (diputuskan 2026-11-10: hanya dari kartu SOS).
+- Ekspor format selain JSON cadangan yang sudah ada. Perbaikan ekspor cadangan B1 (`konsumsi_rokok` + `sos_intervensi`) **termasuk** dalam v1 lewat 7.4 (diputuskan 2026-11-10: diperbaiki sekaligus, bukan ruang lingkup terpisah).
 
 ## 6. Daftar Fitur
 
@@ -66,9 +68,8 @@ Masalah yang ingin diselesaikan: aplikasi belum menyediakan mekanisme rencana if
 |---|---|---|
 | Kelola rencana if-then | Tambah / ubah / hapus rencana "Jika …, Maka …", maksimal 3 | Must Have |
 | Kartu "Rencana Darurat Saya" di SOS | Menampilkan rencana tersimpan pada layar SOS Craving | Must Have |
-| Layar kelola rencana | Layar daftar rencana + form tambah/ubah | Should Have |
-| Sinkron ke cadangan (backup) | `rencana_darurat` ikut terekspor/terpulihkan | Could Have |
-| Contoh rencana bawaan (template) | Beberapa contoh if-then yang bisa disalin pengguna | Could Have |
+| Layar kelola rencana | Layar daftar rencana + form tambah/ubah | Must Have |
+| Sinkron ke cadangan (backup) | `rencana_darurat` ikut terekspor/terpulihkan | Should Have |
 
 ## 7. Detail Persyaratan Fitur
 
@@ -89,8 +90,8 @@ Masalah yang ingin diselesaikan: aplikasi belum menyediakan mekanisme rencana if
 - Aturan bisnis:
   - Maksimal 3 rencana aktif tersimpan; saat sudah 3, tombol tambah dinonaktifkan dengan penjelasan.
   - `jika` dan `maka` di-trim; tidak boleh kosong atau hanya spasi.
-  - Panjang maksimal masing-masing kolom usulan: 150 karakter (konsisten dengan teks ruang terbatas pada kartu).
-  - Urutan tampil: berdasarkan `dibuat` ascending (rencana lama di atas), atau kolom `urutan` bila disepakati.
+  - Panjang maksimal masing-masing kolom: 150 karakter (konsisten dengan teks ruang terbatas pada kartu).
+  - Urutan tampil: berdasarkan `dibuat` ascending (rencana lama di atas).
   - Tidak ada duplikasi: dua rencana dengan `jika` identik (setelah trim, case-insensitive) ditolak dengan pesan.
   - Penghapusan bersifat permanen (tidak ada arsip/undo) dengan dialog konfirmasi destruktif.
 - Validasi:
@@ -122,6 +123,7 @@ Masalah yang ingin diselesaikan: aplikasi belum menyediakan mekanisme rencana if
   - Kartu tidak men-trigger teknik SOS otomatis; hanya menampilkan teks rencana.
   - Teks rencana panjang ditangani dengan overflow yang benar (tidak merusak layout ≤320 dp).
   - Kartu konsisten dengan kartu lain di SOS (alasan berhenti): Card + Padding + Column spacing.
+  - Posisi kartu: terpisah, di bawah kartu "Ingat alasanmu" (diputuskan 2026-11-10).
 - Validasi: tidak ada input teks.
 - Kondisi berhasil: kartu menampilkan rencana terbaru tanpa perlu restart aplikasi.
 - Kondisi gagal: provider error → kartu menampilkan pesan gagal + retry (pola `penanganan-async-data-kosong`); teknik SOS lain tetap berfungsi.
@@ -144,16 +146,20 @@ Masalah yang ingin diselesaikan: aplikasi belum menyediakan mekanisme rencana if
 - Kondisi gagal: lihat 7.1.
 - Respons sistem: AppBar + body ListView/empty state; FAB "Tambah rencana" nonaktif saat sudah 3.
 - Kriteria penerimaan:
-  - Layar dapat dibuka dari kartu SOS dan dari menu Lainnya (bila disepakati).
+  - Layar dapat dibuka hanya dari kartu SOS (diputuskan 2026-11-10); tidak ada entry di menu Lainnya.
   - Semua aksi CRUD berfungsi dan tercermin di kartu SOS.
 
-### 7.4 Sinkron ke Cadangan (Could Have — keputusan diskusi)
+### 7.4 Sinkron ke Cadangan + perbaikan B1 (Should Have — diputuskan 2026-11-10)
 
-- Nama fitur: Ekspor/pemulihan `rencana_darurat`
-- Tujuan: rencana pengguna tidak hilang saat ganti perangkat / reinstall.
-- Deskripsi: tambahkan `rencana_darurat` ke `tabelCadangan` dan payload ekspor pada `cadangan_helper.dart`; pulihkan mengikuti pola tabel lain.
-- Aturan bisnis: harus konsisten dengan perbaikan B1 (`refrensi_apk.md:185-189`); jangan membangun jalur baru yang berbeda.
-- Kriteria penerimaan: berkas cadangan berisi kunci `rencana_darurat`; pemulihan mengembalikan baris yang sama.
+- Nama fitur: Ekspor/pemulihan `rencana_darurat` + penyisiran payload cadangan (B1)
+- Tujuan: rencana pengguna tidak hilang saat ganti perangkat / reinstall; sekaligus memperbaiki bug ekspor yang membuat `konsumsi_rokok` dan `sos_intervensi` tidak diekspor.
+- Deskripsi: tambahkan `rencana_darurat` ke `tabelCadangan` dan payload ekspor (`buatCadanganJson`) pada `cadangan_helper.dart`; sekaligus tulis `konsumsiRokok` dan `sosIntervensi` ke payload yang sama (B1, `refrensi_apk.md:185-189`); pemulihan mengikuti pola tabel lain (restore payload → tabel).
+- Aturan bisnis: jalur pemulihan tunggal mengikuti pola tabel lain — jangan jalur baru; berkas cadangan lama (tanpa `rencana_darurat`) harus tetap terbaca valid (tabel kosong dianggap wajar, konsisten dengan validasi cadangan saat ini).
+- Validasi: payload wajib memuat 7 kunci tabel (biodata, impian, diary_craving, alasan_berhenti, konsumsi_rokok, sos_intervensi, rencana_darurat) setelah perbaikan; berkas cadangan lama dengan 4 kunci tetap dapat dipulihkan (kunci hilang diabaikan/dianggap kosong sesuai validasi yang berlaku).
+- Kondisi berhasil: cadangan berisi `rencana_darurat` (serta `konsumsi_rokok` dan `sos_intervensi`); pemulihan mengembalikan baris identik.
+- Kondisi gagal: gagal baca/tulis → mengikuti perilaku cadangan yang sudah ada (berkas parsial dihapus, toast gagal).
+- Respons sistem: mengikuti alur `CadanganScreen` yang sudah ada.
+- Kriteria penerimaan: berkas cadangan berisi kunci `rencana_darurat`, `konsumsi_rokok`, `sos_intervensi`; pemulihan mengembalikan baris yang sama; cadangan lama tetap bisa dipulihkan.
 
 ## 8. Alur Pengguna
 
@@ -174,6 +180,7 @@ Masalah yang ingin diselesaikan: aplikasi belum menyediakan mekanisme rencana if
 - Form: dua `TextFormField` (label "Jika …" dengan hint "mis. habis makan", label "Maka …" dengan hint "mis. sikat gigi"), `Form` + `GlobalKey`, keyboard teks, `maxLength` 150.
 - Dialog hapus: konfirmasi destruktif (`isDestructiveAction` bila tersedia via adaptive_dialog pola proyek) dengan teks "Hapus rencana?".
 - Kontras/typography mengikuti `Theme.of(context).textTheme`; `WithValues(alpha:)` untuk opacity; angka tidak perlu tabular figures (bukan timer).
+- Posisi kartu di SOS: terpisah, di bawah kartu "Ingat alasanmu" (diputuskan 2026-11-10).
 - Tidak ada grafik; tidak ada navigasi baru yang membingungkan — maksimum 1 level push dari SOS.
 
 ## 10. Ringkasan Kode Contoh Singkat
@@ -225,14 +232,14 @@ Future<void> tambahRencana(RencanaDarurat r) async {
 - Hubungan: tidak ada FK keras; rencana berdiri sendiri (dapat dibaca dari kartu SOS dan layar kelola).
 - Aturan tambah/baca/ubah/hapus: insert saat tambah; update kolom `jika`/`maka` saat ubah; delete permanen saat hapus; read all untuk daftar/kartu.
 - Validasi & integritas: `jika`/`maka` NOT NULL; batas 3 baris ditegakkan di notifier (bukan constraint DB) agar pesan error dapat ditampilkan.
-- Kebutuhan sinkronisasi: tidak ada sinkronisasi jaringan; cadangan lokal (bagian 7.4) bersifat opsional sesuai keputusan diskusi.
-- Integritas cadangan: bila `rencana_darurat` disertakan, kosong dianggap wajar (ditangani oleh validasi yang sama dengan tabel cadangan lain — lihat B1 `refrensi_apk.md:185-189`).
+- Kebutuhan sinkronisasi: tidak ada sinkronisasi jaringan; cadangan lokal (bagian 7.4) wajib disertakan (diputuskan 2026-11-10).
+- Integritas cadangan: `rencana_darurat` disertakan pada ekspor/pemulihan; tabel kosong dianggap wajar (ditangani oleh validasi yang sama dengan tabel cadangan lain — lihat B1 `refrensi_apk.md:185-189`).
 
 ## 13. Persyaratan Nonfungsional
 
 - Performa: daftar ≤3 baris — tidak ada kebutuhan lazy list kompleks; build kartu harus ringan.
 - Keamanan: tidak ada data sensitif yang dikirim keluar; tidak ada izin baru; tidak ada logging isi rencana ke console selain logging pola proyek (`L.i` tanpa menulis konten bebas pengguna — cukup log panjang/jumlah).
-- Privasi: seluruh data di perangkat; rencana tidak ikut berbagi bila pengguna mengekspor cadangan tanpa menyertakan `rencana_darurat` (bila opsi 7.4 ditolak saat diskusi).
+- Privasi: seluruh data di perangkat; `rencana_darurat` disertakan pada cadangan atas persetujuan pengguna (item 7.4 diputuskan 2026-11-10); cadangan hanya dibagikan oleh pengguna sendiri.
 - Keandalan: gagal simpan tidak merusak data lama; migrasi skema diuji pada DB versi 11 yang sudah ada (onUpgrade `oldVersion < 12`).
 - Kompatibilitas: Android API minimum sesuai aplikasi; tidak ada API platform baru.
 - Kemudahan pemeliharaan: mengikuti struktur `lib/fitur/<fitur>/{model,state,notifier,screens,widgets}` + Freezed + Riverpod generator + `build_runner`; file `.g.dart`/`.freezed.dart` tidak diedit manual.
@@ -247,25 +254,24 @@ Future<void> tambahRencana(RencanaDarurat r) async {
 6. `dart analyze` tanpa error baru; tidak ada warning overflow.
 7. Data rencana tersimpan di `rencana_darurat`; DB versi naik ke 12; instalasi lama (versi 11) termigrasi tanpa kehilangan data (`onUpgrade` membuat tabel baru saja).
 8. Semua aksi berjalan offline; tidak ada izin baru di AndroidManifest/Info.plist.
-9. (Bila opsi 7.4 dipilih) cadangan JSON berisi `rencana_darurat`; pemulihan mengembalikan isinya.
+9. Cadangan JSON berisi `rencana_darurat`, `konsumsi_rokok`, dan `sos_intervensi` (B1 diperbaiki sekaligus — diputuskan 2026-11-10); pemulihan mengembalikan isinya; cadangan lama (4 kunci) tetap bisa dipulihkan.
 10. Tidak ada kode Dart yang diubah di luar berkas pada bagian 20 tanpa keputusan eksplisit.
 
 ## 15. Prioritas Pengembangan
 
-- Must Have: kelola rencana if-then (7.1), kartu SOS (7.2), migrasi tabel (bagian 12).
-- Should Have: layar kelola (7.3) — sebenarnya wajib secara UX, digabung dengan 7.1.
-- Could Have: sinkron cadangan (7.4), template contoh rencana bawaan.
-- Won't Have: AI draft rencana, notifikasi berbasis rencana, integrasi otomatis dengan teknik SOS, ekspor CSV.
+- Must Have: kelola rencana if-then (7.1), kartu SOS (7.2), migrasi tabel (bagian 12), layar kelola (7.3, digabung dengan 7.1).
+- Should Have: sinkron cadangan + penyisiran B1 (7.4) — diputuskan 2026-11-10: diperbaiki sekaligus untuk v1.
+- Won't Have: AI draft rencana, notifikasi berbasis rencana, integrasi otomatis dengan teknik SOS, ekspor CSV, template contoh bawaan (diputuskan 2026-11-10), entry menu Lainnya (diputuskan 2026-11-10), tampilan di Dashboard (belum disepakati).
 
 ## 16. Risiko dan Ketergantungan
 
-- **Overlap dengan PRD SOS yang sedang dikerjakan** (`prd/sos_craving_tool_tambahan.md`, status Sedang Diimplementasikan/Final-implementasi): kedua PRD menyentuh `lib/fitur/sos_craving/screens/sos_craving_screen.dart`. Mitigasi: implementasi A10 menunggu merge PRD SOS, atau layar kelola dibuka dari kartu SOS pada tahap setelah SOS selesai — keputusan diskusi.
-- Risiko: kartu SOS menjadi padat (kartu alasan + kartu rencana + teknik) → mitigasi: kartu rencana ringkas; maksimal 3 baris teks; collapsed bila banyak (keputusan detail UI saat diskusi).
+- **Overlap dengan PRD SOS yang sedang dikerjakan** (`prd/sos_craving_tool_tambahan.md`, status Sedang/Final-implementasi): kedua PRD menyentuh `lib/fitur/sos_craving/screens/sos_craving_screen.dart`. Mitigasi (diputuskan 2026-11-10): implementasi A10 menunggu PRD SOS ter-merge/selesai dikerjakan; tidak dikerjakan paralel.
+- Risiko: kartu SOS menjadi padat (kartu alasan + kartu rencana + teknik) → mitigasi: kartu rencana ringkas; maksimal 3 baris teks satu baris per rencana; kartu tidak perlu collapsed (maks 3 baris).
 - Risiko: pengguna menulis rencana yang tidak realistis/kontraproduktif → mitigasi: teks bantuan pada form ("pilih tindakan yang bisa langsung dilakukan"), bukan validasi konten (tidak boleh menghakimi).
 - Risiko: duplikat konseptual ("habis makan" vs "setelah makan") — tidak ditolak karena bukan duplikat literal; diterima sebagai keterbatasan yang disengaja (bukan fuzzy matching).
 - Risiko: migrasi skema gagal → mitigasi: `CREATE TABLE IF NOT EXISTS` di `onUpgrade`; tidak menyentuh tabel lama.
-- Ketergantungan: pola `AlasanBerhenti` (model Freezed + notifier keepAlive), `sqflite.dart` (`_versiDatabase`, `_buatTabel`, `_onUpgrade`), `NamaTabel`, `NamaKolom`, `Nav.to`, `AppToast`/pola toast hasil intervensi, cadangan (`cadangan_helper.dart`, opsional).
-- Asumsi belum terverifikasi: apakah rencana perlu ditampilkan juga di Dashboard; apakah perlu entry di menu Lainnya; apakah cadangan wajib ikut (lihat bagian 18).
+- Ketergantungan: pola `AlasanBerhenti` (model Freezed + notifier keepAlive), `sqflite.dart` (`_versiDatabase`, `_buatTabel`, `_onUpgrade`), `NamaTabel`, `NamaKolom`, `Nav.to`, `AppToast`/pola toast hasil intervensi, cadangan (`cadangan_helper.dart`, wajib), dan penyelesaian PRD SOS (file `sos_craving_screen.dart`).
+- Semua asumsi sudah diverifikasi lewat diskusi 2026-11-10 (posisi kartu, entry point, cadangan, batas 3 × 150 karakter, urutan vs PRD SOS, tanpa template bawaan).
 
 ## 17. Rencana Pengembangan
 
@@ -274,21 +280,21 @@ Future<void> tambahRencana(RencanaDarurat r) async {
 | 1 | Tabel `rencana_darurat` + migrasi versi 12 + konstanta `NamaTabel`/`NamaKolom` | Tahap pertama |
 | 2 | Model Freezed + state + notifier (CRUD + batas 3 + duplikat) | Tahap pertama |
 | 3 | Layar kelola (daftar + form + validasi) | Tahap kedua |
-| 4 | Kartu SOS + empty state + integrasi `Nav.to` | Tahap kedua (setelah/bersama merge PRD SOS) |
-| 5 | (Opsional) sinkron cadangan + template contoh | Tahap ketiga |
+| 4 | Kartu SOS + empty state + integrasi `Nav.to` | Tahap kedua (setelah PRD SOS selesai — diputuskan 2026-11-10) |
+| 5 | Sinkron cadangan + perbaikan B1 (`konsumsi_rokok`, `sos_intervensi`, `rencana_darurat` masuk payload ekspor & pemulihan) | Tahap ketiga (wajib untuk v1 — diputuskan 2026-11-10) |
 | 6 | Audit overflow ≤320 dp + `dart analyze` + uji manual | Sebelum selesai |
 
 ## 18. Ketentuan Tambahan
 
-Keputusan yang masih terbuka dan harus ditetapkan saat diskusi (tool `question`):
+Keputusan diskusi 2026-11-10 (final):
 
-1. Penempatan kartu rencana di SOS: di atas/bawah kartu "Ingat alasanmu", dan apakah digabung jadi satu kartu atau terpisah.
-2. Entry point layar kelola: hanya dari kartu SOS, atau juga dari menu Lainnya.
-3. Apakah `rencana_darurat` wajib ikut cadangan ekspor/pemulihan sekarang (koordinasi dengan perbaikan B1), atau dibiarkan terpisah.
-4. Batas jumlah rencana: tetap 3 (sesuai `refrensi_apk.md:148`) atau boleh lebih.
-5. Panjang maksimal `jika`/`maka`: 150 karakter atau nilai lain.
-6. Template contoh rencana bawaan: ya/tidak.
-7. Overlap dengan PRD SOS: implementasi A10 menunggu SOS selesai, atau dikerjakan paralel dengan risiko konflik file.
+1. Penempatan kartu rencana di SOS: terpisah, di bawah kartu "Ingat alasanmu".
+2. Entry point layar kelola: hanya dari kartu SOS (tanpa menu Lainnya).
+3. `rencana_darurat` wajib ikut ekspor/pemulihan cadangan, diperbaiki sekaligus dengan B1 (`konsumsi_rokok` + `sos_intervensi` ikut diekspor; pemulihan cadangan lama tetap jalan).
+4. Batas jumlah rencana: tetap 3 (sesuai `refrensi_apk.md:148`).
+5. Panjang maksimal `jika`/`maka`: 150 karakter.
+6. Template contoh rencana bawaan: tidak diperlukan.
+7. Overlap dengan PRD SOS: implementasi A10 menunggu PRD SOS selesai dikerjakan/ter-merge; tidak paralel.
 
 Ketentuan lain:
 - Tidak ada perubahan logika bisnis/rumus/notifier yang sudah ada; hanya penambahan baru.
@@ -303,6 +309,8 @@ Ketentuan lain:
 |---|---|---|
 | 2026-11-10 | Draf awal PRD dibuat dari `refrensi_apk.md` bagian A10 (baris 144–149) | Menunggu diskusi final dengan pengguna |
 | 2026-11-10 | Referensi toko dibaca ulang: Pace Playbook (maks 6, "They sit on Today, travel in backups"), Flamy Emergency Setup (v11.5.1: if-then plans + alasan + frasa + shortcut SOS satu tempat), QuitNow Medicon (trigger management plans & coping cards), Craving To Quit (program 21 hari Yale, urge surfing — bukan if-then, dicatat sebagai referensi CBT terdekat) | Draft; belum final |
+| 2026-11-10 | Keputusan diskusi: kartu terpisah di bawah kartu alasan; entry hanya dari SOS; cadangan wajib sertakan `rencana_darurat`; batas 3 rencana × 150 karakter; A10 menunggu PRD SOS selesai; tanpa template bawaan | Draft; belum final |
+| 2026-11-10 | Keputusan lanjutan: perbaikan cadangan B1 (`konsumsi_rokok` + `sos_intervensi`) termasuk dalam v1/7.4, bukan ruang lingkup terpisah; PRD ditandai **Final** | Belum Diimplementasikan |
 
 ## 20. File-File Terdampak
 
@@ -321,8 +329,8 @@ Ketentuan lain:
 | `lib/fitur/rencana_darurat/screens/form_rencana_darurat.dart` | Dibuat | Form tambah/ubah (Form + GlobalKey + validasi + konfirmasi simpan pola proyek) |
 | `lib/fitur/rencana_darurat/widgets/kartu_rencana_darurat.dart` | Dibuat | Widget kartu ringkas untuk disematkan di SOS (pure, terima data via parameter/provider) |
 | `lib/fitur/sos_craving/screens/sos_craving_screen.dart` | Diubah | Sematkan `KartuRencanaDarurat` (posisi menunggu keputusan diskusi; file yang sama diubah PRD SOS — lihat bagian 16) |
-| `lib/fitur/cadangan/helper/cadangan_helper.dart` | Diubah (opsional, keputusan diskusi) | Tambah `rencana_darurat` ke `tabelCadangan` + payload ekspor + pemulihan |
-| `lib/lainnya_screen.dart` | Diubah (opsional, keputusan diskusi) | Entry "Rencana Darurat" bila dipilih untuk menu Lainnya |
+| `lib/fitur/cadangan/helper/cadangan_helper.dart` | Diubah (wajib, diputuskan 2026-11-10) | Tambah `rencana_darurat`, `konsumsi_rokok`, `sos_intervensi` ke `tabelCadangan` + payload `buatCadanganJson()` (perbaikan B1 sekaligus) + pemulihan tabel baru |
+| `lib/lainnya_screen.dart` | Tidak berubah | Diputuskan 2026-11-10: entry hanya dari kartu SOS |
 | `prd/implementation_intention_craving.md` | Dibuat | Dokumen ini |
 | `refrensi_apk.md` | Diubah (tandai) | Bagian A10 ditandai sudah dibuatkan PRD |
 
@@ -365,5 +373,5 @@ Sumber: `refrensi_apk.md` di root proyek (baris dibaca 10–11 November 2026).
 - **`refrensi_apk.md:130-135` (A8. AI Coach)** — draf rencana otomatis ala Pace/Quity **ditolak** untuk v1 (offline-first; tidak ada LLM di proyek).
 - **`refrensi_apk.md:144-149` baris 149 (Prioritas Rendah)** — PRD ini tidak menaikkan/menurunkan prioritas tanpa keputusan pengguna.
 - **`refrensi_apk.md:165-170` (A13. Pengingat 30 Menit Sebelum Jam Rawan)** — notifikasi berbasis pola adalah fitur terpisah; PRD ini tidak membuat notifikasi.
-- **`refrensi_apk.md:185-189` (B1. Ekspor Cadangan)** — bila 7.4 dipilih, sinkron `rencana_darurat` harus selaras dengan perbaikan B1, bukan jalur baru.
+- **`refrensi_apk.md:185-189` (B1. Ekspor Cadangan)** — termasuk dalam v1 lewat 7.4 (diputuskan 2026-11-10: diperbaiki sekaligus dengan `rencana_darurat`; berkas cadangan lama tetap dapat dipulihkan).
 - Catatan bukti: klaim "dibuktikan menurunkan slip dalam studi kebiasaan" berasal dari sumber `refrensi_apk.md:146`; PRD ini tidak menambahkan statistik spesifik agar tidak mengarang angka.

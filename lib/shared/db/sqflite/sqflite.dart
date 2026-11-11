@@ -16,7 +16,8 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 11;
+  // Versi 12: migrasi nilai enum snake_case lama ke lowerCamelCase.
+  static const int _versiDatabase = 12;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -246,6 +247,60 @@ class AppDatabase {
           ${NamaKolom.dibuat} TEXT NOT NULL
         )
       ''');
+    }
+    // v12: petakan nilai enum snake_case yang tersimpan ke lowerCamelCase.
+    // Tanpa migrasi ini nilai lama tidak terparse oleh safeParseEnum.
+    if (oldVersion < 12) {
+      const pemetaanCraving = <String, String>{
+        'napas_478': 'napas478',
+        'minum_air': 'minumAir',
+        'alih_aktivitas': 'alihAktivitas',
+        'tunda_5_menit': 'tunda5Menit',
+      };
+      const pemetaanHasil = <String, String>{
+        'berhasil_menahan': 'berhasilMenahan',
+        'tetap_merokok': 'tetapMerokok',
+        'belum_selesai': 'belumSelesai',
+      };
+      const pemetaanJenisIntervensi = <String, String>{
+        'napas_478': 'napas478',
+        'timer_3_menit': 'timer3Menit',
+        'napas_box': 'napasBox',
+        'napas_90_detik': 'napas90Detik',
+        'grounding_54321': 'grounding54321',
+        'urge_surfing': 'urgeSurfing',
+        'timer_craving': 'timerCraving',
+      };
+      for (final entry in pemetaanCraving.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.diaryCraving} '
+          'SET ${NamaKolom.strategi} = ? '
+          'WHERE ${NamaKolom.strategi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+      for (final entry in pemetaanHasil.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.diaryCraving} '
+          'SET ${NamaKolom.hasil} = ? '
+          'WHERE ${NamaKolom.hasil} = ?',
+          [entry.value, entry.key],
+        );
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.sosIntervensi} '
+          'SET ${NamaKolom.hasilIntervensi} = ? '
+          'WHERE ${NamaKolom.hasilIntervensi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+      for (final entry in pemetaanJenisIntervensi.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.sosIntervensi} '
+          'SET ${NamaKolom.jenisIntervensi} = ? '
+          'WHERE ${NamaKolom.jenisIntervensi} = ?',
+          [entry.value, entry.key],
+        );
+      }
     }
   }
 

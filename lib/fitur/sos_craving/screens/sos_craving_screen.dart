@@ -35,31 +35,31 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
   static const List<({JenisIntervensiSos jenis, IconData ikon, String nama, String deskripsi})>
       _kartuTeknik = [
     (
-      jenis: JenisIntervensiSos.napas_478,
+      jenis: JenisIntervensiSos.napas478,
       ikon: Icons.air,
       nama: 'Napas 4-7-8',
       deskripsi: 'Tarik 4, tahan 7, hembus 8',
     ),
     (
-      jenis: JenisIntervensiSos.timer_craving,
+      jenis: JenisIntervensiSos.timerCraving,
       ikon: Icons.timer_outlined,
       nama: 'Timer Craving',
       deskripsi: 'Tahan 3, 5, atau 10 menit',
     ),
     (
-      jenis: JenisIntervensiSos.napas_box,
+      jenis: JenisIntervensiSos.napasBox,
       ikon: Icons.crop_square,
       nama: 'Box Breathing',
       deskripsi: 'Napas kotak 4-4-4-4',
     ),
     (
-      jenis: JenisIntervensiSos.napas_90_detik,
+      jenis: JenisIntervensiSos.napas90Detik,
       ikon: Icons.hourglass_bottom,
       nama: 'Napas 90 Detik',
       deskripsi: '90 detik napas lega',
     ),
     (
-      jenis: JenisIntervensiSos.grounding_54321,
+      jenis: JenisIntervensiSos.grounding54321,
       ikon: Icons.touch_app,
       nama: 'Grounding 5-4-3-2-1',
       deskripsi: 'Sadar 5 indra sekitar',
@@ -71,7 +71,7 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
       deskripsi: 'Alihkan dengan aktivitas',
     ),
     (
-      jenis: JenisIntervensiSos.urge_surfing,
+      jenis: JenisIntervensiSos.urgeSurfing,
       ikon: Icons.waves,
       nama: 'Urge Surfing',
       deskripsi: 'Tunggangi gelombang craving',
@@ -291,20 +291,20 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
 
   Widget _buildDetailTeknik(JenisIntervensiSos jenis) {
     switch (jenis) {
-      case JenisIntervensiSos.napas_478:
+      case JenisIntervensiSos.napas478:
         return const Napas478View();
-      case JenisIntervensiSos.timer_craving:
-      case JenisIntervensiSos.timer_3_menit:
+      case JenisIntervensiSos.timerCraving:
+      case JenisIntervensiSos.timer3Menit:
         return const TimerCravingView();
-      case JenisIntervensiSos.napas_box:
+      case JenisIntervensiSos.napasBox:
         return const BoxBreathingView();
-      case JenisIntervensiSos.napas_90_detik:
+      case JenisIntervensiSos.napas90Detik:
         return const Napas90DetikView();
-      case JenisIntervensiSos.grounding_54321:
+      case JenisIntervensiSos.grounding54321:
         return const Grounding54321View();
       case JenisIntervensiSos.distraksi:
         return const DistraksiView();
-      case JenisIntervensiSos.urge_surfing:
+      case JenisIntervensiSos.urgeSurfing:
         return const UrgeSurfingView();
     }
   }

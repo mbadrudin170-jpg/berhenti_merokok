@@ -199,7 +199,7 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
                                   if (hasil != null)
                                     _PenandaDetail(
                                       icon: hasil ==
-                                              HasilCravingEnum.berhasil_menahan
+                                              HasilCravingEnum.berhasilMenahan
                                           ? Icons.check_circle_outline
                                           : Icons.radio_button_unchecked,
                                       label: hasil.label,

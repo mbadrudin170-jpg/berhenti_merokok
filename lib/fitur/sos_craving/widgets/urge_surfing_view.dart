@@ -81,7 +81,7 @@ class _UrgeSurfingViewState extends ConsumerState<UrgeSurfingView> {
       tampilkanDanSimpanHasilIntervensi(
         context: context,
         ref: ref,
-        jenisIntervensi: JenisIntervensiSos.urge_surfing,
+        jenisIntervensi: JenisIntervensiSos.urgeSurfing,
         detail: '$_menitTerpilih menit',
       ).catchError((Object e, StackTrace s) {
         L.e('Gagal menampilkan bottom sheet hasil intervensi urge surfing: $e $s');

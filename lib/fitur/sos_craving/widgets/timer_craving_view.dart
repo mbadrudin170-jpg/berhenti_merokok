@@ -85,7 +85,7 @@ class _TimerCravingViewState extends ConsumerState<TimerCravingView> {
       tampilkanDanSimpanHasilIntervensi(
         context: context,
         ref: ref,
-        jenisIntervensi: JenisIntervensiSos.timer_craving,
+        jenisIntervensi: JenisIntervensiSos.timerCraving,
         detail: '$_menitTerpilih menit',
       ).catchError((Object e, StackTrace s) {
         L.e('Gagal menampilkan bottom sheet hasil intervensi timer: $e $s');

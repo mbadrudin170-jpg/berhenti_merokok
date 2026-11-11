@@ -116,7 +116,7 @@ class PolaCravingHelper {
     return hasil;
   }
 
-  /// Strategi dengan rasio `berhasil_menahan` tertinggi, minimal
+  /// Strategi dengan rasio `berhasilMenahan` tertinggi, minimal
   /// [minimumEntri] entri per strategi. `null` bila tidak ada strategi
   /// yang memadai.
   static StrategiCravingEnum? strategiPalingMembantu(
@@ -137,7 +137,7 @@ class PolaCravingHelper {
     grup.forEach((s, entries) {
       if (entries.length < minimumEntri) return;
       final sukses = entries
-          .where((e) => e.hasil == HasilCravingEnum.berhasil_menahan)
+          .where((e) => e.hasil == HasilCravingEnum.berhasilMenahan)
           .length;
       final rasio = sukses / entries.length;
       if (rasio > rasioTerbaik) {

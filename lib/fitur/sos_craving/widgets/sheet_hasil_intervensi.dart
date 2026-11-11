@@ -60,10 +60,10 @@ class SheetHasilIntervensi extends ConsumerWidget {
               onTap: () => Navigator.pop(context, HasilIntervensiSos.tetap),
             ),
             _TombolHasil(
-              label: HasilIntervensiSos.belum_selesai.label,
-              value: HasilIntervensiSos.belum_selesai,
+              label: HasilIntervensiSos.belumSelesai.label,
+              value: HasilIntervensiSos.belumSelesai,
               onTap: () =>
-                  Navigator.pop(context, HasilIntervensiSos.belum_selesai),
+                  Navigator.pop(context, HasilIntervensiSos.belumSelesai),
             ),
             const SizedBox(height: 8),
             OutlinedButton(

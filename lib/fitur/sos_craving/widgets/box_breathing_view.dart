@@ -87,7 +87,7 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
       tampilkanDanSimpanHasilIntervensi(
         context: context,
         ref: ref,
-        jenisIntervensi: JenisIntervensiSos.napas_box,
+        jenisIntervensi: JenisIntervensiSos.napasBox,
       ).catchError((Object e, StackTrace s) {
         L.e('Gagal menampilkan bottom sheet hasil intervensi box breathing: $e $s');
         return null;

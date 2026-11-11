@@ -1,19 +1,21 @@
 /// Hasil akhir dari craving.
+// Enum value di-lowerCamelCase sesuai konvensi penamaan proyek (sebelumnya
+// snake_case yang ikut tersimpan ke kolom database).
 enum HasilCravingEnum {
-  berhasil_menahan,
-  tetap_merokok,
-  belum_selesai,
+  berhasilMenahan,
+  tetapMerokok,
+  belumSelesai,
 }
 
 /// Extension yang menyediakan label untuk [HasilCravingEnum].
 extension HasilCravingEnumExtension on HasilCravingEnum {
   String get label {
     switch (this) {
-      case HasilCravingEnum.berhasil_menahan:
+      case HasilCravingEnum.berhasilMenahan:
         return 'Berhasil menahan';
-      case HasilCravingEnum.tetap_merokok:
+      case HasilCravingEnum.tetapMerokok:
         return 'Tetap merokok';
-      case HasilCravingEnum.belum_selesai:
+      case HasilCravingEnum.belumSelesai:
         return 'Belum selesai';
     }
   }

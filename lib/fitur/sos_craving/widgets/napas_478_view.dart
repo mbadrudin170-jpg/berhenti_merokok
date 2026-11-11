@@ -85,7 +85,7 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
       tampilkanDanSimpanHasilIntervensi(
         context: context,
         ref: ref,
-        jenisIntervensi: JenisIntervensiSos.napas_478,
+        jenisIntervensi: JenisIntervensiSos.napas478,
       ).catchError((Object e, StackTrace s) {
         L.e('Gagal menampilkan bottom sheet hasil intervensi napas: $e $s');
         return null;

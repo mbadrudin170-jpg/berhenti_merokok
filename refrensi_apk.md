@@ -130,7 +130,7 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 
 #### A10. Implementation Intentions (Jika–Maka) untuk Craving
 
-- **PRD:** [prd/implementation_intention_craving.md](prd/implementation_intention_craving.md) (Draft, dibuat 2026-11-10, belum diimplementasikan)
+- **PRD:** [prd/implementation_intention_craving.md](prd/implementation_intention_craving.md) (Final, dibuat 2026-11-10, belum diimplementasikan)
 - **Tujuan fitur:** pengguna menulis rencana "jika craving saat X, maka saya lakukan Y"; dibuktikan menurunkan slip dalam studi kebiasaan.
 - **Referensi:** [Pace Android](https://github.com/ravipurohit1991/pace) (Playbook if-then plans) · [Flamy — SOS Emergency Setup](https://apps.apple.com/us/app/quit-smoking-smoke-free-flamy/id1462887052) · [Intervensi CBT Craving To Quit](https://play.google.com/store/apps/details?id=com.claritasmindsciences.CravingToQuit) · [QuitNow Medicon — 9 hari, 8 latihan CBT](https://apps.apple.com/us/app/quitnow-stop-smoking/id6768372199).
 - **Saran:** layar kecil "Rencana Darurat Saya" (Jika …, Maka …) ditampilkan di kartu SOS; disimpan lokal; maks 3 rencana.
