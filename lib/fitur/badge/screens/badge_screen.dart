@@ -26,6 +26,10 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
   Set<String> _badgeHistoris = <String>{};
   bool _historisDimuat = false;
 
+  /// Flag dedup pendaftaran post-frame callback: mencegah callback terdaftar
+  /// berulang pada setiap rebuild sebelum callback berjalan.
+  bool _simpanTerjadwal = false;
+
   @override
   void initState() {
     super.initState();
@@ -269,22 +273,29 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
 
     // Simpan badge yang baru tercapai ke SharedPreferences agar tidak hilang
     // dari tampilan pencapaian bila metrik aktual turun karena slip berikutnya.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_historisDimuat) return;
-      final tercapaiSekarang = daftarBadge
-          .where((b) => b.tercapai)
-          .map((b) => b.id)
-          .toSet();
-      final kurang = tercapaiSekarang.difference(_badgeHistoris);
-      if (kurang.isNotEmpty) {
+    // Post-frame callback didaftarkan hanya bila ada badge baru yang kurang
+    // dan belum ada callback terjadwal, agar tidak terdaftar berulang per rebuild.
+    final kurang = daftarBadge
+        .where((b) => b.tercapai)
+        .map((b) => b.id)
+        .toSet()
+        .difference(_badgeHistoris);
+    if (kurang.isNotEmpty && !_simpanTerjadwal) {
+      _simpanTerjadwal = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Reset flag lebih dulu agar perubahan berikutnya bisa dijadwalkan lagi.
+        _simpanTerjadwal = false;
+        if (!mounted || !_historisDimuat) return;
         unawaited(
-          _simpanBadgeHistoris({..._badgeHistoris, ...tercapaiSekarang})
-              .catchError((Object e, StackTrace s) {
-                L.e('Gagal menyimpan badge historis: $e $s');
-              }),
+          _simpanBadgeHistoris({..._badgeHistoris, ...kurang}).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal menyimpan badge historis: $e $s');
+          }),
         );
-      }
-    });
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pencapaian')),

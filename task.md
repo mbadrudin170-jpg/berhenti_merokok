@@ -248,8 +248,9 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `a15acd9` mendefinisikan enum value dengan gaya `snake_case` di beberapa enum baru (mis. `HasilCravingEnum.berhasil_menahan`, `HasilCravingEnum.belum_selesai`, `StrategiCravingEnum.napas_478`, `StrategiCravingEnum.tunda_5_menit`, `StrategiCravingEnum.alih_aktivitas`, `HasilIntervensiSos.belum_selesai`, `JenisIntervensiSos.timer_3_menit`) sedangkan enum value yang sudah dipakai proyek (`PemicuEnum.bauRokok`, `ModeBerhenti.seketika`, `StatusKalender.adaKonsumsi`) memakai `lowerCamelCase`. Nilai `.name` enum ini juga dipersistenkan ke kolom database (`mood`, `strategi`, `hasil`, `jenis_intervensi`, `hasil_intervensi`) sehingga inkonsistensi ikut tersimpan di data pengguna. (Value satu kata seperti `senang`, `stres`, `berkurang`, `distraksi`, `jalan`, `lainnya` tidak melanggar dan tidak perlu diubah.)
+- Penyelesaian : Enum value diubah ke `lowerCamelCase` (`berhasilMenahan`, `tetapMerokok`, `belumSelesai`, `napas478`, `minumAir`, `alihAktivitas`, `tunda5Menit`, `timer3Menit`, `napasBox`, `napas90Detik`, `grounding54321`, `urgeSurfing`, `timerCraving`) di keempat enum + seluruh referensi literal di model, helper, layar, dan widget view. Migrasi database v12 ditambahkan di `onUpgrade` (`_versiDatabase` 11 → 12) memetakan nilai snake_case lama ke lowerCamelCase pada `diary_craving.strategi`, `diary_craving.hasil`, `sos_intervensi.jenis_intervensi`, dan `sos_intervensi.hasil_intervensi`. `flutter analyze` bersih.
 - Solusi : Ubah enum value yang melanggar menjadi `lowerCamelCase` (mis. `berhasilMenahan`, `tetapMerokok`, `belumSelesai`, `napas478`, `minumAir`, `alihAktivitas`, `tunda5Menit`, `timer3Menit`), perbarui seluruh referensi literal di model, helper, layar, dan bottom sheet, lalu bila nilai `snake_case` sudah tersimpan di database tambahkan migrasi pada `onUpgrade` versi berikutnya untuk memetakan nilai lama ke nilai baru (mis. `UPDATE diary_craving SET strategi = 'berhasilMenahan' WHERE strategi = 'berhasil_menahan'`). Contoh benar: `enum HasilCravingEnum { berhasilMenahan, tetapMerokok, belumSelesai }`.
 - aturan dilanggar : [penamaan-konvensi](.agents/skills/custom/penamaan-konvensi/SKILL.md)
 - file bermasalah : [hasil_craving_enum.dart](lib/fitur/diary_craving/enum/hasil_craving_enum.dart), [strategi_craving_enum.dart](lib/fitur/diary_craving/enum/strategi_craving_enum.dart), [hasil_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart), [jenis_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart), [sos_intervensi_model.dart](lib/fitur/sos_craving/model/sos_intervensi_model.dart), [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart), [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart), [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart), [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
@@ -278,8 +279,9 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `a15acd9` mengimpor `package:uuid/uuid.dart` di `sos_intervensi_notifier.dart` (`const Uuid().v4()`), tetapi `uuid` tidak dideklarasikan di `pubspec.yaml`; `pubspec.lock` mencatat `uuid 4.6.0` sebagai dependensi `transitive` (dibawa oleh `share_global_saya`). Jika `share_global_saya` berhenti bergantung pada `uuid`, impor ini langsung gagal compile.
+- Penyelesaian : `uuid: ^4.6.0` ditambahkan ke bagian `dependencies` di `pubspec.yaml`; `flutter pub get` mengubah `uuid` dari transitive menjadi direct dependency (versi terpasang tetap 4.6.0). `flutter analyze` bersih.
 - Solusi : Deklarasikan `uuid` sebagai dependensi langsung di `pubspec.yaml` sesuai versi yang terpasang (tervalidasi di pub.dev, https://pub.dev/packages/uuid, terpasang `4.6.0`): tambahkan `uuid: ^4.6.0` pada bagian `dependencies`. Ini sejalan dengan konvensi pub (dependensi langsung wajib dideklarasikan sendiri; versi `^4.6.0` cocok dengan constraint `share_global_saya`).
 - aturan dilanggar : tidak ada skill spesifik; rujukan dokumentasi paket pub.dev dan konvensi Dart/Flutter ("depend on the packages you directly import").
 - file bermasalah : [sos_intervensi_notifier.dart](lib/fitur/sos_craving/notifier/sos_intervensi_notifier.dart), [pubspec.yaml](pubspec.yaml)
@@ -304,8 +306,9 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `a15acd9` melemparkan `WidgetRef` dari `SosCravingScreen` ke widget `StatefulWidget` anak lewat konstruktor (`_Napas478View({required this.ref})`, `_TimerCravingView({required this.ref})`, `_DistraksiView({required this.ref})`) dan menyimpannya di field State. `WidgetRef` terikat pada siklus hidup element pembuatnya, sehingga menyimpannya di objek lain berisiko dipakai setelah element tidak aktif/rebuild. Pola yang benar untuk akses `ref` di dalam `StatefulWidget` adalah `ConsumerStatefulWidget`.
+- Penyelesaian : Sudah diimplementasikan (perubahan belum di-commit di working tree): ketiga widget anak tersebut telah diekstrak menjadi file terpisah (`napas_478_view.dart`, `timer_craving_view.dart`, `distraksi_view.dart`, dan view lainnya) dan seluruhnya sudah `ConsumerStatefulWidget` + `ConsumerState` yang memakai `ref` bawaan langsung di callback; tidak ada `required this.ref` tersisa di kode. `tampilkanDanSimpanHasilIntervensi` di `sheet_hasil_intervensi.dart` menerima `WidgetRef ref` sebagai parameter saat pemanggilan (bukan disimpan di field objek), sesuai solusi yang direkomendasikan. Tidak ada perubahan kode diperlukan; `flutter analyze` bersih.
 - Solusi : Ubah ketiga widget tersebut menjadi `ConsumerStatefulWidget` dan gunakan `ref` bawaan `ConsumerState` langsung di callback (timer selesai, napas selesai, distraksi selesai). Untuk helper `tampilkanDanSimpanHasilIntervensi` di `sheet_hasil_intervensi.dart`, pertahankan parameter `WidgetRef ref` yang dioper saat pemanggilan (bukan disimpan di field objek), atau lebih baik ambil `ref` di dalam `ConsumerWidget`/`ConsumerState` pemanggil saat callback dipicu. Contoh: `class _Napas478View extends ConsumerStatefulWidget { ... }` lalu `class _Napas478ViewState extends ConsumerState<_Napas478View> { ... }` dan panggil `tampilkanDanSimpanHasilIntervensi(context: context, ref: ref, ...)` dari dalam State tersebut.
 - aturan dilanggar : [riverpod-pola](.agents/skills/custom/riverpod-pola/SKILL.md)
 - file bermasalah : [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart), [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
@@ -329,7 +332,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `a15acd9` menambahkan fungsi top-level `_streakSaatIni` di `kalender_smoke_free_screen.dart` (dengan TODO(B.1) merujuk `prd/satukan_perhitungan_baseline_aktual.md`), tetapi commit `9c5dafb` kemudian membuat `MetrikBerhentiHelper.hitungStreak` dengan logika identik di `lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart` tanpa memigrasi layar kalender. Akibatnya perhitungan turunan yang sama ditulis dua kali dan komentar TODO menjadi basi (PRD terkait sudah diimplementasikan dan dihapus pada `9c5dafb`).
 - Solusi : Hapus `_streakSaatIni` dan ganti pemanggilannya dengan `MetrikBerhentiHelper.hitungStreak(konsumsiState.listKonsumsi)` (impor `lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart`). Hapus juga komentar TODO(B.1) yang merujuk PRD yang sudah tidak ada.
 - aturan dilanggar : [ekstraksi-perhitungan-turunan](.agents/skills/custom/ekstraksi-perhitungan-turunan/SKILL.md)
@@ -379,7 +382,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `f6d1fa2` mendaftarkan `WidgetsBinding.instance.addPostFrameCallback` di dalam `build()` pada `BadgeScreen`. Setiap rebuild mendaftarkan callback baru yang tidak dapat dibatalkan, sehingga penulisan `SharedPreferences` (`_simpanBadgeHistoris`) dapat terdaftar berkali-kali untuk badge yang sama selama fase awal (mis. saat `_historisDimuat` baru selesai). Pendaftaran post-frame callback yang berulang melanggar ketentuan bahwa pendaftaran dilakukan hanya sekali.
 - Solusi : Pindahkan logika penyimpanan badge historis keluar dari `build()`: panggil `_simpanBadgeHistoris` tepat sekali setelah `_badgeHistoris` dimuat dan badge baru tercapai (mis. di dalam `_muatBadgeHistoris` setelah setState, atau di `didChangeDependencies` dengan flag `_postFrameTerdaftar`), atau minimal dedup pendaftaran dengan flag agar post-frame callback hanya didaftarkan sekali per perubahan. Contoh: `if (!_postFrameTerdaftar) { _postFrameTerdaftar = true; WidgetsBinding.instance.addPostFrameCallback(...); }`.
 - aturan dilanggar : [penjadwalan-frame-dan-pemantauan-performa-flutter](.agents/skills/custom/penjadwalan-frame-dan-pemantauan-performa-flutter/SKILL.md)
@@ -417,7 +420,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status : belum
+- Status : kerjakan
 - Masalah : `_ambilEntriDiaryTerbaruHariIni` pada `sheet_hasil_intervensi.dart` mencari entri diary memakai prefix tanggal `DateTime.now().toUtc()` (mis. `2026-11-10%`), sedangkan entri diary dibuat dari waktu lokal perangkat yang dikonversi ke UTC sebelum disimpan. Untuk zona UTC+7, entri pagi hari (mis. lokal 10 Nov 06:30 WIB → UTC 09 Nov 23:30) tersimpan dengan tanggal UTC sehari sebelumnya, sehingga tawaran "Tautkan ke catatan craving?" gagal menemukan entri yang dibuat pada hari yang sama menurut waktu pengguna.
 - Solusi : Normalisasi perbandingan ke komponen tanggal yang konsisten dengan cara entri disimpan, mis. cari entri dengan `tanggal >= awal hari lokal hari ini yang dikonversi ke UTC` dan `tanggal < awal hari lokal besok yang dikonversi ke UTC` (rentang UTC dari batas hari lokal), bukan prefix tanggal UTC. Contoh: `final awalLokal = DateTime(now.year, now.month, now.day); final awalUtc = awalLokal.toUtc().toIso8601String(); final akhirUtc = awalLokal.add(const Duration(days: 1)).toUtc().toIso8601String(); where: '${NamaKolom.tanggal} >= ? AND ${NamaKolom.tanggal} < ?', whereArgs: [awalUtc, akhirUtc]`.
 - aturan dilanggar : [normalisasi-tanggal](.agents/skills/custom/normalisasi-tanggal/SKILL.md)
@@ -438,7 +441,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `65abc01` menulis `ontap: () => Nav.to(context, const ...Screen())` pada seluruh pintasan menu di `_ItemLainnya` (SOS Craving, Alasan Berhenti, Konsumsi Rokok, Diary Craving, Kalender Smoke-Free, Pemulihan Kesehatan, Pelacakan Toxin, Pengaturan, dan Dummy). `Nav.to` mengembalikan `Future<T?>` yang dibuang secara diam-diam: tidak dibungkus `unawaited()` dan tidak memiliki `.catchError(...)` yang mencatat `L.e`, sehingga error navigasi menjadi unhandled dan tanpa log. Pola `_buildTombolCustom(() => Nav.to(...))` sebelum commit memiliki kelemahan yang sama, tetapi commit ini menyalinnya ke struktur `_ItemLainnya` alih-alih memperbaikinya.
 - Solusi : Bungkus setiap pemanggilan dengan `unawaited(Nav.to(context, ...).catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke <nama halaman>: $e $s'); return null; }))`. Contoh: `ontap: () => unawaited(Nav.to(context, const SosCravingScreen()).catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke SOS Craving: $e $s'); return null; })),`. Lebih baik lagi: ekstrak helper bersama (mis. `_navigasi(BuildContext context, Widget page, String nama)`) agar pola aman ini tidak diulang di 10 tempat.
 - aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md), [kartu-motivasi-pintasan-dashboard](.agents/skills/custom/kartu-motivasi-pintasan-dashboard/SKILL.md)
@@ -463,7 +466,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `65abc01` menambahkan `onCta: () => unawaited(Nav.to(context, const FormImpian()))` (baris 251) pada `EmptyStateView` tanpa `.catchError(...)`. Skill penanganan-error-unawaited melarang melepas `unawaited(...)` tanpa penanganan error, dan skill kartu-motivasi-pintasan-dashboard mewajibkan `.catchError()` pada navigasi pintasan dengan log `L.e`. Pola identik (tanpa `catchError`) sudah ada lebih dulu di baris 254 dan 370 dan sebaiknya diperbaiki sekalian.
 - Solusi : Tambahkan `.catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke Form Impian: $e $s'); return null; })` sebelum penutup kurung `unawaited`, contoh: `onCta: () => unawaited(Nav.to(context, const FormImpian()).catchError((Object e, StackTrace s) { L.e('Gagal navigasi ke Form Impian: $e $s'); return null; })),`. Terapkan pola yang sama pada baris 254 dan 370.
 - aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md), [kartu-motivasi-pintasan-dashboard](.agents/skills/custom/kartu-motivasi-pintasan-dashboard/SKILL.md)
@@ -492,7 +495,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : belum
+- Status : kerjakan
 - Masalah : Commit `fbcfada` menambahkan `_buildCaptionDariCatatan` yang mengembalikan `Text` telanjang dan diletakkan langsung sebagai anak `ListView` di antara `_buildRingkasan(biodata)` (Row berisi 3 kartu ringkasan) dan `_buildCardSosCraving()` (baris 119-121). Anak-anak `ListView` lain menjaga jarak lewat margin `Card`, tetapi `Text` tidak, sehingga caption `bodySmall` menempel rapat di bawah deretan kartu ringkasan dan rapat di atas kartu SOS Craving. Jarak antar elemen tidak serasi dan tidak mengikuti hierarki spasi yang dipakai layar lain.
 - Solusi : Beri caption jarak vertikal, misalnya bungkus dengan `Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(...))` di dalam `_buildCaptionDariCatatan`, atau sisipkan `const SizedBox(height: 8)` sebelum dan sesudah `_buildCaptionDariCatatan(...)` pada daftar anak `ListView`. Alternatif: gunakan `ListView` dengan jarak seragam untuk seluruh anak.
 - aturan dilanggar : [spacing](.agents/skills/custom/spacing/SKILL.md)
