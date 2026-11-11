@@ -326,7 +326,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `a15acd9` menempatkan `CREATE TABLE IF NOT EXISTS sos_intervensi (...)` dua kali di `onUpgrade`: di dalam blok `if (oldVersion < 9)` (sekitar baris 209-218, branch yang seharusnya hanya membuat `konsumsi_rokok`) dan di dalam blok `if (oldVersion < 11)` (sekitar baris 239-249). Duplikasi DDL yang sama di dua kondisi versi melanggar penanganan kondisional per versi dan berisiko inkonsisten bila skema tabel `sos_intervensi` diubah di masa depan (hanya satu salinan yang kemungkinan diperbarui).
 - Solusi : Hapus blok `CREATE TABLE IF NOT EXISTS sos_intervensi` dari branch `oldVersion < 9` sehingga `konsumsi_rokok` (v9) dan `sos_intervensi` (v11) didefinisikan tepat sekali pada kondisi versinya masing-masing; `onCreate` tetap membuat kedua tabel. Ratakan juga indentasi blok `oldVersion < 9` agar konsisten dengan blok lain.
 - aturan dilanggar : [migrasi-skema-sqlite](.agents/skills/custom/migrasi-skema-sqlite/SKILL.md)
@@ -589,7 +589,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `db5dd32` membuat indentasi tidak konsisten pada `floatingActionButton` di `impian_screen.dart` — closure `Nav.to(...)` kelebihan indent (12 spasi) di dalam `unawaited(`, sementara `child:` dan kurung tutup sejajar dengan `onPressed:`; blok menjadi sulit dibaca dan tidak seragam dengan dua pemanggilan lain di file yang sama. (Ketidakkonsistenan format, tidak ada skill yang dilanggar.)
 - Solusi : Ratakan indentasi blok tersebut mengikuti pola dua pemanggilan lain di file yang sama (baris 252 dan 263): `onPressed: () => unawaited(` lalu isi satu level lebih dalam, `child:` dan `),` sejajar dengan `onPressed:`.
 - aturan dilanggar : tidak ada (ketidakkonsistenan format)
@@ -614,7 +614,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `2462af8` menambahkan tabel `konsumsi_rokok`, `sos_intervensi`, dan `rencana_darurat` ke dalam `tabelCadangan` sehingga `CadanganHelper.pulihkanDariPayload` kini ikut menghapus dan mengisi ulang ketiga tabel tersebut saat pemulihan, tetapi `_refreshProviderSetelahRestore` di `cadangan_screen.dart` hanya me-`refresh` `biodataProvider`, `impianProvider`, `diaryCravingProvider`, dan `alasanBerhentiProvider`. Akibatnya, layar yang memantau `konsumsiRokokProvider` (mis. kalender smoke-free, impian, dashboard), `sosIntervensiProvider` (sheet hasil intervensi SOS), dan `rencanaDaruratProvider` (kartu rencana darurat di SOS Craving, layar rencana darurat) tetap menampilkan data lama setelah pemulihan cadangan hingga aplikasi dimuat ulang. Melanggar aturan skill ekspor/pemulihan cadangan: setelah pemulihan berhasil wajib menyegarkan seluruh provider yang terkait data yang dipulihkan agar UI tidak basi.
 - Solusi : Tambahkan refresh untuk `konsumsiRokokProvider`, `sosIntervensiProvider`, dan `rencanaDaruratProvider` pada `_refreshProviderSetelahRestore` dengan pola try/catch `L.e` yang sama. Contoh:
 
@@ -644,7 +644,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `2462af8` melepas `unawaited(_hapus(item))` pada `onPressed` `IconButton` hapus di `rencana_darurat_screen.dart` tanpa `.catchError(...)`. Di dalam `_hapus`, pemanggilan `showOkCancelAlertDialog` berada di luar blok `try`, sehingga exception dari dialog (mis. kegagalan platform channel) menjadi error async yang tidak tertangani. Melanggar aturan skill penanganan error unawaited: Future yang dilepas dengan `unawaited()` wajib memiliki `catchError` yang mencatat via `L.e`. (Catatan: pola serupa sudah ada di layar lain, tetapi commit `2462af8` memperkenalkan instance baru.)
 - Solusi : Bungkus pemanggilan `_hapus(item)` dengan `catchError`. Contoh: `onPressed: () => unawaited(_hapus(item).catchError((Object e, StackTrace s) { L.e('Gagal menghapus rencana darurat: $e $s'); return null; })),` atau pindahkan `showOkCancelAlertDialog` ke dalam blok `try` pada `_hapus`.
 - aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)
@@ -653,7 +653,7 @@ Tidak ada temuan.
 
 #### Task 3
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Commit `2462af8` melepas `unawaited(_simpan())` pada `onPressed` `OutlinedButton` simpan di `form_rencana_darurat.dart` tanpa `.catchError(...)`. Di dalam `_simpan`, pemanggilan `showOkCancelAlertDialog` dan `setState(() => _sedangMemproses = true)` berada di luar blok `try`, sehingga exception dari dialog (mis. kegagalan platform channel) menjadi error async yang tidak tertangani. Melanggar aturan skill penanganan error unawaited: Future yang dilepas dengan `unawaited()` wajib memiliki `catchError` yang mencatat via `L.e`.
 - Solusi : Bungkus pemanggilan `_simpan()` dengan `catchError`. Contoh: `onPressed: _sedangMemproses ? null : () => unawaited(_simpan().catchError((Object e, StackTrace s) { L.e('Gagal menyimpan rencana darurat: $e $s'); return null; })),` atau pindahkan `showOkCancelAlertDialog` ke dalam blok `try` pada `_simpan`.
 - aturan dilanggar : [penanganan-error-unawaited](.agents/skills/custom/penanganan-error-unawaited/SKILL.md)

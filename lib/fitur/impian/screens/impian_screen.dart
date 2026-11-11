@@ -382,16 +382,18 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           ),
         ),
       ),
+      // floatingActionButton: indentasi Nav.to diselaraskan dengan dua
+      // pemanggilan unawaited() lain di file ini (baris 251 dan 261).
       floatingActionButton: FloatingActionButton(
         onPressed: () => unawaited(
-            Nav.to(context, const FormImpian()).catchError((
-              Object e,
-              StackTrace s,
-            ) {
-              L.e('Gagal navigasi ke Form Impian: $e $s');
-              return null;
-            }),
-          ),
+          Nav.to(context, const FormImpian()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Form Impian: $e $s');
+            return null;
+          }),
+        ),
         child: const Icon(CupertinoIcons.add),
       ),
     );

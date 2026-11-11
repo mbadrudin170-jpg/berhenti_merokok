@@ -201,33 +201,24 @@ class AppDatabase {
         'ADD COLUMN ${NamaKolom.targetSmokeFreeHari} INTEGER',
       );
     }
+    // v9: tabel konsumsi_rokok. Tabel sos_intervensi dibuat di cabang v11 (lihat bawah)
+    // agar setiap tabel didefinisikan tepat sekali pada kondisi versinya masing-masing.
     if (oldVersion < 9) {
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.tanggal} TEXT NOT NULL,
-        ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
-        ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
-        ${NamaKolom.catatan} TEXT,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-    await db.execute('''
-      CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
-      ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
-        ${NamaKolom.detail} TEXT,
-        ${NamaKolom.hasilIntervensi} TEXT,
-        ${NamaKolom.diaryCravingId} TEXT,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-  }
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.tanggal} TEXT NOT NULL,
+          ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
+          ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
+          ${NamaKolom.catatan} TEXT,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
+        ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
+      ''');
+    }
     if (oldVersion < 10) {
       await db.execute(
         'ALTER TABLE ${NamaTabel.diaryCraving} '

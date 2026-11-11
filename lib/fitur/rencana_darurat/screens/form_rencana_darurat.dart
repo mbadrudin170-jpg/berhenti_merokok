@@ -193,7 +193,16 @@ class _FormRencanaDaruratState extends ConsumerState<FormRencanaDarurat> {
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
-                  onPressed: _sedangMemproses ? null : () => unawaited(_simpan()),
+                  // Dialog konfirmasi dan setState berada di luar try di
+                  // _simpan; catchError mencegah error async tidak tertangani.
+                  onPressed: _sedangMemproses
+                      ? null
+                      : () => unawaited(
+                          _simpan().catchError((Object e, StackTrace s) {
+                            L.e('Gagal menyimpan rencana darurat: $e $s');
+                            return null;
+                          }),
+                        ),
                   child: const Text('Simpan'),
                 ),
               ],

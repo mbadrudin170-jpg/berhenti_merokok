@@ -155,7 +155,14 @@ class _RencanaDaruratScreenState extends ConsumerState<RencanaDaruratScreen> {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline),
                     tooltip: 'Hapus',
-                    onPressed: () => unawaited(_hapus(item)),
+                    // Dialog konfirmasi di luar try di _hapus dapat melempar
+                    // exception; catchError mencegah error async tidak tertangani.
+                    onPressed: () => unawaited(
+                      _hapus(item).catchError((Object e, StackTrace s) {
+                        L.e('Gagal menghapus rencana darurat: $e $s');
+                        return null;
+                      }),
+                    ),
                   ),
                   onTap: () => _navigasiKeForm(rencana: item),
                 ),
