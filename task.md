@@ -567,3 +567,75 @@ Tidak ada temuan.
 
 Tidak ada temuan.
 
+# Kelompok 33
+
+## file terdampak
+
+- [aturan_skill.md](.agents/rules/global/aturan_skill.md)
+- [aturan-pembuatan-skill/SKILL.md](.agents/skills/custom/aturan-pembuatan-skill/SKILL.md)
+
+## Tinggi
+
+#### Task 1
+
+- Status : kerjakan
+- Masalah : `aturan_skill.md` belum memiliki definisi trigger yang tegas dan konvensi ekstraksi/penormalan trigger dari `description` ke bahasa Indonesia yang dapat diekstrak secara deterministik. Field `metadata.diperbarui` dan `metadata.sumber-terakhir` belum ditetapkan secara final di front matter. Section §7.1 dan §8 perlu direkonsiliasi dengan konvensi trigger baru agar segmen trigger-only jelas untuk ekstraksi indeks tanpa menghapus informasi wajib.
+- Solusi : Perbarui `.agents/rules/global/aturan_skill.md` dengan: (a) definisi trigger (kondisi/tugas pemicu, hanya trigger, tanpa cakupan/larangan/workflow/referensi file), (b) konvensi format/penempatan trigger di `description` (penanda pola, pemisah segmen, penanganan bahasa ID/EN), (c) rekonsiliasi §7.1 dan §8 sehingga ada segmen trigger-only yang jelas, (d) tambahkan field wajib `metadata.diperbarui` dan `metadata.sumber-terakhir`, (e) perbarui template §7.3, §8, §10, dan checklist §11. Lalu selaraskan `.agents/skills/custom/aturan-pembuatan-skill/SKILL.md` dengan aturan yang sama (definisi, format, template, contoh, checklist, sumber evaluasi).
+- aturan dilanggar : (aturan_skill)[aturan_skill:95], (aturan_pembuatan_skill)[aturan-pembuatan-skill:32]
+- file bermasalah : [aturan_skill.md](.agents/rules/global/aturan_skill.md), [aturan-pembuatan-skill/SKILL.md](.agents/skills/custom/aturan-pembuatan-skill/SKILL.md)
+- prompt : hanya diisi oleh saya
+
+# Kelompok 34
+
+## file terdampak
+
+- [skills_config.json](.config/dart_skills/skills_config.json)
+- Semua `SKILL.md` di `.agents/skills/custom/` dan `.agents/skills/bawaan/` (~84 file)
+
+## Tinggi
+
+#### Task 1
+
+- Status : kerjakan
+- Masalah : ~84 skill existing memiliki format `description` yang bervariasi (ID/campuran/EN, posisi trigger berbeda, kadang implisit), sehingga ekstraksi trigger-only untuk `SKILLS_INDEX.md` tidak dapat dijamin valid. Strategi migrasi dan prioritas batch belum ditetapkan. Khusus `bawaan`, acuan waktu dari `skills_config.json` perlu diintegrasikan ke alur pembaruan.
+- Solusi : Buat strategi migrasi bertahap: (a) audit seluruh `SKILL.md` untuk mengklasifikasikan `description` (trigger eksplisit/implisit/tidak extractable), (b) normalisasi per batch kecil (mis. per folder atau 10–20 skill per putaran) dengan memperbarui segmen trigger di `description` sesuai konvensi baru, (c) perlakuan khusus `bawaan`: ambil satu `installedAt` dari baris pertama `skills_config.json`, konversi UTC ke Asia/Jakarta, perbarui skill `bawaan` jika acuan lebih baru, (d) setiap perubahan `SKILL.md` juga menaikkan `metadata.versi` (bump patch default) dan memperbarui `metadata.diperbarui` serta `metadata.sumber-terakhir`. Patuhi aturan sumber isi (berdasarkan riwayat commit) dan laporkan pelanggaran skill lama sebelum mengubah.
+- aturan dilanggar : (aturan_sumber_isi)[aturan_skill:56], (aturan_pelanggaran)[aturan_skill:86]
+- file bermasalah : Semua `SKILL.md` di `.agents/skills/custom/` dan `.agents/skills/bawaan/`, [skills_config.json](.config/dart_skills/skills_config.json)
+- prompt : hanya diisi oleh saya
+
+# Kelompok 35
+
+## file terdampak
+
+- [perbarui_skills_index.md](.kilo/commands/perbarui_skills_index.md) (baru)
+- [SKILLS_INDEX.md](SKILLS_INDEX.md) (baru/diperbarui)
+- [AGENTS.md](AGENTS.md) (diubah - referensi indeks)
+
+## Tinggi
+
+#### Task 1
+
+- Status : kerjakan
+- Masalah : Belum ada command untuk memindai `.agents/skills/**/SKILL.md`, mengekstrak trigger, membaca status diperbarui dari metadata, dan menulis `SKILLS_INDEX.md`. Referensi indeks juga belum tercantum di `AGENTS.md`.
+- Solusi : Buat draf command `.kilo/commands/perbarui_skills_index.md` dengan langkah: (a) scan seluruh `SKILL.md` di `.agents/skills/**/`, (b) ekstraksi trigger-only dari `description` sesuai konvensi yang disetujui (bahasa Indonesia), (c) baca `metadata.diperbarui` dari front matter setiap skill, (d) untuk `bawaan`, ambil satu `installedAt` dari baris pertama `skills_config.json`, konversi UTC ke Asia/Jakarta, bandingkan dengan status indeks/metadata, (e) tulis `SKILLS_INDEX.md` dengan heading `## <folder>`, entri `1. <path>`, `- Trigger : <isi>`, `- Status : diperbarui : <waktu>`, urut alfabetis, (f) pastikan referensi indeks di `AGENTS.md` terjaga, (g) validasi dan pelaporan skill dengan trigger tidak jelas (gunakan penanda "perlu dilengkapi trigger" tanpa menyalin non-trigger).
+- aturan dilanggar : (format_task)[format_task:1], (aturan_skill)[aturan_skill:125]
+- file bermasalah : [perbarui_skills_index.md](.kilo/commands/perbarui_skills_index.md), [SKILLS_INDEX.md](SKILLS_INDEX.md), [AGENTS.md](AGENTS.md)
+- prompt : hanya diisi oleh saya
+
+# Kelompok 36
+
+## file terdampak
+
+- [mode_diskusi.md](.kilo/commands/mode/mode_diskusi.md)
+
+## Rendah
+
+#### Task 1
+
+- Status : kerjakan
+- Masalah : Butir ke-4 di `.kilo/commands/mode/mode_diskusi.md` masih kosong. Butir ini seharusnya menguraikan struktur dan field wajib file ringkasan diskusi (`diskusi_N.md`) agar mudah dipetakan.
+- Solusi : Isi butir ke-4 `mode_diskusi.md` dengan rincian field-field wajib: `## Status` (Draft/Batal/Final), `## Topik`, `## Ringkasan`, `## Keputusan`, `## Tindak Lanjut`, beserta format dan aturan pengisian masing-masing.
+- aturan dilanggar : (mode_diskusi)[mode_diskusi:7]
+- file bermasalah : [mode_diskusi.md](.kilo/commands/mode/mode_diskusi.md)
+- prompt : hanya diisi oleh saya
+

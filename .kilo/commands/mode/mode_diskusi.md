@@ -1,6 +1,6 @@
-1. buat file baru di folder `hasil_diskusi` untuk ringkasan hasil diskusi. Nama file wajib menggunakan format `diskusi_N.md` (misal `diskusi_1.md`, `diskusi_2.md`, dan seterusnya).
-   - Jika folder `hasil_diskusi` kosong (belum ada file), buat file baru bernama `diskusi_1.md`.
-   - Jika sudah ada file, cari nomor tertinggi dari semua file `diskusi_N.md`, lalu buat file baru dengan nomor tertinggi + 1 (contoh: tertinggi `diskusi_11.md` → buat `diskusi_12.md`).
+1. buat file baru di folder `hasil_diskusi/` (root proyek) untuk ringkasan hasil diskusi. Semua file ringkasan wajib ditulis di dalam folder `hasil_diskusi/`. Nama file wajib menggunakan format `diskusi_N.md` (misal `diskusi_1.md`, `diskusi_2.md`, dan seterusnya).
+   - Jika folder `hasil_diskusi/` kosong (belum ada file), buat file baru bernama `diskusi_1.md`.
+   - Jika sudah ada file, cari nomor tertinggi dari semua file `diskusi_N.md` di dalam folder `hasil_diskusi/`, lalu buat file baru dengan nomor tertinggi + 1 (contoh: tertinggi `diskusi_11.md` → buat `diskusi_12.md`).
    - Jika ada nomor yang terlewat (gap) di antara file yang ada, tetap buat file baru dari nomor tertinggi + 1, jangan mengisi gap.
 2. disini kita hanya fokus ke diskusi saja.
 3. selalu fokus hanya pada topik yang sedang di bicarakan saja.
