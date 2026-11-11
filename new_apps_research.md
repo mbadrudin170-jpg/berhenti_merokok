@@ -1,4 +1,4 @@
-# Hasil Riset Aplikasi Baru Google Play Store (Belum di apk_serupa.md)
+# Hasil Riset Aplikasi Baru Google Play Store (Belum di apk_kompetitor.md)
 
 ## Tabel Aplikasi Baru (27 entri)
 
@@ -75,6 +75,6 @@
 ## Catatan
 
 - Semua aplikasi diverifikasi dengan `curl -s -o /dev/null -w "%{http_code}" -L "<url>"` pada 2026-11-10.
-- Tidak ada duplikasi dengan entri existing di `apk_serupa.md` (dicek package ID dan nama).
+- Tidak ada duplikasi dengan entri existing di `apk_kompetitor.md` (dicek package ID dan nama).
 - Ringkasan ditulis ulang dalam Bahasa Indonesia (bukan copy-paste deskripsi store).
 - 2 kandidat (com.mmgct.quitguide2, com.gsk.myquit) mengembalikan HTTP 404 dan **tidak disertakan**.

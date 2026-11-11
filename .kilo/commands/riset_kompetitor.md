@@ -15,7 +15,7 @@
 - identifikasi pola ui,ux dan layout apk mereka.  
 - lalu berikan saran untuk hasil temuan tersebut.  
 - biar saya yang sortir  
-7. hanya cek apk yang terdaftar di file `apk_serupa.md` yang ada diroot, lalu hanya apk yang belum dianalisis saja.
+7. hanya cek apk yang terdaftar di file `apk_kompetitor.md` yang ada diroot, lalu hanya apk yang belum dianalisis saja.
 
 \# Format penulisan isi file \`refrensi\_apk.md\`
 
