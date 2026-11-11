@@ -313,6 +313,7 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 - **Pola UX:** tujuan abstrak terasa konkret; tetap transparan (label "estimasi").
 - **Pola layout:** kartu impian + objek visual kecil; detail terpisah.
 - **Saran:** pertahankan progress bar; tambah opsi tema visual (mis. "Toples"/"Pohon"); jangan menggantikan data dengan dekorasi.
+- **PRD:** `prd/impian_metafora_visual.md`
 - **Prioritas:** Rendah.
 
 #### C8. Trigger & Peak Analysis UI (Teks + Donut Sederhana)
