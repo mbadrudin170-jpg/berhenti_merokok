@@ -22,9 +22,8 @@ alias gabung_example_teks="script/gabung_example_teks.sh"
 alias install_rg="sudo apt-get update && sudo apt-get install -y ripgrep"
 
 # Install SKILLS (ke .agents/skills/bawaan)
-alias iskills="dart run skills@ get --all -C .agents/skills"
-alias flutterskills="npx skills add flutter/skills --yes -C .agents/skills"
-
+alias iskills="dart run skills@ get --all --agent generic -C .agents/skills"
+alias flutterskills="npx skills add flutter/skills --yes --agent generic -C .agents/skills"
 
 alias h='free -h'
 alias k="code_paket"
