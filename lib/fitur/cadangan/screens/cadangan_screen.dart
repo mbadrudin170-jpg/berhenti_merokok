@@ -138,6 +138,91 @@ class _CadanganScreenState extends ConsumerState<CadanganScreen> {
     }
   }
 
+  Future<void> _eksporCsv() async {
+    if (_sedangMemproses) return;
+    L.i('CadanganScreen eksporCsv');
+    if (!_platformDidukung) {
+      L.w('Platform tidak mendukung cadangan berkas');
+      if (!mounted) return;
+      AppToast.gagal(context, 'Platform tidak mendukung ekspor berkas');
+      return;
+    }
+
+    final konfirmasi = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Ekspor CSV',
+      message:
+          'Ekspor ${tabelCadangan.length} berkas CSV (satu berkas per tabel). '
+          'Lokasi penyimpanan dipilih satu per berkas. Lanjutkan ekspor?',
+      okLabel: 'Ekspor',
+      cancelLabel: 'Batal',
+    );
+    if (!mounted) return;
+    if (konfirmasi != OkCancelResult.ok) {
+      L.w('Ekspor CSV dibatalkan pengguna');
+      return;
+    }
+
+    setState(() {
+      _sedangMemproses = true;
+    });
+    unawaited(
+      EasyLoading.show(
+        status: 'Mengekspor CSV...',
+        maskType: EasyLoadingMaskType.black,
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal menampilkan loading ekspor CSV: $e $s');
+      }),
+    );
+    try {
+      var jumlahBerkas = 0;
+      for (final tabel in tabelCadangan) {
+        final csv = await CadanganHelper.buatCsvTabel(tabel);
+        final namaBerkas = CadanganHelper.namaBerkasCsv(tabel);
+        final bytes = Uint8List.fromList(utf8.encode(csv));
+
+        final uri = await FilePicker.saveFile(
+          dialogTitle: 'Simpan CSV $tabel',
+          fileName: namaBerkas,
+          bytes: bytes,
+          mimeType: 'text/csv',
+          initialDirectory: (await getApplicationDocumentsDirectory()).path,
+        );
+        if (uri == null) {
+          L.w('Pengguna membatalkan penyimpanan CSV tabel $tabel');
+          if (!mounted) return;
+          AppToast.info(context, 'Ekspor CSV dibatalkan');
+          return;
+        }
+        // saveFile sudah menulis bytes ke lokasi terpilih; tidak perlu
+        // tulis ulang (mencegah berkas terhapus saat tulis ulang gagal).
+        jumlahBerkas++;
+        L.i('CSV tabel $tabel disimpan ke $uri');
+      }
+      if (!mounted) return;
+      AppToast.sukses(context, 'Ekspor CSV berhasil ($jumlahBerkas berkas)');
+    } on UnsupportedError catch (e, s) {
+      L.e('Ekspor CSV tidak didukung: $e $s');
+      if (!mounted) return;
+      AppToast.gagal(context, 'Platform tidak mendukung ekspor CSV');
+    } on Exception catch (e, s) {
+      L.e('Gagal mengekspor CSV: $e $s');
+      if (!mounted) return;
+      AppToast.gagal(context, 'Gagal mengekspor CSV');
+    } finally {
+      unawaited(
+        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+          L.e('Gagal menutup loading ekspor CSV: $e $s');
+        }),
+      );
+      if (mounted) {
+        setState(() {
+          _sedangMemproses = false;
+        });
+      }
+    }
+  }
+
   Future<void> _pulihkanData() async {
     if (_sedangMemproses) return;
     L.i('CadanganScreen pulihkanData');
@@ -320,6 +405,14 @@ class _CadanganScreenState extends ConsumerState<CadanganScreen> {
                               unawaited(_eksporData());
                             },
                       child: const Text('Ekspor data'),
+                    ),
+                    FilledButton(
+                      onPressed: _sedangMemproses
+                          ? null
+                          : () {
+                              unawaited(_eksporCsv());
+                            },
+                      child: const Text('Ekspor CSV'),
                     ),
                     OutlinedButton(
                       onPressed: _sedangMemproses

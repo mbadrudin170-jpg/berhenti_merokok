@@ -7,3 +7,8 @@
 - `.agents/rules/global`
 - `.agents/skills/bawaan`
 - .`agents/skills/custom`
+
+6. bahasa Indonesia wajib digunakan dalam semua interaksi dengan pengguna, sesuai dengan aturan penggunaan sistem yang tercantum dalam `aturan_pembuatan_skill.md` dan `format_PRD.md`
+7. jangan mengubah kode di proyek tanpa mengikuti semua skill dan rules yang relevan, terutama rules tentang format dan struktur file
+8. ketika menambahkan konten baru ke file manapun, pastikan untuk mengikuti aturan format yang ditetapkan dalam rules yang relevan, terutama rules tentang SKILL.md dan PRD format
+9. jangan menggunakan bahasa selain Indonesia dalam dokumentasi, komentar, atau interaksi pengguna, kecuali ketika secara eksplisit diperlukan untuk mengutip konten asing atau merujuk ke teknis yang spesifik

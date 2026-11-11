@@ -18,3 +18,5 @@
    git branch -a # termasuk branch remote
 6. Kembali ke branch sebelumnya:
    git switch -
+
+

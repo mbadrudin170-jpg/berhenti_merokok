@@ -546,3 +546,24 @@ Tidak ada temuan.
 
 Tidak ada temuan.
 
+# Kelompok 32
+
+## file terdampak
+
+- [cadangan_helper.dart](lib/fitur/cadangan/helper/cadangan_helper.dart)
+- [cadangan_screen.dart](lib/fitur/cadangan/screens/cadangan_screen.dart)
+- [sqflite_op.dart](lib/shared/db/sqflite/sqflite_op.dart)
+- [pubspec.yaml](pubspec.yaml)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+Tidak ada temuan.
+
