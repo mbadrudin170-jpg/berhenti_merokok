@@ -130,16 +130,12 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
 
     // Fallback seperti badge: aktual bila ada catatan, estimasi bila belum ada.
     final rokokTidakDiHisap = adaCatatan ? rokokAktual : rokokEstimasi;
-    L.i(
-      'rokokEstimasi=$rokokEstimasi, adaCatatan=$adaCatatan, hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, rokokTidakDiHisap=$rokokTidakDiHisap',
-    );
 
     if (rokokTidakDiHisap == 0) {
       return _buildBelumAdaRokokDiHindari();
     }
 
     final daftarToxin = ToxinHitungHelper.hitung(rokokTidakDiHisap);
-    L.i('daftarToxin.length=${daftarToxin.length}');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pelacakan Toxin')),

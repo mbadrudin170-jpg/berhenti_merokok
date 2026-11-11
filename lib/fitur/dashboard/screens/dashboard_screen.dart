@@ -793,8 +793,6 @@ String _formatCounterSmokeFreeBesar(BiodataModel biodata) {
     jamSisa = totalJam < 0 ? 0 : totalJam % 24;
   }
 
-  L.i('hariBerhenti=$hariBerhenti, jamSisa=$jamSisa');
-
   return '$hariBerhenti hari $jamSisa jam';
 }
 
