@@ -34,7 +34,7 @@ final class KonsumsiRokokNotifierProvider
 }
 
 String _$konsumsiRokokNotifierHash() =>
-    r'87b195ae12503ae6831dd638459e82644eacded4';
+    r'92f3aaa3127bc80c4d771da14b71c1ebc5bacfa7';
 
 abstract class _$KonsumsiRokokNotifier
     extends $AsyncNotifier<KonsumsiRokokState> {
