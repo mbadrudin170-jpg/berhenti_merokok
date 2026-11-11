@@ -58,21 +58,6 @@ Digunakan untuk menentukan hasil yang ingin dicapai. Tujuan harus berhubungan la
 **Isi:**
 Jelaskan hasil dan manfaat yang ingin dicapai melalui aplikasi.
 
-## 4. Target Pengguna
-
-**Konteks penggunaan:**
-Digunakan untuk menentukan siapa yang akan menggunakan produk. Informasi ini menjadi dasar dalam menentukan fitur, bahasa, navigasi, hak akses, dan pengalaman pengguna.
-
-**Aturan pengisian:**
-
-- Identifikasi kelompok pengguna yang benar-benar menjadi sasaran produk.
-- Jelaskan kebutuhan dan tujuan masing-masing kelompok.
-- Cantumkan karakteristik pengguna hanya jika berpengaruh terhadap desain atau fungsi produk.
-- Jangan membuat jenis pengguna yang tidak memiliki kebutuhan atau fungsi jelas.
-
-**Isi:**
-Jelaskan siapa pengguna aplikasi, kebutuhan mereka, dan masalah yang ingin diselesaikan.
-
 ## 6. Daftar Fitur
 
 **Konteks penggunaan:**
