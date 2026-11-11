@@ -1,6 +1,6 @@
 # PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
-**Status Dokumen:** Draft
+**Status Dokumen:** final
 
 **Status Implementasi:** Belum Diimplementasikan
 
