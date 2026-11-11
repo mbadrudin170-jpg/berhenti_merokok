@@ -6,9 +6,9 @@
         "skills": [
           {
             "name": "adaptive_dialog-dialogs",
-            "installedAt": "2026-11-11T10:05:03.187087Z",
+            "installedAt": "2026-11-11T10:56:32.880976Z",
             "contentHash": "9zsp/CYhAnz9O8l0kS7DmQ==",
-            "path": "bawaan/adaptive_dialog-dialogs"
+            "path": "skills/adaptive_dialog-dialogs"
           }
         ]
       },
@@ -16,15 +16,15 @@
         "skills": [
           {
             "name": "restart-app-integration",
-            "installedAt": "2026-11-11T10:05:03.191552Z",
+            "installedAt": "2026-11-11T10:56:32.885439Z",
             "contentHash": "nOhgizji/GQ5M+NxH+v+Vg==",
-            "path": "bawaan/restart-app-integration"
+            "path": "skills/restart-app-integration"
           },
           {
             "name": "restart-app-ios-engine-restart",
-            "installedAt": "2026-11-11T10:05:03.195637Z",
+            "installedAt": "2026-11-11T10:56:32.888324Z",
             "contentHash": "ul374MQWumgFeswL5TKMqQ==",
-            "path": "bawaan/restart-app-ios-engine-restart"
+            "path": "skills/restart-app-ios-engine-restart"
           }
         ]
       },
@@ -32,21 +32,21 @@
         "skills": [
           {
             "name": "sqflite-testing-and-platforms",
-            "installedAt": "2026-11-11T10:05:03.201482Z",
+            "installedAt": "2026-11-11T10:56:32.894491Z",
             "contentHash": "3tyVO/yHbhJmT4nYerW4tQ==",
-            "path": "bawaan/sqflite-testing-and-platforms"
+            "path": "skills/sqflite-testing-and-platforms"
           },
           {
             "name": "sqflite-open-database",
-            "installedAt": "2026-11-11T10:05:03.204075Z",
+            "installedAt": "2026-11-11T10:56:32.896558Z",
             "contentHash": "fOmoB+4dNOjQDdvPkJjRXw==",
-            "path": "bawaan/sqflite-open-database"
+            "path": "skills/sqflite-open-database"
           },
           {
             "name": "sqflite-crud-and-transactions",
-            "installedAt": "2026-11-11T10:05:03.208081Z",
+            "installedAt": "2026-11-11T10:56:32.900174Z",
             "contentHash": "lEO7nhZOzQbXLY8dWXXHNw==",
-            "path": "bawaan/sqflite-crud-and-transactions"
+            "path": "skills/sqflite-crud-and-transactions"
           }
         ]
       },
@@ -54,15 +54,15 @@
         "skills": [
           {
             "name": "sqflite-common-ffi-web-options",
-            "installedAt": "2026-11-11T10:05:03.212880Z",
+            "installedAt": "2026-11-11T10:56:32.904609Z",
             "contentHash": "sbLsdetrQZu0rzLeGFb9nQ==",
-            "path": "bawaan/sqflite-common-ffi-web-options"
+            "path": "skills/sqflite-common-ffi-web-options"
           },
           {
             "name": "sqflite-common-ffi-web-setup",
-            "installedAt": "2026-11-11T10:05:03.215700Z",
+            "installedAt": "2026-11-11T10:56:32.906503Z",
             "contentHash": "yVnI5Sk64s9GLC3YJWHVXw==",
-            "path": "bawaan/sqflite-common-ffi-web-setup"
+            "path": "skills/sqflite-common-ffi-web-setup"
           }
         ]
       }
