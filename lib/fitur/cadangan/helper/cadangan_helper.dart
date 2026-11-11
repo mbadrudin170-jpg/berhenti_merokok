@@ -16,6 +16,7 @@ const List<String> tabelCadangan = <String>[
   NamaTabel.alasanBerhenti,
   NamaTabel.konsumsiRokok,
   NamaTabel.sosIntervensi,
+  NamaTabel.rencanaDarurat,
 ];
 
 /// Exception ketika berkas cadangan tidak valid.
@@ -43,9 +44,14 @@ class CadanganHelper {
       final impian = await op.ambilSemua(NamaTabel.impian);
       final diary = await op.ambilSemua(NamaTabel.diaryCraving);
       final alasan = await op.ambilSemua(NamaTabel.alasanBerhenti);
+      final konsumsi = await op.ambilSemua(NamaTabel.konsumsiRokok);
+      final sosIntervensi = await op.ambilSemua(NamaTabel.sosIntervensi);
+      final rencanaDarurat = await op.ambilSemua(NamaTabel.rencanaDarurat);
       L.i(
         'biodata=${biodata.length}, impian=${impian.length}, '
-        'diary=${diary.length}, alasan=${alasan.length}',
+        'diary=${diary.length}, alasan=${alasan.length}, '
+        'konsumsi=${konsumsi.length}, sosIntervensi=${sosIntervensi.length}, '
+        'rencanaDarurat=${rencanaDarurat.length}',
       );
 
       final payload = <String, Object?>{
@@ -55,6 +61,9 @@ class CadanganHelper {
         NamaTabel.impian: impian,
         NamaTabel.diaryCraving: diary,
         NamaTabel.alasanBerhenti: alasan,
+        NamaTabel.konsumsiRokok: konsumsi,
+        NamaTabel.sosIntervensi: sosIntervensi,
+        NamaTabel.rencanaDarurat: rencanaDarurat,
       };
       final json = jsonEncode(payload);
       L.s('Cadangan JSON berhasil dibuat');

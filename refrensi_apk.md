@@ -46,12 +46,12 @@ Peluang terbesar hasil riset terhadap **semua 159 listing**:
 | Navigasi | 4 tab: Dashboard, Biodata, Impian, Lainnya; lazy + IndexedStack (`lib/home.dart`) | Pertahankan; kompetitor juga membatasi destinasi utama |
 | Dashboard | Counter, kartu SOS, uang dihemat, target, impian, milestone, badge (`lib/fitur/dashboard/...`) | Audit kepadatan; 1 metrik dominan |
 | Biodata/tapering | Dua mode; target harian dari penurunan per minggu; tidak terhubung ke konsumsi aktual | Peluang integrasi |
-| Konsumsi | Model `jumlah`, `isSlip`, `catatan`; quick log +1; ringkasan harian | Tidak terhubung ke counter/tapering; tidak diekspor ke cadangan |
+| Konsumsi | Model `jumlah`, `isSlip`, `catatan`; quick log +1; ringkasan harian | Tidak terhubung ke counter/tapering |
 | Impian | CRUD, visual tabungan, sorting | Sudah setara kompetitor |
-| SOS | Napas 4-7-8, timer 3 menit, distraksi, hasil intervensi tersimpan di `sos_intervensi` | Hasil intervensi tidak diekspor ke cadangan |
+| SOS | Napas 4-7-8, timer 3 menit, distraksi, hasil intervensi tersimpan di `sos_intervensi`; kartu "Rencana Darurat Saya" (if-then) di bawah kartu alasan | Hasil intervensi ikut diekspor ke cadangan |
 | Diary craving | Pemicu, intensitas, `PolaCravingHelper` → jam teratas + pengingat pola | Belum ada heatmap jam/trigger |
 | Notifikasi | Harian, check-in pagi, pola craving (platform terbatas) | Pengaturan OK |
-| Cadangan | Ekspor/pemulihan JSON, validasi versi, transaksi atomik | **Ekspor tidak menulis `konsumsi_rokok` & `sos_intervensi`** |
+| Cadangan | Ekspor/pemulihan JSON, validasi versi, transaksi atomik; ekspor menulis seluruh tabel (`biodata`, `impian`, `diary_craving`, `alasan_berhenti`, `konsumsi_rokok`, `sos_intervensi`, `rencana_darurat`) | Bug ekspor (tabel konsumsi/intervensi hilang) sudah diperbaiki 2026-11-11 |
 | Milestone/badge | Milestone WHO 20 menit s/d 15 tahun; badge durasi/rokok/uang/impian | Label sumber perlu jelas |
 | Tema | Sistem/terang/gelap | OK |
 | Teknologi | Riverpod, Freezed, sqflite, `share_plus`, **tanpa fl_chart/grafik** | Grafik butuh dependency baru |
@@ -128,14 +128,6 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 - **Saran:** proyek sudah punya badge; tambahkan sparingly: misi harian 1 baris + XP sederhana; jangan tambahkan lebih dari satu sistem reward; opsi "Mode Minimal" untuk pengguna yang tidak suka gamifikasi.
 - **Prioritas:** Rendah.
 
-#### A10. Implementation Intentions (Jika–Maka) untuk Craving
-
-- **PRD:** [prd/implementation_intention_craving.md](prd/implementation_intention_craving.md) (Final, dibuat 2026-11-10, belum diimplementasikan)
-- **Tujuan fitur:** pengguna menulis rencana "jika craving saat X, maka saya lakukan Y"; dibuktikan menurunkan slip dalam studi kebiasaan.
-- **Referensi:** [Pace Android](https://github.com/ravipurohit1991/pace) (Playbook if-then plans) · [Flamy — SOS Emergency Setup](https://apps.apple.com/us/app/quit-smoking-smoke-free-flamy/id1462887052) · [Intervensi CBT Craving To Quit](https://play.google.com/store/apps/details?id=com.claritasmindsciences.CravingToQuit) · [QuitNow Medicon — 9 hari, 8 latihan CBT](https://apps.apple.com/us/app/quitnow-stop-smoking/id6768372199).
-- **Saran:** layar kecil "Rencana Darurat Saya" (Jika …, Maka …) ditampilkan di kartu SOS; disimpan lokal; maks 3 rencana.
-- **Prioritas:** Rendah.
-
 #### A11. Letters to Future Self
 
 - **Tujuan fitur:** surat motivasi yang muncul otomatis pada milestone (7/30/90 hari).
@@ -167,15 +159,6 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 ---
 
 ## B. Optimasi Fitur yang Sudah Ada (sama seperti proyek, tapi bisa diperbaiki)
-
-### Prioritas Tinggi
-
-#### B1. **Ekspor Cadangan Hilangkan Data Konsumsi & Intervensi SOS (bug)**
-
-- **Temuan:** `lib/fitur/cadangan/helper/cadangan_helper.dart` — `tabelCadangan` mendaftarkan 6 tabel, tetapi `buatCadanganJson()` hanya menulis 4 (`biodata`, `impian`, `diary_craving`, `alasan_berhenti`). Tabel `konsumsi_rokok` (quick log + slip) dan `sos_intervensi` tidak diekspor. Validasi memperlakukan tabel kosong sebagai wajar, sehingga pemulihan tidak error — hanya data hilang senyap.
-- **Tujuan perbaikan:** keamanan data pengguna; konsisten dengan validasi dan README teknis.
-- **Saran:** tambahkan kedua tabel ke payload ekspor dan catat ukurannya di log; tambahkan uji kontrak ekspor↔pulihkan; tampilkan ringkasan isi cadangan (jumlah baris per tabel) di layar Cadangan. Juga pertimbangkan pratinjau isi/versi sebelum memulihkan.
-- **Prioritas:** Tinggi (integritas data; kerugian senyap).
 
 ### Prioritas Sedang
 
@@ -508,23 +491,22 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 
 | Urutan | Rekomendasi | Jenis | Nilai utama | Ketergantungan utama |
 |---:|---|---|---|---|
-| 1 | Perbaiki ekspor cadangan: sertakan `konsumsi_rokok` & `sos_intervensi` (B1) | Bug / Optimasi | Integritas data pengguna; kerugian senyap hilang | Perbaikan ekspor + uji kontrak |
-| 2 | Widget Home Screen Android (A1/C5) | Fitur baru | Akses 1–2 ketuk ke SOS/log/progres | Kode native Android (Glance/AppWidget) |
-| 3 | Hubungkan konsumsi aktual ke counter/tapering/tabungan (B2) | Optimasi | Satu sumber kebenaran metrik | Helper rumus bersama |
-| 4 | Anti-shame slip + bahasa netral + preview dampak (A6/B5/C4) | Optimasi/UX | Laporan jujur, retensi | Definisi metrik + copy |
-| 5 | Undo/koreksi konsumsi (B3/C2) | Optimasi | Data akurat → metrik tepercaya | Notifier + UI feedback |
-| 6 | Kartu progres yang dapat dibagikan (A2) | Fitur baru | Motivasi sosial terkendali | share_plus (ada) + template |
-| 7 | Analitik: grafik tren + heatmap craving (A5/B6) | Fitur baru/optimasi | Insight yang bisa ditindaklanjuti | fl_chart (baru) + data cukup |
-| 8 | Check-in harian mood singkat (A3) | Fitur baru | Refleksi & deteksi risiko | Tabel `check_in_harian` |
-| 9 | Pengingat jam rawan berdasarkan pola (A13/B7) | Optimasi | Relevansi notifikasi | PolaCravingHelper + opt-in |
-| 10 | Backup CSV + pratinjau (B8) | Optimasi | Portabilitas & analisis | Ekspor sisi baca saja |
-| 11 | Mini-game distraksi (A7) | Fitur baru | Variasi motivasi | Matching-pairs sederhana |
-| 12 | Gamifikasi ringan (misi harian, opsional) (A9) | Fitur baru | Retensi opt-in | Sistem reward sederhana |
-| 13 | If-then plan (A10) & letters to future self (A11) | Fitur baru | Kedalaman motivasi | Layar kecil |
-| 14 | NRT tracker (A12) | Fitur baru | Lengkapnya rencana tapering | Model `nrt_entri` |
-| 15 | Pindahkan statistik sekunder ke layar Analitik terpisah dari Dashboard (lihat A5) | UX | Fokus; beban kognitif | Tinjau layar di HP kecil |
-| 16 | AI coach (A8) | Fitur baru | Dukungan personal (opsional) | Backend, biaya, privasi |
-| 17 | Komunitas (di luar offline-first) | Fitur baru | Dukungan sosial | Backend + moderasi; **bukan** rekomendasi utama |
+| 1 | Widget Home Screen Android (A1/C5) | Fitur baru | Akses 1–2 ketuk ke SOS/log/progres | Kode native Android (Glance/AppWidget) |
+| 2 | Hubungkan konsumsi aktual ke counter/tapering/tabungan (B2) | Optimasi | Satu sumber kebenaran metrik | Helper rumus bersama |
+| 3 | Anti-shame slip + bahasa netral + preview dampak (A6/B5/C4) | Optimasi/UX | Laporan jujur, retensi | Definisi metrik + copy |
+| 4 | Undo/koreksi konsumsi (B3/C2) | Optimasi | Data akurat → metrik tepercaya | Notifier + UI feedback |
+| 5 | Kartu progres yang dapat dibagikan (A2) | Fitur baru | Motivasi sosial terkendali | share_plus (ada) + template |
+| 6 | Analitik: grafik tren + heatmap craving (A5/B6) | Fitur baru/optimasi | Insight yang bisa ditindaklanjuti | fl_chart (baru) + data cukup |
+| 7 | Check-in harian mood singkat (A3) | Fitur baru | Refleksi & deteksi risiko | Tabel `check_in_harian` |
+| 8 | Pengingat jam rawan berdasarkan pola (A13/B7) | Optimasi | Relevansi notifikasi | PolaCravingHelper + opt-in |
+| 9 | Backup CSV + pratinjau (B8) | Optimasi | Portabilitas & analisis | Ekspor sisi baca saja |
+| 10 | Mini-game distraksi (A7) | Fitur baru | Variasi motivasi | Matching-pairs sederhana |
+| 11 | Gamifikasi ringan (misi harian, opsional) (A9) | Fitur baru | Retensi opt-in | Sistem reward sederhana |
+| 12 | Letters to future self (A11) | Fitur baru | Kedalaman motivasi | Layar kecil |
+| 13 | NRT tracker (A12) | Fitur baru | Lengkapnya rencana tapering | Model `nrt_entri` |
+| 14 | Pindahkan statistik sekunder ke layar Analitik terpisah dari Dashboard (lihat A5) | UX | Fokus; beban kognitif | Tinjau layar di HP kecil |
+| 15 | AI coach (A8) | Fitur baru | Dukungan personal (opsional) | Backend, biaya, privasi |
+| 16 | Komunitas (di luar offline-first) | Fitur baru | Dukungan sosial | Backend + moderasi; **bukan** rekomendasi utama |
 
 ---
 
@@ -538,8 +520,7 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 - **Kesehatan:** milestone WHO/CDC/NHS yang ditampilkan sebagai fakta wajib diverifikasi; aplikasi hanya menyajikan estimasi ilustratif.
 - **Platform:** Pace `s3gv` (Live Activities/WidgetKit) dan `quit-smoking-smoke-free` iOS-only tidak relevan untuk Android/Flutter; gunakan padanan Android bila ada.
 - **Screenshot:** UI/UX disimpulkan dari deskripsi/README publik; interaksi dan aksesibilitas pada perangkat fisik belum diverifikasi. Tidak ada APK kompetitor yang dipasang/diuji.
-- **Proyek:** kode tidak diubah dalam tugas riset ini; satu cacat ditemukan (B1) dan didokumentasikan, bukan diperbaiki di sini.
-- **Backup proyek:** README menyebut versi 1 hanya `biodata`, `impian`, `diary_craving`, `alasan_berhenti` — tetapi kode mendaftarkan `konsumsi_rokok` dan `sos_intervensi` pada `tabelCadangan`, sementara `buatCadanganJson()` tidak menulisnya. Dokumentasikan sebagai bug B1.
+
 
 ---
 
@@ -557,4 +538,4 @@ Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositor
 
 ---
 
-_Dokumen diperbarui 11 November 2026 berdasarkan riset seluruh 159 listing di `apk_serupa.md`, ditambah verifikasi ulang sampel tautan pada tanggal yang sama: Galaxy Store (#74–75) kini HTTP 200 (verifikasi ringan), Quit Tracker Uptodown (#78) berubah dari 410 menjadi 404, dan bagian C1 (usulan Dashboard Metrik Dominan) dihapus oleh pengguna bersamaan dengan penghapusan PRD `prd/dashboard_metrik_dominan.md`. Pada 11 November 2026 bagian A4 (Tool SOS Tambahan) dihapus oleh pengguna setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/sos_craving_tool_tambahan.md`; baris rekomendasi "Tool SOS tambahan" pada tabel E digugurkan dan urutan nomor di bawah posisi 9 digeser naik. Rekomendasi menunggu penyortiran dan keputusan pengguna. Per 11 November 2026 kode `lib/fitur/sos_craving/` telah diimplementasikan sesuai PRD tersebut (menu kartu teknik + 7 teknik); dokumen ini hanya mencatat riset, bukan status implementasi._
+_Dokumen diperbarui 11 November 2026 berdasarkan riset seluruh 159 listing di `apk_serupa.md`, ditambah verifikasi ulang sampel tautan pada tanggal yang sama: Galaxy Store (#74–75) kini HTTP 200 (verifikasi ringan), Quit Tracker Uptodown (#78) berubah dari 410 menjadi 404, dan bagian C1 (usulan Dashboard Metrik Dominan) dihapus oleh pengguna bersamaan dengan penghapusan PRD `prd/dashboard_metrik_dominan.md`. Pada 11 November 2026 bagian A4 (Tool SOS Tambahan) dihapus oleh pengguna setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/sos_craving_tool_tambahan.md`; baris rekomendasi "Tool SOS tambahan" pada tabel E digugurkan dan urutan nomor di bawah posisi 9 digeser naik. Rekomendasi menunggu penyortiran dan keputusan pengguna. Per 11 November 2026 kode `lib/fitur/sos_craving/` telah diimplementasikan sesuai PRD tersebut (menu kartu teknik + 7 teknik); dokumen ini hanya mencatat riset, bukan status implementasi. Pada 11 November 2026 bagian A10 (Implementation Intentions / Jika–Maka) dihapus setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/implementation_intention_craving.md`; baris rekomendasi "If-then plan (A10) & letters to future self (A11)" pada tabel E dipersempit menjadi "Letters to future self (A11)" dan urutan nomor digeser naik. Bagian B1 (bug ekspor cadangan: `konsumsi_rokok` + `sos_intervensi` tidak diekspor) turut dianggap selesai karena diperbaiki sekaligus dalam implementasi A10 (payload `buatCadanganJson()` kini menulis seluruh tabel termasuk `rencana_darurat`; `tabelCadangan` mencantumkan 7 tabel); bagian B1 dihapus dan baris rekomendasi terkait pada tabel E digugurkan dengan urutan nomor digeser naik._

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
 import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
+import 'package:berhenti_merokok/fitur/rencana_darurat/widgets/kartu_rencana_darurat.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/widgets/box_breathing_view.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/widgets/distraksi_view.dart';
@@ -257,6 +258,7 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
     return Column(
       children: [
         _buildKartuAlasanBerhenti(),
+        const KartuRencanaDarurat(),
         Expanded(
           child: GridView.count(
             crossAxisCount: 2,

@@ -461,3 +461,146 @@ Tidak ada temuan.
 
 Tidak ada temuan.
 
+---
+
+# Kelompok 27
+
+## file terdampak
+
+- [hasil_craving_enum.dart](lib/fitur/diary_craving/enum/hasil_craving_enum.dart)
+- [strategi_craving_enum.dart](lib/fitur/diary_craving/enum/strategi_craving_enum.dart)
+- [hasil_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart)
+- [jenis_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart)
+- [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart)
+- [sos_intervensi_model.dart](lib/fitur/sos_craving/model/sos_intervensi_model.dart)
+- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
+- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
+- [box_breathing_view.dart](lib/fitur/sos_craving/widgets/box_breathing_view.dart)
+- [distraksi_view.dart](lib/fitur/sos_craving/widgets/distraksi_view.dart)
+- [grounding_54321_view.dart](lib/fitur/sos_craving/widgets/grounding_54321_view.dart)
+- [napas_478_view.dart](lib/fitur/sos_craving/widgets/napas_478_view.dart)
+- [napas_90_detik_view.dart](lib/fitur/sos_craving/widgets/napas_90_detik_view.dart)
+- [timer_craving_view.dart](lib/fitur/sos_craving/widgets/timer_craving_view.dart)
+- [urge_surfing_view.dart](lib/fitur/sos_craving/widgets/urge_surfing_view.dart)
+- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+Tidak ada temuan.
+
+---
+
+# Kelompok 28
+
+## file terdampak
+
+- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
+- [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart)
+- [nama_tabel.dart](lib/shared/konstanta/nama_tabel.dart)
+
+## Tinggi
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `db5dd32` menambahkan tabel `rencana_darurat` (skema v13) hanya di `_onUpgrade`, tetapi tidak di `_buatTabel` (onCreate). Instalasi baru pada versi 13 tidak akan memiliki tabel `rencana_darurat` sehingga query/insert ke tabel tersebut gagal pada pengguna baru. Melanggar aturan skill migrasi skema: onCreate wajib membuat seluruh tabel yang dibutuhkan aplikasi (termasuk tabel baru), dan tabel baru wajib dibuat baik di `onCreate` maupun di `onUpgrade`.
+- Solusi : Tambahkan blok `CREATE TABLE IF NOT EXISTS` untuk `rencana_darurat` ke `_buatTabel` (mis. setelah blok `sosIntervensi`). Contoh:
+
+  ```dart
+  await db.execute('''
+    CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+      ${NamaKolom.id} TEXT PRIMARY KEY,
+      ${NamaKolom.jika} TEXT NOT NULL,
+      ${NamaKolom.maka} TEXT NOT NULL,
+      ${NamaKolom.dibuat} TEXT NOT NULL
+    )
+  ''');
+  ```
+
+- aturan dilanggar : [migrasi-skema-sqlite](.agents/skills/custom/migrasi-skema-sqlite/SKILL.md)
+- file bermasalah : [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L44-L120)
+- prompt :
+
+## Sedang
+
+#### Task 2
+
+- Status : belum
+- Masalah : Commit `db5dd32` menempatkan DDL `CREATE TABLE IF NOT EXISTS rencana_darurat` di dalam branch `oldVersion < 11` (cabang untuk `sos_intervensi` v11) sekaligus di branch `oldVersion < 13`. Penempatan di branch v11 salah versi (`rencana_darurat` adalah v13) dan menyebabkan duplikasi DDL untuk upgrade dari versi ≤10 (tabel dibuat dua kali; idempoten karena `IF NOT EXISTS`, tetapi menyesatkan dan berisiko drift bila skema tabel diubah di masa depan). Blok `oldVersion < 11` baru juga ber-indentasi ragged (isi tidak sejajar dengan `if`), mengikuti pola buruk blok `oldVersion < 9` yang sudah dilaporkan di Kelompok 20 Task 1 dan belum diperbaiki.
+- Solusi : Hapus blok `CREATE TABLE rencana_darurat` dari branch `oldVersion < 11` sehingga branch itu kembali hanya membuat `sos_intervensi`; biarkan pembuatan tabel `rencana_darurat` hanya di branch `oldVersion < 13` (dan di `onCreate` sesuai Kelompok 28 Task 1). Ratakan indentasi blok `oldVersion < 11` (dan `oldVersion < 9`) ke level yang sama dengan branch lain. Perhatikan juga temuan duplikasi `sos_intervensi` di Kelompok 20 Task 1 (masih belum).
+- aturan dilanggar : [migrasi-skema-sqlite](.agents/skills/custom/migrasi-skema-sqlite/SKILL.md)
+- file bermasalah : [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L240-L260), [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L315-L325)
+- prompt :
+
+## Rendah
+
+Tidak ada temuan.
+
+---
+
+# Kelompok 29
+
+## file terdampak
+
+- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
+- [kalender_smoke_free_screen.dart](lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart)
+- [pubspec.yaml](pubspec.yaml)
+
+## Tinggi
+
+Tidak ada temuan.
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+Tidak ada temuan.
+
+---
+
+# Kelompok 30
+
+## file terdampak
+
+- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
+- [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart)
+- [lainnya_screen.dart](lib/lainnya_screen.dart)
+- [rencana_darurat_model.dart](lib/fitur/rencana_darurat/model/rencana_darurat_model.dart)
+- [rencana_darurat_state.dart](lib/fitur/rencana_darurat/state/rencana_darurat_state.dart)
+
+## Tinggi
+
+#### Task 1
+
+- Status : belum
+- Masalah : Commit `db5dd32` menambahkan `RencanaDaruratModel` dan `RencanaDaruratState` dengan direktif `part '...freezed.dart'`, tetapi file generated (`rencana_darurat_model.freezed.dart`, `rencana_darurat_state.freezed.dart`) tidak ikut di-commit, padahal proyek ini meng-commit file generated (lihat file `*.freezed.dart` lain di `git ls-files`). Akibatnya kode pada commit tersebut gagal di-compile: `dart analyze` melaporkan `uri_does_not_exist` untuk kedua part file dan nama `_$RencanaDaruratModel` / `_$RencanaDaruratState` tidak terdefinisi.
+- Solusi : Jalankan `dart run build_runner build --delete-conflicting-outputs` lalu commit kedua file generated tersebut. Contoh: `git add lib/fitur/rencana_darurat/model/rencana_darurat_model.freezed.dart lib/fitur/rencana_darurat/state/rencana_darurat_state.freezed.dart`.
+- aturan dilanggar : [build-runner-codegen](.agents/skills/custom/build-runner-codegen/SKILL.md)
+- file bermasalah : [rencana_darurat_model.dart](lib/fitur/rencana_darurat/model/rencana_darurat_model.dart#L5), [rencana_darurat_state.dart](lib/fitur/rencana_darurat/state/rencana_darurat_state.dart#L4)
+- prompt :
+
+## Sedang
+
+Tidak ada temuan.
+
+## Rendah
+
+#### Task 2
+
+- Status : belum
+- Masalah : Commit `db5dd32` membuat indentasi tidak konsisten pada `floatingActionButton` di `impian_screen.dart` — closure `Nav.to(...)` kelebihan indent (12 spasi) di dalam `unawaited(`, sementara `child:` dan kurung tutup sejajar dengan `onPressed:`; blok menjadi sulit dibaca dan tidak seragam dengan dua pemanggilan lain di file yang sama. (Ketidakkonsistenan format, tidak ada skill yang dilanggar.)
+- Solusi : Ratakan indentasi blok tersebut mengikuti pola dua pemanggilan lain di file yang sama (baris 252 dan 263): `onPressed: () => unawaited(` lalu isi satu level lebih dalam, `child:` dan `),` sejajar dengan `onPressed:`.
+- aturan dilanggar : tidak ada (ketidakkonsistenan format)
+- file bermasalah : [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart#L385-L397)
+- prompt :
+

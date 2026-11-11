@@ -117,6 +117,15 @@ class AppDatabase {
         ${NamaKolom.dibuat} TEXT NOT NULL
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.jika} TEXT NOT NULL,
+        ${NamaKolom.maka} TEXT NOT NULL,
+        ${NamaKolom.dibuat} TEXT NOT NULL
+      )
+    ''');
   }
 
   /// Memperbarui skema database saat versi meningkat.
@@ -238,26 +247,17 @@ class AppDatabase {
       );
     }
     if (oldVersion < 11) {
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
-        ${NamaKolom.detail} TEXT,
-        ${NamaKolom.hasilIntervensi} TEXT,
-        ${NamaKolom.diaryCravingId} TEXT,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.jika} TEXT NOT NULL,
-        ${NamaKolom.maka} TEXT NOT NULL,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-  }
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
+          ${NamaKolom.detail} TEXT,
+          ${NamaKolom.hasilIntervensi} TEXT,
+          ${NamaKolom.diaryCravingId} TEXT,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
+    }
     // v12: petakan nilai enum snake_case yang tersimpan ke lowerCamelCase.
     // Tanpa migrasi ini nilai lama tidak terparse oleh safeParseEnum.
     if (oldVersion < 12) {
