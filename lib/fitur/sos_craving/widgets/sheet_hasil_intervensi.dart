@@ -98,19 +98,28 @@ class _TombolHasil extends StatelessWidget {
   }
 }
 
-/// Mengambil entri diary craving terbaru untuk hari ini (berdasarkan UTC).
+/// Mengambil entri diary craving terbaru untuk hari ini.
+///
+/// Entri diary disimpan dari waktu lokal yang dikonversi ke UTC, sehingga
+/// pencarian memakai rentang UTC dari batas hari lokal (00:00 lokal sampai
+/// 00:00 lokal besok), bukan prefix tanggal UTC — prefix UTC meleset satu
+/// hari untuk zona UTC+X pada pagi hari.
 ///
 /// Mengembalikan `id` entri terbaru bila ditemukan, atau `null` bila tidak ada.
 Future<String?> _ambilEntriDiaryTerbaruHariIni() async {
   try {
     final op = const SqfliteOp();
-    final now = DateTime.now().toUtc();
-    final tanggalHariIni =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final now = DateTime.now();
+    // Batas hari lokal dinormalisasi lalu dikonversi ke UTC agar konsisten
+    // dengan cara tanggal disimpan di kolom `tanggal`.
+    final awalLokal = DateTime(now.year, now.month, now.day);
+    final awalUtc = awalLokal.toUtc().toIso8601String();
+    final akhirUtc =
+        awalLokal.add(const Duration(days: 1)).toUtc().toIso8601String();
     final rows = await op.ambil(
       NamaTabel.diaryCraving,
-      where: '${NamaKolom.tanggal} LIKE ?',
-      whereArgs: ['$tanggalHariIni%'],
+      where: '${NamaKolom.tanggal} >= ? AND ${NamaKolom.tanggal} < ?',
+      whereArgs: [awalUtc, akhirUtc],
       orderBy: '${NamaKolom.tanggal} DESC',
       limit: 1,
     );

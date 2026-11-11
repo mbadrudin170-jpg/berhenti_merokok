@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
 import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
@@ -11,6 +13,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:share_global_saya/core_shared.dart';
+
+/// Navigasi pintasan yang aman: Nav.to mengembalikan Future yang bisa gagal,
+/// jadi wajib di-`unawaited` dengan `.catchError` yang mencatat `L.e` agar
+/// error tidak menjadi unhandled. Diekstrak agar pola tidak diulang per item.
+void _navigasi(BuildContext context, Widget page, String nama) {
+  unawaited(
+    Nav.to(context, page).catchError((Object e, StackTrace s) {
+      L.e('Gagal navigasi ke $nama: $e $s');
+      return null;
+    }),
+  );
+}
 
 class LainnyaScreen extends StatelessWidget {
   const LainnyaScreen({super.key});
@@ -29,12 +43,12 @@ class LainnyaScreen extends StatelessWidget {
           _ItemLainnya(
             ikon: Icons.sos,
             label: 'SOS Craving',
-            ontap: () => Nav.to(context, const SosCravingScreen()),
+            ontap: () => _navigasi(context, const SosCravingScreen(), 'SOS Craving'),
           ),
           _ItemLainnya(
             ikon: CupertinoIcons.heart,
             label: 'Alasan Berhenti',
-            ontap: () => Nav.to(context, const AlasanBerhentiScreen()),
+            ontap: () => _navigasi(context, const AlasanBerhentiScreen(), 'Alasan Berhenti'),
           ),
         ],
       ),
@@ -44,17 +58,17 @@ class LainnyaScreen extends StatelessWidget {
           _ItemLainnya(
             ikon: CupertinoIcons.smoke,
             label: 'Konsumsi Rokok',
-            ontap: () => Nav.to(context, const KonsumsiRokokScreen()),
+            ontap: () => _navigasi(context, const KonsumsiRokokScreen(), 'Konsumsi Rokok'),
           ),
           _ItemLainnya(
             ikon: CupertinoIcons.book,
             label: 'Diary Craving',
-            ontap: () => Nav.to(context, const DiaryCravingScreen()),
+            ontap: () => _navigasi(context, const DiaryCravingScreen(), 'Diary Craving'),
           ),
           _ItemLainnya(
             ikon: CupertinoIcons.calendar,
             label: 'Kalender Smoke-Free',
-            ontap: () => Nav.to(context, const KalenderSmokeFreeScreen()),
+            ontap: () => _navigasi(context, const KalenderSmokeFreeScreen(), 'Kalender Smoke-Free'),
           ),
         ],
       ),
@@ -64,12 +78,12 @@ class LainnyaScreen extends StatelessWidget {
           _ItemLainnya(
             ikon: CupertinoIcons.bandage,
             label: 'Pemulihan Kesehatan',
-            ontap: () => Nav.to(context, const PemulihanKesehatanScreen()),
+            ontap: () => _navigasi(context, const PemulihanKesehatanScreen(), 'Pemulihan Kesehatan'),
           ),
           _ItemLainnya(
             ikon: CupertinoIcons.cloud,
             label: 'Pelacakan Toxin',
-            ontap: () => Nav.to(context, const ToxinPelacakanScreen()),
+            ontap: () => _navigasi(context, const ToxinPelacakanScreen(), 'Pelacakan Toxin'),
           ),
         ],
       ),
@@ -79,13 +93,13 @@ class LainnyaScreen extends StatelessWidget {
           _ItemLainnya(
             ikon: CupertinoIcons.gear,
             label: 'Pengaturan',
-            ontap: () => Nav.to(context, const PengaturanScreen()),
+            ontap: () => _navigasi(context, const PengaturanScreen(), 'Pengaturan'),
           ),
           if (kDebugMode)
             _ItemLainnya(
               ikon: CupertinoIcons.wrench,
               label: 'Dummy',
-              ontap: () => Nav.to(context, DummyScreen()),
+              ontap: () => _navigasi(context, DummyScreen(), 'Dummy'),
             ),
         ],
       ),

@@ -17,7 +17,8 @@ class AppDatabase {
 
   /// Versi skema database.
   // Versi 12: migrasi nilai enum snake_case lama ke lowerCamelCase.
-  static const int _versiDatabase = 12;
+  // Versi 13: tabel rencana_darurat (if-then plan).
+  static const int _versiDatabase = 13;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -237,17 +238,26 @@ class AppDatabase {
       );
     }
     if (oldVersion < 11) {
-      await db.execute('''
-        CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
-          ${NamaKolom.id} TEXT PRIMARY KEY,
-          ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
-          ${NamaKolom.detail} TEXT,
-          ${NamaKolom.hasilIntervensi} TEXT,
-          ${NamaKolom.diaryCravingId} TEXT,
-          ${NamaKolom.dibuat} TEXT NOT NULL
-        )
-      ''');
-    }
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
+        ${NamaKolom.detail} TEXT,
+        ${NamaKolom.hasilIntervensi} TEXT,
+        ${NamaKolom.diaryCravingId} TEXT,
+        ${NamaKolom.dibuat} TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.jika} TEXT NOT NULL,
+        ${NamaKolom.maka} TEXT NOT NULL,
+        ${NamaKolom.dibuat} TEXT NOT NULL
+      )
+    ''');
+  }
     // v12: petakan nilai enum snake_case yang tersimpan ke lowerCamelCase.
     // Tanpa migrasi ini nilai lama tidak terparse oleh safeParseEnum.
     if (oldVersion < 12) {
@@ -301,6 +311,17 @@ class AppDatabase {
           [entry.value, entry.key],
         );
       }
+    }
+    // v13: tabel rencana_darurat (if-then plan).
+    if (oldVersion < 13) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.jika} TEXT NOT NULL,
+          ${NamaKolom.maka} TEXT NOT NULL,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
     }
   }
 

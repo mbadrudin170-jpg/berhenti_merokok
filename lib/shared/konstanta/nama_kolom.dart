@@ -77,6 +77,13 @@ class NamaKolom {
   /// Kolom teks alasan berhenti.
   static const String teks = 'teks';
 
+  // Kolom tabel rencana_darurat.
+  /// Kolom situasi pemicu (jika …) pada rencana darurat.
+  static const String jika = 'jika';
+
+  /// Kolom tindakan konkret (maka …) pada rencana darurat.
+  static const String maka = 'maka';
+
   // Kolom tabel konsumsi_rokok.
   /// Kolom flag slip/relapse konsumsi rokok.
   static const String isSlip = 'is_slip';

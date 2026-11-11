@@ -312,53 +312,62 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   /// Caption satu baris "Dari catatan": aktual dari catatan konsumsi
   /// ditampilkan ringkas (bukan blok besar). Loading/error/kosong ditangani
   /// dengan pesan singkat ber-bodySmall.
+  ///
+  /// Dibungkus [Padding] vertikal agar caption punya jarak serasi terhadap
+  /// kartu ringkasan di atasnya dan kartu SOS Craving di bawahnya (Text
+  /// telanjang tidak punya margin seperti Card).
   Widget _buildCaptionDariCatatan(
     BiodataModel biodata,
     AsyncValue<KonsumsiRokokState> konsumsiAsync,
   ) {
     final style = Theme.of(context).textTheme.bodySmall;
 
+    final Widget isi;
     if (konsumsiAsync.isLoading) {
-      return Text('Menghitung dari catatan…', style: style);
-    }
-    if (konsumsiAsync.hasError) {
+      isi = Text('Menghitung dari catatan…', style: style);
+    } else if (konsumsiAsync.hasError) {
       L.e(
         'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
       );
-      return Text(
+      isi = Text(
         'Catatan konsumsi gagal dimuat; menampilkan estimasi.',
         style: style,
       );
+    } else {
+      final konsumsiList = konsumsiAsync.asData?.value.listKonsumsi;
+      final adaCatatan = konsumsiList != null && konsumsiList.isNotEmpty;
+      if (!adaCatatan) {
+        isi = Text(
+          'Belum ada catatan konsumsi — aktual tersedia setelah Anda mencatat.',
+          style: style,
+        );
+      } else {
+        final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
+          konsumsiList,
+        );
+        final rokokAktual = MetrikBerhentiHelper.hitungRokokDihindariAktual(
+          biodata,
+          konsumsiList,
+        );
+        final uangAktual = MetrikBerhentiHelper.hitungUangDihematAktual(
+          biodata,
+          konsumsiList,
+        );
+        L.i(
+          'hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, uangAktual=$uangAktual',
+        );
+
+        isi = Text(
+          'Dari catatan ($hariTercatat hari tercatat): '
+          '${FormatUang.formatRupiah(uangAktual)} · $rokokAktual batang',
+          style: style,
+        );
+      }
     }
 
-    final konsumsiList = konsumsiAsync.asData?.value.listKonsumsi;
-    final adaCatatan = konsumsiList != null && konsumsiList.isNotEmpty;
-    if (!adaCatatan) {
-      return Text(
-        'Belum ada catatan konsumsi — aktual tersedia setelah Anda mencatat.',
-        style: style,
-      );
-    }
-
-    final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
-      konsumsiList,
-    );
-    final rokokAktual = MetrikBerhentiHelper.hitungRokokDihindariAktual(
-      biodata,
-      konsumsiList,
-    );
-    final uangAktual = MetrikBerhentiHelper.hitungUangDihematAktual(
-      biodata,
-      konsumsiList,
-    );
-    L.i(
-      'hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, uangAktual=$uangAktual',
-    );
-
-    return Text(
-      'Dari catatan ($hariTercatat hari tercatat): '
-      '${FormatUang.formatRupiah(uangAktual)} · $rokokAktual batang',
-      style: style,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: isi,
     );
   }
 

@@ -248,10 +248,26 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
               'Catat impian yang ingin kamu capai dengan uang yang dihemat '
               'dari berhenti merokok.',
           ctaLabel: 'Tambah Impian',
-          onCta: () => unawaited(Nav.to(context, const FormImpian())),
+          onCta: () => unawaited(
+            Nav.to(context, const FormImpian()).catchError((
+              Object e,
+              StackTrace s,
+            ) {
+              L.e('Gagal navigasi ke Form Impian: $e $s');
+              return null;
+            }),
+          ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+          onPressed: () => unawaited(
+            Nav.to(context, const FormImpian()).catchError((
+              Object e,
+              StackTrace s,
+            ) {
+              L.e('Gagal navigasi ke Form Impian: $e $s');
+              return null;
+            }),
+          ),
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -367,7 +383,15 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+        onPressed: () => unawaited(
+            Nav.to(context, const FormImpian()).catchError((
+              Object e,
+              StackTrace s,
+            ) {
+              L.e('Gagal navigasi ke Form Impian: $e $s');
+              return null;
+            }),
+          ),
         child: const Icon(CupertinoIcons.add),
       ),
     );

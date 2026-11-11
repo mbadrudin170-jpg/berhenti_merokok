@@ -19,4 +19,7 @@ class NamaTabel {
 
   /// Tabel riwayat intervensi SOS Craving.
   static const String sosIntervensi = 'sos_intervensi';
+
+  /// Tabel rencana darurat if-then (jika… maka…).
+  static const String rencanaDarurat = 'rencana_darurat';
 }
