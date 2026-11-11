@@ -7,6 +7,7 @@ import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -24,6 +25,10 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
   /// Badge historis tidak pernah dicoret dari pencapaian pengguna karena slip.
   Set<String> _badgeHistoris = <String>{};
   bool _historisDimuat = false;
+
+  /// Flag dedup pendaftaran post-frame callback: mencegah callback terdaftar
+  /// berulang pada setiap rebuild sebelum callback berjalan.
+  bool _simpanTerjadwal = false;
 
   @override
   void initState() {
@@ -268,22 +273,29 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
 
     // Simpan badge yang baru tercapai ke SharedPreferences agar tidak hilang
     // dari tampilan pencapaian bila metrik aktual turun karena slip berikutnya.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_historisDimuat) return;
-      final tercapaiSekarang = daftarBadge
-          .where((b) => b.tercapai)
-          .map((b) => b.id)
-          .toSet();
-      final kurang = tercapaiSekarang.difference(_badgeHistoris);
-      if (kurang.isNotEmpty) {
+    // Post-frame callback didaftarkan hanya bila ada badge baru yang kurang
+    // dan belum ada callback terjadwal, agar tidak terdaftar berulang per rebuild.
+    final kurang = daftarBadge
+        .where((b) => b.tercapai)
+        .map((b) => b.id)
+        .toSet()
+        .difference(_badgeHistoris);
+    if (kurang.isNotEmpty && !_simpanTerjadwal) {
+      _simpanTerjadwal = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Reset flag lebih dulu agar perubahan berikutnya bisa dijadwalkan lagi.
+        _simpanTerjadwal = false;
+        if (!mounted || !_historisDimuat) return;
         unawaited(
-          _simpanBadgeHistoris({..._badgeHistoris, ...tercapaiSekarang})
-              .catchError((Object e, StackTrace s) {
-                L.e('Gagal menyimpan badge historis: $e $s');
-              }),
+          _simpanBadgeHistoris({..._badgeHistoris, ...kurang}).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal menyimpan badge historis: $e $s');
+          }),
         );
-      }
-    });
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pencapaian')),
@@ -299,14 +311,39 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
                 style: Theme.of(context).textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
-              Text(
-                pakaiAktual
-                    ? 'Badge rokok/uang dihitung dari $hariTercatat hari tercatat; badge lainnya dari baseline biodata. Badge yang pernah tercapai tetap tersimpan meskipun Anda slip.'
-                    : 'Belum ada catatan konsumsi. Badge rokok/uang memakai estimasi dari biodata. Badge yang pernah tercapai tetap tersimpan meskipun Anda slip.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+              if (!pakaiAktual) ...[
+                Text(
+                  'Belum ada catatan konsumsi. Badge rokok/uang memakai '
+                  'estimasi dari biodata. Badge yang pernah tercapai tetap '
+                  'tersimpan meskipun Anda slip.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () => unawaited(
+                      Nav.to(
+                        context,
+                        const KonsumsiRokokScreen(),
+                      ).catchError((Object e, StackTrace s) {
+                        L.e('Gagal navigasi ke Konsumsi Rokok: $e $s');
+                        return null;
+                      }),
+                    ),
+                    child: const Text('Catat Konsumsi'),
+                  ),
+                ),
+              ] else
+                Text(
+                  'Badge rokok/uang dihitung dari $hariTercatat hari '
+                  'tercatat; badge lainnya dari baseline biodata. Badge yang '
+                  'pernah tercapai tetap tersimpan meskipun Anda slip.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

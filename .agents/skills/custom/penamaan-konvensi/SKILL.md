@@ -3,9 +3,9 @@ name: penamaan-konvensi
 description: Konvensi penamaan proyek Flutter - identifier bahasa Indonesia, nama file snake_case, variable camelCase, class PascalCase, konstanta SCREAMING_SNAKE_CASE, import package: hanya, dan nama tabel/kolom database snake_case.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "a5beae01b86a4d9753963380818bc437c2b4741a"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Konvensi Penamaan Proyek
@@ -35,6 +35,7 @@ Skill ini mendokumentasikan konvensi penamaan yang wajib diterapkan di proyek in
 11. Private (underscore prefix): `_camelCase`.
 12. Top-level constant, static const class field: `SCREAMING_SNAKE_CASE`.
 13. Enum values: `lowerCamelCase` (bukan SCREAMING_SNAKE_CASE).
+13a. Nilai enum yang dipersistenkan ke kolom database (`.name` disimpan ke kolom `TEXT`) juga wajib `lowerCamelCase` (mis. `berhasilMenahan`, `timer3Menit`). Perubahan nilai enum yang sudah tersimpan wajib disertai migrasi data di `onUpgrade` (lihat skill `migrasi-skema-sqlite`); nilai `snake_case` lama tidak boleh dipertahankan di enum baru maupun di data baru.
 14. Nama tabel & kolom database: `snake_case` (lowercase + underscore).
 15. Konstanta `NamaTabel` / `NamaKolom` value harus cocok persis dengan schema SQLite.
 16. Import wajib pakai `package:` prefix, DILARANG relative import (`../`, `./`).
@@ -144,4 +145,4 @@ import './biodata_model.dart'; // DILARANG
 
 - File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/shared/konstanta/nama_tabel.dart`, `lib/shared/konstanta/nama_kolom.dart`
 - Class terkait: `BiodataModel`, `ModeBerhenti`, `NamaTabel`, `NamaKolom`
-- Commit rujukan: `1e7b71e` — Import ordering enforcement; `adc85b5` — NamaKolom snake_case constants; `3b67d309` — Indonesian identifiers throughout
+- Commit rujukan: `1e7b71e` — Import ordering enforcement; `adc85b5` — NamaKolom snake_case constants; `3b67d309` — Indonesian identifiers throughout; `a5beae01b86a4d9753963380818bc437c2b4741a` — enum lowerCamelCase + migrasi data v12 untuk nilai tersimpan

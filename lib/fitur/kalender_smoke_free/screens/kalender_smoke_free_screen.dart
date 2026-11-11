@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,29 +46,8 @@ StatusKalender _statusTanggal({
   return StatusKalender.tanpaCatatan;
 }
 
-/// Streak saat ini: hari kalender berturut-turut tanpa catatan
-/// konsumsi/slip sampai hari ini.
-///
-/// TODO(B.1): delegasikan ke `MetrikBerhentiHelper.hitungStreak`
-/// (`lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart`) setelah
-/// `prd/satukan_perhitungan_baseline_aktual.md` diimplementasikan.
-int _streakSaatIni(List<KonsumsiRokokModel> list) {
-  DateTime? terakhir;
-  for (final m in list) {
-    final lokal = m.tanggal.toLocal();
-    final d = DateTime(lokal.year, lokal.month, lokal.day);
-    if (terakhir == null || d.isAfter(terakhir)) {
-      terakhir = d;
-    }
-  }
-  if (terakhir == null) {
-    return 0; // belum ada catatan: bukan bukti bebas rokok
-  }
-  final sekarang = DateTime.now();
-  final hariIni = DateTime(sekarang.year, sekarang.month, sekarang.day);
-  final selisih = hariIni.difference(terakhir).inDays;
-  return selisih < 0 ? 0 : selisih;
-}
+// Streak dihitung lewat MetrikBerhentiHelper.hitungStreak (helper bersama)
+// agar logika tidak ditulis dua kali di layar ini.
 
 /// Halaman kalender smoke-free.
 ///
@@ -229,7 +210,7 @@ class _KalenderSmokeFreeScreenState
     final totalSmokeFree =
         hariIniDate.difference(tanggalBerhentiDate).inDays + 1;
     final totalSmokeFreeAman = totalSmokeFree < 0 ? 0 : totalSmokeFree;
-    final streak = _streakSaatIni(konsumsiState.listKonsumsi);
+    final streak = MetrikBerhentiHelper.hitungStreak(konsumsiState.listKonsumsi);
     L.i(
       'streak=$streak, totalSmokeFree=$totalSmokeFreeAman, '
       'ringkasan.length=${ringkasan.length}',
@@ -284,25 +265,14 @@ class _KalenderSmokeFreeScreenState
   Widget _buildBiodataNull() {
     return Scaffold(
       appBar: AppBar(title: const Text('Kalender Smoke-Free')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 12,
-              children: [
-                const Text('Belum ada data biodata'),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
-                  ),
-                  child: const Text('Isi Biodata'),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: EmptyStateView(
+        ikon: CupertinoIcons.person,
+        judul: 'Belum ada data biodata',
+        deskripsi:
+            'Kalender smoke-free membutuhkan biodata untuk mengetahui '
+            'kebiasaan merokokmu sebelum berhenti.',
+        ctaLabel: 'Isi Biodata',
+        onCta: _bukaFormBiodata,
       ),
     );
   }
@@ -310,36 +280,27 @@ class _KalenderSmokeFreeScreenState
   Widget _buildBelumBerhenti() {
     return Scaffold(
       appBar: AppBar(title: const Text('Kalender Smoke-Free')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 12,
-              children: [
-                const Icon(CupertinoIcons.calendar, size: 48),
-                const Text(
-                  'Belum ada tanggal mulai berhenti merokok.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  'Isi tanggal mulai berhenti pada biodata untuk melihat '
-                  'kalender smoke-free.',
-                  textAlign: TextAlign.center,
-                ),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(context, const FormBiodata(buatPertama: false)),
-                  ),
-                  child: const Text('Isi Biodata'),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: EmptyStateView(
+        ikon: CupertinoIcons.calendar,
+        judul: 'Belum ada tanggal mulai berhenti',
+        deskripsi:
+            'Isi tanggal mulai berhenti pada biodata untuk melihat '
+            'kalender smoke-free.',
+        ctaLabel: 'Isi Biodata',
+        onCta: _bukaFormBiodata,
       ),
+    );
+  }
+
+  void _bukaFormBiodata() {
+    unawaited(
+      Nav.to(context, const FormBiodata(buatPertama: false)).catchError((
+        Object e,
+        StackTrace s,
+      ) {
+        L.e('Gagal navigasi ke Form Biodata: $e $s');
+        return null;
+      }),
     );
   }
 }

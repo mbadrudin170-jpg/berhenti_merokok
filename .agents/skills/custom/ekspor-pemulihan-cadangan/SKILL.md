@@ -3,9 +3,9 @@ name: ekspor-pemulihan-cadangan
 description: Panduan ekspor dan pemulihan data cadangan lokal Flutter - pemulihan dalam transaksi DB atomic, exception khusus (class implements Exception), cek platform sebelum operasi berkas, flag double submit (_sedangMemproses), unawaited catchError dengan L.e, mounted check setelah await, refresh provider setelah sukses, konfirmasi destruktif dengan isDestructiveAction, AppToast feedback, dan hapus file parsial gagal.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "338a0216257bb9f75617f144fd2fae0d7faf63d2"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "50c1be708e595449fa2fd18e3491d4418943c565"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Ekspor dan Pemulihan Data Cadangan Lokal
@@ -27,7 +27,8 @@ Pemulihan dalam transaksi atomic, exception khusus, cek platform, flag double su
 4. Operasi async berulang (ekspor/pemulihan) dilindungi flag `_sedangMemproses` dicek awal, dikembalikan `finally` termasuk error.
 5. unawaited (EasyLoading show/dismiss, Nav.to) wajib `.catchError(...)` log via `L.e`.
 6. Setelah `await` wajib cek `mounted` sebelum akses context/setState.
-7. Setelah pemulihan berhasil, refresh semua provider (`biodataProvider`, `impianProvider`, `diaryCravingProvider`, `alasanBerhentiProvider`) via `ref.refresh()`, try/catch `L.e`.
+7. Setelah pemulihan berhasil, refresh SEMUA provider yang datanya ikut dipulihkan via `ref.refresh()`, masing-masing dalam try/catch `L.e` — bukan hanya sebagian. Daftar minimal saat ini: `biodataProvider`, `impianProvider`, `diaryCravingProvider`, `alasanBerhentiProvider`, `konsumsiRokokProvider`, `sosIntervensiProvider`, `rencanaDaruratProvider`. Bila menambah tabel ke `tabelCadangan`, provider-nya WAJIB ikut ditambahkan ke `_refreshProviderSetelahRestore` (cadangan_screen.dart) — menambah tabel cadangan tanpa refresh provider membuat UI menampilkan data usang setelah pemulihan.
+7a. Ekspor (`CadanganHelper.eksporKePayload`) wajib menyertakan SELURUH tabel yang dideklarasikan di `tabelCadangan` (`biodata`, `impian`, `diaryCraving`, `alasanBerhenti`, `konsumsiRokok`, `sosIntervensi`, `rencanaDarurat`) beserta pencatatan jumlah baris tiap tabel di log (`L.i`). Tabel baru yang ditambahkan ke skema wajib dievaluasi apakah termasuk cadangan; bila ya, tambahkan ke `tabelCadangan` sekaligus ke refresh provider di aturan 7.
 8. Operasi destruktif (pemulihan ganti data) wajib dialog konfirmasi `showOkCancelAlertDialog` dengan `isDestructiveAction: true`.
 9. Feedback pakai `AppToast` (sukses/gagal/info), bukan `Fluttertoast` langsung.
 10. Berkas parsial gagal ditulis wajib dihapus.
@@ -80,9 +81,9 @@ class _CadanganBenarState extends ConsumerState<CadanganBenar> {
         // insert data baru...
       });
 
-      // Refresh provider
-      for (final provider in [biodataProvider, impianProvider, diaryCravingProvider, alasanBerhentiProvider]) {
-        try { await ref.refresh(provider.future); } catch (e, s) { L.e('Refresh gagal: $e $s'); }
+      // Refresh SEMUA provider yang datanya dipulihkan
+      for (final provider in [biodataProvider, impianProvider, diaryCravingProvider, alasanBerhentiProvider, konsumsiRokokProvider, sosIntervensiProvider, rencanaDaruratProvider]) {
+        try { ref.refresh(provider); } on Exception catch (e, s) { L.e('Gagal refresh provider: $e $s'); }
       }
 
       AppToast.sukses(context, 'Cadangan berhasil dipulihkan');
@@ -123,4 +124,4 @@ Navigator.pop(context);
 
 - File: `lib/fitur/cadangan/helper/cadangan_helper.dart`, `lib/fitur/cadangan/screens/cadangan_screen.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`
 - Class terkait: `SqfliteOp`, `BerkasCadanganTidakValidException`, `EasyLoading`, `AppToast`, `L`, `Nav`
-- Commit rujukan: `338a0216257bb9f75617f144fd2fae0d7faf63d2` — Konfirmasi pemulihan cadangan (destruktif)
+- Commit rujukan: `338a0216257bb9f75617f144fd2fae0d7faf63d2` — Konfirmasi pemulihan cadangan (destruktif); `2462af81050e12b2933717f457a33a5b05d3719f` — ekspor seluruh tabel (konsumsi_rokok, sos_intervensi, rencana_darurat); `50c1be708e595449fa2fd18e3491d4418943c565` — refresh provider konsumsiRokok/sosIntervensi/rencanaDarurat setelah restore

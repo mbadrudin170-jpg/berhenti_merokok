@@ -12,6 +12,7 @@ import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -240,9 +241,33 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
       L.w('listImpian kosong');
       return Scaffold(
         appBar: AppBar(title: const Text('Impian'), scrolledUnderElevation: 2),
-        body: const _EmptyImpian(),
+        body: EmptyStateView(
+          ikon: CupertinoIcons.star,
+          judul: 'Belum ada impian',
+          deskripsi:
+              'Catat impian yang ingin kamu capai dengan uang yang dihemat '
+              'dari berhenti merokok.',
+          ctaLabel: 'Tambah Impian',
+          onCta: () => unawaited(
+            Nav.to(context, const FormImpian()).catchError((
+              Object e,
+              StackTrace s,
+            ) {
+              L.e('Gagal navigasi ke Form Impian: $e $s');
+              return null;
+            }),
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+          onPressed: () => unawaited(
+            Nav.to(context, const FormImpian()).catchError((
+              Object e,
+              StackTrace s,
+            ) {
+              L.e('Gagal navigasi ke Form Impian: $e $s');
+              return null;
+            }),
+          ),
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -357,8 +382,18 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           ),
         ),
       ),
+      // floatingActionButton: indentasi Nav.to diselaraskan dengan dua
+      // pemanggilan unawaited() lain di file ini (baris 251 dan 261).
       floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(Nav.to(context, const FormImpian())),
+        onPressed: () => unawaited(
+          Nav.to(context, const FormImpian()).catchError((
+            Object e,
+            StackTrace s,
+          ) {
+            L.e('Gagal navigasi ke Form Impian: $e $s');
+            return null;
+          }),
+        ),
         child: const Icon(CupertinoIcons.add),
       ),
     );
@@ -449,33 +484,4 @@ class _SaldoItem extends StatelessWidget {
   }
 }
 
-/// Widget untuk state kosong daftar impian.
-class _EmptyImpian extends StatelessWidget {
-  const _EmptyImpian();
 
-  @override
-  Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
-            children: [
-              Icon(CupertinoIcons.star, size: 48),
-              Text(
-                'Belum ada impian',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Tekan tombol + untuk menambah impian pertama.',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

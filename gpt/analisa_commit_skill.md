@@ -24,4 +24,4 @@
 - AGENTS.md  
 - catatan.md  
 21. khusus untuk commit yang isi nya  file `task.md` wajib baca diff yang bagian task berstatus batal dan dihapus, berarti ada alasannya kenapa task statusnya di tandai batal, lalu lihat bagian `prompt` disana ada keterangan kenapa sebuah task ditandai \`batal\`, setelah itu perbarui skill yang relevan agar mengikuti arahan dari prompt pada \`task\` itu.  
-22. 
+22. sekalian baca file `.agents/rules/global/aturan_skill.md` agar semua skill di folder `custom` sesuai dengan rules itu.

@@ -28,7 +28,8 @@ abstract class SosIntervensiModel with _$SosIntervensiModel {
             JenisIntervensiSos.values,
             ParserUtil.parseStringOrNull(row[NamaKolom.jenisIntervensi]),
           ) ??
-          JenisIntervensiSos.napas_478,
+          // Fallback default ikut nama enum baru (lowerCamelCase).
+          JenisIntervensiSos.napas478,
       detail: ParserUtil.parseStringOrNull(row[NamaKolom.detail]),
       hasilIntervensi: ParserUtil.safeParseEnum(
         HasilIntervensiSos.values,

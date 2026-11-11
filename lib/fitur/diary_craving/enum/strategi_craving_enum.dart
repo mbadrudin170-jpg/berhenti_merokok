@@ -1,10 +1,12 @@
 /// Strategi yang dicoba untuk menahan craving.
+// Enum value di-lowerCamelCase sesuai konvensi penamaan proyek (sebelumnya
+// snake_case yang ikut tersimpan ke kolom database).
 enum StrategiCravingEnum {
-  napas_478,
-  minum_air,
+  napas478,
+  minumAir,
   jalan,
-  alih_aktivitas,
-  tunda_5_menit,
+  alihAktivitas,
+  tunda5Menit,
   lainnya,
 }
 
@@ -12,15 +14,15 @@ enum StrategiCravingEnum {
 extension StrategiCravingEnumExtension on StrategiCravingEnum {
   String get label {
     switch (this) {
-      case StrategiCravingEnum.napas_478:
+      case StrategiCravingEnum.napas478:
         return 'Napas 4-7-8';
-      case StrategiCravingEnum.minum_air:
+      case StrategiCravingEnum.minumAir:
         return 'Minum air';
       case StrategiCravingEnum.jalan:
         return 'Jalan';
-      case StrategiCravingEnum.alih_aktivitas:
+      case StrategiCravingEnum.alihAktivitas:
         return 'Alih aktivitas';
-      case StrategiCravingEnum.tunda_5_menit:
+      case StrategiCravingEnum.tunda5Menit:
         return 'Tunda 5 menit';
       case StrategiCravingEnum.lainnya:
         return 'Lainnya';

@@ -3,9 +3,9 @@ name: kartu-motivasi-pintasan-dashboard
 description: Panduan kartu motivasi dan pintasan aksi cepat pada dashboard dan SOS Craving Flutter - navigasi pintasan pakai unawaited Nav.to dengan catchError dan L.e, akses data async opsional dengan asData?.value bukan requireValue, log variabel UI dengan L.i/L.w, FilterChip logging, dan SizedBox.shrink untuk data kosong.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "e6595744b3840998d840e398ca1782e7be7d50b4"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "117293d38f0aa2f139aefe5dc4412bd57473b90e"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Kartu Motivasi dan Pintasan Aksi Cepat pada Dashboard dan SOS Craving
@@ -26,6 +26,8 @@ Pintasan Nav.to unawaited catchError, asData?.value untuk data opsional, log var
 3. Variabel relevan di method UI wajib log `L.i`/`L.w` per aturan logging.
 4. FilterChip pilihan cepat form alasan berhenti wajib log `L.i('snippet=$snippet, terpilih=$terpilih')` dan `L.i('snippet dipilih=$snippet, dipilih=$dipilih')`.
 5. Data opsional kosong → `const SizedBox.shrink()` dengan `L.w`, bukan error/crash.
+6. Baris kartu ringkasan yang sejajar (`Row` + `crossAxisAlignment: CrossAxisAlignment.stretch`) wajib dibungkus `IntrinsicHeight` agar semua kartu memiliki tinggi yang sama meskipun isinya berbeda jumlah baris (caption panjang tak boleh membuat salah satu kartu lebih tinggi).
+7. Caption ringkas di bawah blok metrik wajib dibungkus `Padding(vertical: 8)` (bukan `Text` telanjang) agar jarak terhadap kartu di atas/bawah serasi seperti kartu `Card`.
 
 ## Larangan
 
@@ -91,4 +93,4 @@ if (list.isEmpty) return const SizedBox.shrink(); // Tanpa L.w
 
 - File: `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart`
 - Class terkait: `AsyncValue`, `FilterChip`, `ConsumerWidget`, `L`, `Nav`
-- Commit rujukan: `e6595744b3840998d840e398ca1782e7be7d50b4` — Kartu SOS Craving dan Alasan Berhenti di dashboard
+- Commit rujukan: `e6595744b3840998d840e398ca1782e7be7d50b4` — Kartu SOS Craving dan Alasan Berhenti di dashboard; `fbcfadac74a271a2425334916171adbea4439d11` — penyederhanaan tata letak dashboard (pola C1); `db5dd32f28e92346b9a8d3467fa9b2838e013a02` — caption "Dari catatan" dibungkus `Padding(vertical: 8)`; `117293d38f0aa2f139aefe5dc4412bd57473b90e` — `IntrinsicHeight` untuk menyamakan tinggi 3 kartu ringkasan

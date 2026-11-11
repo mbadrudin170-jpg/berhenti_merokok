@@ -3,9 +3,9 @@ name: penanganan-async-data-kosong
 description: Panduan penanganan state async dan data kosong pada layar - handle isLoading, hasError, requireValue, empty state, data tidak lengkap, early return, mounted check.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "65abc0104fc8eec90cde9906c52d3f65cba13ba3"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Penanganan State Asynchronous dan Data Kosong pada Layar
@@ -41,7 +41,20 @@ if (dataAsync.hasError) {
 
 final state = dataAsync.requireValue;
 if (state.list.isEmpty) {
-  return const Scaffold(body: _EmptyState());
+  return Scaffold(
+    body: EmptyStateView(
+      ikon: CupertinoIcons.book,
+      judul: 'Belum ada data',
+      deskripsi: 'Tekan tombol + untuk menambah data pertama.',
+      ctaLabel: 'Tambah',
+      onCta: () => unawaited(
+        Nav.to(context, const FormPage()).catchError((Object e, StackTrace s) {
+          L.e('Gagal navigasi: $e $s');
+          return null;
+        }),
+      ),
+    ),
+  );
 }
 return Scaffold(body: _Daftar(state.list));
 ```
@@ -55,5 +68,5 @@ return Scaffold(body: ListView(...));
 
 ## Sumber Evaluasi
 
-- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`, `65abc0104fc8eec90cde9906c52d3f65cba13ba3` (`EmptyStateView` sebagai empty state bersama)
 - File: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`

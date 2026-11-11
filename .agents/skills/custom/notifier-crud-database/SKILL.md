@@ -3,9 +3,9 @@ name: notifier-crud-database
 description: Panduan pola Notifier CRUD pada database dengan Riverpod - keepAlive, build memanggil _ambilSemua, CRUD update state setelah operasi DB berhasil, catch Exception rethrow.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "4823fe3e7f4deae674fc8e805a4c3e19fea9fcf4"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "50c1be708e595449fa2fd18e3491d4418943c565"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Pola Notifier CRUD pada Database
@@ -25,12 +25,17 @@ Notifier database wajib menggunakan `@Riverpod(keepAlive: true)`, method `build(
    f. Menangkap `Exception` dengan `on Exception catch (e, s)`, mencatat dengan `L.e`, lalu `rethrow`.
 4. Gunakan `SqfliteOp` sebagai lapisan akses database; jangan memanggil `openDatabase` langsung di notifier.
 5. Operasi batch (banyak data) wajib menggunakan `op.batch(...)` agar atomik dan efisien.
+6. Untuk entitas baru yang dibuat dari form, notifier boleh menyimpan satu baris langsung dengan `op.tambah(...)` menghasilkan `id` via `Uuid().v4()` dan `dibuat` via `DateTime.now().toUtc()`; state diperbarui dengan prepend model baru ke `list...` dan menaikkan counter (`jumlah... + 1`) setelah DB berhasil — jangan menulis dua jalur penyimpanan (model-by-model vs map) di notifier yang sama.
+7. Update parsial satu kolom (mis. menautkan `diaryCravingId`) wajib memakai `op.ubah(... where: 'id = ?', whereArgs: [...])` lalu memetakan model lama dengan `copyWith` untuk membentuk state baru; jangan menulis ulang seluruh baris dengan `toSqflite()` hanya untuk mengubah satu kolom.
+8. Konflik insert wajib eksplisit: `conflictAlgorithm: ConflictAlgorithm.abort` untuk insert baru (gagal bila id bentrok) — `replace` hanya bila memang upsert disengaja.
+9. Setelah `await future` di dalam method CRUD, jangan akses provider lain yang bisa memicu rebuild tidak perlu; state diperbarui murni dari `dataLama` + model baru.
 
 ## Larangan
 
 - Jangan memperbarui `state` sebelum operasi database selesai (kecuali mengikuti pola optimistic update pada aturan Riverpod #9).
 - Jangan menelan exception; wajib `rethrow` agar UI dapat menangani.
 - Jangan membuat instance database baru di notifier.
+- Jangan persistenkan `id` yang tidak di-generate (mis. dari input pengguna) tanpa keputusan eksplisit.
 
 ## Contoh Benar
 
@@ -83,5 +88,5 @@ await op.tambah(NamaTabel.diaryCraving, craving.toSqflite()); // jika gagal, sta
 
 ## Sumber Evaluasi
 
-- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
-- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `a15acd9603fe5d1251afa4acc3817e7e9c1607b1` (SosIntervensiNotifier: simpan + ubahDiaryCravingId), `2462af81050e12b2933717f457a33a5b05d3719f` (RencanaDaruratNotifier)
+- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/sos_craving/notifier/sos_intervensi_notifier.dart`, `lib/fitur/rencana_darurat/notifier/rencana_darurat_notifier.dart`

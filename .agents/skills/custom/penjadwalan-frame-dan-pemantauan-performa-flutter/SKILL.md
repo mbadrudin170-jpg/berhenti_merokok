@@ -3,9 +3,9 @@ name: penjadwalan-frame-dan-pemantauan-performa-flutter
 description: Panduan penjadwalan frame dan pemantauan performa Flutter menggunakan SchedulerBinding, PlatformDispatcher, Timeline, dan FrameTiming. Digunakan untuk mengatur siklus frame (scheduleFrame, scheduleWarmUpFrame, handleBeginFrame, handleDrawFrame), transient/persistent/post-frame callback, pemantauan performa via addTimingsCallback dan onReportTimings, serta pencatatan timeline via Timeline.timeSync/startSync/finishSync dan Flow.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "belum-ada-commit"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "4dd0cdb5d101413a839c37c3dfb8c594aeef60c2"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Penjadwalan Frame dan Pemantauan Performa Flutter
@@ -28,6 +28,7 @@ Skill ini mengatur cara kerja siklus frame Flutter dari lapisan framework (Sched
 4. Fase frame (`SchedulerPhase`) harus dipahami: `scheduleFrame()` tidak berpengaruh saat fasa `transientCallbacks`, `midFrameMicrotasks`, atau `persistentCallbacks`; hanya berfungsi pada `idle` dan `postFrameCallbacks`.
 5. Transient frame callback (`scheduleFrameCallback`) dieksekusi pada fase `transientCallbacks` (awal frame); persistent callback (`addPersistentFrameCallback`) dieksekusi pada fase `persistentCallbacks`; post-frame callback (`addPostFrameCallback`) dieksekusi setelah rendering selesai.
 6. Persistent dan post-frame callback tidak dapat dibatalkan setelah terdaftar; pastikan pendaftaran hanya dilakukan sekali untuk menghindari duplikasi eksekusi per frame.
+6a. `WidgetsBinding.instance.addPostFrameCallback(...)` yang didaftarkan di dalam `build()` wajib dideduplicasi dengan flag instance (mis. `bool _simpanTerjadwal = false;`): hitung dulu selisih/kondisi yang memicu, set flag `true` sebelum mendaftarkan callback, dan reset flag menjadi `false` di awal callback. Jangan mendaftarkan callback baru pada setiap rebuild; pendaftaran tanpa flag menyebabkan callback terdaftar berkali-kali selama fase awal (mis. saat data async baru selesai dimuat) dan operasi di dalamnya (mis. `SharedPreferences.setStringList`) tereksekusi berulang.
 7. Wajib memanggil `SchedulerBinding.addTimingsCallback()` (lebih disarankan) daripada `PlatformDispatcher.onReportTimings` secara langsung karena mendukung banyak callback secara independen.
 8. Setiap `Timeline.startSync()` harus selalu diiringi `Timeline.finishSync()` dalam blok `finally` untuk mencegah uneven calls; gunakan `Timeline.timeSync()` untuk pemanggilan sinkron sederhana.
 9. Objek `Flow` digunakan untuk menggambarkan alur antar Timeline slice dengan `id` yang sama; gunakan `Flow.begin()`, `Flow.step(id)`, dan `Flow.end(id)` berpasangan.
@@ -40,6 +41,7 @@ Skill ini mengatur cara kerja siklus frame Flutter dari lapisan framework (Sched
 - DILARANG menggunakan `scheduleWarmUpFrame()` untuk render frame rutin (hanya startup / hot reload / allowFirstFrame).
 - DILARANG menjalankan tugas berat (lebih dari ~1 ms) di dalam transient callback karena akan menunda frame reguler.
 - DILARANG membatalkan persistent atau post-frame callback setelah terdaftar (tidak ada API unregister).
+- DILARANG mendaftarkan `addPostFrameCallback` di `build()` tanpa flag dedup; pendaftaran berulang per rebuild dilarang meskipun callback "aman" dijalankan berkali-kali.
 - DILARANG meninggalkan `Timeline.startSync()` tanpa pasangan `finishSync()`.
 - DILARANG menggunakan `Flow` dengan `id` yang tidak terkoordinasi antar slice yang ingin dihubungkan.
 - DILARANG meminta `DartPerformanceMode` tanpa membuang `PerformanceModeRequestHandle` saat selesai.
@@ -128,6 +130,20 @@ SchedulerBinding.instance.scheduleFrameCallback((_) {
 
 // BENAR: pindahkan tugas berat ke scheduleTask dengan prioritas rendah
 
+// DILARANG: addPostFrameCallback di build() tanpa dedup (terdaftar per rebuild)
+WidgetsBinding.instance.addPostFrameCallback((_) { simpan(); });
+
+// BENAR: dedup dengan flag instance
+final kurang = tercapaiSekarang.difference(_tersimpan);
+if (kurang.isNotEmpty && !_simpanTerjadwal) {
+  _simpanTerjadwal = true;
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _simpanTerjadwal = false; // reset lebih dulu agar perubahan berikutnya bisa dijadwalkan
+    if (!mounted) return;
+    unawaited(simpan(kurang).catchError((e, s) => L.e('Gagal: $e $s')));
+  });
+}
+
 // DILARANG: Timeline tanpa finishSync
 Timeline.startSync('Nama');
 doSomething();
@@ -157,4 +173,5 @@ handle.dispose();
 - File: `dart:developer` / `developer/timeline.dart` (class `Timeline`, `TimelineTask`, `Flow`)
 - File: `dart:ui` / `ui/platform_dispatcher.dart` (class `PlatformDispatcher`, `FrameTiming`, enum `FramePhase`, `DartPerformanceMode`)
 - Class terkait: `SchedulerBinding`, `PlatformDispatcher`, `Timeline`, `TimelineTask`, `Flow`, `FrameTiming`, `PerformanceModeRequestHandle`
-- Commit rujukan: `belum-ada-commit` (topik berasal dari SDK Flutter, tidak ada commit proyek terkait)
+- Commit rujukan: `f6d1fa2f63e367ee147e7f4cb9ded6c6707533cb` (pendaftaran post-frame callback di `build()` tanpa dedup), `4dd0cdb5d101413a839c37c3dfb8c594aeef60c2` (perbaikan dengan flag `_simpanTerjadwal` di `badge_screen.dart`)
+- File proyek: `lib/fitur/badge/screens/badge_screen.dart`

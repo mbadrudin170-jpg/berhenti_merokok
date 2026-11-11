@@ -3,9 +3,9 @@ name: gaya
 description: Panduan styling warna dan tema Flutter - wajib menggunakan withValues(alpha:) untuk opacity (bukan withOpacity yang deprecated), warna UI harus diambil dari ColorScheme/tema, hardcode warna hanya diperbolehkan untuk status semantic yang harus sama di light/dark mode (hijau sukses, merah error, kuning warning), dan EasyLoading wajib dilengkapi catchError pada unawaited.
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
-  model: "kilo-auto/free"
+  versi: "1.1.0"
+  commit-terakhir: "ceb9536cc50304149be139dc8c5a36addb9c0774"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Panduan Styling (Gaya)
@@ -27,6 +27,7 @@ Skill ini mendokumentasikan aturan styling warna dan tema berdasarkan implementa
 3. Wajib menggunakan warna dari `Theme.of(context).colorScheme` untuk teks dan komponen UI agar menyesuaikan mode terang/gelap.
 4. Hardcode warna (HEX/RGBA) hanya diperbolehkan jika warna harus tetap sama di kedua mode tema (mis. brand color, status semantic: hijau sukses, merah error, kuning warning).
 5. DILARANG mengubah nilai HEX/RGBA yang sudah ada menjadi referensi `ColorScheme` jika warna memang harus tetap.
+5a. Hardcode status semantic sudah dikonfirmasi pengguna boleh dipertahankan — task yang menandai `const Color(0xFFFF9800)` (dashboard, warning), `const Color(0xFF4CAF50)` (dashboard, sukses), dan `const Color(0xFFEF5350)` (konsumsi_rokok_screen, error) sebagai pelanggaran ditandai `batal` oleh pengguna (commit `ceb9536cc50304149be139dc8c5a36addb9c0774`, `task.md`). Kode di atas sudah sesuai aturan #4; jangan "diperbaiki" dengan mengganti ke `ColorScheme`.
 6. `EasyLoading.show()` dan `EasyLoading.dismiss()` yang dipanggil dengan `unawaited()` wajib dilengkapi `.catchError(...)` untuk menangani error.
 7. Mask type untuk operasi blocking wajib menggunakan `EasyLoadingMaskType.black`.
 8. Konsisten menggunakan `withValues` di seluruh widget, tidak boleh bercampur dengan `withOpacity`.
@@ -89,6 +90,6 @@ unawaited(EasyLoading.show(status: 'Memproses...'));
 
 ## Sumber Evaluasi
 
-- File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/impian/widget/visual_tabungan_impian.dart`
+- File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`, `lib/fitur/impian/widget/visual_tabungan_impian.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart`
 - Class terkait: `Color`, `ThemeData`, `ColorScheme`, `Brightness`, `EasyLoading`, `EasyLoadingMaskType`, `AlwaysStoppedAnimation`
-- Commit rujukan: `3b67d309` — `warna.withValues(alpha: 0.2)` di `SosCravingScreen`; `c7337d1` — `VisualTabunganImpian` warna semantic
+- Commit rujukan: `3b67d309` — `warna.withValues(alpha: 0.2)` di `SosCravingScreen`; `c7337d1` — `VisualTabunganImpian` warna semantic; `ceb9536cc50304149be139dc8c5a36addb9c0774` — task.md: temuan warna hardcode semantic ditandai `batal` (pengguna memutuskan boleh dipertahankan)

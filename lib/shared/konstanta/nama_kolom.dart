@@ -77,18 +77,25 @@ class NamaKolom {
   /// Kolom teks alasan berhenti.
   static const String teks = 'teks';
 
+  // Kolom tabel rencana_darurat.
+  /// Kolom situasi pemicu (jika …) pada rencana darurat.
+  static const String jika = 'jika';
+
+  /// Kolom tindakan konkret (maka …) pada rencana darurat.
+  static const String maka = 'maka';
+
   // Kolom tabel konsumsi_rokok.
   /// Kolom flag slip/relapse konsumsi rokok.
   static const String isSlip = 'is_slip';
 
   // Kolom tabel sos_intervensi.
-  /// Kolom jenis intervensi SOS (napas_478, timer_3_menit, distraksi).
+  /// Kolom jenis intervensi SOS (napas478, timer3Menit, distraksi).
   static const String jenisIntervensi = 'jenis_intervensi';
 
   /// Kolom nama aktivitas distraksi yang dipilih (nullable).
   static const String detail = 'detail';
 
-  /// Kolom hasil intervensi (berkurang, tetap, belum_selesai; nullable).
+  /// Kolom hasil intervensi (berkurang, tetap, belumSelesai; nullable).
   static const String hasilIntervensi = 'hasil_intervensi';
 
   /// Kolom referensi entri diary craving (FK logis, nullable).

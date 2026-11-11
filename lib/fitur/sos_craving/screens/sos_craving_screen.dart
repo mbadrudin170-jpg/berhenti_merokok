@@ -1,16 +1,25 @@
 import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
+import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
+import 'package:berhenti_merokok/fitur/rencana_darurat/widgets/kartu_rencana_darurat.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/box_breathing_view.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/distraksi_view.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/grounding_54321_view.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/napas_478_view.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/napas_90_detik_view.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/timer_craving_view.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/widgets/urge_surfing_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 
 /// Halaman bantuan cepat saat craving (SOS Craving).
 ///
-/// Menyediakan latihan napas 4-7-8, timer craving 3 menit, dan daftar
-/// distraksi untuk membantu pengguna melewati dorongan merokok.
+/// Menampilkan kartu "Ingat alasanmu" di atas menu kartu teknik.
+/// Mengetuk kartu teknik membuka tampilan detail teknik; tombol kembali
+/// pada AppBar mengembalikan ke menu kartu.
 class SosCravingScreen extends ConsumerStatefulWidget {
   const SosCravingScreen({super.key});
 
@@ -18,8 +27,58 @@ class SosCravingScreen extends ConsumerStatefulWidget {
   ConsumerState<SosCravingScreen> createState() => _SosCravingScreenState();
 }
 
-class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
-    with SingleTickerProviderStateMixin {
+class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
+  JenisIntervensiSos? _teknikTerpilih;
+
+  /// Daftar kartu teknik sesuai urutan yang disepakati:
+  /// Napas 4-7-8 → Timer Craving → Box Breathing → Napas 90 Detik →
+  /// Grounding 5-4-3-2-1 → Distraksi → Urge Surfing.
+  static const List<({JenisIntervensiSos jenis, IconData ikon, String nama, String deskripsi})>
+      _kartuTeknik = [
+    (
+      jenis: JenisIntervensiSos.napas478,
+      ikon: Icons.air,
+      nama: 'Napas 4-7-8',
+      deskripsi: 'Tarik 4, tahan 7, hembus 8',
+    ),
+    (
+      jenis: JenisIntervensiSos.timerCraving,
+      ikon: Icons.timer_outlined,
+      nama: 'Timer Craving',
+      deskripsi: 'Tahan 3, 5, atau 10 menit',
+    ),
+    (
+      jenis: JenisIntervensiSos.napasBox,
+      ikon: Icons.crop_square,
+      nama: 'Box Breathing',
+      deskripsi: 'Napas kotak 4-4-4-4',
+    ),
+    (
+      jenis: JenisIntervensiSos.napas90Detik,
+      ikon: Icons.hourglass_bottom,
+      nama: 'Napas 90 Detik',
+      deskripsi: '90 detik napas lega',
+    ),
+    (
+      jenis: JenisIntervensiSos.grounding54321,
+      ikon: Icons.touch_app,
+      nama: 'Grounding 5-4-3-2-1',
+      deskripsi: 'Sadar 5 indra sekitar',
+    ),
+    (
+      jenis: JenisIntervensiSos.distraksi,
+      ikon: Icons.gamepad_outlined,
+      nama: 'Distraksi',
+      deskripsi: 'Alihkan dengan aktivitas',
+    ),
+    (
+      jenis: JenisIntervensiSos.urgeSurfing,
+      ikon: Icons.waves,
+      nama: 'Urge Surfing',
+      deskripsi: 'Tunggangi gelombang craving',
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -32,14 +91,83 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
     super.dispose();
   }
 
+  void _pilihTeknik(JenisIntervensiSos jenis) {
+    L.i('teknik dipilih: ${jenis.name}');
+    setState(() {
+      _teknikTerpilih = jenis;
+    });
+  }
+
+  void _kembaliKeMenu() {
+    L.i('kembali ke menu teknik');
+    setState(() {
+      _teknikTerpilih = null;
+    });
+  }
+
   /// Membangun kartu pengingat alasan berhenti terbaru (penguat motivasi).
   Widget _buildKartuAlasanBerhenti() {
     final alasanAsync = ref.watch(alasanBerhentiProvider);
     final listAlasan = alasanAsync.asData?.value.listAlasan;
     L.i('listAlasan.length=${listAlasan?.length}');
     if (listAlasan == null || listAlasan.isEmpty) {
-      L.w('alasan kosong, kartu motivasi tidak ditampilkan');
-      return const SizedBox.shrink();
+      L.w('alasan kosong, tampilkan pesan + CTA');
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 12,
+                  children: [
+                    Icon(
+                      Icons.favorite_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 4,
+                        children: [
+                          Text(
+                            'Belum ada alasan berhenti',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Catat alasan berhenti agar bisa menguatkanmu '
+                            'saat craving.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const AlasanBerhentiScreen()).catchError((
+                      Object e,
+                      StackTrace s,
+                    ) {
+                      L.e('Gagal navigasi ke Alasan Berhenti: $e $s');
+                      return null;
+                    }),
+                  ),
+                  child: const Text('Tambah alasan'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
     final terbaru = listAlasan.first;
     L.i('terbaru=$terbaru');
@@ -80,34 +208,43 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildKartuTeknik({
+    required IconData ikon,
+    required String nama,
+    required String deskripsi,
+    required VoidCallback onTap,
+  }) {
     final textTheme = Theme.of(context).textTheme;
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('SOS Craving'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Napas 4-7-8'),
-              Tab(text: 'Timer 3 Menit'),
-              Tab(text: 'Distraksi'),
-            ],
-          ),
-        ),
-        body: SafeArea(
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 8,
             children: [
-              _buildKartuAlasanBerhenti(),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _Napas478View(textTheme: textTheme, ref: ref),
-                    _TimerCravingView(ref: ref),
-                    _DistraksiView(ref: ref),
-                  ],
+              Icon(
+                ikon,
+                size: 36,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              Text(
+                nama,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+              Text(
+                deskripsi,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: textTheme.bodySmall,
               ),
             ],
           ),
@@ -115,512 +252,83 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
       ),
     );
   }
-}
 
-/// Latihan napas 4-7-8: tarik 4 detik, tahan 7 detik, hembuskan 8 detik.
-class _Napas478View extends StatefulWidget {
-  const _Napas478View({required this.textTheme, required this.ref});
-
-  final TextTheme textTheme;
-  final WidgetRef ref;
-
-  @override
-  State<_Napas478View> createState() => _Napas478ViewState();
-}
-
-class _Napas478ViewState extends State<_Napas478View> {
-  Timer? _timer;
-  bool _berjalan = false;
-  int _faseIndex = 0; // 0 tarik, 1 tahan, 2 hembus
-  int _sisaFase = 4;
-  int _siklus = 0;
-
-  static const List<({String label, int durasi})> _fase = [
-    (label: 'Tarik napas', durasi: 4),
-    (label: 'Tahan', durasi: 7),
-    (label: 'Hembuskan', durasi: 8),
-  ];
-
-  static const int _targetSiklus = 4;
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('Napas478View initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('Napas478View dispose');
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _mulai() {
-    if (_berjalan) return;
-    L.i('mulai napas 4-7-8');
-    setState(() {
-      _berjalan = true;
-      _faseIndex = 0;
-      _sisaFase = _fase[0].durasi;
-      _siklus = 0;
-    });
-    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-  }
-
-  void _tick(Timer _) {
-    if (!mounted) return;
-    setState(() {
-      _sisaFase--;
-      if (_sisaFase <= 0) {
-        _faseIndex++;
-        if (_faseIndex >= _fase.length) {
-          _faseIndex = 0;
-          _siklus++;
-          if (_siklus >= _targetSiklus) {
-            _selesai();
-            return;
-          }
-        }
-        _sisaFase = _fase[_faseIndex].durasi;
-      }
-    });
-  }
-
-  void _selesai() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-    });
-    L.i('napas 4-7-8 selesai, siklus=$_siklus');
-    AppToast.sukses(context, 'Latihan napas selesai. Anda hebat!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: widget.ref,
-        jenisIntervensi: JenisIntervensiSos.napas_478,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi napas: $e $s');
-        return null;
-      }),
+  Widget _buildMenuTeknik() {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      children: [
+        _buildKartuAlasanBerhenti(),
+        const KartuRencanaDarurat(),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            padding: const EdgeInsets.all(16),
+            childAspectRatio: 1.05,
+            children: [
+              for (final kartu in _kartuTeknik)
+                _buildKartuTeknik(
+                  ikon: kartu.ikon,
+                  nama: kartu.nama,
+                  deskripsi: kartu.deskripsi,
+                  onTap: () => _pilihTeknik(kartu.jenis),
+                ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          child: Text(
+            'Teknik ini bukan pengganti nasihat medis.',
+            textAlign: TextAlign.center,
+            style: textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  void _henti() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-    });
-    L.i('napas 4-7-8 dihentikan');
-  }
-
-  void _reset() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _faseIndex = 0;
-      _sisaFase = _fase[0].durasi;
-      _siklus = 0;
-    });
-    L.i('napas 4-7-8 reset');
-  }
-
-  double get _skalaLingkaran {
-    if (!_berjalan) return 0.6;
-    switch (_faseIndex) {
-      case 0: // tarik: membesar
-        final durasi = _fase[0].durasi;
-        final progres = 1 - (_sisaFase / durasi);
-        return 0.6 + (0.4 * progres);
-      case 1: // tahan
-        return 1.0;
-      case 2: // hembus: mengecil
-        final durasi = _fase[2].durasi;
-        final progres = 1 - (_sisaFase / durasi);
-        return 1.0 - (0.4 * progres);
-      default:
-        return 0.6;
+  Widget _buildDetailTeknik(JenisIntervensiSos jenis) {
+    switch (jenis) {
+      case JenisIntervensiSos.napas478:
+        return const Napas478View();
+      case JenisIntervensiSos.timerCraving:
+      case JenisIntervensiSos.timer3Menit:
+        return const TimerCravingView();
+      case JenisIntervensiSos.napasBox:
+        return const BoxBreathingView();
+      case JenisIntervensiSos.napas90Detik:
+        return const Napas90DetikView();
+      case JenisIntervensiSos.grounding54321:
+        return const Grounding54321View();
+      case JenisIntervensiSos.distraksi:
+        return const DistraksiView();
+      case JenisIntervensiSos.urgeSurfing:
+        return const UrgeSurfingView();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final fase = _fase[_faseIndex];
-    final warna = Theme.of(context).colorScheme.primary;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        spacing: 16,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Latihan Napas 4-7-8',
-            style: widget.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            'Tarik napas 4 detik, tahan 7 detik, hembuskan 8 detik. '
-            'Ulangi $_targetSiklus kali.',
-            textAlign: TextAlign.center,
-            style: widget.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 900),
-            curve: Curves.easeInOut,
-            width: 200 * _skalaLingkaran,
-            height: 200 * _skalaLingkaran,
-            decoration: BoxDecoration(
-              color: warna.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-              border: Border.all(color: warna, width: 3),
-            ),
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _berjalan ? fase.label : 'Siap',
-                  style: widget.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _berjalan ? '$_sisaFase' : '$_targetSiklus siklus',
-                  style: widget.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (_berjalan)
-            Text(
-              'Siklus ${_siklus + 1} dari $_targetSiklus',
-              style: widget.textTheme.bodyMedium,
-            ),
-          const SizedBox(height: 8),
-          Row(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_berjalan)
-                FilledButton.icon(
-                  onPressed: _mulai,
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Mulai'),
-                )
-              else
-                FilledButton.icon(
-                  onPressed: _henti,
-                  icon: const Icon(Icons.pause),
-                  label: const Text('Jeda'),
-                ),
-              OutlinedButton.icon(
-                onPressed: _reset,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Reset'),
+    final teknik = _teknikTerpilih;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(teknik == null ? 'SOS Craving' : teknik.label),
+        leading: teknik == null
+            ? null
+            : IconButton(
+                tooltip: 'Kembali ke menu',
+                icon: const Icon(Icons.arrow_back),
+                onPressed: _kembaliKeMenu,
               ),
-            ],
-          ),
-        ],
       ),
-    );
-  }
-}
-
-/// Timer craving 3 menit.
-class _TimerCravingView extends StatefulWidget {
-  const _TimerCravingView({required this.ref});
-
-  final WidgetRef ref;
-
-  @override
-  State<_TimerCravingView> createState() => _TimerCravingViewState();
-}
-
-class _TimerCravingViewState extends State<_TimerCravingView> {
-  static const int _durasiAwal = 3 * 60;
-  Timer? _timer;
-  bool _berjalan = false;
-  int _sisa = _durasiAwal;
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('TimerCravingView initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('TimerCravingView dispose');
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _mulai() {
-    if (_berjalan) return;
-    if (_sisa <= 0) {
-      _sisa = _durasiAwal;
-    }
-    L.i('timer craving mulai, sisa=$_sisa');
-    setState(() {
-      _berjalan = true;
-    });
-    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-  }
-
-  void _tick(Timer _) {
-    if (!mounted) return;
-    setState(() {
-      _sisa--;
-      if (_sisa <= 0) {
-        _selesai();
-      }
-    });
-  }
-
-  void _selesai() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _sisa = 0;
-    });
-    L.i('timer craving selesai');
-    AppToast.sukses(
-      context,
-      '3 menit berlalu. Craving biasanya singkat. Anda berhasil!',
-    );
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: widget.ref,
-        jenisIntervensi: JenisIntervensiSos.timer_3_menit,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi timer: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  void _jeda() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-    });
-    L.i('timer craving dijeda');
-  }
-
-  void _reset() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _sisa = _durasiAwal;
-    });
-    L.i('timer craving reset');
-  }
-
-  String get _teksWaktu {
-    final menit = (_sisa ~/ 60).toString().padLeft(2, '0');
-    final detik = (_sisa % 60).toString().padLeft(2, '0');
-    return '$menit:$detik';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final progres = 1 - (_sisa / _durasiAwal);
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        spacing: 16,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Timer Craving',
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Craving biasanya berlangsung sekitar 3 menit. '
-            'Tahan dorongan hingga waktu habis.',
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: 200,
-            height: 200,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                CircularProgressIndicator(
-                  value: progres.clamp(0.0, 1.0),
-                  strokeWidth: 12,
-                ),
-                Center(
-                  child: Text(
-                    _teksWaktu,
-                    style: textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_berjalan)
-                FilledButton.icon(
-                  onPressed: _mulai,
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(_sisa == 0 ? 'Ulangi' : 'Mulai'),
-                )
-              else
-                FilledButton.icon(
-                  onPressed: _jeda,
-                  icon: const Icon(Icons.pause),
-                  label: const Text('Jeda'),
-                ),
-              OutlinedButton.icon(
-                onPressed: _reset,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Reset'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Daftar distraksi sederhana.
-class _DistraksiView extends StatefulWidget {
-  const _DistraksiView({required this.ref});
-
-  final WidgetRef ref;
-
-  @override
-  State<_DistraksiView> createState() => _DistraksiViewState();
-}
-
-class _DistraksiViewState extends State<_DistraksiView> {
-  int _berhasil = 0;
-  String? _aktivitasTerpilih;
-
-  static const List<String> _aktivitas = [
-    'Minum segelas air putih',
-    'Jalan kaki 5 menit',
-    'Makan permen atau buah',
-    'Cuci muka dengan air dingin',
-    'Telepon teman atau keluarga',
-    'Dengarkan musik favorit',
-    'Lakukan 10 kali push-up ringan',
-    'Baca 1 halaman buku',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('DistraksiView initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('DistraksiView dispose, berhasil=$_berhasil');
-    super.dispose();
-  }
-
-  void _tandaiBerhasil() {
-    setState(() {
-      _berhasil++;
-    });
-    L.i('distraksi berhasil, total=$_berhasil');
-    AppToast.sukses(context, 'Craving berhasil dilewati!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: widget.ref,
-        jenisIntervensi: JenisIntervensiSos.distraksi,
-        detail: _aktivitasTerpilih,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi distraksi: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        spacing: 12,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Distraksi',
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Pilih aktivitas untuk mengalihkan perhatian dari craving.',
-            style: textTheme.bodyMedium,
-          ),
-          if (_berhasil > 0)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  'Craving dilewati: $_berhasil kali',
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          Expanded(
-            child: ListView.separated(
-              itemCount: _aktivitas.length,
-              itemBuilder: (context, index) {
-                final aktivitas = _aktivitas[index];
-                return ListTile(
-                  leading: const Icon(Icons.check_circle_outline),
-                  title: Text(aktivitas),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    L.i('distraksi dipilih: $aktivitas');
-                    setState(() {
-                      _aktivitasTerpilih = aktivitas;
-                    });
-                    AppToast.info(context, aktivitas);
-                  },
-                );
-              },
-              separatorBuilder: (context, index) => const SizedBox(height: 4),
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _tandaiBerhasil,
-              icon: const Icon(Icons.verified),
-              label: const Text('Saya berhasil melewati craving'),
-            ),
-          ),
-        ],
+      body: SafeArea(
+        child: teknik == null
+            ? _buildMenuTeknik()
+            : _buildDetailTeknik(teknik),
       ),
     );
   }

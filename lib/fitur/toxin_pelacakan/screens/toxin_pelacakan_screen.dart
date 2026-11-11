@@ -4,7 +4,9 @@ import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart';
 import 'package:berhenti_merokok/fitur/toxin_pelacakan/helper/toxin_hitung_helper.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +36,30 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
   void dispose() {
     L.i('ToxinPelacakanScreen dispose');
     super.dispose();
+  }
+
+  void _bukaKonsumsiRokok() {
+    unawaited(
+      Nav.to(context, const KonsumsiRokokScreen()).catchError((
+        Object e,
+        StackTrace s,
+      ) {
+        L.e('Gagal navigasi ke Konsumsi Rokok: $e $s');
+        return null;
+      }),
+    );
+  }
+
+  void _bukaFormBiodata() {
+    unawaited(
+      Nav.to(
+        context,
+        const FormBiodata(buatPertama: false),
+      ).catchError((Object e, StackTrace s) {
+        L.e('Gagal navigasi ke Form Biodata: $e $s');
+        return null;
+      }),
+    );
   }
 
   @override
@@ -104,16 +130,12 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
 
     // Fallback seperti badge: aktual bila ada catatan, estimasi bila belum ada.
     final rokokTidakDiHisap = adaCatatan ? rokokAktual : rokokEstimasi;
-    L.i(
-      'rokokEstimasi=$rokokEstimasi, adaCatatan=$adaCatatan, hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, rokokTidakDiHisap=$rokokTidakDiHisap',
-    );
 
     if (rokokTidakDiHisap == 0) {
       return _buildBelumAdaRokokDiHindari();
     }
 
     final daftarToxin = ToxinHitungHelper.hitung(rokokTidakDiHisap);
-    L.i('daftarToxin.length=${daftarToxin.length}');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pelacakan Toxin')),
@@ -148,12 +170,17 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
                   'Catatan konsumsi gagal dimuat; menampilkan estimasi.',
                   style: Theme.of(context).textTheme.bodySmall,
                 )
-              else if (!adaCatatan)
+              else if (!adaCatatan) ...[
                 Text(
                   'Belum ada catatan konsumsi — aktual tersedia setelah Anda '
                   'mencatat.',
                   style: Theme.of(context).textTheme.bodySmall,
-                )
+                ),
+                TextButton(
+                  onPressed: _bukaKonsumsiRokok,
+                  child: const Text('Buka Konsumsi Rokok'),
+                ),
+              ]
               else
                 Text(
                   'Dari catatan: $rokokAktual batang dihindari '
@@ -232,41 +259,14 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
   Widget _buildBiodataNull() {
     return Scaffold(
       appBar: AppBar(title: const Text('Pelacakan Toxin')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 12,
-              children: [
-                const Icon(CupertinoIcons.info, size: 48),
-                const Text(
-                  'Belum ada data biodata',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  'Isi biodata dan tentukan tanggal mulai berhenti untuk '
-                  'melihat pelacakan toxin.',
-                  textAlign: TextAlign.center,
-                ),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(
-                      context,
-                      const FormBiodata(buatPertama: false),
-                    ).catchError((Object e, StackTrace s) {
-                      L.e('Gagal navigasi ke Form Biodata: $e $s');
-                      return null;
-                    }),
-                  ),
-                  child: const Text('Isi Biodata'),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: EmptyStateView(
+        ikon: CupertinoIcons.person,
+        judul: 'Belum ada data biodata',
+        deskripsi:
+            'Isi biodata dan tentukan tanggal mulai berhenti untuk melihat '
+            'pelacakan toxin.',
+        ctaLabel: 'Isi Biodata',
+        onCta: _bukaFormBiodata,
       ),
     );
   }
@@ -274,41 +274,14 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
   Widget _buildBelumBerhenti() {
     return Scaffold(
       appBar: AppBar(title: const Text('Pelacakan Toxin')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 12,
-              children: [
-                const Icon(CupertinoIcons.heart, size: 48),
-                const Text(
-                  'Tanggal mulai berhenti belum ditetapkan.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  'Isi tanggal mulai berhenti pada biodata untuk melihat '
-                  'pelacakan toxin.',
-                  textAlign: TextAlign.center,
-                ),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(
-                      context,
-                      const FormBiodata(buatPertama: false),
-                    ).catchError((Object e, StackTrace s) {
-                      L.e('Gagal navigasi ke Form Biodata: $e $s');
-                      return null;
-                    }),
-                  ),
-                  child: const Text('Isi Biodata'),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: EmptyStateView(
+        ikon: CupertinoIcons.heart,
+        judul: 'Tanggal mulai berhenti belum ditetapkan',
+        deskripsi:
+            'Isi tanggal mulai berhenti pada biodata untuk melihat '
+            'pelacakan toxin.',
+        ctaLabel: 'Isi Biodata',
+        onCta: _bukaFormBiodata,
       ),
     );
   }
@@ -316,40 +289,14 @@ class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
   Widget _buildBelumAdaRokokDiHindari() {
     return Scaffold(
       appBar: AppBar(title: const Text('Pelacakan Toxin')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 12,
-              children: [
-                const Icon(CupertinoIcons.check_mark_circled, size: 48),
-                const Text(
-                  'Belum ada rokok yang dihindari',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  'Data toxin akan tersedia setelah Anda mulai hari smoke-free.',
-                  textAlign: TextAlign.center,
-                ),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(
-                      context,
-                      const FormBiodata(buatPertama: false),
-                    ).catchError((Object e, StackTrace s) {
-                      L.e('Gagal navigasi ke Form Biodata: $e $s');
-                      return null;
-                    }),
-                  ),
-                  child: const Text('Isi Biodata'),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: EmptyStateView(
+        ikon: CupertinoIcons.check_mark_circled,
+        judul: 'Belum ada rokok yang dihindari',
+        deskripsi:
+            'Data toxin akan tersedia setelah Anda melewati hari pertama '
+            'smoke-free.',
+        ctaLabel: 'Isi Biodata',
+        onCta: _bukaFormBiodata,
       ),
     );
   }

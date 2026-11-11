@@ -16,7 +16,9 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 11;
+  // Versi 12: migrasi nilai enum snake_case lama ke lowerCamelCase.
+  // Versi 13: tabel rencana_darurat (if-then plan).
+  static const int _versiDatabase = 13;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -115,6 +117,15 @@ class AppDatabase {
         ${NamaKolom.dibuat} TEXT NOT NULL
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.jika} TEXT NOT NULL,
+        ${NamaKolom.maka} TEXT NOT NULL,
+        ${NamaKolom.dibuat} TEXT NOT NULL
+      )
+    ''');
   }
 
   /// Memperbarui skema database saat versi meningkat.
@@ -190,33 +201,24 @@ class AppDatabase {
         'ADD COLUMN ${NamaKolom.targetSmokeFreeHari} INTEGER',
       );
     }
+    // v9: tabel konsumsi_rokok. Tabel sos_intervensi dibuat di cabang v11 (lihat bawah)
+    // agar setiap tabel didefinisikan tepat sekali pada kondisi versinya masing-masing.
     if (oldVersion < 9) {
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.tanggal} TEXT NOT NULL,
-        ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
-        ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
-        ${NamaKolom.catatan} TEXT,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-    await db.execute('''
-      CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
-      ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
-        ${NamaKolom.detail} TEXT,
-        ${NamaKolom.hasilIntervensi} TEXT,
-        ${NamaKolom.diaryCravingId} TEXT,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-  }
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.tanggal} TEXT NOT NULL,
+          ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
+          ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
+          ${NamaKolom.catatan} TEXT,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
+        ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
+      ''');
+    }
     if (oldVersion < 10) {
       await db.execute(
         'ALTER TABLE ${NamaTabel.diaryCraving} '
@@ -243,6 +245,71 @@ class AppDatabase {
           ${NamaKolom.detail} TEXT,
           ${NamaKolom.hasilIntervensi} TEXT,
           ${NamaKolom.diaryCravingId} TEXT,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
+    }
+    // v12: petakan nilai enum snake_case yang tersimpan ke lowerCamelCase.
+    // Tanpa migrasi ini nilai lama tidak terparse oleh safeParseEnum.
+    if (oldVersion < 12) {
+      const pemetaanCraving = <String, String>{
+        'napas_478': 'napas478',
+        'minum_air': 'minumAir',
+        'alih_aktivitas': 'alihAktivitas',
+        'tunda_5_menit': 'tunda5Menit',
+      };
+      const pemetaanHasil = <String, String>{
+        'berhasil_menahan': 'berhasilMenahan',
+        'tetap_merokok': 'tetapMerokok',
+        'belum_selesai': 'belumSelesai',
+      };
+      const pemetaanJenisIntervensi = <String, String>{
+        'napas_478': 'napas478',
+        'timer_3_menit': 'timer3Menit',
+        'napas_box': 'napasBox',
+        'napas_90_detik': 'napas90Detik',
+        'grounding_54321': 'grounding54321',
+        'urge_surfing': 'urgeSurfing',
+        'timer_craving': 'timerCraving',
+      };
+      for (final entry in pemetaanCraving.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.diaryCraving} '
+          'SET ${NamaKolom.strategi} = ? '
+          'WHERE ${NamaKolom.strategi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+      for (final entry in pemetaanHasil.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.diaryCraving} '
+          'SET ${NamaKolom.hasil} = ? '
+          'WHERE ${NamaKolom.hasil} = ?',
+          [entry.value, entry.key],
+        );
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.sosIntervensi} '
+          'SET ${NamaKolom.hasilIntervensi} = ? '
+          'WHERE ${NamaKolom.hasilIntervensi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+      for (final entry in pemetaanJenisIntervensi.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.sosIntervensi} '
+          'SET ${NamaKolom.jenisIntervensi} = ? '
+          'WHERE ${NamaKolom.jenisIntervensi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+    }
+    // v13: tabel rencana_darurat (if-then plan).
+    if (oldVersion < 13) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.jika} TEXT NOT NULL,
+          ${NamaKolom.maka} TEXT NOT NULL,
           ${NamaKolom.dibuat} TEXT NOT NULL
         )
       ''');

@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart';
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/daftar_entri_konsumsi_sheet.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,26 +19,77 @@ class KonsumsiRokokScreen extends ConsumerStatefulWidget {
 }
 
 class _KonsumsiRokokScreenState extends ConsumerState<KonsumsiRokokScreen> {
+  void _catatCepat() {
+    unawaited(
+      ref
+          .read(konsumsiRokokProvider.notifier)
+          .catatCepat()
+          .then((entri) {
+            if (!mounted) return;
+            // Tampilkan Snackbar dengan aksi "Urungkan" (U1)
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Rokok dicatat (+1)'),
+                action: SnackBarAction(
+                  label: 'Urungkan',
+                  onPressed: () => unawaited(
+                    ref
+                        .read(konsumsiRokokProvider.notifier)
+                        .hapus(entri.id)
+                        .catchError((Object e, StackTrace s) {
+                      L.e('Gagal undo quick log: $e $s');
+                      if (context.mounted) {
+                        AppToast.gagal(context, 'Gagal membatalkan catatan');
+                      }
+                    }),
+                  ),
+                ),
+                duration: const Duration(seconds: 10),
+              ),
+            );
+          })
+          .catchError((Object e, StackTrace s) {
+            L.e('Gagal catat cepat konsumsi: $e $s');
+            if (mounted) {
+              AppToast.gagal(context, 'Gagal mencatat rokok');
+            }
+          }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final konsumsiAsync = ref.watch(konsumsiRokokProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Konsumsi Rokok')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: konsumsiAsync.when(
-            data: (state) {
-              if (state.listKonsumsi.isEmpty) {
-                return const _EmptyKonsumsiRokok();
-              }
-              return _DaftarKonsumsi(state: state);
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, s) {
-              L.e('KonsumsiRokokScreen error: $e $s');
-              return Center(
+      body: konsumsiAsync.when(
+        data: (state) {
+          if (state.listKonsumsi.isEmpty) {
+            return EmptyStateView(
+              ikon: CupertinoIcons.smoke,
+              judul: 'Belum ada catatan konsumsi',
+              deskripsi:
+                  'Catat setiap batang rokok agar metrik berhenti '
+                  'merokok akurat.',
+              ctaLabel: 'Catat Rokok (+1)',
+              onCta: _catatCepat,
+            );
+          }
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: _DaftarKonsumsi(state: state),
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, s) {
+          L.e('KonsumsiRokokScreen error: $e $s');
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   spacing: 8,
@@ -51,28 +103,13 @@ class _KonsumsiRokokScreenState extends ConsumerState<KonsumsiRokokScreen> {
                     ),
                   ],
                 ),
-              );
-            },
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(
-          ref
-              .read(konsumsiRokokProvider.notifier)
-              .catatCepat()
-              .then((_) {
-                if (mounted) {
-                  AppToast.sukses(context, 'Rokok dicatat (+1)');
-                }
-              })
-              .catchError((Object e, StackTrace s) {
-                L.e('Gagal catat cepat konsumsi: $e $s');
-                if (mounted) {
-                  AppToast.gagal(context, 'Gagal mencatat rokok');
-                }
-              }),
-        ),
+        onPressed: _catatCepat,
         child: const Icon(CupertinoIcons.add),
         tooltip: 'Catat Rokok (+1)',
       ),
@@ -107,6 +144,14 @@ class _DaftarKonsumsi extends StatelessWidget {
             ? entriHari.first.tanggal
             : null;
 
+        // Parse tanggalKey untuk dibawa ke bottom sheet
+        final parts = tanggalKey.split('-');
+        final tanggalWidget = DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        );
+
         return Card(
           key: ValueKey(tanggalKey),
           child: ListTile(
@@ -126,11 +171,11 @@ class _DaftarKonsumsi extends StatelessWidget {
             subtitle: Text(
               '$total batang${adaSlip ? '  •  SLIP' : ''}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: adaSlip
-                    ? const Color(0xFFEF5350)
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: adaSlip ? FontWeight.bold : FontWeight.normal,
-              ),
+                    color: adaSlip
+                        ? const Color(0xFFEF5350)
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: adaSlip ? FontWeight.bold : FontWeight.normal,
+                  ),
             ),
             trailing: adaSlip
                 ? const Icon(
@@ -142,11 +187,12 @@ class _DaftarKonsumsi extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                builder: (_) => FormKonsumsiRokok(
-                  konsumsi: entriHari.isNotEmpty ? entriHari.first : null,
+                builder: (_) => DaftarEntriKonsumsiSheet(
+                  tanggal: tanggalWidget,
+                  entriHari: entriHari,
                 ),
               ).catchError((Object e, StackTrace s) {
-                L.e('Gagal membuka form konsumsi: $e $s');
+                L.e('Gagal membuka daftar entri konsumsi: $e $s');
                 return null;
               }),
             ),
@@ -157,34 +203,4 @@ class _DaftarKonsumsi extends StatelessWidget {
   }
 }
 
-/// Empty state saat belum ada data konsumsi.
-class _EmptyKonsumsiRokok extends StatelessWidget {
-  const _EmptyKonsumsiRokok();
 
-  @override
-  Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 12,
-            children: [
-              Icon(CupertinoIcons.smoke, size: 64, color: Colors.grey),
-              Text(
-                'Belum ada catatan konsumsi',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Tekan tombol + untuk mencatat rokok pertama Anda.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

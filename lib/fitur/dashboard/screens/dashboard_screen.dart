@@ -92,66 +92,37 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        scrolledUnderElevation: 2,
-        actions: [
-          IconButton(
-            tooltip: 'SOS Craving',
-            icon: const Icon(Icons.sos),
-            onPressed: () => unawaited(
-              Nav.to(context, const SosCravingScreen()).catchError((
-                Object e,
-                StackTrace s,
-              ) {
-                L.e('Gagal navigasi ke SOS Craving: $e $s');
-                return null;
-              }),
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Dashboard'), scrolledUnderElevation: 2),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: ListView(
             children: [
-              _CounterSmokeFreeBesar(biodata: biodata),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 8,
-                    children: [
-                      Text(
-                        'Lama berhenti merokok',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      _DurasiBerhenti(tanggalBerhenti: tanggalBerhenti),
-                      if (tanggalBerhenti != null)
-                        Text(
-                          'Sejak ${FormatTanggal.formatDasar(tanggalBerhenti)}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      if (nama.isNotEmpty)
-                        Text(
-                          'Halo, $nama',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                    ],
-                  ),
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  _CounterSmokeFreeBesar(biodata: biodata),
+                  if (tanggalBerhenti != null)
+                    Text(
+                      'Sejak ${FormatTanggal.formatDasar(tanggalBerhenti)}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  if (nama.isNotEmpty)
+                    Text(
+                      'Halo, $nama',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                ],
               ),
+              const SizedBox(height: 16),
+              _buildRingkasan(biodata),
+              _buildCaptionDariCatatan(biodata, konsumsiAsync),
               _buildCardSosCraving(),
-              _buildCardProgres(biodata, konsumsiAsync),
               _buildCardKonsumsiHariIni(biodata, konsumsiAsync),
               _buildCardTargetSmokeFree(biodata),
               _buildCardRingkasanImpian(biodata, impianAsync),
               _buildCardAlasanBerhenti(),
-              _buildCardMilestone(biodata),
               _buildCardBadge(),
               _buildInfoKerugian(biodata),
             ],
@@ -282,13 +253,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  /// Kartu progres: baseline (estimasi dari biodata) dan aktual (dari catatan
-  /// konsumsi) ditampilkan berdampingan dengan label eksplisit.
-  Widget _buildCardProgres(
-    BiodataModel biodata,
-    AsyncValue<KonsumsiRokokState> konsumsiAsync,
-  ) {
-    final hariBerhenti = MetrikBerhentiHelper.hitungHariBerhenti(biodata);
+  /// Baris 3 kartu ringkasan seragam: uang dihemat (estimasi), rokok
+  /// tidak dihisap (estimasi), dan milestone kesehatan berikutnya (tap →
+  /// `PemulihanKesehatanScreen`). Bobot visual ketiganya seragam.
+  Widget _buildRingkasan(BiodataModel biodata) {
     final rokokEstimasi = MetrikBerhentiHelper.hitungRokokTidakDiHisapEstimasi(
       biodata,
     );
@@ -296,116 +264,116 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       biodata,
     );
 
-    final konsumsiList = konsumsiAsync.asData?.value.listKonsumsi;
-    final adaCatatan = konsumsiList != null && konsumsiList.isNotEmpty;
-    final hariTercatat = adaCatatan
-        ? MetrikBerhentiHelper.hitungJumlahHariTercatat(konsumsiList)
-        : 0;
-    final rokokAktual = adaCatatan
-        ? MetrikBerhentiHelper.hitungRokokDihindariAktual(biodata, konsumsiList)
-        : 0;
-    final uangAktual = adaCatatan
-        ? MetrikBerhentiHelper.hitungUangDihematAktual(biodata, konsumsiList)
-        : 0.0;
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    final durasi = tanggalBerhenti == null
+        ? Duration.zero
+        : DateTime.now().difference(tanggalBerhenti);
+    final aman = durasi.isNegative ? Duration.zero : durasi;
+    final berikutnya = milestoneBerikutnya(aman);
+    final sisa = berikutnya == null ? null : berikutnya.target - aman;
+    L.i(
+      'milestoneBerikutnya=${berikutnya?.judul}, rokokEstimasi=$rokokEstimasi, uangEstimasi=$uangEstimasi',
+    );
 
-    if (konsumsiAsync.hasError) {
+    return IntrinsicHeight(
+      child: Row(
+        spacing: 8,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _KartuRingkasan(
+              judul: 'Uang dihemat (estimasi)',
+              nilai: FormatUang.formatRupiah(uangEstimasi),
+            ),
+          ),
+          Expanded(
+            child: _KartuRingkasan(
+              judul: 'Rokok dihindari (estimasi)',
+              nilai: '$rokokEstimasi batang',
+            ),
+          ),
+          Expanded(
+            child: _KartuRingkasan(
+              judul: 'Milestone berikutnya',
+              nilai: berikutnya?.judul ?? 'Semua tercapai',
+              keterangan: sisa == null
+                  ? null
+                  : 'Tersisa ${_formatDurasiSingkat(sisa)}',
+              onTap: () => unawaited(
+                Nav.to(context, const PemulihanKesehatanScreen()).catchError((
+                  Object e,
+                  StackTrace s,
+                ) {
+                  L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
+                  return null;
+                }),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Caption satu baris "Dari catatan": aktual dari catatan konsumsi
+  /// ditampilkan ringkas (bukan blok besar). Loading/error/kosong ditangani
+  /// dengan pesan singkat ber-bodySmall.
+  ///
+  /// Dibungkus [Padding] vertikal agar caption punya jarak serasi terhadap
+  /// kartu ringkasan di atasnya dan kartu SOS Craving di bawahnya (Text
+  /// telanjang tidak punya margin seperti Card).
+  Widget _buildCaptionDariCatatan(
+    BiodataModel biodata,
+    AsyncValue<KonsumsiRokokState> konsumsiAsync,
+  ) {
+    final style = Theme.of(context).textTheme.bodySmall;
+
+    final Widget isi;
+    if (konsumsiAsync.isLoading) {
+      isi = Text('Menghitung dari catatan…', style: style);
+    } else if (konsumsiAsync.hasError) {
       L.e(
         'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
       );
-    }
-    L.i(
-      'hariBerhenti=$hariBerhenti, rokokEstimasi=$rokokEstimasi, uangEstimasi=$uangEstimasi, adaCatatan=$adaCatatan, hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, uangAktual=$uangAktual',
-    );
+      isi = Text(
+        'Catatan konsumsi gagal dimuat; menampilkan estimasi.',
+        style: style,
+      );
+    } else {
+      final konsumsiList = konsumsiAsync.asData?.value.listKonsumsi;
+      final adaCatatan = konsumsiList != null && konsumsiList.isNotEmpty;
+      if (!adaCatatan) {
+        isi = Text(
+          'Belum ada catatan konsumsi — aktual tersedia setelah Anda mencatat.',
+          style: style,
+        );
+      } else {
+        final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
+          konsumsiList,
+        );
+        final rokokAktual = MetrikBerhentiHelper.hitungRokokDihindariAktual(
+          biodata,
+          konsumsiList,
+        );
+        final uangAktual = MetrikBerhentiHelper.hitungUangDihematAktual(
+          biodata,
+          konsumsiList,
+        );
+        L.i(
+          'hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, uangAktual=$uangAktual',
+        );
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
-          children: [
-            Text(
-              'Lama berhenti (estimasi)',
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '$hariBerhenti hari',
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'Uang dihemat (estimasi)',
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              FormatUang.formatRupiah(uangEstimasi),
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'Rokok tidak dihisap (estimasi)',
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '$rokokEstimasi batang',
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            if (konsumsiAsync.isLoading)
-              Text(
-                'Menghitung dari catatan…',
-                style: Theme.of(context).textTheme.bodySmall,
-              )
-            else if (konsumsiAsync.hasError)
-              Text(
-                'Catatan konsumsi gagal dimuat; menampilkan estimasi.',
-                style: Theme.of(context).textTheme.bodySmall,
-              )
-            else if (!adaCatatan)
-              Text(
-                'Belum ada catatan konsumsi — aktual tersedia setelah Anda '
-                'mencatat.',
-                style: Theme.of(context).textTheme.bodySmall,
-              )
-            else ...[
-              const Divider(),
-              Text(
-                'Dari catatan ($hariTercatat hari tercatat)',
-                style: Theme.of(context).textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Uang dihemat (dari catatan)',
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                FormatUang.formatRupiah(uangAktual),
-                style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Rokok dihindari (dari catatan)',
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '$rokokAktual batang',
-                style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ],
-        ),
-      ),
+        isi = Text(
+          'Dari catatan ($hariTercatat hari tercatat): '
+          '${FormatUang.formatRupiah(uangAktual)} · $rokokAktual batang',
+          style: style,
+        );
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: isi,
     );
   }
 
@@ -519,64 +487,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 CupertinoIcons.chevron_right,
                 color: Theme.of(context).colorScheme.onErrorContainer,
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCardMilestone(BiodataModel biodata) {
-    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-    if (tanggalBerhenti == null) return const SizedBox.shrink();
-
-    final durasi = DateTime.now().difference(tanggalBerhenti);
-    final aman = durasi.isNegative ? Duration.zero : durasi;
-    final berikutnya = milestoneBerikutnya(aman);
-    L.i('milestoneBerikutnya=${berikutnya?.judul}');
-
-    return Card(
-      child: InkWell(
-        onTap: () => unawaited(
-          Nav.to(context, const PemulihanKesehatanScreen()).catchError((
-            Object e,
-            StackTrace s,
-          ) {
-            L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
-            return null;
-          }),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            spacing: 12,
-            children: [
-              const Icon(CupertinoIcons.heart, size: 32, color: Colors.green),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4,
-                  children: [
-                    Text(
-                      'Pemulihan Kesehatan',
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      berikutnya == null
-                          ? 'Semua milestone tercapai'
-                          : 'Berikutnya: ${berikutnya.judul}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    if (berikutnya != null)
-                      Text(
-                        'Tersisa ${_formatDurasiSingkat(berikutnya.target - aman)}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                  ],
-                ),
-              ),
-              const Icon(CupertinoIcons.chevron_right),
             ],
           ),
         ),
@@ -827,75 +737,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-/// Widget kecil yang menampilkan durasi berhenti merokok dan memperbarui tampilannya setiap detik tanpa memicu rebuild seluruh halaman.
-class _DurasiBerhenti extends StatefulWidget {
-  const _DurasiBerhenti({required this.tanggalBerhenti});
-
-  final DateTime? tanggalBerhenti;
-
-  @override
-  State<_DurasiBerhenti> createState() => _DurasiBerhentiState();
-}
-
-class _DurasiBerhentiState extends State<_DurasiBerhenti> {
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      _formatLamaBerhenti(widget.tanggalBerhenti),
-      style: Theme.of(context).textTheme.headlineMedium
-          ?.copyWith(fontWeight: FontWeight.bold),
-    );
-  }
-}
-
-/// Menghitung lama waktu (hari, jam, menit, detik) sejak [tanggalBerhenti] hingga saat ini.
-String _formatLamaBerhenti(DateTime? tanggalBerhenti) {
-  if (tanggalBerhenti == null) {
-    return 'Belum ditentukan';
-  }
-  final selisih = DateTime.now().difference(tanggalBerhenti);
-  L.i('tanggalBerhenti=$tanggalBerhenti, selisih=$selisih');
-  if (selisih.isNegative) {
-    return '0 detik';
-  }
-
-  final hari = selisih.inDays;
-  final jam = selisih.inHours % 24;
-  final menit = selisih.inMinutes % 60;
-  final detik = selisih.inSeconds % 60;
-
-  final bagian = <String>[];
-  if (hari > 0) {
-    bagian.add('$hari hari');
-  }
-  if (jam > 0) {
-    bagian.add('$jam jam');
-  }
-  if (menit > 0) {
-    bagian.add('$menit menit');
-  }
-  bagian.add('$detik detik');
-  return bagian.join(' ');
-}
-
 /// Widget terisolasi yang menampilkan counter smoke-free besar (hari + jam)
 /// di bagian atas Dashboard. Timer per detik hanya membangun ulang widget
 /// ini, bukan seluruh halaman.
@@ -930,10 +771,16 @@ class _CounterSmokeFreeBesarState extends State<_CounterSmokeFreeBesar> {
   @override
   Widget build(BuildContext context) {
     final teks = _formatCounterSmokeFreeBesar(widget.biodata);
-    return Text(
-      teks,
-      style: Theme.of(context).textTheme.displayMedium
-          ?.copyWith(fontWeight: FontWeight.bold),
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Text(
+        teks,
+        style: Theme.of(context).textTheme.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+      ),
     );
   }
 }
@@ -952,7 +799,72 @@ String _formatCounterSmokeFreeBesar(BiodataModel biodata) {
     jamSisa = totalJam < 0 ? 0 : totalJam % 24;
   }
 
-  L.i('hariBerhenti=$hariBerhenti, jamSisa=$jamSisa');
-
   return '$hariBerhenti hari $jamSisa jam';
+}
+
+/// Kartu ringkasan seragam untuk baris 3 metrik pendukung di Dashboard.
+/// StatelessWidget, pure, aman untuk tema; label "(estimasi)" ditulis di
+/// judul oleh pemanggil. Bila [onTap] diisi, kartu menjadi tappable.
+class _KartuRingkasan extends StatelessWidget {
+  const _KartuRingkasan({
+    required this.judul,
+    required this.nilai,
+    this.keterangan,
+    this.onTap,
+  });
+
+  final String judul;
+  final String nilai;
+  final String? keterangan;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final isi = Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: 4,
+        children: [
+          Text(
+            judul,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              nilai,
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+          if (keterangan != null)
+            Text(
+              keterangan!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.bodySmall,
+            ),
+        ],
+      ),
+    );
+
+    if (onTap == null) {
+      return Card(child: isi);
+    }
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: isi,
+      ),
+    );
+  }
 }

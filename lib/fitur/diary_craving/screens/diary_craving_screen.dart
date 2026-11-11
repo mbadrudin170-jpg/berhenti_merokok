@@ -9,6 +9,7 @@ import 'package:berhenti_merokok/fitur/diary_craving/helper/pola_craving_helper.
 import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/form_diary_craving.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +33,18 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
   void dispose() {
     L.i('DiaryCravingScreen dispose');
     super.dispose();
+  }
+
+  void _navigasiKeForm() {
+    unawaited(
+      Nav.to(context, const FormDiaryCraving()).catchError((
+        Object e,
+        StackTrace s,
+      ) {
+        L.e('Gagal navigasi ke Form Diary Craving: $e $s');
+        return null;
+      }),
+    );
   }
 
   Future<void> _hapus(DiaryCravingModel item) async {
@@ -119,17 +132,17 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
     if (list.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Diary Craving')),
-        body: const _EmptyDiaryCraving(),
+        body: EmptyStateView(
+          ikon: CupertinoIcons.book,
+          judul: 'Belum ada catatan craving',
+          deskripsi:
+              'Catat setiap dorongan merokok untuk memahami pemicu dan '
+              'strategi yang paling membantu.',
+          ctaLabel: 'Catat Craving',
+          onCta: _navigasiKeForm,
+        ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => unawaited(
-                    Nav.to(context, const FormDiaryCraving()).catchError((
-                      Object e,
-                      StackTrace s,
-                    ) {
-                      L.e('Gagal navigasi ke Form Diary Craving: $e $s');
-                      return null;
-                    }),
-                  ),
+          onPressed: _navigasiKeForm,
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -186,7 +199,7 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
                                   if (hasil != null)
                                     _PenandaDetail(
                                       icon: hasil ==
-                                              HasilCravingEnum.berhasil_menahan
+                                              HasilCravingEnum.berhasilMenahan
                                           ? Icons.check_circle_outline
                                           : Icons.radio_button_unchecked,
                                       label: hasil.label,
@@ -220,46 +233,8 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(
-          Nav.to(context, const FormDiaryCraving()).catchError((
-            Object e,
-            StackTrace s,
-          ) {
-            L.e('Gagal navigasi ke Form Diary Craving: $e $s');
-            return null;
-          }),
-        ),
+        onPressed: _navigasiKeForm,
         child: const Icon(CupertinoIcons.add),
-      ),
-    );
-  }
-}
-
-class _EmptyDiaryCraving extends StatelessWidget {
-  const _EmptyDiaryCraving();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
-            children: [
-              Icon(CupertinoIcons.book, size: 48),
-              Text(
-                'Belum ada catatan craving',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Tekan tombol + untuk mencatat craving pertama.',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

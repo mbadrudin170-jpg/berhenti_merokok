@@ -4,6 +4,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
 import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
 import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart';
+import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,18 @@ class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
   void dispose() {
     L.i('AlasanBerhentiScreen dispose');
     super.dispose();
+  }
+
+  void _navigasiKeForm() {
+    unawaited(
+      Nav.to(context, const FormAlasanBerhenti()).catchError((
+        Object e,
+        StackTrace s,
+      ) {
+        L.e('Gagal navigasi ke Form Alasan Berhenti: $e $s');
+        return null;
+      }),
+    );
   }
 
   Future<void> _hapus(AlasanBerhentiModel item) async {
@@ -98,10 +111,17 @@ class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
     if (list.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Alasan Berhenti')),
-        body: const _EmptyAlasanBerhenti(),
+        body: EmptyStateView(
+          ikon: CupertinoIcons.heart,
+          judul: 'Belum ada alasan berhenti',
+          deskripsi:
+              'Catat alasan kamu ingin berhenti agar mudah diingat saat '
+              'dorongan merokok muncul.',
+          ctaLabel: 'Tambah Alasan',
+          onCta: _navigasiKeForm,
+        ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () =>
-              unawaited(Nav.to(context, const FormAlasanBerhenti())),
+          onPressed: _navigasiKeForm,
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -138,39 +158,11 @@ class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(Nav.to(context, const FormAlasanBerhenti())),
+        onPressed: _navigasiKeForm,
         child: const Icon(CupertinoIcons.add),
       ),
     );
   }
 }
 
-class _EmptyAlasanBerhenti extends StatelessWidget {
-  const _EmptyAlasanBerhenti();
 
-  @override
-  Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
-            children: [
-              Icon(CupertinoIcons.heart, size: 48),
-              Text(
-                'Belum ada alasan berhenti',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Tekan tombol + untuk mencatat alasan berhenti pertama.',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

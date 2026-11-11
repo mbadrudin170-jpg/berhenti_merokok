@@ -90,19 +90,38 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
       return;
     }
 
-    final konfirmasi = await showOkCancelAlertDialog(
-      context: context,
-      title: 'Simpan Konsumsi',
-      message: 'Apakah Anda yakin ingin menyimpan catatan konsumsi ini?',
-      okLabel: 'Simpan',
-      cancelLabel: 'Batal',
-    );
-    L.i('konfirmasi=$konfirmasi');
-    if (konfirmasi != OkCancelResult.ok) {
-      L.w('konfirmasi bukan ok');
-      return;
+    // U5: Konfirmasi khusus saat jumlah berubah (edit entri existing)
+    if (widget.konsumsi != null && jumlah != widget.konsumsi!.jumlah) {
+      final konfirmasi = await showOkCancelAlertDialog(
+        context: context,
+        title: 'Ubah Jumlah',
+        message:
+            'Metrik uang dihemat, rokok tidak dihisap, dan target tapering akan ikut menyesuaikan. Lanjutkan simpan?',
+        okLabel: 'Simpan',
+        cancelLabel: 'Batal',
+      );
+      L.i('konfirmasi ubah jumlah=$konfirmasi');
+      if (konfirmasi != OkCancelResult.ok) {
+        L.w('konfirmasi ubah jumlah bukan ok');
+        return;
+      }
+      if (!mounted) return;
+    } else {
+      // Konfirmasi generik untuk entri baru atau perubahan non-jumlah
+      final konfirmasi = await showOkCancelAlertDialog(
+        context: context,
+        title: 'Simpan Konsumsi',
+        message: 'Apakah Anda yakin ingin menyimpan catatan konsumsi ini?',
+        okLabel: 'Simpan',
+        cancelLabel: 'Batal',
+      );
+      L.i('konfirmasi=$konfirmasi');
+      if (konfirmasi != OkCancelResult.ok) {
+        L.w('konfirmasi bukan ok');
+        return;
+      }
+      if (!mounted) return;
     }
-    if (!mounted) return;
 
     setState(() => _isLoading = true);
     unawaited(
@@ -130,7 +149,7 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
       }
       if (!mounted) return;
       if (Navigator.of(context).canPop()) {
-        Nav.pop(context);
+        Nav.pop(context, true); // Kembalikan true untuk menandakan sukses
       }
     } on Exception catch (e, s) {
       L.e('Gagal menyimpan konsumsi: $e $s');

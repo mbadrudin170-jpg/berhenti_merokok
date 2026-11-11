@@ -7,6 +7,12 @@ import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/cadangan/helper/cadangan_helper.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
+// Provider refresh tambahan: tabel konsumsi_rokok, sos_intervensi, dan
+// rencana_darurat ikut dipulihkan CadanganHelper, jadi providernya juga
+// harus disegarkan agar UI tidak menampilkan data lama.
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
+import 'package:berhenti_merokok/fitur/rencana_darurat/notifier/rencana_darurat_notifier.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/notifier/sos_intervensi_notifier.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -261,6 +267,23 @@ class _CadanganScreenState extends ConsumerState<CadanganScreen> {
       final _ = ref.refresh(alasanBerhentiProvider);
     } on Exception catch (e, s) {
       L.e('Gagal refresh alasanBerhentiProvider: $e $s');
+    }
+    // Tabel-tabel ini juga ikut dipulihkan dari cadangan, tetapi sebelumnya
+    // providernya tidak disegarkan sehingga layar menampilkan data usang.
+    try {
+      final _ = ref.refresh(konsumsiRokokProvider);
+    } on Exception catch (e, s) {
+      L.e('Gagal refresh konsumsiRokokProvider: $e $s');
+    }
+    try {
+      final _ = ref.refresh(sosIntervensiProvider);
+    } on Exception catch (e, s) {
+      L.e('Gagal refresh sosIntervensiProvider: $e $s');
+    }
+    try {
+      final _ = ref.refresh(rencanaDaruratProvider);
+    } on Exception catch (e, s) {
+      L.e('Gagal refresh rencanaDaruratProvider: $e $s');
     }
   }
 
