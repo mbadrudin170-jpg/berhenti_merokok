@@ -4,7 +4,8 @@ description: Panduan melakukan riset kompetitor aplikasi berhenti merokok - menc
 metadata:
   kategori: "custom"
   versi: "1.4.1"
-  commit-terakhir: "belum-ada-commit"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo/kilo-auto/free"
 ---
 

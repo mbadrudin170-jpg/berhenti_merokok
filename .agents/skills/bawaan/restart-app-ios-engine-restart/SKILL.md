@@ -4,6 +4,9 @@ description: >-
   Configure or debug restart_app Flutter engine restart on iOS, including
   AppDelegate and UIScene registration, custom native shells, engine factories,
   and explicit notification fallback.
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # iOS Flutter engine restart

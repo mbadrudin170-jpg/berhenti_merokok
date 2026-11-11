@@ -4,7 +4,8 @@ description: Panduan kartu motivasi dan pintasan aksi cepat pada dashboard dan S
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "117293d38f0aa2f139aefe5dc4412bd57473b90e"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

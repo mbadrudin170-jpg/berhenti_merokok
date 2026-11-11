@@ -100,7 +100,8 @@ Setiap `SKILL.md` wajib memiliki frontmatter di paling atas file, dibungkus deng
 | `description`              | Deskripsi yang sangat detail                                  |
 | `metadata.kategori`        | Sesuai folder kategori (default `"custom"`)                   |
 | `metadata.versi`           | Format semver, contoh `"1.0.0"`                               |
-| `metadata.commit-terakhir` | Hash commit rujukan, atau `"belum-ada-commit"` jika belum ada |
+| `metadata.diperbarui`      | Waktu pembaruan terakhir isi skill (format `TZ=Asia/Jakarta date`), wajib diisi dan diperbarui setiap kali isi skill berubah (frontmatter maupun body) |
+| `metadata.sumber-terakhir` | Sumber terakhir perubahan (hash commit atau perintah/hasil eksplisit pengguna), menggantikan `metadata.commit-terakhir` |
 
 ### 7.2 Field Opsional
 
@@ -117,8 +118,9 @@ description: Panduan menambahkan integration test Flutter, mengeksplorasi UI via
 metadata:
   kategori: "custom"
   versi: "1.0.0"
+  diperbarui: "Wed Nov 11 2026 23:30:00 WIB"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "models/gemini-3.1-pro-preview"
-  commit-terakhir: "<hash-commit>"
 ---
 ```
 

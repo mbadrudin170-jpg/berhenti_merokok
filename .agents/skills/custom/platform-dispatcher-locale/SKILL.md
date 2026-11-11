@@ -4,7 +4,8 @@ description: Panduan PlatformDispatcher, Locale, ViewPadding, platformBrightness
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "platform_dispatcher.dart"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

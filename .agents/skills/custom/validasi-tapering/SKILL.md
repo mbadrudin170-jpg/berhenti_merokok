@@ -4,7 +4,8 @@ description: Panduan validasi dan perhitungan mode berhenti bertahap (tapering) 
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "ceacc6a1c388b24b7647a37ccde411d6c85ee01c"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

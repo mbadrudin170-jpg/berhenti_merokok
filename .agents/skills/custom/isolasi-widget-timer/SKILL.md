@@ -4,7 +4,8 @@ description: Panduan mengisolasi widget yang diperbarui berkala (Timer.periodic)
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "fbbb0906d08d2590caa8c7829595ea7fa4e513a5"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

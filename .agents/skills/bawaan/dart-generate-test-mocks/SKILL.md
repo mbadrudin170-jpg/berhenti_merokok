@@ -2,8 +2,10 @@
 name: dart-generate-test-mocks
 description: Define and generate mock objects for external dependencies using `package:mockito` and `build_runner`. Use when unit testing classes that depend on complex external services like APIs or databases.
 metadata:
-  model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:13:58 GMT
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
+  model: "models/gemini-3.1-pro-preview"
 ---
 # Testing and Mocking Dart Applications
 

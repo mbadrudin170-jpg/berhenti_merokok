@@ -2,8 +2,10 @@
 name: dart-setup-ffi-assets
 description: "Guides agents in compiling and packaging C/C++ source code into dynamic or static libraries (Code Assets) using Dart's Native Assets hook system (via hook/build.dart and hook/link.dart utilizing package:hooks and package:native_toolchain_c). Use when a user asks to: 'setup native assets', 'compile C/C++ source code', 'bundle dynamic libraries', 'build native C code', 'link native assets', 'implement build.dart or link.dart hooks', or 'integrate C/C++ interop in Dart/Flutter'. Helps agents avoid manual toolchain orchestration and configures secure hash-validated binary downloads or advanced linker tree-shaking with package:record_use mapping."
 metadata:
-  model: models/gemini-3.1-pro-preview
   last_modified: Fri, 29 May 2026 09:10:00 GMT
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
+  model: "models/gemini-3.1-pro-preview"
 ---
 # Compiling C Code into Code Assets with Native Assets Hooks
 

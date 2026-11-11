@@ -4,6 +4,9 @@ description: >-
   Integrate or troubleshoot Flutter app restarts with restart_app, including
   restart modes, results, saved data, web routes, desktop relaunches, and
   requests from background isolates.
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # Flutter app restart integration

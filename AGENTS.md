@@ -6,7 +6,8 @@
 
 - `.agents/rules/global`
 - `.agents/skills/bawaan`
-- .`agents/skills/custom`
+- `.agents/skills/custom`
+- `SKILLS_INDEX.md` (indeks bantu discovery skill berdasarkan trigger; `SKILL.md` tetap sumber kebenaran dan wajib di-load sebelum mengerjakan tugas)
 
 6. bahasa Indonesia wajib digunakan dalam semua interaksi dengan pengguna, sesuai dengan aturan penggunaan sistem yang tercantum dalam `aturan_pembuatan_skill.md` dan `format_PRD.md`
 7. jangan mengubah kode di proyek tanpa mengikuti semua skill dan rules yang relevan, terutama rules tentang format dan struktur file

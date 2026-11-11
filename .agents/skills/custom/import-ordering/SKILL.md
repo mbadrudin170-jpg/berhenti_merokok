@@ -4,7 +4,8 @@ description: Panduan mengurutkan import secara alfabetis berdasarkan path packag
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "86b437c75df86daa9e41b9f7ae46c9331213c341"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "GPT-6"
 ---
 

@@ -10,6 +10,9 @@ description: >-
   sqfliteFfiWebLoadSqlite3Wasm and sqfliteFfiWebStartSharedWorker,
   SqfliteFfiWebContext, sqliteFfiWebDebugWebWorker, and inspecting the worker
   in Chrome (chrome://inspect/#workers).
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # sqflite_common_ffi_web: custom factories, options and debugging

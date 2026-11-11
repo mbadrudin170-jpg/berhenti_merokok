@@ -4,8 +4,10 @@ description: |-
   Replace the usage of `expect` and similar functions from `package:matcher`
   to `package:checks` equivalents.
 metadata:
-  model: models/gemini-3.1-pro-preview
   last_modified: Tue, 09 Jun 2026 19:30:00 GMT
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
+  model: "models/gemini-3.1-pro-preview"
 ---
 # Migrating Dart Tests to Package Checks
 

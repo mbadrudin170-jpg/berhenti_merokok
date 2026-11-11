@@ -1,6 +1,9 @@
 ---
 name: dart-use-doc-examples
 description: "How to inject external code examples into Dartdoc using the {@example} directive, and how to filter those files using #hide, #region, and #endregion tags."
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # Using Examples in Dartdoc

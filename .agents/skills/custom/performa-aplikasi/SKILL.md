@@ -4,7 +4,8 @@ description: Aturan performa aplikasi Flutter - widget rebuild minimal, const co
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "e6595744b3840998d840e398ca1782e7be7d50b4"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

@@ -4,7 +4,8 @@ description: Panduan parsing field nullable integer dari database memakai parseI
 metadata:
   kategori: "custom"
   versi: "1.0.3"
-  commit-terakhir: "4823fe3e7f4deae674fc8e805a4c3e19fea9fcf4"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

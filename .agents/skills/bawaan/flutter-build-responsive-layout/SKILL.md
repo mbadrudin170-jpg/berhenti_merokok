@@ -2,8 +2,10 @@
 name: flutter-build-responsive-layout
 description: Use `LayoutBuilder`, `MediaQuery`, or `Expanded/Flexible` to create a layout that adapts to different screen sizes. Use when you need the UI to look good on both mobile and tablet/desktop form factors.
 metadata:
-  model: models/gemini-3.1-pro-preview
   last_modified: Tue, 21 Apr 2026 20:17:40 GMT
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
+  model: "models/gemini-3.1-pro-preview"
 ---
 # Implementing Adaptive Layouts
 

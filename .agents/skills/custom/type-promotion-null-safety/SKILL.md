@@ -4,7 +4,8 @@ description: Panduan type promotion untuk null safety pada field objek model - s
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

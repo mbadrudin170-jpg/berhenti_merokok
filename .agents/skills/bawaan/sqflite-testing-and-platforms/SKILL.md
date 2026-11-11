@@ -9,6 +9,9 @@ description: >-
   debugQuickLoggerWrapper, Sqflite.setDebugModeOn, setLogLevel,
   setLockWarningInfo, "database has been locked", MissingPluginException,
   isolates, Android WAL manifest, iOS unprotected folder, encryption.
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # sqflite: tests, other platforms and debugging

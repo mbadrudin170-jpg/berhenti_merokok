@@ -9,6 +9,9 @@ description: >-
   column types (int, num, String, Uint8List, no bool/DateTime), reserved-name
   escaping (escapeName), Sqflite.firstIntValue for COUNT(*), and
   DatabaseException handling (isUniqueConstraintError, isNoSuchTableError).
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # sqflite: CRUD, transactions and batches

@@ -8,6 +8,9 @@ description: >-
   kIsWeb, database names and IndexedDB persistence, shared worker vs basic
   worker, importing a database with writeDatabaseBytes, limitations and
   troubleshooting (missing worker file, port-bound storage, deleteDatabase).
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # sqflite_common_ffi_web: sqflite in the browser

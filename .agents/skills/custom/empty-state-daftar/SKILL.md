@@ -4,7 +4,8 @@ description: Panduan empty state pada daftar dan layar non-daftar - gunakan komp
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "65abc0104fc8eec90cde9906c52d3f65cba13ba3"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

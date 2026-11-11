@@ -4,7 +4,8 @@ description: Panduan navigasi dan routing Flutter - Navigator, Route, Page, Mate
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "50c1be708e595449fa2fd18e3491d4418943c565"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

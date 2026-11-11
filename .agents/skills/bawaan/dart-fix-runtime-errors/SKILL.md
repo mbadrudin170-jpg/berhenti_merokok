@@ -2,8 +2,10 @@
 name: dart-fix-runtime-errors
 description: Uses get_runtime_errors and lsp to fetch an active stack trace, locate the failing line, apply a fix, and verify resolution via hot_reload.
 metadata:
-  model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:13:22 GMT
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
+  model: "models/gemini-3.1-pro-preview"
 ---
 # Resolving Dart Static Analysis Errors
 

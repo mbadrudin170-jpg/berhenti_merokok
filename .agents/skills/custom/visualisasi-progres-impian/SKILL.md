@@ -4,7 +4,8 @@ description: Panduan visualisasi progres impian dan perayaan pencapaian Flutter 
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "f6d1fa2f63e367ee147e7f4cb9ded6c6707533cb"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

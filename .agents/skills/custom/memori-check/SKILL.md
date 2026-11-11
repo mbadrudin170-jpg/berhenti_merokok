@@ -4,7 +4,8 @@ description: Panduan memastikan setiap model AI selalu membaca file MEMORI.md ro
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "belum-ada-commit"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

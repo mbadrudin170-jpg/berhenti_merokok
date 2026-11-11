@@ -3,6 +3,9 @@ name: adaptive_dialog-dialogs
 description: >-
   Use when showing platform-adaptive alert dialogs, confirmation dialogs, modal action sheets,
   or text input dialogs across iOS, Android, macOS, and Web using adaptive_dialog.
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # adaptive_dialog Dialogs & Action Sheets Guide

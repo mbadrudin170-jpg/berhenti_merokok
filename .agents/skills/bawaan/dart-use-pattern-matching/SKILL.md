@@ -9,8 +9,10 @@ description: >-
   on sealed classes. Don't use for simple boolean conditions, single-variable
   type promotion (use `is`), or basic collection filtering.
 metadata:
-  model: models/gemini-3.1-pro-preview
   last_modified: Tue, 13 Oct 2026 19:45:00 GMT
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
+  model: "models/gemini-3.1-pro-preview"
 ---
 # Implementing Dart Patterns
 

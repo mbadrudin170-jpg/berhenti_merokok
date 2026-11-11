@@ -4,7 +4,8 @@ description: Panduan penjadwalan frame dan pemantauan performa Flutter menggunak
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "4dd0cdb5d101413a839c37c3dfb8c594aeef60c2"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

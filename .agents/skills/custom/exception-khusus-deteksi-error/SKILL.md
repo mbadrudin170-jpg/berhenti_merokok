@@ -4,7 +4,8 @@ description: Panduan menggunakan tipe exception khusus (class implements Excepti
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "07fc8df6cf5ea28fe7133b1aee5dae7b05b96590"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

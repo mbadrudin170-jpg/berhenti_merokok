@@ -4,7 +4,8 @@ description: Panduan larangan membawa berkas cadangan .backup task/ ke repositor
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "0b0b564f3f2a9b4342facd6a318b7a5c16edb9c0"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

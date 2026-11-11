@@ -2,8 +2,10 @@
 name: dart-use-ffigen
 description: Guide agents to use `package:ffigen` to automatically generate FFI bindings instead of writing them manually. Use this skill when a task involves writing new FFI bindings, extending C/Objective-C/Swift integrations, or replacing hand-crafted `dart:ffi` setups.
 metadata:
-  model: models/gemini-3.1-pro-preview
   last_modified: Thu, 28 May 2026 07:21:07 GMT
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
+  model: "models/gemini-3.1-pro-preview"
 ---
 # Generating FFI Bindings using package:ffigen
 

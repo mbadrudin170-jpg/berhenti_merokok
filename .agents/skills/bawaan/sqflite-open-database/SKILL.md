@@ -8,6 +8,9 @@ description: >-
   deleteDatabase, databaseExists, inMemoryDatabasePath, singleInstance,
   readOnly, databaseFactory, getVersion, setJournalMode (WAL), foreign keys,
   copying an asset database, and the "database is locked" pitfalls.
+metadata:
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "skill bawaan (built-in)"
 ---
 
 # sqflite: opening and migrating a database
