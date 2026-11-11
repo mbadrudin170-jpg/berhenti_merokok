@@ -27,36 +27,20 @@ Digunakan untuk mengidentifikasi produk dan memberikan gambaran umum proyek. Inf
 - Versi:
 - Status pengembangan:
 
-## 2. Latar Belakang
+## 3. Tujuan PRD
 
 **Konteks penggunaan:**
-Digunakan untuk menjelaskan alasan produk dibuat. Tuliskan masalah nyata, kebutuhan pengguna, atau kendala yang ingin diselesaikan.
+Digunakan untuk menentukan hasil yang ingin dicapai dari dokumen PRD ini. Tujuan harus berhubungan langsung dengan kebutuhan dokumen.
 
 **Aturan pengisian:**
 
-- Jelaskan kondisi atau permasalahan yang melatarbelakangi pengembangan.
-- Hubungkan permasalahan dengan kebutuhan produk.
-- Hindari penjelasan yang tidak berhubungan dengan produk.
-- Bedakan fakta, asumsi, dan kebutuhan yang belum terverifikasi.
-- Jangan langsung menjelaskan solusi teknis sebelum masalahnya jelas.
-
-**Isi:**
-Jelaskan masalah, kebutuhan, atau alasan produk ini perlu dibuat.
-
-## 3. Tujuan Produk
-
-**Konteks penggunaan:**
-Digunakan untuk menentukan hasil yang ingin dicapai. Tujuan harus berhubungan langsung dengan masalah pada bagian latar belakang.
-
-**Aturan pengisian:**
-
-- Tuliskan hasil yang diharapkan dari produk.
-- Pastikan setiap tujuan memiliki hubungan dengan masalah yang ingin diselesaikan.
+- Tuliskan hasil yang diharapkan dari PRD.
+- Pastikan setiap tujuan memiliki hubungan dengan kebutuhan dokumen PRD.
 - Gunakan tujuan yang jelas dan dapat dievaluasi.
-- Jangan memasukkan tujuan yang berada di luar ruang lingkup produk.
+- Jangan memasukkan tujuan yang berada di luar ruang lingkup PRD.
 
 **Isi:**
-Jelaskan hasil dan manfaat yang ingin dicapai melalui aplikasi.
+Jelaskan hasil dan manfaat yang ingin dicapai melalui dokumen PRD ini.
 
 ## 6. Daftar Fitur
 
