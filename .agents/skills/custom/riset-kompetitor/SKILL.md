@@ -1,6 +1,6 @@
 ---
 name: riset-kompetitor
-description: Panduan melakukan riset kompetitor aplikasi berhenti merokok - mencatat daftar aplikasi serupa di berbagai store (Google Play, Apple App Store, F-Droid, GitHub, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Huawei AppGallery, Samsung Galaxy Store, Uptodown, IzzyOnDroid), menyertakan ringkasan fitur relevan, link store/repositori yang terverifikasi otomatis (curl HTTP 200, iTunes lookup), mengikuti format tabel yang terstandarisasi di apk_serupa.md, serta menyusun laporan referensi mendalam refrensi_apk.md (fitur baru mobile, optimasi fitur eksisting, pola UI/UX/layout, rekomendasi ber-prioritas) dan menandai listing yang sudah dianalisa fitur-fiturnya di section `# Status Analisa Fitur` pada apk_serupa.md. Gunakan saat menambah/memperbarui apk_serupa.md, saat diminta mencari referensi fitur/UI/UX dari seluruh APK yang terdaftar di apk_serupa.md (perintah seperti `.kilo/commands/referensi_apk_sejenis.md`), atau saat diminta menambah aplikasi baru (perintah seperti `.kilo/commands/cari_apk_serupa.md`).
+description: Panduan melakukan riset kompetitor aplikasi berhenti merokok - mencatat daftar aplikasi serupa di berbagai store (Google Play, Apple App Store, F-Droid, GitHub, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Huawei AppGallery, Samsung Galaxy Store, Uptodown, IzzyOnDroid), menyertakan ringkasan fitur relevan, link store/repositori yang terverifikasi otomatis (curl HTTP 200, iTunes lookup), mengikuti format tabel yang terstandarisasi di apk_serupa.md, serta menyusun laporan referensi mendalam refrensi_apk.md (fitur baru mobile, optimasi fitur eksisting, pola UI/UX/layout, rekomendasi ber-prioritas) dan menandai listing yang sudah dianalisa fitur-fiturnya di section `# Status Analisa Fitur` pada apk_serupa.md. Gunakan saat menambah/memperbarui apk_serupa.md, saat diminta mencari referensi fitur/UI/UX dari seluruh APK yang terdaftar di apk_serupa.md (perintah seperti `.kilo/commands/riset_kompetitor.md`), atau saat diminta menambah aplikasi baru (perintah seperti `.kilo/commands/cari_apk_kompetitor.md`).
 metadata:
   kategori: "custom"
   versi: "1.3.0"
@@ -17,7 +17,7 @@ Mengumpulkan dan mendokumentasikan daftar aplikasi kompetitor (serupa) untuk ana
 - Package: `tidak ada` (dokumentasi non-kode)
 - File: `apk_serupa.md` (root proyek) — katalog daftar aplikasi per store, diakhiri section `# Status Analisa Fitur (per YYYY-MM-DD)` sebagai penanda listing yang sudah/belum dianalisa fitur-fiturnya
 - File: `refrensi_apk.md` (root proyek) — laporan referensi mendalam dari seluruh APK di `apk_serupa.md`
-- Perintah terkait: `.kilo/commands/cari_apk_serupa.md` (dan `gpt/cari_apk_serupa.md`) untuk menambah listing baru; `.kilo/commands/referensi_apk_sejenis.md` (dan `gpt/referensi_apk_sejenis.md`) untuk analisa fitur dari seluruh APK terdaftar
+- Perintah terkait: `.kilo/commands/cari_apk_kompetitor.md` untuk menambah listing baru; `.kilo/commands/riset_kompetitor.md` untuk analisa fitur dari seluruh APK terdaftar
 - File wajib dibaca sebelum mengerjakan tugas riset: `README.md`, `AGENTS.md`, `apk_serupa.md`
 - Kolom tabel: `Nama Aplikasi`, `Ringkasan Singkat`, `Store`, `Link`
 - Struktur `refrensi_apk.md`: informasi riset + cara membaca → ringkasan temuan terbesar → kondisi fitur aktual proyek → A. Rekomendasi fitur baru → B. Optimasi fitur eksisting → C. UI/UX & Layout → D. Katalog semua listing → E. Prioritas gabungan → F. Verifikasi & keterbatasan → G. Sumber
@@ -49,8 +49,8 @@ Mengumpulkan dan mendokumentasikan daftar aplikasi kompetitor (serupa) untuk ana
 20. Temuan cacat kode yang ditemukan saat riset (mis. `buatCadanganJson()` hanya menulis 4 dari 6 tabel yang terdaftar pada `tabelCadangan`) **didokumentasikan di `refrensi_apk.md` dengan prioritas dan path file, tidak diperbaiki** sebagai bagian dari tugas riset. Perbaikan kode adalah tugas terpisah.
 21. Sebelum memperbarui `refrensi_apk.md`, periksa `git diff` working tree/staged — jangan menimpa, membangkitkan kembali, atau menggabungkan ulang bagian yang sudah dihapus pengguna (mis. usulan fitur yang dibatalkan); hilangkan pula tautan ke dokumen yang sudah dihapus (mis. `prd/*.md` yang dihapus) dari teks referensi.
 22. Amazon Appstore dan Samsung Galaxy Store dapat mengembalikan HTTP 200 langsung pada curl dengan user agent Chrome; Galaxy Store tetap hanya menampilkan judul halaman, sehingga tetap diklasifikasi **verifikasi ringan**. APKPure/Aptoide/SlideME tetap 403 (anti-bot) — verifikasi via websearch/webfetch, bukan dibuang otomatis.
-23. Untuk perintah seperti `.kilo/commands/referensi_apk_sejenis.md` (analisa fitur dari seluruh APK terdaftar di `apk_serupa.md`, hasil ditulis ke `refrensi_apk.md`): setelah analisa selesai, **wajib** membuat atau memperbarui section `# Status Analisa Fitur (per YYYY-MM-DD)` di **akhir** `apk_serupa.md`. Section wajib memuat: tanggal analisa, cakupan listing yang dianalisa (total tautan dan section/tambahan yang tercakup), pernyataan bahwa hasil analisa didokumentasikan di `refrensi_apk.md`, dan catatan bahwa listing yang ditambahkan setelah tanggal tersebut belum dianalisa. Format section konsisten dengan section `# Tambahan Riset (YYYY-MM-DD)` (heading `#` di akhir file, tanpa kolom/tabel baru).
-24. Untuk perintah seperti `.kilo/commands/cari_apk_serupa.md` (menambah listing baru ke `apk_serupa.md`): listing yang baru ditambahkan **wajib** dianggap **belum dianalisa fitur-fiturnya**, meskipun `refrensi_apk.md` sudah ada. Perbarui section `# Status Analisa Fitur` agar menyebutkan bahwa listing baru tersebut menunggu analisa (atau biarkan tanggal status sebagaimana adanya — jangan dimundurkan); jangan pernah menandai listing baru sebagai sudah dianalisa tanpa analisa ulang.
+23. Untuk perintah seperti `.kilo/commands/riset_kompetitor.md` (analisa fitur dari seluruh APK terdaftar di `apk_serupa.md`, hasil ditulis ke `refrensi_apk.md`): setelah analisa selesai, **wajib** membuat atau memperbarui section `# Status Analisa Fitur (per YYYY-MM-DD)` di **akhir** `apk_serupa.md`. Section wajib memuat: tanggal analisa, cakupan listing yang dianalisa (total tautan dan section/tambahan yang tercakup), pernyataan bahwa hasil analisa didokumentasikan di `refrensi_apk.md`, dan catatan bahwa listing yang ditambahkan setelah tanggal tersebut belum dianalisa. Format section konsisten dengan section `# Tambahan Riset (YYYY-MM-DD)` (heading `#` di akhir file, tanpa kolom/tabel baru).
+24. Untuk perintah seperti `.kilo/commands/cari_apk_kompetitor.md` (menambah listing baru ke `apk_serupa.md`): listing yang baru ditambahkan **wajib** dianggap **belum dianalisa fitur-fiturnya**, meskipun `refrensi_apk.md` sudah ada. Perbarui section `# Status Analisa Fitur` agar menyebutkan bahwa listing baru tersebut menunggu analisa (atau biarkan tanggal status sebagaimana adanya — jangan dimundurkan); jangan pernah menandai listing baru sebagai sudah dianalisa tanpa analisa ulang.
 25. Saat menjalankan perintah referensi/analisa, listing yang sudah tercakup section `# Status Analisa Fitur` (tanggal status terakhir) tidak perlu dianalisa ulang kecuali pengguna secara eksplisit meminta analisa ulang; fokus pada listing yang ditambahkan setelah tanggal status terakhir. `refrensi_apk.md` tetap memuat katalog lengkap (seksi D) — perbarui hanya bagian yang terdampak oleh listing baru, jangan tulis ulang dari nol kecuali diminta.
 26. Section `# Status Analisa Fitur` tidak pernah dihapus; ini satu-satunya mekanisme penandaan — jangan tambah kolom status ke tabel `apk_serupa.md` dan jangan menyisipkan penanda ke sel tabel.
 
@@ -75,7 +75,7 @@ Mengumpulkan dan mendokumentasikan daftar aplikasi kompetitor (serupa) untuk ana
 - DILARANG menandai listing sebagai "sudah dianalisa fitur-fiturnya" (atau memajukan tanggal section `# Status Analisa Fitur`) sebelum analisa benar-benar dijalankan dan didokumentasikan di `refrensi_apk.md`.
 - DILARANG menambah kolom status ke tabel `apk_serupa.md` atau menyisipkan penanda ke sel tabel; penanda analisa hanya section `# Status Analisa Fitur` di akhir file.
 - DILARANG menghapus atau memundurkan tanggal section `# Status Analisa Fitur` karena merugikan pengguna (menyembunyikan fakta bahwa listing baru belum dianalisa); listing baru wajib tetap dianggap belum dianalisa sampai analisa benar-benar dijalankan.
-- DILARANG menandai listing yang baru ditambahkan via `cari_apk_serupa.md` sebagai sudah dianalisa hanya karena `refrensi_apk.md` versi sebelumnya sudah mencantumkan listing lama.
+- DILARANG menandai listing yang baru ditambahkan via `cari_apk_kompetitor.md` sebagai sudah dianalisa hanya karena `refrensi_apk.md` versi sebelumnya sudah mencantumkan listing lama.
 
 ## Contoh Benar
 
@@ -129,23 +129,23 @@ tidak terverifikasi -> 404/403 tanpa alternatif (Breev, ZeroSmoke, Smoker Reduce
                       QuitSM SlideME, Flamy Aptoide, Quit Tracker Uptodown 410/404)
 ```
 
-Contoh section `# Status Analisa Fitur` di akhir `apk_serupa.md` (dibuat/diperbarui setelah menjalankan perintah seperti `referensi_apk_sejenis.md`):
+Contoh section `# Status Analisa Fitur` di akhir `apk_serupa.md` (dibuat/diperbarui setelah menjalankan perintah seperti `riset_kompetitor.md`):
 
 ```markdown
 # Status Analisa Fitur (per 2026-11-11)
 
 - Seluruh listing yang tercatat di file ini per 2026-11-11 (daftar awal 79 + Tambahan Riset 2026-11-10 + lanjutan 2026-11-10 + 2026-11-11; total 352 tautan) **sudah dianalisa fitur-fiturnya**. Hasil analisa didokumentasikan di `refrensi_apk.md` di root proyek (seksi A–G; katalog listing di seksi D).
-- Listing yang ditambahkan setelah 2026-11-11 **belum dianalisa fitur-fiturnya** sampai perintah `referensi_apk_sejenis.md` (atau perintah serupa) dijalankan dan section ini diperbarui dengan tanggal dan cakupan terbaru.
-- Perintah `cari_apk_serupa.md` hanya menambah listing baru; listing baru tersebut dianggap **belum dianalisa** sampai seksi ini diperbarui setelah analisa dijalankan.
+- Listing yang ditambahkan setelah 2026-11-11 **belum dianalisa fitur-fiturnya** sampai perintah `riset_kompetitor.md` (atau perintah serupa) dijalankan dan section ini diperbarui dengan tanggal dan cakupan terbaru.
+- Perintah `cari_apk_kompetitor.md` hanya menambah listing baru; listing baru tersebut dianggap **belum dianalisa** sampai seksi ini diperbarui setelah analisa dijalankan.
 - Saat menjalankan analisa, listing yang sudah tercakup tanggal status ini tidak perlu dianalisa ulang kecuali pengguna meminta analisa ulang; fokus pada listing yang ditambahkan setelah tanggal status terakhir.
 ```
 
 Alur kerja kedua perintah:
 
 ```text
-cari_apk_serupa.md      -> tambah listing baru ke apk_serupa.md (status: BELUM dianalisa)
-referensi_apk_sejenis.md -> analisa fitur listing belum dianalisa -> perbarui refrensi_apk.md
-                          -> perbarui section `# Status Analisa Fitur (per <tanggal>)` di akhir apk_serupa.md
+cari_apk_kompetitor.md      -> tambah listing baru ke apk_serupa.md (status: BELUM dianalisa)
+riset_kompetitor.md -> analisa fitur listing belum dianalisa -> perbarui refrensi_apk.md
+                           -> perbarui section `# Status Analisa Fitur (per <tanggal>)` di akhir apk_serupa.md
 ```
 
 ## Contoh Salah
@@ -180,7 +180,7 @@ referensi_apk_sejenis.md -> analisa fitur listing belum dianalisa -> perbarui re
 
 ## Sumber Evaluasi
 
-- File: `apk_serupa.md` (root proyek), `refrensi_apk.md` (root proyek), `.kilo/commands/referensi_apk_sejenis.md`, `.kilo/commands/cari_apk_serupa.md`, `gpt/referensi_apk_sejenis.md`, `gpt/cari_apk_serupa.md`
+- File: `apk_serupa.md` (root proyek), `refrensi_apk.md` (root proyek), `.kilo/commands/riset_kompetitor.md`, `.kilo/commands/cari_apk_kompetitor.md`, `gpt/referensi_apk_sejenis.md`, `gpt/cari_apk_serupa.md`
 - Commit rujukan: `a6f3020` — Tambah daftar aplikasi berhenti merokok serupa (85+ aplikasi)
 - Commit rujukan: `d174c1b` — Revisi instruksi riset aplikasi sejenis
 - Commit rujukan: `f6ad391` — Delegasi pencarian aplikasi serupa ke berkas panduan
@@ -188,5 +188,5 @@ referensi_apk_sejenis.md -> analisa fitur listing belum dianalisa -> perbarui re
 - Commit rujukan: `7cb9c64` — Perbarui skill riset-kompetitor dengan pengetahuan riset lintas-store (kerangka ref. aturan-pembuatan-skill); commit ini memperbarui isi skill tetapi menyisakan metadata `commit-terakhir` menunjuk `3af4f53` (dibawa hingga v1.1.0); diperbaiki pada v1.2.0
 - Commit rujukan: `b7f455c` — Perbarui refrensi_apk.md: cakupan 159 tautan listing, hasil verifikasi sumber, metodologi verifikasi, dan analisis referensi (dasar struktur `refrensi_apk.md`, aturan 15–21, contoh item B1, klasifikasi verifikasi)
 - Catatan sumber langsung (2026-11-10, probe mandiri, belum di-commit pada `refrensi_apk.md`): Samsung Galaxy Store `com.siwooeo.quitday` & `com.siwooeo.quitsmoke` mengembalikan HTTP 200 dengan judul halaman tampil; Quit Tracker Uptodown berubah dari HTTP 410 menjadi 404; Amazon Appstore mengembalikan 200 langsung dengan UA Chrome
-- Instruksi langsung pengguna (2026-11-11, belum di-commit): jika perintah pengguna seperti `.kilo/commands/referensi_apk_sejenis.md`, tandai listing sebagai sudah dianalisa fitur-fiturnya. Diimplementasikan sebagai aturan 23–26 + section `# Status Analisa Fitur (per YYYY-MM-DD)` di akhir `apk_serupa.md` (section dibuat 2026-11-11, mencakup 352 listing) — penanda per-section, bukan kolom tabel
-- v1.3.0 (2026-11-11): tambah aturan 23–26, penanda status analisa fitur via section `# Status Analisa Fitur` di `apk_serupa.md`, aturan perintah `cari_apk_serupa.md` (listing baru = belum dianalisa), contoh status section, larangan penandaan palsu/kolom status; metadata `commit-terakhir` diset `belum-ada-commit` karena belum di-commit
+- Instruksi langsung pengguna (2026-11-11, belum di-commit): jika perintah pengguna seperti `.kilo/commands/riset_kompetitor.md`, tandai listing sebagai sudah dianalisa fitur-fiturnya. Diimplementasikan sebagai aturan 23–26 + section `# Status Analisa Fitur (per YYYY-MM-DD)` di akhir `apk_serupa.md` (section dibuat 2026-11-11, mencakup 352 listing) — penanda per-section, bukan kolom tabel
+- v1.3.0 (2026-11-11): tambah aturan 23–26, penanda status analisa fitur via section `# Status Analisa Fitur` di `apk_serupa.md`, aturan perintah `cari_apk_kompetitor.md` (listing baru = belum dianalisa), contoh status section, larangan penandaan palsu/kolom status; metadata `commit-terakhir` diset `belum-ada-commit` karena belum di-commit
