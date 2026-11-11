@@ -1,8 +1,8 @@
 # PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
-**Status Dokumen:** Draft
+**Status Dokumen:** Final
 
-**Status Implementasi:** Belum Diimplementasikan
+**Status Implementasi:** Sedang Dikerjakan
 
 ---
 
@@ -110,7 +110,7 @@ Masalah yang ingin diselesaikan: pilihan coping pengguna terlalu sempit; tidak a
 - Nama fitur: Grounding 5-4-3-2-1
 - Tujuan: mengalihkan perhatian dari craving ke sensasi tubuh/indra saat ini.
 - Deskripsi: layar interaktif 5 langkah berurutan: 5 hal yang dilihat → 4 hal yang disentuh → 3 hal yang didengar → 2 hal yang dicium → 1 hal yang dikecap. Setiap langkah berisi instruksi singkat dan tombol "Sudah" untuk lanjut; progres terlihat jelas.
-- Data masukan: tidak ada input teks (opsional: catatan singkat tidak diwajibkan pada v1).
+- Data masukan: tidak ada input teks; setiap langkah hanya berisi instruksi + tombol "Sudah" (keputusan disepakati 2026-11-10 untuk v1).
 - Proses: tampilkan langkah 1..5 secara berurutan; pengguna menekan "Sudah" untuk maju; setelah langkah 5 selesai, tandai selesai dan simpan dengan `JenisIntervensiSos.grounding_54321`.
 - Aturan bisnis: langkah tidak boleh dilompati ke depan; pengguna boleh kembali ke langkah sebelumnya; keluar di tengah = tidak ada penyimpanan (keputusan disepakati 2026-11-10).
 - Validasi: tidak ada input bebas.
@@ -123,7 +123,7 @@ Masalah yang ingin diselesaikan: pilihan coping pengguna terlalu sempit; tidak a
 
 - Nama fitur: Urge Surfing
 - Tujuan: membantu pengguna "menunggangi" gelombang craving hingga reda, berbasis teknik mindfulness yang dipakai kompetitor (Craving To Quit, QuitNow Medicon).
-- Deskripsi: timer dengan pilihan durasi 10 / 15 / 20 menit; menampilkan kurva gelombang (teks/visual sederhana: naik → puncak → reda) dan afirmasi singkat per fase; tanpa musik/audio eksternal.
+- Deskripsi: timer dengan pilihan durasi 10 / 15 / 20 menit; menampilkan teks fase gelombang (naik → puncak → reda) dan lingkaran progres (`CircularProgressIndicator`) plus timer mundur; afirmasi singkat per fase; tanpa musik/audio eksternal; tanpa grafik kustom; tidak ada klaim medis (keputusan visual disepakati 2026-11-10).
 - Data masukan: pilihan durasi (10/15/20), Mulai/Jeda/Reset/Selesai.
 - Proses: pengguna memilih durasi → timer berjalan dengan fase gelombang (mis. 3 fase: naik, puncak, reda) → saat waktu habis, tandai selesai dan simpan dengan `JenisIntervensiSos.urge_surfing` dan `detail` berisi durasi yang dipilih (mis. `'10 menit'`).
 - Aturan bisnis: durasi hanya 10/15/20 menit; craving tidak dipaksa "hilang", hanya ditemani hingga berlalu; tidak ada klaim medis.
@@ -180,8 +180,8 @@ Alur alternatif:
 Keputusan struktur layar (disepakati 2026-11-10): **Opsi A — Menu kartu teknik**, sesuai `refrensi_apk.md:103` ("satu tab SOS dengan kartu pilihan teknik").
 
 - Layar SOS diubah dari `TabBar` 3 tab menjadi menu kartu teknik (grid 2 kolom, `GridView`/`Wrap` sesuai kebutuhan): setiap kartu berisi ikon, nama teknik, dan deskripsi 1 baris.
-- Kartu inti tetap ada di urutan pertama: Napas 4-7-8, Timer Craving (3/5/10), Distraksi.
-- Kartu teknik baru menyusul: Box Breathing, Napas 90 Detik, Grounding 5-4-3-2-1, Urge Surfing.
+- Kartu inti tetap di urutan pertama, diikuti teknik baru (keputusan disepakati 2026-11-10): **Napas 4-7-8 → Timer Craving (3/5/10) → Box Breathing → Napas 90 Detik → Grounding 5-4-3-2-1 → Distraksi → Urge Surfing**.
+- Kartu "Ingat alasanmu" (kartu alasan berhenti yang sudah ada) **tetap tampil di atas** grid kartu, seperti perilaku layar saat ini (keputusan disepakati 2026-11-10).
 - Mengetuk kartu membuka tampilan detail teknik (implementasi bebas: halaman/route terpisah atau `IndexedStack` seperti pola proyek — keputusan detail diserahkan ke tahap implementasi, tidak mengubah perilaku).
 - Opsi B (gabung 3 tab) dan Opsi C (tab ke-4) **tidak dipilih**.
 
@@ -314,6 +314,8 @@ Aplikasi hanya memiliki satu jenis pengguna tanpa pembatasan khusus.
 |---|---|---|
 | 2026-11-10 | Draf awal PRD dibuat dari `refrensi_apk.md` bagian A4 (baris 94–104) | Menunggu diskusi final dengan pengguna |
 | 2026-11-10 | Keputusan diskusi: Opsi A (menu kartu teknik) dipilih; cakupan v1 = semua 5 tool (box breathing, napas 90 detik, grounding 5-4-3-2-1, urge surfing, timer 5/10 menit); pencatatan timer memakai `timer_craving` + `detail` durasi; keluar di tengah teknik = tidak ada penyimpanan | Status dokumen tetap Draft sampai diskusi selesai |
+| 2026-11-10 | Keputusan diskusi lanjutan: kartu "Ingat alasanmu" tetap di atas grid; Grounding 5-4-3-2-1 tanpa input teks (tombol "Sudah" saja); urge surfing memakai teks fase + lingkaran progres (tanpa CustomPainter); urutan kartu: Napas 4-7-8 → Timer Craving → Box Breathing → Napas 90 Detik → Grounding 5-4-3-2-1 → Distraksi → Urge Surfing | Status dokumen tetap Draft |
+| 2026-11-10 | PRD ditandai **Final** setelah diskusi selesai | Belum Diimplementasikan |
 
 ## 20. File-File Terdampak
 
