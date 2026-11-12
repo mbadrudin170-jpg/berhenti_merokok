@@ -57,6 +57,7 @@
 
 ## Skills & Rules Utama yang Diaktifkan
 Dikutip dari `.agents/skills/`:
+- `memori-check` v1.2.0 - WAJIB load pada SETIAP interaksi apa pun di proyek ini (AGENTS.md aturan 5 & 10; bukan hanya task, juga pertanyaan/diskusi/review/penelusuran)
 - `bug-runtime` - Pencegahan bug runtime
 - `gaya` - Styling warna dan tema
 - `import-ordering` - Urutan import
@@ -87,6 +88,8 @@ Topik diskusi terakhir berkaitan dengan pembaruan file MEMORI.md dan memastikan 
 - Type promotion: salin field nullable ke variabel lokal sebelum null-check
 - Hardcode warna hanya untuk status semantic (hijau sukses, merah error, kuning warning)
 - `MaterialApp` harus memiliki `home`, `routes`, `onGenerateRoute`, atau `builder` non-null
+- AGENTS.md aturan 5: `MEMORI.md` tercantum sebagai file wajib baca sebelum SETIAP interaksi apa pun di proyek ini (task, pertanyaan, diskusi, review, penelusuran)
+- AGENTS.md aturan 10: `MEMORI.md` wajib dibaca sebelum setiap interaksi; selalu perbarui isinya setelah task atau interaksi yang mengubah proyek (lihat skill `memori-check` di `.agents/skills/custom/memori-check/SKILL.md`)
 
 ## Referensi Commit Terkait
 - Commit terkait skill dan fitur dapat ditemukan melalui `git log` di repository ini

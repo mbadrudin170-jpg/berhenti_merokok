@@ -2,7 +2,7 @@
 
 **Status Dokumen:** Draft / Final
 
-**Status Implementasi:** Belum Diimplementasikan / Sedang Diimplementasikan / Sudah Diimplementasikan
+**Status Implementasi:** Sedang Diimplementasikan
 
 ---
 

@@ -7,9 +7,11 @@
 - `.agents/rules/global`
 - `.agents/skills/bawaan`
 - `.agents/skills/custom`
+- `MEMORI.md` (root proyek — **wajib dibaca SEBELUM setiap interaksi apa pun di proyek ini** (task, pertanyaan, diskusi, review, penelusuran) dan diperbarui SESUDAH interaksi yang mengubah proyek; lihat skill `memori-check` di `.agents/skills/custom/memori-check/SKILL.md`)
 - `SKILLS_INDEX.md` (indeks bantu discovery skill berdasarkan trigger; `SKILL.md` tetap sumber kebenaran dan wajib di-load sebelum mengerjakan tugas)
 
 6. bahasa Indonesia wajib digunakan dalam semua interaksi dengan pengguna, sesuai dengan aturan penggunaan sistem yang tercantum dalam `aturan_pembuatan_skill.md` dan `format_PRD.md`
 7. jangan mengubah kode di proyek tanpa mengikuti semua skill dan rules yang relevan, terutama rules tentang format dan struktur file
 8. ketika menambahkan konten baru ke file manapun, pastikan untuk mengikuti aturan format yang ditetapkan dalam rules yang relevan, terutama rules tentang SKILL.md dan PRD format
 9. jangan menggunakan bahasa selain Indonesia dalam dokumentasi, komentar, atau interaksi pengguna, kecuali ketika secara eksplisit diperlukan untuk mengutip konten asing atau merujuk ke teknis yang spesifik
+10. kapan pun berinteraksi dengan proyek ini dalam bentuk apa pun (task, pertanyaan, diskusi, review, penelusuran), wajib baca `MEMORI.md` di root proyek terlebih dahulu; setiap kali selesai mengerjakan task atau interaksi yang mengubah proyek, selalu perbarui isi file `MEMORI.md` agar konteks proyek tetap konsisten, antara lain update bagian `Status Proyek` (versi/state), `Provider/Riverpod Key`, `Enum Utama`, `File Konfigurasi & Penting`, `Skills & Rules Utama yang Diaktifkan`, `Aturan yang Harus Dipelihara`, `Catatan Teknis Penting`, dan `Catatan untuk Model Selanjutnya`; baca dan patuhi skill `memori-check` (`.agents/skills/custom/memori-check/SKILL.md`) sebelum mulai dan sesudah selesai interaksi
