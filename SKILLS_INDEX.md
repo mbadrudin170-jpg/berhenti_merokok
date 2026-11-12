@@ -267,8 +267,8 @@ Indeks skill untuk discovery berdasarkan trigger (kapan/untuk apa di-load).
 
 53. custom/pencarian-teks-ripgrep
 
-- Trigger : Mencari teks di dalam file dengan ripgrep (`rg`) - preferensi `rg` atas `grep -rn`, cek ketersediaan dengan `which rg`, pembagian tugas dengan `glob` (file berdasarkan nama/pola path) dan `ls` (isi folder)
-- Status : diperbarui : Thu Nov 12 07:01:35 WIB 2026
+- Trigger : Mencari teks di dalam file dengan ripgrep (`rg`) - preferensi `rg` atas `grep -rn`, cek ketersediaan dengan `which rg`, pembagian tugas dengan `glob` (file berdasarkan nama/pola path) dan `ls` (isi folder), serta diagnosa dan pemulihan binary `rg` milik Kilo (`~/.cache/kilo/bin/rg`) saat spawn gagal
+- Status : diperbarui : Thu Nov 12 07:05:03 WIB 2026
 
 ## bawaan
 

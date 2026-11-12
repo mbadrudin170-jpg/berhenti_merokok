@@ -58,7 +58,7 @@
 ## Skills & Rules Utama yang Diaktifkan
 Dikutip dari `.agents/skills/`:
 - `memori-check` v1.2.0 - WAJIB load pada SETIAP interaksi apa pun di proyek ini (AGENTS.md aturan 5 & 10; bukan hanya task, juga pertanyaan/diskusi/review/penelusuran)
-- `pencarian-teks-ripgrep` - Penggunaan `rg` sebagai alat pencarian teks (preferensi atas `grep -rn`, cek `which rg`, pembagian tugas dengan `glob`/`ls`)
+- `pencarian-teks-ripgrep` - Penggunaan `rg` sebagai alat pencarian teks (preferensi atas `grep -rn`, cek `which rg`, pembagian tugas dengan `glob`/`ls`, diagnosa/pemulihan binary Kilo `~/.cache/kilo/bin/rg` via `install_rg` + salin `/usr/bin/rg`)
 - `bug-runtime` - Pencegahan bug runtime
 - `gaya` - Styling warna dan tema
 - `import-ordering` - Urutan import
@@ -79,6 +79,7 @@ PRD diskusi_7 (membuat skill penggunaan `ripgrep`) diimplementasikan: skill `.ag
 5. **Navigator Key**: `NotifikasiService.navigatorKey` digunakan untuk navigasi dari notifikasi
 6. **EasyLoading**: `builder: EasyLoading.init()` di MaterialApp
 7. **Eksport Modul**: `share_global_saya` sebagai path dependency lokal
+8. **ripgrep Kilo**: `/home/thefarmercompanyba/.cache/kilo/bin/rg` sempat hilang (spawn `ChildProcess.spawn .../bin/rg` gagal). Diperbaiki dengan `install_rg` (`sudo apt-get install -y ripgrep`, v14.1.0) lalu menyalin `/usr/bin/rg` ke `~/.cache/kilo/bin/rg`. Lingkungan Cloud Shell bersifat ephemeral: instalasi apt dan isi `~/.cache` dapat hilang setelah sesi berakhir — bila error `rg` muncul lagi, pasang ulang dan salin ulang.
 
 ## Aturan yang Harus Dipelihara
 - Selalu gunakan kebab-case untuk nama folder skill
