@@ -170,5 +170,8 @@
       ".agents/skills",
       ".agents/skills/bawaan"
     ]
+  },
+  "retention": {
+    "enabled": true
   }
 }
