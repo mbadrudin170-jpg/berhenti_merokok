@@ -1,7 +1,7 @@
 # Hasil Diskusi 1 — Penyebab Skill Spesifik Tidak Termuat Otomatis dan Strategi Routing
 
 ## Status
-- Dokumen: Draft
+- Dokumen: Final
 - Implementasi: Sedang Diimplementasikan (R-2 sebagian: pendaftaran `SKILLS_INDEX.md` ke `instructions`)
 - Tanggal: 2026-11-12
 - Topik: Analisis penyebab skill spesifik tidak dimuat pada pekerjaan spesifik, serta rekomendasi perbaikan routing skill.
@@ -157,20 +157,20 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 | No | Tindakan | File Terdampak | Status |
 |----|----------|----------------|--------|
 | 1 | Menunggu jawaban pengguna atas pertanyaan lanjutan (langkah dan cakupan perbaikan) | `hasil_diskusi/diskusi_1.md` | selesai |
-| 2 | Menaikkan status dokumen dari `Draft` menjadi `Final` setelah keputusan diterima | `hasil_diskusi/diskusi_1.md` | belum |
+| 2 | Menaikkan status dokumen dari `Draft` menjadi `Final` setelah keputusan diterima | `hasil_diskusi/diskusi_1.md` | selesai |
 | 3 | Mengerjakan R-1 (lengkapi trigger kosong) | `SKILLS_INDEX.md` | belum |
 | 4 | Mengerjakan R-2 (routing index/instruksi): daftarkan `SKILLS_INDEX.md` ke `instructions` | `~/.config/kilo/kilo.jsonc` | selesai |
 | 5 | Mengerjakan R-3 (sebut nama skill anak) | `.agents/skills/custom/{bug-runtime,pola-ui,pola-ux,widget-custom}/SKILL.md` | belum |
 | 6 | Mengerjakan R-4 (peta tugas ke skill) | `AGENTS.md`, `.kilo/commands/mode/mode_diskusi.md` | belum |
 | 7 | Mengerjakan R-5 (pemangkasan deskripsi) | `.agents/skills/**/SKILL.md` | belum |
-| 8 | Mengerjakan R-6 (perbaiki `skills.paths`) | `~/.config/kilo/kilo.jsonc` | belum |
-| 9 | Verifikasi pada sesi baru bahwa `SKILLS_INDEX.md` muncul sebagai blok `Instructions from:` | `~/.config/kilo/kilo.jsonc` | belum |
+| 8 | Mengerjakan R-6 (perbaiki `skills.paths`) | `~/.config/kilo/kilo.jsonc` | selesai |
+| 9 | Verifikasi pada sesi baru bahwa `SKILLS_INDEX.md` muncul sebagai blok `Instructions from:` | `~/.config/kilo/kilo.jsonc` | selesai |
 | 10 | Memastikan `MEMORI.md` tetap dibaca via tool pada setiap interaksi (K-5), tidak didaftarkan ke `instructions` | `AGENTS.md` | selesai |
-| 11 | Evaluasi pembuatan `STATUS_PROYEK.md` ringkas bila konteks selalu-hadir diperlukan (R-8) | belum ditentukan | belum |
+| 11 | Evaluasi pembuatan `STATUS_PROYEK.md` ringkas bila konteks selalu-hadir diperlukan (R-8) | belum ditentukan | selesai |
 | 12 | Verifikasi keberlakuan `agent.code.prompt` melalui `/status` atau Settings → Agent Behaviour (R-14) | `~/.config/kilo/kilo.jsonc` | selesai |
 | 13 | Wire prompt ke `kilo.json` proyek dengan `{file:./prompts/code.md}` setelah verifikasi (R-16) | `kilo.json` (baru), `prompts/code.md` | selesai |
 | 15 | Validasi `.kilo/kilo.json` (R-25/R-26) | `.kilo/kilo.json`, `.kilo/prompts/code.md` | selesai |
-| 14 | Hapus `skills.paths` pada `kilo.jsonc` global (R-6) | `~/.config/kilo/kilo.jsonc` | belum |
+| 14 | Hapus `skills.paths` pada `kilo.jsonc` global (R-6) | `~/.config/kilo/kilo.jsonc` | selesai |
 
 ## File Terdampak
 | Lokasi File | Status Perubahan | Deskripsi |
@@ -191,10 +191,10 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 
 ## Pertanyaan Terbuka
 - Apakah perbaikan dilakukan bertahap (dokumentasi lebih dahulu, lalu perbaikan) atau langsung pada penyebab utama?
-- Apakah cakupan perbaikan mencakup R-6 (`skills.paths`) dan R-5 (pemangkasan deskripsi)?
+- Apakah cakupan perbaikan mencakup R-6 (`skills.paths`) dan R-5 (pemangkasan deskripsi)? — Terjawab (2026-11-12): R-6 selesai (config global `~/.config/kilo/kilo.jsonc` kini hanya memuat `$schema`); R-5 dipetakan ke `task.md` (Task 2 pada Kelompok 34).
 - Apakah `SKILLS_INDEX.md` yang penuh dipertahankan, atau diganti dengan berkas routing ringkas yang lebih hemat token? (keputusan K-1 memilih versi penuh; evaluasi ulang setelah R-1)
 - Apakah perubahan isi berkas `instructions` di tengah sesi langsung berlaku, atau memerlukan sesi/reload baru? (belum diverifikasi)
-- Apakah R-8 (`STATUS_PROYEK.md` ringkas) akan dibuat, atau pembacaan `MEMORI.md` via tool dinilai sudah cukup?
+- Apakah R-8 (`STATUS_PROYEK.md` ringkas) akan dibuat, atau pembacaan `MEMORI.md` via tool dinilai sudah cukup? — Terjawab (2026-11-12): tidak dibuat; pembacaan `MEMORI.md` via tool dipertahankan (K-5).
 
 ## Riwayat Perubahan
 | Tanggal | Perubahan |
@@ -213,3 +213,5 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 | 2026-11-12 | Ditambahkan poin 18 dan R-24: hasil clone bersifat sementara; alternatif unduh langsung via `curl` dari `raw.githubusercontent.com` tanpa clone. |
 | 2026-11-12 | Ditambahkan poin 19, K-12, R-25, R-26: `.kilo/kilo.json` sebagai lokasi config tingkat proyek yang ikut ter-clone dan tidak perlu restore manual; catatan resolusi `{file:...}`, penggantian array `instructions`, `KILO_DISABLE_PROJECT_CONFIG`, dan cakupan hanya satu proyek. |
 | 2026-11-12 | Penerapan K-12/R-25/R-26: `.kilo/kilo.json` dibuat di repo (enam entri `instructions` ditulis ulang, `agent.code.prompt` = `{file:./prompts/code.md}`, `skills.paths` tidak diwariskan dari config global), `.kilo/prompts/code.md` dibuat, root `prompts/code.md` ditandai sudah dipindah, dan config divalidasi Kilo tanpa error. Dokumen masih `Draft`; K-12, R-25, R-26, dan tindak lanjut 12/13/15 ditandai selesai. |
+| 2026-11-12 | Dokumen diubah dari `Draft` menjadi `Final` atas persetujuan pengguna; tindak lanjut 2 ditandai selesai. |
+| 2026-11-12 | Tindak lanjut 8, 9, 11, dan 14 ditandai selesai: (8/14, R-6) config global `~/.config/kilo/kilo.jsonc` terverifikasi hanya memuat `$schema` sehingga `skills.paths` tidak ada lagi; (9) `SKILLS_INDEX.md` terdaftar di `instructions` `.kilo/kilo.jsonc` proyek dan tampil sebagai blok `Instructions from:` pada sesi ini; (11, R-8) diputuskan tidak membuat `STATUS_PROYEK.md`. Tindak lanjut yang tersisa dipetakan ke `task.md`: R-1 → Kelompok 37, R-3 → Kelompok 38, R-4 → Kelompok 39, R-5 → Task 2 Kelompok 34. |

@@ -603,6 +603,15 @@ Tidak ada temuan.
 - file bermasalah : Semua `SKILL.md` di `.agents/skills/custom/` dan `.agents/skills/bawaan/`, [skills_config.json](.config/dart_skills/skills_config.json)
 - prompt : hanya diisi oleh saya
 
+#### Task 2
+
+- Status : kerjakan
+- Masalah : Deskripsi `SKILL.md` ditulis sebagai paragraf naratif (± 34,5 KB hanya untuk lima baris awal tiap berkas, ± 8–9k token sebelum isi dibaca), tanpa kata kunci trigger di posisi awal, sehingga pencocokan skill oleh model menjadi longgar dan mahal. Himpunan file sama dengan Task 1 (seluruh `SKILL.md`), sehingga digabung pada kelompok yang sama.
+- Solusi : Pangkas `description` setiap `SKILL.md` menjadi kata kunci trigger di posisi awal dengan batas ± 300 karakter, tanpa menghilangkan informasi wajib (trigger, cakupan, larangan, workflow, referensi file — lihat `aturan_skill.md` §8). Sinkronkan dengan konvensi trigger dari Kelompok 33 dan hasil R-1 pada `SKILLS_INDEX.md`. Perlakukan `bawaan` sesuai strategi Task 1 (acuan `installedAt` dari `skills_config.json`). Setiap perubahan menaikkan `metadata.versi` (bump patch default), memperbarui `metadata.diperbarui` dan `metadata.sumber-terakhir`. Patuhi aturan sumber isi (berbasis riwayat commit) dan laporkan pelanggaran skill lama sebelum mengubah. Verifikasi hasilnya: tidak ada deskripsi yang melebihi ± 300 karakter dan kata kunci trigger berada di awal kalimat.
+- aturan dilanggar : (aturan_sumber_isi)[aturan_skill:56], (aturan_pelanggaran)[aturan_skill:86], (format_task)[format_task:1]
+- file bermasalah : Semua `SKILL.md` di `.agents/skills/custom/` dan `.agents/skills/bawaan/`
+- prompt : hanya diisi oleh saya
+
 # Kelompok 35
 
 ## file terdampak
@@ -637,5 +646,60 @@ Tidak ada temuan.
 - Solusi : Isi butir ke-4 `mode_diskusi.md` dengan rincian field-field wajib: `## Status` (Draft/Batal/Final), `## Topik`, `## Ringkasan`, `## Keputusan`, `## Tindak Lanjut`, beserta format dan aturan pengisian masing-masing.
 - aturan dilanggar : (mode_diskusi)[mode_diskusi:7]
 - file bermasalah : [mode_diskusi.md](.kilo/commands/mode/mode_diskusi.md)
+- prompt : hanya diisi oleh saya
+
+# Kelompok 37
+
+## file terdampak
+
+- [SKILLS_INDEX.md](SKILLS_INDEX.md)
+
+## Tinggi
+
+#### Task 1
+
+- Status : kerjakan
+- Masalah : `SKILLS_INDEX.md` memuat 55 entri dengan literal `Trigger : perlu dilengkapi trigger`, sehingga indeks tidak dapat dipakai sebagai peta routing tugas → skill (lihat `hasil_diskusi/diskusi_1.md` poin 3, R-1).
+- Solusi : Lengkapi trigger pada 55 entri tersebut dengan kata kunci pencarian dan pola path berkas yang biasa disentuh (mis. `lib/fitur/diary_craving/**`). Ambil kata kunci dari `description` tiap `SKILL.md` (sumber isi mengikuti riwayat commit, sesuai `aturan_skill.md` §5; laporkan skill lama yang melanggar sebelum mengubah). Pertahankan format baris `Trigger : ...` yang sudah ada; gunakan `rg "perlu dilengkapi trigger" SKILLS_INDEX.md` untuk menemukan sisa entri. Verifikasi akhir: tidak ada lagi literal `perlu dilengkapi trigger` di `SKILLS_INDEX.md`.
+- aturan dilanggar : (aturan_skill)[aturan_skill:56]
+- file bermasalah : [SKILLS_INDEX.md](SKILLS_INDEX.md)
+- prompt : hanya diisi oleh saya
+
+# Kelompok 38
+
+## file terdampak
+
+- [bug-runtime/SKILL.md](.agents/skills/custom/bug-runtime/SKILL.md)
+- [pola-ui/SKILL.md](.agents/skills/custom/pola-ui/SKILL.md)
+- [pola-ux/SKILL.md](.agents/skills/custom/pola-ux/SKILL.md)
+- [widget-custom/SKILL.md](.agents/skills/custom/widget-custom/SKILL.md)
+
+## Tinggi
+
+#### Task 1
+
+- Status : kerjakan
+- Masalah : Deskripsi skill indeks (`bug-runtime`, `pola-ui`, `pola-ux`, `widget-custom`) menyebut topik tanpa menyebut nama skill anak, sehingga routing membutuhkan dua tahap dan tahap kedua sering terlewat (lihat `hasil_diskusi/diskusi_1.md` poin 4, R-3).
+- Solusi : Cantumkan nama skill anak secara eksplisit pada `description` keempat skill indeks, dengan nama yang diambil dari isi masing-masing skill (bukan dikarang): `bug-runtime` → `type-promotion-null-safety`, `normalisasi-tanggal`, `penanganan-async-data-kosong`, `penanganan-asyncvalue-berkali`, `penanganan-error-unawaited`, `validasi-platform-izin`, `exception-khusus-deteksi-error`; `pola-ui` → `visualisasi-progres-impian`, `isolasi-widget-timer`, `withvalues-opacity-warna`, `normalisasi-tanggal`, `widget-custom`; `pola-ux` → `konfirmasi-sebelum-simpan`, `empty-state-daftar`, `kartu-motivasi-pintasan-dashboard`, `validasi-form-sebelum-penyimpanan`, `penanganan-asyncvalue-berkali`, `penanganan-async-data-kosong`; `widget-custom` → `visualisasi-progres-impian`, `isolasi-widget-timer`, `empty-state-daftar`. Hanya ubah segmen `description`; perbarui `metadata.diperbarui` dan `metadata.sumber-terakhir` (dan `metadata.model` bila tercantum). Verifikasi: `rg "bug-runtime" .agents/skills/custom/` (dst.) menampilkan nama skill anak di deskripsi.
+- aturan dilanggar : (aturan_skill)[aturan_skill:40], (aturan_skill)[aturan_skill:56]
+- file bermasalah : [bug-runtime/SKILL.md](.agents/skills/custom/bug-runtime/SKILL.md), [pola-ui/SKILL.md](.agents/skills/custom/pola-ui/SKILL.md), [pola-ux/SKILL.md](.agents/skills/custom/pola-ux/SKILL.md), [widget-custom/SKILL.md](.agents/skills/custom/widget-custom/SKILL.md)
+- prompt : hanya diisi oleh saya
+
+# Kelompok 39
+
+## file terdampak
+
+- [AGENTS.md](AGENTS.md)
+- [mode_diskusi.md](.kilo/commands/mode/mode_diskusi.md)
+
+## Sedang
+
+#### Task 1
+
+- Status : kerjakan
+- Masalah : `AGENTS.md` dan `.kilo/commands/mode/mode_diskusi.md` tidak memuat peta "skill wajib per jenis pekerjaan", sehingga agen mengandalkan tebakan saat memilih skill (lihat `hasil_diskusi/diskusi_1.md` poin 7, R-4).
+- Solusi : Tambahkan daftar ringkas "skill wajib per jenis pekerjaan" pada `AGENTS.md` (mis. pengerjaan kode → skill sesuai area yang disentuh; pembahasan diskusi → `memori-check`, `penggunaan-tool-question`, `format_hasil_diskusi`; pembuatan/pembaruan skill → `aturan-pembuatan-skill`; menulis/memerbarui `SKILLS_INDEX.md` → skill terkait indeks) serta daftar skill wajib untuk pekerjaan diskusi pada `.kilo/commands/mode/mode_diskusi.md`. Sebut nama skill secara eksplisit, gunakan bahasa Indonesia baku, dan pertahankan struktur poin `AGENTS.md` yang sudah ada (jangan menambah jumlah aturan berlebihan; lihat R-12).
+- aturan dilanggar : (aturan_skill)[aturan_skill:40]
+- file bermasalah : [AGENTS.md](AGENTS.md), [mode_diskusi.md](.kilo/commands/mode/mode_diskusi.md)
 - prompt : hanya diisi oleh saya
 

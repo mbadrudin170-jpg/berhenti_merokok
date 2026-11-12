@@ -97,7 +97,7 @@ Setiap `SKILL.md` wajib memiliki frontmatter di paling atas file, dibungkus deng
 | Field                      | Keterangan                                                    |
 | -------------------------- | ------------------------------------------------------------- |
 | `name`                     | Sama dengan nama folder skill (kebab-case, bahasa Indonesia)  |
-| `description`              | Deskripsi yang sangat detail                                  |
+| `description`              | Deskripsi yang sangat detail; **wajib diawali segmen trigger-only** (lihat §8) |
 | `metadata.kategori`        | Sesuai folder kategori (default `"custom"`)                   |
 | `metadata.versi`           | Format semver, contoh `"1.0.0"`                               |
 | `metadata.diperbarui`      | Waktu pembaruan terakhir isi skill (format `TZ=Asia/Jakarta date`), wajib diisi dan diperbarui setiap kali isi skill berubah (frontmatter maupun body) |
@@ -114,7 +114,7 @@ Setiap `SKILL.md` wajib memiliki frontmatter di paling atas file, dibungkus deng
 ```yaml
 ---
 name: menambahkan-integration-test-flutter
-description: Panduan menambahkan integration test Flutter, mengeksplorasi UI via MCP, dan mengotomasi alur pengguna dengan integration_test.
+description: Trigger: saat menambahkan integration test Flutter | Panduan integration test, eksplorasi UI via MCP, dan mengotomasi alur pengguna dengan integration_test.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
@@ -126,13 +126,53 @@ metadata:
 
 ## 8. Aturan Penulisan Deskripsi Skill
 
-Deskripsi skill (bagian `description` dan paragasan pengantar) wajib mencakup poin-poin berikut:
+Deskripsi skill (bagian `description` dan paragraf pengantar) wajib mencakup poin-poin §8.4. Bagian `description` **wajib diawali segmen trigger-only** agar ekstraksi trigger untuk `SKILLS_INDEX.md` dapat dilakukan secara deterministik.
 
-1. **Kapan digunakan (trigger/use case)** — jelaskan skenario spesifik yang memerlukan skill ini.
+### 8.1 Definisi Trigger
+
+**Trigger** adalah kondisi atau tugas pemicu yang membuat skill ini relevan digunakan (mis. "saat menambahkan notifikasi lokal", "saat membuat PRD"). Aturan definisi trigger:
+
+1. Trigger hanya berisi **kondisi/tugas pemicu** — bukan cakupan, bukan larangan, bukan langkah kerja (workflow), dan bukan referensi file.
+2. Trigger **tidak boleh** memuat daftar package/class/versi (cakupan), hal yang dilarang, urutan kerja, atau path file/folder.
+3. Trigger wajib spesifik dan dapat dibedakan dari skill lain (bukan "saat bekerja dengan Flutter").
+4. Trigger ditulis dalam **bahasa Indonesia** baku; istilah teknis (mis. `build_runner`, `SKILL.md`, `PRD`) boleh tetap dalam bahasa Inggris.
+
+### 8.2 Format dan Penempatan Segmen Trigger di `description`
+
+1. `description` **wajib diawali** dengan penanda literal `Trigger:` pada posisi paling awal (huruf `T` besar, diikuti satu spasi).
+2. Segmen trigger adalah teks dari setelah `Trigger:` sampai pemisah **` | `** pertama (spasi, pipe, spasi) atau sampai akhir string bila pemisah tidak ada.
+3. Setelah pemisah ` | `, segmen berikutnya memuat cakupan, larangan, workflow, dan referensi file seperti biasa (lihat §8.4).
+4. Segmen trigger **hanya memuat trigger** — isi selain kondisi/tugas pemicu dilarang berada di segmen trigger.
+5. Bila `description` tidak memuat pemisah ` | `, seluruh isi setelah `Trigger:` dianggap sebagai segmen trigger (satu segmen).
+
+Contoh:
+
+```yaml
+description: Trigger: saat menambahkan notifikasi lokal Flutter | Panduan flutter_local_notifications v23.0.0, cek platform, izin runtime, dan payload validation.
+```
+
+### 8.3 Penanganan Bahasa ID/EN
+
+1. Segmen trigger wajib **bahasa Indonesia**; isi boleh memuat istilah teknis bahasa Inggris yang lazim.
+2. Segmen setelah pemisah ` | ` boleh bahasa Indonesia atau bahasa Inggris-campuran, tetapi dianjurkan bahasa Indonesia.
+3. Bila `description` lama seluruhnya bahasa Inggris, terjemahkan hanya segmen trigger ke bahasa Indonesia saat normalisasi; segmen lainnya boleh dipertahankan (lihat strategi migrasi pada `task.md`).
+4. Ekstraktor (mis. `perbarui_skills_index.md`) wajib membaca dari setelah `Trigger:` sampai ` | ` pertama atau akhir string; tidak boleh menebak-nebak isi non-trigger.
+
+### 8.4 Poin Wajib Deskripsi Skill
+
+Deskripsi skill (bagian `description` dan paragraf pengantar) wajib mencakup poin-poin berikut:
+
+1. **Kapan digunakan (trigger/use case)** — jelaskan skenario spesifik yang memerlukan skill ini. Bagian ini **wajib** menjadi segmen trigger-only di awal `description` (lihat §8.1–8.3).
 2. **Apa yang di-cover** — cakupan fungsi, class, package, atau versi yang relevan (contoh: `flutter_local_notifications` v22.3.3).
 3. **Apa yang harus dihindari** — jangan digunakan untuk UI web, jangan diedit manual file generated, dll.
 4. **Langkah kerja (workflow)** — urutan tindakan yang wajib diikuti, misal `pub get` → `build_runner` → verifikasi `dart analyze`.
 5. **Referensi ke file terkait** — path file atau folder yang relevan dengan topik skill dan digunakan sebagai acuan saat menerapkan skill tersebut.
+
+### 8.5 Rekonsiliasi dengan Front Matter
+
+- `metadata.diperbarui` dan `metadata.sumber-terakhir` adalah field **wajib** (lihat §7.1) dan menggantikan `metadata.commit-terakhir` yang tidak lagi dipakai.
+- Setiap perubahan `description` (termasuk penambahan/perbaikan segmen trigger) wajib memperbarui `metadata.diperbarui` dan `metadata.sumber-terakhir`, serta menaikkan `metadata.versi` (bump patch default).
+- Segmen trigger-only di awal `description` adalah syarat validitas deskripsi, sehingga `description` tanpa penanda `Trigger:` dianggap belum memenuhi aturan ini.
 
 ## 9. Format Lengkap `SKILL.md`
 

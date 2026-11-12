@@ -56,7 +56,7 @@ Celah pada skill yang berlaku:
 - R-1: Setelah commit perbaikan v15 tersedia, perbarui `.agents/skills/custom/migrasi-skema-sqlite/SKILL.md`: tambahkan aturan A dan rekomendasi B (dengan contoh dari commit perbaikan v15), tambahkan checklist verifikasi `PRAGMA table_info` per tabel setelah perubahan skema, dan perbarui `metadata.diperbarui` serta `metadata.sumber-terakhir` (hash commit) sesuai `aturan_skill.md` §7.1.
 - R-2: Perbarui kolom `Status : diperbarui` pada entri skill tersebut di `SKILLS_INDEX.md` bila isi skill berubah (tanpa menambah/menghapus entri).
 - R-3: Setelah pembaruan skill, verifikasi bahwa skema database instalasi baru identik dengan hasil chain `onUpgrade` (mis. `PRAGMA table_info` untuk setiap tabel) sebelum `keluhan.md` butir 1 ditandai tuntas; perbarui `MEMORI.md` (bagian status/keluhan dan riwayat perubahan).
-- R-4: Pertimbangkan pengujian skema otomatis (mis. via `sqflite_common_ffi`, sesuai skill `sqflite-testing-and-platforms`) sebagai pembahasan terpisah; belum disepakati pada diskusi ini.
+- R-4: Pengujian skema otomatis disepakati dan dikerjakan setelah diskusi ditutup (perintah pengguna, 2026-11-13): dev dependency `sqflite_common_ffi` (2.4.7) ditambahkan dan `test/skema_migrasi_test.dart` dibuat — tes kontrak skema instalasi baru v15 (seluruh tabel + kolom wajib, indeks `idx_konsumsi_tanggal`, INSERT `konsumsi_rokok` dengan `pemicu`) dan tes migrasi v14-tanpa-`pemicu` → v15 (kolom ditambahkan, data lama dipertahankan, INSERT pasca-migrasi berhasil). `dart format` & `dart analyze` lolos; `flutter test`: 44 lolos, 1 gagal (`widget_test.dart` "Home" — gagal juga sebelum perubahan, bukan regresi). Verifikasi runtime (aplikasi berjalan) tetap menunggu pengguna.
 
 ## Tindak Lanjut
 
@@ -66,6 +66,7 @@ Celah pada skill yang berlaku:
 | 2  | Setelah commit: perbarui skill `migrasi-skema-sqlite` sesuai R-1 (aturan A + rekomendasi B + checklist `PRAGMA table_info`) | `.agents/skills/custom/migrasi-skema-sqlite/SKILL.md` | selesai (`migrasi-skema-sqlite` v1.2.0 — aturan 12–14 + `## Steps` + contoh bug v14/perbaikan v15; `metadata.sumber-terakhir` = `230f0b1`) |
 | 3  | Perbarui `SKILLS_INDEX.md` (tanggal diperbarui entri skill) bila R-1 dijalankan | `SKILLS_INDEX.md` | selesai (entri no. 20, diperbarui Fri Nov 13 2026 04:56:47 WIB) |
 | 4  | Verifikasi skema instalasi baru vs chain `onUpgrade`, lalu perbarui `keluhan.md` dan `MEMORI.md` | `keluhan.md`, `MEMORI.md` | selesai sebagian — verifikasi **statis** (DDL per tabel identik) selesai & `keluhan.md` diperbarui; verifikasi runtime (aplikasi berjalan) menunggu pengguna |
+| 5  | Buatkan tes otomatis migrasi & kontrak skema (R-4) | `pubspec.yaml`, `pubspec.lock`, `test/skema_migrasi_test.dart` | selesai — `sqflite_common_ffi` 2.4.7 (dev dependency); 4 tes lolos; `dart format` & `dart analyze` bersih |
 
 ## File Terdampak
 
@@ -78,7 +79,7 @@ Celah pada skill yang berlaku:
 
 ## Pertanyaan Terbuka
 
-- Apakah pengujian skema otomatis (R-4) akan dibahas terpisah pada diskusi lain? Belum dibahas.
+- Pengujian skema otomatis (R-4) sudah dikerjakan (lihat tindak lanjut no. 5).
 - Perbaikan v15 sudah di-commit sebagai `230f0b1` (`fix(sqflite): perbaikan kolom pemicu pada migrasi database ke v15`); prasyarat R-1..R-3 terpenuhi.
 
 ## Riwayat Perubahan
@@ -88,3 +89,4 @@ Celah pada skill yang berlaku:
 | 2026-11-13 | Berkas dibuat berdasarkan hasil diskusi: cakupan kasus skema DB saja; tindak lanjut dokumentasi + rekomendasi skill; arah pembaruan skill Opsi A + B; pembaruan skill menunggu commit perbaikan v15; refactor `_buatTabel` tidak diajukan. |
 | 2026-11-13 | Perbaikan v15 di-commit sebagai `230f0b1` (`fix(sqflite): perbaikan kolom pemicu pada migrasi database ke v15`); prasyarat R-1..R-3 terpenuhi. Bagian Tindak Lanjut (no. 1) dan Pertanyaan Terbuka disesuaikan. Implementasi R-1..R-3 belum dijalankan. |
 | 2026-11-13 | R-1..R-3 dikerjakan: (R-1) `migrasi-skema-sqlite` diperbarui ke v1.2.0 — aturan 12 (sinkronisasi kolom/indeks `onUpgrade` → definisi `CREATE TABLE` di `onCreate`), aturan 13 (verifikasi `PRAGMA table_info` per tabel), aturan 14 (rekomendasi pola satu sumber DDL, tanpa mewajibkan refactor), `## Steps` checklist, contoh bug v14 & perbaikan v15 (`230f0b1`), `metadata.diperbarui`/`metadata.sumber-terakhir` diperbarui; (R-2) `SKILLS_INDEX.md` entri no. 20 diperbarui; (R-3) verifikasi statis DDL per tabel (identik) — `keluhan.md` butir 1 diperbarui, verifikasi runtime menunggu pengguna. Implementasi diubah ke `Sedang Diimplementasikan`. |
+| 2026-11-13 | R-4 disepakati dan dikerjakan: `pubspec.yaml`/`pubspec.lock` menambah dev dependency `sqflite_common_ffi` 2.4.7; dibuat `test/skema_migrasi_test.dart` (kontrak skema instalasi baru v15 + migrasi v14-tanpa-`pemicu` → v15 via fixture `onCreate` versi 14 lama; memakai `sqfliteFfiInit()` + `databaseFactoryFfi`, DB tes di `.dart_tool/sqflite_common_ffi/databases` dan dibersihkan oleh setUp/tearDown). `dart format` & `dart analyze` lolos; `flutter test`: 44 lolos, 1 gagal (`widget_test.dart` teks `Home` — terkonfirmasi gagal juga sebelum perubahan, bukan regresi). Runtime verification tetap menunggu pengguna. |
