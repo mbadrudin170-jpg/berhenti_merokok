@@ -97,8 +97,8 @@ Indeks skill untuk discovery berdasarkan trigger (kapan/untuk apa di-load).
 
 19. custom/memori-check
 
-- Trigger : WAJIB load pada SETIAP interaksi apa pun di proyek ini (task, pertanyaan, diskusi, review, penelusuran, perbaikan kode/dokumen) - baca MEMORI.md root proyek sebelum interaksi dan perbarui isinya setelah interaksi yang mengubah proyek
-- Status : diperbarui : Thu Nov 12 2026 06:59:20 WIB
+- Trigger : WAJIB load pada SETIAP interaksi apa pun di proyek ini (task, pertanyaan, diskusi, review, penelusuran, perbaikan kode/dokumen) - baca MEMORI.md root proyek sebelum interaksi dan perbarui bagian relevan setelah interaksi yang mengubah proyek. Skill mengatur PROSES, bukan daftar section, sehingga tetap valid saat struktur MEMORI.md berubah.
+- Status : diperbarui : Thu Nov 12 2026 19:12:28 WIB
 
 20. custom/migrasi-skema-sqlite
 
