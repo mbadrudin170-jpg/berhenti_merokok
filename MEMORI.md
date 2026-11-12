@@ -86,8 +86,8 @@ Provider dihasilkan dari notifier ber-anotasi `@Riverpod` (deklarasi ada di `*.n
 
 ## Lokasi Hasil Diskusi (PENTING)
 - Folder hasil diskusi berada di **`prd/hasil_diskusi/`** (BUKAN di root).
-- File yang ada saat ini: **(kosong)** — tidak ada file `diskusi_N.md`.
-- Nomor tertinggi dari file yang ada: **tidak ada**; diskusi berikutnya = `diskusi_1.md`.
+- File yang ada saat ini: `diskusi_1.md` (topik risiko dan rekomendasi pengeditan `MEMORI.md` secara bersamaan oleh banyak pihak).
+- Nomor tertinggi dari file yang ada: `diskusi_1.md`; diskusi berikutnya = `diskusi_2.md`.
 - Aturan penomoran: nomor tertinggi + 1, gap tidak diisi (lihat `.kilo/commands/mode/mode_diskusi.md` bagian 3). Jika folder kosong → buat `diskusi_1.md`.
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 3, baris 16–22) sudah diperbaiki: path `hasil_diskusi/` → `prd/hasil_diskusi/`.
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 4) sudah diselaraskan: dulu mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama), kini merujuk ke `format_PRD.md` sebagai satu-satunya sumber kebenaran tanpa hardcode jumlah/judul bagian.
@@ -99,6 +99,7 @@ Format: `No | Tanggal | Topik | Status PRD | Tindak Lanjut`
 | No | Tanggal | Topik | Status PRD | Tindak Lanjut |
 |----|---------|-------|------------|---------------|
 | 1 | 2026-11-12 | Penekanan `AGENTS.md` agar agen wajib membaca & mematuhi file/aturan (poin 5, rules global spesifik, permission `kilo.jsonc`, skill relevan sebelum kerja) | Final (file PRD dihapus setelah implementasi) | Sudah diimplementasikan: `AGENTS.md` diperkuat (wording tegas, cakupan poin 5 + rules global spesifik `aturan_skill.md`/`format_PRD.md`/`format_task.md`, baca `~/.config/kilo/kilo.jsonc` permission sebelum bash/tindakan, cari & load skill relevan sebelum kerja; struktur poin dipertahankan) |
+| 2 | 2026-11-12 | Risiko dan rekomendasi koordinasi pengeditan `MEMORI.md` secara bersamaan oleh pengguna, Kilo, dan model AI lain | Draft | Belum ditindaklanjuti (hanya dokumentasi hasil diskusi di `prd/hasil_diskusi/diskusi_1.md`) |
 | 4 | (lihat file) | Lihat isi `prd/hasil_diskusi/diskusi_4.md` | Final (file diskusi tidak tersedia di folder saat ini) | Belum ditindaklanjuti (berdasarkan catatan sebelumnya) |
 | 7 | (lihat file) | Pembuatan skill penggunaan `ripgrep` | Final (file diskusi sudah dihapus) | Selesai diimplementasikan (skill `pencarian-teks-ripgrep`) |
 | 8 | 2026-11-12 | Celah validasi pada `.kilo/commands/perbarui_skills_index.md` (skill tanpa kategori / di luar `bawaan`/`custom` tidak dilaporkan) | Final (file dihapus atas permintaan pengguna) | Perintah direvisi: kategori dari folder fisik, klasifikasi anomali (serius→STOP, ringan→peringatan, fatal→STOP), laporan wajib |
@@ -117,6 +118,7 @@ Catatan: `prd/hasil_diskusi/` saat ini **kosong** (tidak ada file `diskusi_N.md`
 | 2026-11-12 | Penyelarasan aturan PRD: `.kilo/commands/mode/mode_diskusi.md` §4.2 tidak lagi mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama yang sudah disederhanakan lewat commit `4ce508d`, `06634a2`, `aedb325`, `30ff01b` menjadi 6 bagian) dan kini merujuk ke `format_PRD.md` sebagai sumber kebenaran; §4.6 kini hanya menyebut bagian yang benar-benar ada (`Daftar Fitur`, `Alur Pengguna`, `Steps`, `File-File Terdampak`); penomoran butir §4 dirapikan menjadi 1–7; hasil diskusi semula didokumentasikan pada `prd/hasil_diskusi/diskusi_5.md` (kini dihapus). |
 | 2026-11-12 | Pembaruan skill `memori-check` ke v1.3.0: diubah dari daftar section yang di-hardcode menjadi panduan proses generik (baca konteks → terapkan → perbarui bagian relevan) agar tidak wajib diubah setiap kali struktur `MEMORI.md` berubah; `Sumber Evaluasi` diperbaiki (commit `1823940`, `5e2a55d`, `b7f2b05`; path `prd/hasil_diskusi/`) |
 | 2026-11-12 | Pemindahan semua skill bawaan (33 skill) dari root `.agents/skills/` ke `.agents/skills/bawaan/`,Folder `custom` (53 skill) tidak dipindah. `SKILLS_INDEX.md` diperbarui path bawaan ke `.agents/skills/bawaan/<nama>/SKILL.md`. Tidak ada file `SKILL.md` yang diubah isinya. |
+| 2026-11-12 | Mode Diskusi: dibuat `prd/hasil_diskusi/diskusi_1.md` (Draft) dokumentasi hasil diskusi tentang risiko dan rekomendasi koordinasi saat `MEMORI.md` diubah secara bersamaan oleh banyak pihak. `MEMORI.md` diperbarui (lokasi hasil diskusi sekarang berisi `diskusi_1.md`, berikutnya `diskusi_2.md`; riwayat diskusi ditambahi entri no. 2). |
 
 ## Catatan Teknis Penting
 1. **Database FFI Web**: Konfigurasi `sqfliteCommonFfiWeb` di `main.dart`
