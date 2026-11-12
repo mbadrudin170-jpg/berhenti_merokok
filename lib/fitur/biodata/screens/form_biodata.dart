@@ -55,6 +55,9 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     if (modelAwal != null) {
       _isiDariModel(modelAwal);
     }
+    if (widget.buatPertama && _tanggalMulaiMerokok == null) {
+      _tanggalMulaiMerokok = DateTime.now();
+    }
     _biodataSubscription = ref.listenManual(biodataProvider, (previous, next) {
       next.whenData((biodata) {
         if (biodata != null && !_sudahDiisi && mounted) {
@@ -179,6 +182,27 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
         _tanggalMulaiTapering == null) {
       AppToast.gagal(context, 'Tanggal mulai penurunan wajib dipilih');
       return;
+    }
+    final tanggalMulaiMerokok = _tanggalMulaiMerokok;
+    final tanggalMulaiBerhenti = _tanggalMulaiBerhentiMerokok;
+    if (tanggalMulaiMerokok != null && tanggalMulaiBerhenti != null) {
+      final mulaiDate = DateTime(
+        tanggalMulaiMerokok.year,
+        tanggalMulaiMerokok.month,
+        tanggalMulaiMerokok.day,
+      );
+      final berhentiDate = DateTime(
+        tanggalMulaiBerhenti.year,
+        tanggalMulaiBerhenti.month,
+        tanggalMulaiBerhenti.day,
+      );
+      if (berhentiDate.isBefore(mulaiDate)) {
+        AppToast.gagal(
+          context,
+          'Tanggal mulai berhenti merokok tidak boleh sebelum tanggal mulai merokok',
+        );
+        return;
+      }
     }
     setState(() => _isLoading = true);
     unawaited(
