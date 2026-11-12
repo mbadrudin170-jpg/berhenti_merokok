@@ -43,22 +43,31 @@ Memindai seluruh file `SKILL.md` di `.agents/skills/**/`, memvalidasi penempatan
    - Bandingkan dengan `metadata.diperbarui` di indeks; jika lebih baru, perbarui skill folder `bawaan` saja dan sinkronkan indeks.
 
 7. **Validasi anomali (WAJIB).**
-   Deteksi dan kumpulkan tiga jenis anomali berikut:
-   - **Di luar kategori standar**: skill tidak berada di `.agents/skills/bawaan/` maupun `.agents/skills/custom/` (mis. langsung di `.agents/skills/<nama>/`).
-   - **Metadata kategori kosong**: skill tidak memiliki field `metadata.kategori`.
-   - **Konflik kategori**: folder fisik berbeda dengan nilai `metadata.kategori` (mis. folder `bawaan` tetapi `metadata.kategori: "custom"`).
+   Deteksi dan klasifikasikan anomali menjadi dua tingkat:
 
-8. **Laporkan hasil (WAJIB).**
+   **A. Anomali serius — MENGHENTIKAN (jangan tulis indeks):**
+   - **Di luar kategori standar**: skill tidak berada di `.agents/skills/bawaan/` maupun `.agents/skills/custom/` (mis. langsung di `.agents/skills/<nama>/`).
+   - **Konflik kategori**: folder fisik berbeda dengan nilai `metadata.kategori` (mis. folder `bawaan` tetapi `metadata.kategori: "custom"`).
+   - **Fatal**: folder `.agents/skills/` tidak dapat dibaca, atau tidak ada satu pun `SKILL.md` ditemukan.
+
+   **B. Anomali ringan — hanya peringatan (tetap lanjut):**
+   - **Metadata kategori kosong**: skill tidak memiliki field `metadata.kategori`. Ini **wajar** untuk skill bawaan, jadi tidak menghentikan proses.
+
+8. **Ambil keputusan berdasarkan tingkat anomali (WAJIB).**
+   - Jika ada anomali serius/fatal: **STOP**. Cetak daftar anomali + ringkasan, **JANGAN menulis `SKILLS_INDEX.md`**, dan akhiri dengan status gagal.
+   - Jika hanya ada anomali ringan: lanjutkan penulisan indeks sambil mencatat peringatan.
+
+9. **Laporkan hasil (WAJIB).**
    - Cetak ringkasan: total skill dan jumlah per kategori.
-   - Cetak daftar anomali (path file + jenis anomali) bila ada.
+   - Cetak daftar anomali (path file + jenis anomali + tingkat: serius/ringan) bila ada.
    - Bila tidak ada anomali, cetak "Tidak ada anomali".
    - DILARANG diam ketika daftar anomali tidak kosong.
 
-9. **Tulis SKILLS_INDEX.md.**
-   - Simpan di root proyek (`SKILLS_INDEX.md`).
-   - Gunakan format waktu baku Asia/Jakarta untuk semua timestamp.
+10. **Tulis SKILLS_INDEX.md.** (hanya bila tidak ada anomali serius/fatal)
+    - Simpan di root proyek (`SKILLS_INDEX.md`).
+    - Gunakan format waktu baku Asia/Jakarta untuk semua timestamp.
 
-10. **Validasi akhir.**
+11. **Validasi akhir.**
     - Pastikan `SKILLS_INDEX.md` hanya memuat trigger (bukan cakupan/larangan/workflow).
     - Pastikan `SKILL.md` tetap menjadi sumber kebenaran (wajib di-load sebelum mengerjakan tugas).
     - Pastikan jumlah entri indeks sama dengan jumlah `SKILL.md` yang dipindai (tidak ada yang hilang).
@@ -79,13 +88,14 @@ Memindai seluruh file `SKILL.md` di `.agents/skills/**/`, memvalidasi penempatan
 4. Dilarang mengubah file lain di luar `SKILLS_INDEX.md`.
 5. Dilarang menentukan kategori dari `metadata.kategori` (kategori wajib dari folder fisik).
 6. Dilarang melewatkan pelaporan anomali atau menampilkan hasil seolah normal ketika ada anomali.
+7. Dilarang menulis `SKILLS_INDEX.md` ketika terdapat anomali serius/fatal (perintah wajib berhenti).
 
 # Batasan Ruang Lingkup
 
 1. Pekerjaan hanya mencakup pembuatan/memperbarui `SKILLS_INDEX.md` dari `SKILL.md` yang ada.
 2. Tidak membuat, mengubah, atau menghapus file `SKILL.md`.
 3. Jika `metadata.diperbarui` atau `metadata.sumber-terakhir` belum ada pada `SKILL.md`, catat di indeks dan lanjutkan; tidak menghentikan proses.
-4. Anomali kategori dan metadata **dilaporkan**, tetapi tidak menghentikan penulisan indeks (kecuali diminta pengguna secara eksplisit).
+4. Anomali **ringan** (mis. `metadata.kategori` kosong) dilaporkan tetapi tidak menghentikan penulisan indeks. Anomali **serius/fatal** (di luar `bawaan`/`custom`, konflik kategori, folder tak terbaca, tidak ada `SKILL.md`) **menghentikan** perintah dan tidak menulis indeks.
 
 # Hasil Akhir
 
