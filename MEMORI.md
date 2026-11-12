@@ -86,10 +86,12 @@ Provider dihasilkan dari notifier ber-anotasi `@Riverpod` (deklarasi ada di `*.n
 
 ## Lokasi Hasil Diskusi (PENTING)
 - Folder hasil diskusi berada di **`hasil_diskusi/`** di **root proyek** (BUKAN di dalam `prd/`).
-- File yang ada saat ini: `diskusi_1.md`, `diskusi_2.md`, `diskusi_3.md` (topik pemindahan folder hasil diskusi ke root), `diskusi_4.md` (topik pembuatan aturan format hasil diskusi).
-- Nomor tertinggi dari file yang ada: `diskusi_4.md`; diskusi berikutnya = `diskusi_5.md`.
+- File yang ada saat ini: `diskusi_1.md`, `diskusi_2.md`, `diskusi_3.md` (topik pemindahan folder hasil diskusi ke root), `diskusi_4.md` (topik pembuatan aturan format hasil diskusi), `diskusi_5.md` (topik pemisahan format hasil diskusi dari format PRD).
+- Nomor tertinggi dari file yang ada: `diskusi_5.md`; diskusi berikutnya = `diskusi_6.md`.
 - Aturan penomoran: nomor tertinggi + 1, gap tidak diisi (lihat `.kilo/commands/mode/mode_diskusi.md` bagian 3). Jika folder kosong → buat `diskusi_1.md`.
-- Aturan format berkas hasil diskusi: `.agents/rules/global/format_hasil_diskusi.md` (lokasi, penamaan, penomoran, struktur, status, pencatatan, larangan); sudah didaftarkan pada `instructions` di `~/.config/kilo/kilo.jsonc`.
+- Aturan format berkas hasil diskusi: `.agents/rules/global/format_hasil_diskusi.md` (lokasi, penamaan, penomoran, struktur berorientasi keputusan, status, pencatatan, larangan); sudah didaftarkan pada `instructions` di `~/.config/kilo/kilo.jsonc`.
+- Format hasil diskusi **berbeda** dari PRD: bukan dokumen PRD, tidak memakai struktur `format_PRD.md`. Bagian wajib: `## Status`, `## Latar Belakang`, `## Poin Diskusi`, `## Keputusan`, `## Rekomendasi`, `## Tindak Lanjut`, `## File Terdampak`, `## Pertanyaan Terbuka`, `## Riwayat Perubahan`.
+- `diskusi_1.md`–`diskusi_4.md` adalah arsip berstruktur PRD dan **tidak** dimigrasi ke format baru.
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 3) sudah memakai path `hasil_diskusi/` (root).
 - `.kilo/commands/kerjakan_hasil_diskusi.md` (baris 2 & 5) memakai `hasil_diskusi/diskusi_N.md`.
 - Mirror `gpt/mode/mode_diskusi.md` dan `gpt/kerjakan_hasil_diskusi.md` memakai path `hasil_diskusi/` (kini kembali benar setelah pemindahan); isi bagian lain pada mirror `gpt/` belum disinkronkan dengan versi `.kilo/commands/`.
@@ -104,14 +106,17 @@ Format: `No | Tanggal | Topik | Status PRD | Tindak Lanjut`
 | 2 | 2026-11-12 | Risiko dan rekomendasi koordinasi pengeditan `MEMORI.md` secara bersamaan oleh pengguna, Kilo, dan model AI lain | Draft | Belum ditindaklanjuti (dokumentasi hasil diskusi di `hasil_diskusi/diskusi_1.md`) |
 | 3 | 2026-11-12 | Pemindahan folder hasil diskusi dari `prd/hasil_diskusi/` ke root `hasil_diskusi/` | Final | Selesai diimplementasikan (folder dipindah, referensi path diperbarui di command aktif + MEMORI; mirror `gpt/` sudah sesuai) |
 | 4 | 2026-11-12 | Pembuatan aturan format berkas hasil diskusi (`.agents/rules/global/format_hasil_diskusi.md`) | Final | Selesai diimplementasikan (aturan dibuat, `mode_diskusi.md` §3–§4 merujuk ke aturan, didaftarkan di `instructions` `kilo.jsonc`) |
+| 5 | 2026-11-12 | Pemisahan format hasil diskusi dari format PRD (format berorientasi keputusan) | Final | Selesai diimplementasikan (aturan ditulis ulang, `mode_diskusi.md` §4 tidak lagi mensyaratkan PRD, `diskusi_1`–`4` tetap arsip) |
 | 7 | (lihat file) | Pembuatan skill penggunaan `ripgrep` | Final (file diskusi sudah dihapus) | Selesai diimplementasikan (skill `pencarian-teks-ripgrep`) |
 | 8 | 2026-11-12 | Celah validasi pada `.kilo/commands/perbarui_skills_index.md` (skill tanpa kategori / di luar `bawaan`/`custom` tidak dilaporkan) | Final (file dihapus atas permintaan pengguna) | Perintah direvisi: kategori dari folder fisik, klasifikasi anomali (serius→STOP, ringan→peringatan, fatal→STOP), laporan wajib |
 
-Catatan: `hasil_diskusi/` (root) saat ini berisi `diskusi_1.md`, `diskusi_2.md`, `diskusi_3.md`, dan `diskusi_4.md`. Folder ini sebelumnya berada di `prd/hasil_diskusi/` dan dipindahkan ke root pada 2026-11-12. Riwayat lama: `diskusi_1.md` (topik `AGENTS.md`) dan `diskusi_5.md` pernah dibuat lalu dihapus; `diskusi_4.md` dan lainnya tidak tersedia sebagai file saat ini. Nomor diskusi berikutnya = tertinggi yang ada + 1.
+Catatan: `hasil_diskusi/` (root) saat ini berisi `diskusi_1.md` sampai `diskusi_5.md`. Folder ini sebelumnya berada di `prd/hasil_diskusi/` dan dipindahkan ke root pada 2026-11-12. Riwayat lama: `diskusi_1.md` (topik `AGENTS.md`) dan `diskusi_5.md` pernah dibuat lalu dihapus; `diskusi_4.md` dan lainnya tidak tersedia sebagai file saat ini. Nomor diskusi berikutnya = tertinggi yang ada + 1.
 
 ## Riwayat Perubahan (Changelog)
 | Tanggal | Perubahan |
 |---------|-----------|
+| 2026-11-12 | Penyelarasan `AGENTS.md` dengan pemisahan format: poin 5 kini mencantumkan `format_hasil_diskusi.md` (dan `format_PRD.md` dibatasi hanya untuk PRD), poin 6 serta poin 8 ikut menyesuaikan. `MEMORI.md` bagian `Aturan yang Harus Dipelihara` menambahkan butir format hasil diskusi. |
+| 2026-11-12 | Pemisahan format hasil diskusi dari PRD: `.agents/rules/global/format_hasil_diskusi.md` ditulis ulang menjadi format berorientasi keputusan (9 bagian wajib: `## Status`, `## Latar Belakang`, `## Poin Diskusi`, `## Keputusan`, `## Rekomendasi`, `## Tindak Lanjut`, `## File Terdampak`, `## Pertanyaan Terbuka`, `## Riwayat Perubahan`) dan tidak lagi merujuk struktur `format_PRD.md`; `.kilo/commands/mode/mode_diskusi.md` §1 & §4 disesuaikan (hasil diskusi bukan PRD); `.kilo/commands/kerjakan_hasil_diskusi.md` butir 4 ditambahi rujukan aturan format. `diskusi_1`–`diskusi_4` tetap sebagai arsip berstruktur PRD. |
 | 2026-11-12 | Pembuatan aturan format berkas hasil diskusi: dibuat `.agents/rules/global/format_hasil_diskusi.md` (tujuan, cakupan, hubungan dengan `format_PRD.md`, aturan lokasi/penamaan/penomoran, struktur isi, status, bagian belum dibahas, pencatatan `MEMORI.md`, larangan, kerangka contoh, checklist). `.kilo/commands/mode/mode_diskusi.md` bagian 3–4 diperbarui agar merujuk ke aturan baru (penomoran butir disesuaikan), dan berkas aturan didaftarkan pada `instructions` di `~/.config/kilo/kilo.jsonc`. `docs/struktur_rules.md` sudah usang dan sengaja tidak diubah pada diskusi ini. |
 | 2026-11-12 | Pemindahan folder hasil diskusi dari `prd/hasil_diskusi/` ke root **`hasil_diskusi/`** (mkdir + `git mv` untuk `diskusi_1.md` yang tracked, `mv` untuk `diskusi_2.md` yang untracked, lalu `rmdir prd/hasil_diskusi`). Folder `prd/` dipertahankan dan hanya berisi `prd_konsumsi_pemicu_analisis_puncak.md`. Referensi path diperbarui di `.kilo/commands/mode/mode_diskusi.md`, `.kilo/commands/kerjakan_hasil_diskusi.md`, dan `MEMORI.md`; mirror `gpt/mode/mode_diskusi.md` + `gpt/kerjakan_hasil_diskusi.md` sudah memakai path root sehingga tidak perlu diubah. |
 | 2026-11-12 | Koreksi angka jumlah skill di `MEMORI.md` (pertanyaan pengguna "ada berapa skill terdaftar"). Verifikasi via `find .agents/skills -name SKILL.md` = 86 file (53 `custom` + 33 `bawaan`) dan `SKILLS_INDEX.md` = 86 entri (53 + 33); `available_skills` = 87 entri (86 project-local + `kilo-config` bawaan Kilo). Angka usang "90 total / 36 `bawaan`" di `Status Proyek`, `Skills & Rules Utama yang Diaktifkan`, dan `Catatan untuk Model Selanjutnya` diganti menjadi 87 (53 + 1 + 33). |
@@ -139,6 +144,7 @@ Catatan: `hasil_diskusi/` (root) saat ini berisi `diskusi_1.md`, `diskusi_2.md`,
 
 ## Aturan yang Harus Dipelihara
 - Selalu gunakan kebab-case untuk nama folder skill
+- Berkas hasil diskusi memakai format berorientasi keputusan (`format_hasil_diskusi.md`), BUKAN struktur PRD
 - Bahasa Indonesia dalam dokumentasi dan komentar
 - Gunakan `withValues(alpha:)` untuk opacity, DILARANG `withOpacity()`
 - Import diurutkan alfabetis berdasarkan path package lengkap

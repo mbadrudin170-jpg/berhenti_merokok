@@ -7,12 +7,13 @@
    - `SKILLS_INDEX.md` — indeks bantu discovery skill berdasarkan trigger; `SKILL.md` tetap sumber kebenaran dan **WAJIB** di-load sebelum mengerjakan tugas.
    - `.agents/rules/global/` — **WAJIB** dibaca dan dipatuhi; saat konteks relevan, patuhi secara spesifik:
      - `aturan_skill.md` — saat membuat atau memperbarui skill.
-     - `format_PRD.md` — saat menyusun atau memperbarui PRD/hasil diskusi.
+     - `format_PRD.md` — saat menyusun atau memperbarui PRD.
+     - `format_hasil_diskusi.md` — saat membuat atau memperbarui berkas hasil diskusi (`hasil_diskusi/diskusi_N.md`).
      - `format_task.md` — saat membuat atau memperbarui `task.md`.
    - `.agents/skills/custom/` dan `.agents/skills/bawaan/` — **WAJIB** dipatuhi; muat skill yang relevan sebelum bekerja.
-6. **WAJIB** menggunakan bahasa Indonesia dalam semua interaksi dengan pengguna, sesuai aturan pada `aturan_skill.md` dan `format_PRD.md`.
+6. **WAJIB** menggunakan bahasa Indonesia dalam semua interaksi dengan pengguna, sesuai aturan pada `aturan_skill.md`, `format_PRD.md`, dan `format_hasil_diskusi.md`.
 7. **WAJIB**: jangan mengubah kode di proyek tanpa mengikuti semua skill dan rules yang relevan, terutama rules tentang format dan struktur file.
-8. **WAJIB**: ketika menambahkan konten baru ke file mana pun, pastikan mengikuti aturan format yang ditetapkan dalam rules yang relevan, terutama rules tentang format `SKILL.md` dan format PRD.
+8. **WAJIB**: ketika menambahkan konten baru ke file mana pun, pastikan mengikuti aturan format yang ditetapkan dalam rules yang relevan, terutama rules tentang format `SKILL.md`, format PRD, dan format hasil diskusi.
 9. **WAJIB**: jangan menggunakan bahasa selain Indonesia dalam dokumentasi, komentar, atau interaksi pengguna, kecuali ketika secara eksplisit diperlukan untuk mengutip konten asing atau merujuk ke istilah teknis yang spesifik.
 10. **WAJIB** pada setiap interaksi apa pun di proyek ini: baca `MEMORI.md` terlebih dahulu; setelah interaksi/task yang mengubah proyek, **WAJIB** perbarui `MEMORI.md` agar konteks tetap konsisten (antara lain bagian yang relevan seperti `Status Proyek`, `Provider/Riverpod Key`, `Enum Utama`, `File Konfigurasi & Penting`, `Skills & Rules Utama yang Diaktifkan`, `Aturan yang Harus Dipelihara`, `Catatan Teknis Penting`, dan `Catatan untuk Model Selanjutnya`). Baca dan patuhi skill `memori-check` (`.agents/skills/custom/memori-check/SKILL.md`) sebelum mulai dan sesudah selesai interaksi.
 11. **WAJIB** membaca konfigurasi global Kilo `~/.config/kilo/kilo.jsonc` (terutama bagian `permission`) **sebelum** menjalankan perintah `bash` atau mengambil tindakan lain, agar mengetahui izin yang ditolak (`deny`) serta aturan `ask`/`allow` yang berlaku. Izin `deny` bersifat **mutlak** dan **DILARANG** dilewati, diakali, atau dieksekusi lewat perintah lain (misalnya saat ini `bash`: `cat *`, `sed *`, `python3 *`; `read`: `*.env`, `*.env.*`). File `kilo.jsonc` adalah sumber kebenaran dan dapat berubah sewaktu-waktu; **WAJIB** baca ulang isinya setiap interaksi dan **DILARANG** mengandalkan daftar di aturan ini saja. Sumber izin adalah konfigurasi global, bukan `kilo.json` proyek.

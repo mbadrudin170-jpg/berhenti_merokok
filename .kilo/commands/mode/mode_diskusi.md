@@ -2,7 +2,7 @@
 
 ## 1. Tujuan
 
-Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendokumentasikan hasil diskusi ke dalam file PRD yang terstruktur.
+Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendokumentasikan hasil diskusi ke dalam berkas hasil diskusi yang terstruktur.
 
 ## 2. Aturan Diskusi
 
@@ -24,16 +24,16 @@ Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendoku
 
 ## 4. Struktur dan Isi File Hasil Diskusi
 
-1. Selain ketentuan di bawah, struktur dan status berkas hasil diskusi **WAJIB** mengikuti `.agents/rules/global/format_hasil_diskusi.md`.
-2. Isi file `diskusi_N.md` WAJIB mengikuti struktur dan aturan pengisian PRD lengkap sesuai `.agents/rules/global/format_PRD.md`.
-3. File WAJIB mencakup **seluruh bagian PRD** sebagaimana ditetapkan di `.agents/rules/global/format_PRD.md`, termasuk judul, metadata status, pemisah, konteks penggunaan, aturan pengisian, dan format tabel/isi pada setiap bagian.
-4. **Jumlah dan judul bagian tidak ditulis secara hardcode di aturan ini.** Selalu ikuti versi `format_PRD.md` yang berlaku saat diskusi. Saat ini `format_PRD.md` menetapkan 6 bagian: `1. Informasi Produk`, `2. Tujuan PRD`, `3. Daftar Fitur`, `4. Alur Pengguna`, `5. Steps`, dan `6. File-File Terdampak`. Daftar ini hanya contoh dan akan kedaluwarsa bila templat PRD diperbarui.
-5. Penyesuaian status untuk mode diskusi:
-   - `**Status Dokumen:**` WAJIB diisi salah satu dari: `Draft`, `Batal`, atau `Final` sesuai status hasil diskusi.
-   - `**Status Implementasi:**` diisi sesuai kondisi aktual; jika belum diketahui atau belum relevan, tandai secara jelas tanpa mengarang.
-6. Seluruh isi PRD WAJIB didasarkan pada hasil diskusi dan informasi proyek yang diketahui. DILARANG mengarang informasi.
-7. Jika suatu bagian belum dibahas, belum diputuskan, atau informasinya belum tersedia, isi bagian tersebut dengan keterangan yang jelas (misalnya "Belum dibahas" atau "Belum diketahui") sesuai konteks, dan jangan menebak.
-8. Keputusan, tindak lanjut, dan poin penting dari diskusi WAJIB tercermin pada bagian PRD yang relevan sebagaimana ditetapkan `format_PRD.md` — saat ini `Daftar Fitur`, `Alur Pengguna`, `Steps`, dan `File-File Terdampak`, termasuk bagian lain yang ditetapkan `format_PRD.md` — agar hasil diskusi dapat dipetakan secara utuh.
+1. Struktur dan isi berkas hasil diskusi **WAJIB** mengikuti `.agents/rules/global/format_hasil_diskusi.md`.
+2. Berkas hasil diskusi **BUKAN** dokumen PRD. **DILARANG** memakai struktur PRD (bagian "Konteks penggunaan", "Aturan pengisian", atau 6 bagian PRD) untuk berkas hasil diskusi.
+3. Bagian wajib berurutan: `## Status`, `## Latar Belakang`, `## Poin Diskusi`, `## Keputusan`, `## Rekomendasi`, `## Tindak Lanjut`, `## File Terdampak`, `## Pertanyaan Terbuka`, dan `## Riwayat Perubahan`; judul dan urutan **persis** mengikuti aturan.
+4. Penyesuaian status untuk mode diskusi:
+   - `Dokumen` pada `## Status` WAJIB diisi salah satu dari: `Draft`, `Batal`, atau `Final` sesuai status hasil diskusi.
+   - `Implementasi` pada `## Status` diisi sesuai kondisi aktual; jika belum diketahui atau belum relevan, tandai secara jelas tanpa mengarang.
+5. Seluruh isi WAJIB didasarkan pada hasil diskusi dan informasi proyek yang diketahui. DILARANG mengarang informasi.
+6. Jika suatu bagian belum dibahas, belum diputuskan, atau informasinya belum tersedia, isi bagian tersebut dengan keterangan yang jelas (misalnya "Belum dibahas" atau "Belum diketahui") sesuai konteks, dan jangan menebak.
+7. Keputusan, tindak lanjut, dan poin penting dari diskusi WAJIB tercermin pada bagian `## Keputusan` dan `## Tindak Lanjut` agar hasil diskusi dapat ditindaklanjuti oleh `kerjakan_hasil_diskusi.md`.
+8. Setelah berkas dibuat, diperbarui, atau dihapus, WAJIB perbarui `MEMORI.md` pada bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`.
 
 ## 5. Aturan Penggunaan Tool `question`
 

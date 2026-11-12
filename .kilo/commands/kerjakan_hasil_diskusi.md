@@ -9,7 +9,7 @@ description: Menindaklanjuti hasil diskusi (hasil_diskusi/diskusi_N.md) menjadi 
 3. **Validasi status diskusi**:
    - Jika file diskusi berstatus `Draft`, **jangan dikerjakan walaupun ditunjuk oleh pengguna**. Hentikan proses, sampaikan bahwa diskusi masih `Draft`, dan minta pengguna mengubah status menjadi `Final` terlebih dahulu (atau `Batal` jika tidak dilanjutkan).
    - Hanya file diskusi berstatus `Final` yang boleh ditindaklanjuti. Jika status bukan `Final`/tidak valid, hentikan dan minta klarifikasi.
-4. **Baca konteks pendukung** (setelah status valid): baca aturan format yang relevan (mis. `.agents/rules/global/format_task.md` dan `.agents/rules/global/format_PRD.md` bila diperlukan) agar hasil sesuai aturan proyek.
+4. **Baca konteks pendukung** (setelah status valid): baca aturan format yang relevan (`.agents/rules/global/format_hasil_diskusi.md`, serta `.agents/rules/global/format_task.md` dan `.agents/rules/global/format_PRD.md` bila diperlukan) agar hasil sesuai aturan proyek.
 5. **Fokus topik**: proses hanya tindak lanjut yang berkaitan langsung dengan diskusi sumber; jangan menambah pekerjaan di luar keputusan/topik diskusi.
 6. **Analisis dan petakan tindak lanjut**:
    - Identifikasi item tindakan yang konkret dari `## Keputusan` dan `## Tindak Lanjut`.

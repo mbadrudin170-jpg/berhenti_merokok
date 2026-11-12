@@ -8,17 +8,21 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 
 - **Berkas yang diatur**: berkas hasil diskusi `diskusi_N.md` pada folder `hasil_diskusi/` di root proyek.
 - **Mode terkait**: `.kilo/commands/mode/mode_diskusi.md` (aturan pelaksanaan mode diskusi) dan `.kilo/commands/kerjakan_hasil_diskusi.md` (tindak lanjut hasil diskusi).
-- **Aturan format PRD**: `.agents/rules/global/format_PRD.md` (struktur dan aturan pengisian PRD).
 - **Dokumen lain**: `MEMORI.md` (bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`).
 
-## 3. Hubungan dengan `format_PRD.md`
+## 3. Perbedaan dengan Format PRD
 
-1. `format_PRD.md` adalah **satu-satunya sumber kebenaran** untuk struktur, judul, jumlah bagian, dan aturan pengisian PRD.
-2. Aturan ini adalah **sumber kebenaran khusus** untuk hal-hal yang melekat pada berkas hasil diskusi: lokasi folder, penamaan, penomoran, status dokumen/implementasi, pencatatan, dan larangan.
-3. Jika terjadi konflik:
-   - Untuk **struktur dan isi bagian PRD**, `format_PRD.md` yang berlaku.
-   - Untuk **lokasi, penamaan, penomoran, status, dan pencatatan**, aturan ini yang berlaku.
-4. **DILARANG** menduplikasi templat PRD ke dalam aturan ini atau ke dalam berkas hasil diskusi secara tidak lengkap. Rujuk `format_PRD.md` dan ikuti versi yang berlaku saat diskusi.
+1. Berkas hasil diskusi **BUKAN** dokumen PRD. Sifatnya catatan proses: latar belakang, poin diskusi, keputusan, rekomendasi, dan tindak lanjut.
+2. `.agents/rules/global/format_PRD.md` hanya berlaku untuk dokumen PRD dan **tidak** menjadi acuan struktur berkas hasil diskusi.
+3. Perbedaan utama:
+
+| Aspek | PRD (`format_PRD.md`) | Hasil Diskusi (aturan ini) |
+| ----- | --------------------- | -------------------------- |
+| Sifat | Spesifikasi produk | Catatan proses/keputusan |
+| Pembuka | H1 PRD, metadata status, pemisah `---` | H1 topik + metadata ringkas pada `## Status` |
+| Bagian | 6 bagian PRD (Informasi Produk, Tujuan PRD, Daftar Fitur, Alur Pengguna, Steps, File-File Terdampak) | Latar Belakang, Poin Diskusi, Keputusan, Rekomendasi, Tindak Lanjut, File Terdampak, Pertanyaan Terbuka, Riwayat Perubahan |
+| Pengulangan aturan | Tiap bagian memuat "Konteks penggunaan" dan "Aturan pengisian" | Tidak ada pengulangan; langsung isi |
+| Kata kunci wajib | — | `## Status`, `## Keputusan`, `## Tindak Lanjut` (dipakai `kerjakan_hasil_diskusi.md`) |
 
 ## 4. Aturan Lokasi dan Penamaan
 
@@ -33,23 +37,40 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 
 ## 5. Aturan Struktur Isi
 
-1. Berkas **WAJIB** mencakup **seluruh bagian PRD** sebagaimana ditetapkan `format_PRD.md` pada saat diskusi berlangsung.
-2. **Jumlah dan judul bagian DILARANG di-hardcode** di aturan lain maupun di dalam berkas hasil diskusi secara mendasar. Selalu ikuti versi `format_PRD.md` yang berlaku.
-3. Bagian pembuka **WAJIB** berupa:
-   - Judul H1: `# PRODUCT REQUIREMENTS DOCUMENT (PRD)`.
-   - `**Status Dokumen:**` dan `**Status Implementasi:**`.
-   - Pemisah `---`.
-4. Setiap bagian PRD **WAJIB** mempertahankan urutan baku: konteks penggunaan, aturan pengisian, lalu isi (narasi atau tabel) sesuai `format_PRD.md`.
-5. Seluruh isi **WAJIB** menggunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi.
-6. Seluruh isi **WAJIB** didasarkan pada hasil diskusi dan informasi proyek yang diketahui. **DILARANG mengarang informasi.**
+1. Berkas **WAJIB** memuat bagian berikut **berurutan**, dengan teks judul **persis** seperti tertulis (tanpa penomoran):
+   1. `# Hasil Diskusi <N> — <judul topik>`
+   2. `## Status`
+   3. `## Latar Belakang`
+   4. `## Poin Diskusi`
+   5. `## Keputusan`
+   6. `## Rekomendasi`
+   7. `## Tindak Lanjut`
+   8. `## File Terdampak`
+   9. `## Pertanyaan Terbuka`
+   10. `## Riwayat Perubahan`
+2. Isi tiap bagian:
+   - `## Status` — memuat metadata: `Dokumen`, `Implementasi`, `Tanggal`, dan `Topik`.
+   - `## Latar Belakang` — masalah, pemicu, atau konteks yang memunculkan diskusi.
+   - `## Poin Diskusi` — poin-poin yang dibahas; setiap poin memuat pertanyaan dan kesimpulan singkat.
+   - `## Keputusan` — daftar keputusan final, diberi kode `K-1`, `K-2`, dan seterusnya.
+   - `## Rekomendasi` — daftar saran/tindakan yang dianjurkan, diberi kode `R-1`, `R-2`, dan seterusnya.
+   - `## Tindak Lanjut` — tabel dengan kolom `No`, `Tindakan`, `File Terdampak`, `Status`.
+   - `## File Terdampak` — tabel dengan kolom `Lokasi File`, `Status Perubahan`, `Deskripsi`.
+   - `## Pertanyaan Terbuka` — hal yang masih menunggu jawaban/keputusan; tulis `Belum ada` bila tidak ada.
+   - `## Riwayat Perubahan` — tabel dengan kolom `Tanggal`, `Perubahan`.
+3. **Jumlah dan judul bagian DILARANG diubah** tanpa pembaruan aturan ini. Bila format perlu diperluas, ubah aturan ini terlebih dahulu.
+4. Seluruh isi **WAJIB** menggunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi.
+5. Seluruh isi **WAJIB** didasarkan pada hasil diskusi dan informasi proyek yang diketahui. **DILARANG mengarang informasi.**
+6. Teks judul `## Status`, `## Keputusan`, dan `## Tindak Lanjut` **WAJIB** dipertahankan apa adanya karena menjadi titik baca `.kilo/commands/kerjakan_hasil_diskusi.md`.
+7. **Pengecualian arsip.** Berkas hasil diskusi yang dibuat sebelum aturan ini berlaku (mis. `diskusi_1.md` sampai `diskusi_4.md`) dikecualikan dari kewajiban struktur di atas dan dipertahankan apa adanya sebagai arsip. **DILARANG** mengubah arsip tersebut tanpa persetujuan pengguna.
 
 ## 6. Aturan Status
 
-1. `**Status Dokumen:**` **WAJIB** diisi salah satu dari:
+1. `Dokumen` pada `## Status` **WAJIB** diisi salah satu dari:
    - `Draft` — masih dibahas atau belum disepakati.
    - `Final` — hasil diskusi sudah disepakati.
    - `Batal` — diskusi dibatalkan.
-2. `**Status Implementasi:**` **WAJIB** diisi sesuai kondisi aktual, mis. `Belum Diimplementasikan`, `Sedang Diimplementasikan`, atau `Sudah Diimplementasikan`. Jika belum diketahui atau belum relevan, tulis secara eksplisit (mis. `Belum diketahui`) dan **DILARANG** mengarang.
+2. `Implementasi` pada `## Status` **WAJIB** diisi sesuai kondisi aktual, mis. `Belum Diimplementasikan`, `Sedang Diimplementasikan`, atau `Sudah Diimplementasikan`. Jika belum diketahui atau belum relevan, tulis secara eksplisit (mis. `Belum diketahui`) dan **DILARANG** mengarang.
 3. Perubahan status **WAJIB** disertai penyesuaian isi bagian yang relevan agar dokumen tetap konsisten.
 
 ## 7. Aturan Bagian yang Belum Dibahas
@@ -71,38 +92,61 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 - **DILARANG** mengisi gap penomoran atau menimpa berkas yang sudah ada.
 - **DILARANG** mengubah berkas hasil diskusi berstatus `Final` tanpa alasan yang disepakati pengguna.
 - **DILARANG** mengubah kode sumber implementasi (`.dart` atau kode lain) sebagai bagian dari pembuatan berkas hasil diskusi; mode diskusi hanya menghasilkan dokumen.
-- **DILARANG** menghapus bagian PRD yang diwajibkan `format_PRD.md`.
+- **DILARANG** memakai struktur PRD (bagian "Konteks penggunaan", "Aturan pengisian", atau 6 bagian PRD) untuk berkas hasil diskusi.
+- **DILARANG** mengubah teks judul `## Status`, `## Keputusan`, atau `## Tindak Lanjut`.
 - **DILARANG** menggunakan bahasa selain Indonesia, kecuali mengutip istilah teknis atau konten asing yang relevan.
 
-## 10. Contoh Kerangka Berkas
+## 10. Kerangka Berkas
 
 ```markdown
-# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+# Hasil Diskusi <N> — <judul topik>
 
-**Status Dokumen:** Draft
+## Status
+- Dokumen: Draft | Final | Batal
+- Implementasi: Belum Diimplementasikan | Sedang Diimplementasikan | Sudah Diimplementasikan
+- Tanggal: YYYY-MM-DD
+- Topik: <ringkasan topik>
 
-**Status Implementasi:** Belum Diimplementasikan
+## Latar Belakang
+<masalah, pemicu, atau konteks diskusi>
 
----
+## Poin Diskusi
+### 1. <poin>
+- Tanya: <pertanyaan>
+- Kesimpulan: <kesimpulan singkat>
 
-## 1. <Judul bagian sesuai format_PRD.md>
+## Keputusan
+- K-1: <keputusan>
 
-**Konteks penggunaan:**
-...
+## Rekomendasi
+- R-1: <rekomendasi>
 
-**Aturan pengisian:**
+## Tindak Lanjut
+| No | Tindakan | File Terdampak | Status |
+|----|----------|----------------|--------|
+| 1  | <tindakan> | <file> | belum |
 
-- ...
+## File Terdampak
+| Lokasi File | Status Perubahan | Deskripsi |
+|-------------|------------------|-----------|
+| <file> | Dibuat / Diubah / Dihapus | <deskripsi> |
 
-**Isi:**
-...
+## Pertanyaan Terbuka
+- <pertanyaan> / Belum ada
+
+## Riwayat Perubahan
+| Tanggal | Perubahan |
+|---------|-----------|
+| YYYY-MM-DD | <perubahan> |
 ```
 
 ## 11. Checklist Sebelum Menyelesaikan Berkas
 
 - [ ] Berkas berada di `hasil_diskusi/diskusi_N.md` dengan nomor `tertinggi + 1`.
-- [ ] Seluruh bagian PRD sesuai `format_PRD.md` versi terbaru tersedia.
-- [ ] `Status Dokumen` dan `Status Implementasi` terisi dan konsisten dengan isi.
+- [ ] Seluruh bagian pada §5 tersedia dan berurutan, dengan judul persis.
+- [ ] `Dokumen` dan `Implementasi` pada `## Status` terisi dan konsisten dengan isi.
+- [ ] Keputusan diberi kode `K-N` dan rekomendasi diberi kode `R-N`.
 - [ ] Bagian yang belum dibahas diberi keterangan eksplisit.
+- [ ] Tidak memakai struktur PRD.
 - [ ] Bahasa Indonesia dan tidak ada informasi yang dikarang.
 - [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`.
