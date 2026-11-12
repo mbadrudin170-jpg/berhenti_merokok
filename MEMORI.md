@@ -6,7 +6,7 @@
 - **Versi**: 1.0.0+1
 - **Platform**: Flutter (Android, iOS, Web, Desktop)
 - **Status Implementasi**: Sedang Diimplementasikan
-- **Terakhir Diperbarui**: 2026-11-12
+- **Terakhir Diperbarui**: 2026-11-12 (implementasi PRD `diskusi_1.md`: `AGENTS.md` diperkuat, PRD dihapus)
 
 ## Struktur Utama Layar (Screen)
 Folder fitur ada di `lib/fitur/` (16 folder). Fitur utama:
@@ -85,8 +85,9 @@ Provider dihasilkan dari notifier ber-anotasi `@Riverpod` (deklarasi ada di `*.n
 
 ## Lokasi Hasil Diskusi (PENTING)
 - Folder hasil diskusi berada di **`prd/hasil_diskusi/`** (BUKAN di root).
-- File tertinggi saat ini: `prd/hasil_diskusi/diskusi_4.md`; diskusi berikutnya = `diskusi_5.md`.
-- Aturan penomoran: nomor tertinggi + 1, gap tidak diisi (lihat `.kilo/commands/mode/mode_diskusi.md` bagian 3).
+- File yang ada saat ini: **(kosong)** — tidak ada file `diskusi_N.md`.
+- Nomor tertinggi dari file yang ada: **tidak ada**; diskusi berikutnya = `diskusi_1.md`.
+- Aturan penomoran: nomor tertinggi + 1, gap tidak diisi (lihat `.kilo/commands/mode/mode_diskusi.md` bagian 3). Jika folder kosong → buat `diskusi_1.md`.
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 3, baris 16–22) sudah diperbaiki: path `hasil_diskusi/` → `prd/hasil_diskusi/`.
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 4) sudah diselaraskan: dulu mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama), kini merujuk ke `format_PRD.md` sebagai satu-satunya sumber kebenaran tanpa hardcode jumlah/judul bagian.
 - `.kilo/commands/kerjakan_hasil_diskusi.md` (baris 2 & 5) juga diperbarui ke `prd/hasil_diskusi/diskusi_N.md`.
@@ -96,14 +97,17 @@ Format: `No | Tanggal | Topik | Status PRD | Tindak Lanjut`
 
 | No | Tanggal | Topik | Status PRD | Tindak Lanjut |
 |----|---------|-------|------------|---------------|
-| 4 | (lihat file) | Lihat isi `prd/hasil_diskusi/diskusi_4.md` | Final (lihat file) | Belum ditindaklanjuti |
+| 1 | 2026-11-12 | Penekanan `AGENTS.md` agar agen wajib membaca & mematuhi file/aturan (poin 5, rules global spesifik, permission `kilo.jsonc`, skill relevan sebelum kerja) | Final (file PRD dihapus setelah implementasi) | Sudah diimplementasikan: `AGENTS.md` diperkuat (wording tegas, cakupan poin 5 + rules global spesifik `aturan_skill.md`/`format_PRD.md`/`format_task.md`, baca `~/.config/kilo/kilo.jsonc` permission sebelum bash/tindakan, cari & load skill relevan sebelum kerja; struktur poin dipertahankan) |
+| 4 | (lihat file) | Lihat isi `prd/hasil_diskusi/diskusi_4.md` | Final (file diskusi tidak tersedia di folder saat ini) | Belum ditindaklanjuti (berdasarkan catatan sebelumnya) |
 | 7 | (lihat file) | Pembuatan skill penggunaan `ripgrep` | Final (file diskusi sudah dihapus) | Selesai diimplementasikan (skill `pencarian-teks-ripgrep`) |
 
-Catatan: file yang tersedia saat ini hanya `diskusi_4.md`; `diskusi_5.md` dihapus pada 2026-11-12 atas permintaan pengguna (tindak lanjutnya sudah terimplementasi pada aturan). Nomor 1–3, 5, 6, dan 7 tidak tersedia sebagai file; nomor diskusi berikutnya = tertinggi yang ada + 1 (yaitu `diskusi_5.md`).
+Catatan: folder `prd/hasil_diskusi/` saat ini kosong (tidak ada file `diskusi_N.md`). `diskusi_1.md` dibuat, diimplementasikan, dan dihapus pada 2026-11-12; `diskusi_4.md` dan lainnya tidak tersedia sebagai file saat ini. Nomor diskusi berikutnya = tertinggi yang ada + 1; karena tidak ada file, berikutnya `diskusi_1.md`.
 
 ## Riwayat Perubahan (Changelog)
 | Tanggal | Perubahan |
 |---------|-----------|
+| 2026-11-12 | Implementasi `prd/hasil_diskusi/diskusi_1.md` (penekanan `AGENTS.md`): `AGENTS.md` diperkuat dengan wording tegas (WAJIB/DILARANG) sambil mempertahankan struktur poin — menegaskan cari & load skill relevan sebelum kerja, poin 5 sebagai konteks inti wajib (termasuk urutan/prioritas), rules global spesifik `aturan_skill.md`/`format_PRD.md`/`format_task.md` saat relevan, dan kewajiban baca `~/.config/kilo/kilo.jsonc` permission sebelum bash/tindakan (izin `deny` mutlak). PRD berstatus Sedang → Sudah Diimplementasikan lalu dihapus; tidak ada section terkait di `refrensi_apk.md` (dilewati). `MEMORI.md` diperbarui (lokasi/riwayat diskusi, status diskusi 1). |
+| 2026-11-12 | Pembuatan `prd/hasil_diskusi/diskusi_1.md` (Mode Diskusi, PRD usulan saja, Draft): topik penekanan `AGENTS.md` agar agen wajib membaca & mematuhi poin 5, rules global spesifik (`aturan_skill.md`, `format_PRD.md`, `format_task.md` saat relevan), permission `~/.config/kilo/kilo.jsonc` sebelum bash/tindakan, dan skill relevan sebelum kerja; gaya perkuat wording dengan struktur dipertahankan; `AGENTS.md` belum diubah. `MEMORI.md` diperbarui (lokasi & riwayat diskusi). |
 | 2026-11-12 | Penghapusan `prd/hasil_diskusi/diskusi_5.md` atas permintaan pengguna (tindak lanjut diskusi sudah terimplementasi pada aturan). `MEMORI.md` diperbarui: lokasi hasil diskusi (tertinggi kembali `diskusi_4.md`, berikutnya `diskusi_5.md`), riwayat diskusi (entri no. 5 dihapus, catatan ketersediaan file diperbarui). |
 | 2026-11-12 | Penyelarasan aturan PRD: `.kilo/commands/mode/mode_diskusi.md` §4.2 tidak lagi mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama yang sudah disederhanakan lewat commit `4ce508d`, `06634a2`, `aedb325`, `30ff01b` menjadi 6 bagian) dan kini merujuk ke `format_PRD.md` sebagai sumber kebenaran; §4.6 kini hanya menyebut bagian yang benar-benar ada (`Daftar Fitur`, `Alur Pengguna`, `Steps`, `File-File Terdampak`); penomoran butir §4 dirapikan menjadi 1–7; hasil diskusi semula didokumentasikan pada `prd/hasil_diskusi/diskusi_5.md` (kini dihapus). |
 | 2026-11-12 | Pembaruan skill `memori-check` ke v1.3.0: diubah dari daftar section yang di-hardcode menjadi panduan proses generik (baca konteks → terapkan → perbarui bagian relevan) agar tidak wajib diubah setiap kali struktur `MEMORI.md` berubah; `Sumber Evaluasi` diperbaiki (commit `1823940`, `5e2a55d`, `b7f2b05`; path `prd/hasil_diskusi/`) |
