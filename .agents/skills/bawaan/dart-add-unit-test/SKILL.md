@@ -1,9 +1,12 @@
 ---
 name: dart-add-unit-test
-description: Write and organize unit tests for functions, methods, and classes using `package:test`. Use when creating new logic or fixing bugs to ensure code remains correct and regression-free.
+description: "Trigger: saat membuat logika baru atau memperbaiki bug | Unit test package:test untuk fungsi, method, dan class; tulis test agar kode benar dan bebas regresi."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Mon, 03 Aug 2026 21:51:24 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Testing Dart and Flutter Applications
 

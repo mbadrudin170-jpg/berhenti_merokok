@@ -1,12 +1,12 @@
 ---
 name: text-form-field-validasi
-description: Panduan penggunaan TextFormField, TextEditingController, Form, GlobalKey, dan validasi sebelum penyimpanan.
+description: "Trigger: saat membuat input teks dengan validasi | Panduan TextFormField, TextEditingController, Form, GlobalKey, dan validasi sebelum penyimpanan."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # TextFormField dan Validasi Form

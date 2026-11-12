@@ -1,12 +1,12 @@
 ---
 name: penggunaan-tool-question
-description: 'Panduan penggunaan tool `question` Kilo untuk bertanya, meminta klarifikasi, atau meminta keputusan/input pengguna - mencakup kapan WAJIB memakai tool (bukan teks biasa), format `header` maksimal 30 karakter, struktur opsi jawaban (`label` 1-5 kata + `description` wajib), aturan `multiple` untuk multi-select vs single-select, opsi `default` untuk praseleksi, opsi rekomendasi di urutan pertama dengan label diakhiri "(Recommended)", larangan opsi catch-all karena "Type your own answer" tersedia otomatis, serta varian kunci i18n (`questionKey`, `headerKey`, `labelKey`, `descriptionKey`). Alur kerja - tentukan kebutuhan input -> susun `header` + `question` -> daftar opsi `label` + `description` -> set `multiple`/`default` -> panggil tool `question` lalu tunggu jawaban. Gunakan saat menyusun pertanyaan ke pengguna pada Mode Diskusi maupun interaksi lain yang keputusannya bergantung pada input pengguna; jangan gunakan untuk pertanyaan retoris, informasi yang sudah ada di konteks, atau keputusan teknis yang dapat diputuskan sendiri berdasarkan skill/rules. Sumber aturan - `.kilo/commands/mode/mode_diskusi.md` §5 dan skema tool `question`.'
+description: "Trigger: saat menyusun pertanyaan ke pengguna | Panduan tool question Kilo: header maks 30 karakter, label + description, multiple vs single, default, rekomendasi pertama (Recommended), larangan opsi catch-all, kunci i18n."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Fri Nov 13 2026 01:48:40 WIB"
-  sumber-terakhir: "commit 208e3ec (mode_diskusi.md §5 Aturan Penggunaan Tool question)"
-  model: "kilo/kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Penggunaan Tool `question`

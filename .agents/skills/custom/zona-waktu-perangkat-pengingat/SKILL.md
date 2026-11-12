@@ -1,12 +1,12 @@
 ---
 name: zona-waktu-perangkat-pengingat
-description: Panduan zona waktu perangkat untuk pengingat harian Flutter - deteksi zona waktu lokal via flutter_timezone, inisialisasi tz database, fallback Asia/Jakarta jika deteksi gagal, dan handle error setiap tahap (inisialisasi DB, deteksi perangkat, pencarian lokasi, set lokasi).
+description: "Trigger: saat menjadwalkan pengingat berbasis zona waktu | Panduan flutter_timezone untuk deteksi zona lokal, inisialisasi tz database, fallback Asia/Jakarta, handle error tiap tahap."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Zona Waktu Perangkat untuk Pengingat Harian

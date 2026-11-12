@@ -1,7 +1,12 @@
 ---
 name: dart-build-cli-app
-description: >-
-  Architectural patterns, entrypoint structure, exit codes, stream routing, and subprocess spawning for Dart command-line interface (CLI) applications. Use when building CLI tools, console utilities, scripts, argument parsing with `package:args` (ArgParser or CommandRunner), handling exit codes, configuring executables in pubspec.yaml, spawning Dart subprocesses, or compiling native CLI binaries. Don't use for Flutter UI widgets, web applications, or standalone HTTP backend servers.
+description: "Trigger: saat membangun alat CLI Dart | Pola CLI: entrypoint, exit codes, stream routing, subprocess (package:args ArgParser/CommandRunner), executable di pubspec.yaml, kompilasi biner native. Jangan untuk UI Flutter."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Building Dart CLI Applications

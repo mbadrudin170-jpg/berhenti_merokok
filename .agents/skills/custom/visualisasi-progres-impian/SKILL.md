@@ -1,11 +1,11 @@
 ---
 name: visualisasi-progres-impian
-description: Panduan visualisasi progres impian dan perayaan pencapaian Flutter - helper murni ImpianProgresHelper, guard divisi nol, SharedPreferences penandaan perayaan sekali, AppToast sukses, saldo aktual (fallback estimasi baseline dari biodata) via `MetrikBerhentiHelper`, widget bawaan (Stack, LinearProgressIndicator, Icon), clamp rasio 0-1, dan VisualTabunganImpian widget reusable.
+description: "Trigger: saat memvisualisasikan progres impian atau perayaan | Panduan ImpianProgresHelper, guard divisi nol, SharedPreferences penandaan sekali, AppToast, saldo aktual via MetrikBerhentiHelper, clamp 0-1, VisualTabunganImpian."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

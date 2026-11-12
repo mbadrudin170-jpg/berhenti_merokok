@@ -1,8 +1,12 @@
 ---
 name: adaptive_dialog-dialogs
-description: >-
-  Use when showing platform-adaptive alert dialogs, confirmation dialogs, modal action sheets,
-  or text input dialogs across iOS, Android, macOS, and Web using adaptive_dialog.
+description: "Trigger: saat menampilkan dialog adaptif platform | Adaptive alert/confirmation dialog, action sheets, text input iOS/Android/macOS/Web (adaptive_dialog)."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # adaptive_dialog Dialogs & Action Sheets Guide

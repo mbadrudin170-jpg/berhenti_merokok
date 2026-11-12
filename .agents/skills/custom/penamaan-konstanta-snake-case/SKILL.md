@@ -1,12 +1,12 @@
 ---
 name: penamaan-konstanta-snake-case
-description: Panduan penamaan konstanta kolom database dengan snake_case lowercase yang harus sama persis dengan skema dan migrasi SQLite.
+description: "Trigger: saat menamai konstanta kolom database | Panduan konstanta kolom snake_case lowercase yang harus sama persis dengan skema dan migrasi SQLite."
 metadata:
   kategori: "custom"
-  versi: "1.0.1"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "GPT-6"
+  versi: "1.0.2"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Penamaan Konstanta Kolom Database Menggunakan snake_case

@@ -1,12 +1,12 @@
 ---
 name: pola-testing
-description: Pola testing standar - unit test pakai package:test, widget test pakai WidgetTester, integration test, mockito generate mocks, test dummy data, build_runner untuk codegen.
+description: "Trigger: saat menulis test | Pola testing standar: package:test untuk unit test, WidgetTester untuk widget test, integration test, mockito generate mocks, dummy data, build_runner."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Pola Testing Standar

@@ -1,11 +1,11 @@
 ---
 name: ekstraksi-perhitungan-turunan
-description: Panduan ekstraksi logika perhitungan turunan yang diduplikasi ke ekstensi model atau helper murni agar hanya ditulis sekali dan konsisten di seluruh layar.
+description: "Trigger: saat logika perhitungan turunan terduplikasi | Panduan ekstraksi logika perhitungan turunan ke ekstensi model atau helper murni agar ditulis sekali dan konsisten di seluruh layar."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

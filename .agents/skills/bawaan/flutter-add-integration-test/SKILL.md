@@ -1,9 +1,12 @@
 ---
 name: flutter-add-integration-test
-description: Configures Flutter Driver for app interaction and converts MCP actions into permanent integration tests. Use when adding integration testing to a project, exploring UI components via MCP, or automating user flows with the integration_test package.
+description: "Trigger: saat menambahkan pengujian integrasi | Flutter Driver + integration_test package: jelajahi UI via MCP, otomasi alur pengguna."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Tue, 21 Apr 2026 18:29:20 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Implementing Flutter Integration Tests
 

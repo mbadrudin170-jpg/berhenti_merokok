@@ -1,12 +1,12 @@
 ---
 name: flutter-local-notifications
-description: Panduan standar flutter_local_notifications v23.0.0 Flutter - cek platform sebelum API penjadwalan, dukungan Android/iOS/macOS/Linux/Windows, izin runtime (minta saat fitur diaktifkan bukan startup), payload validation, lifecycle tap (foreground/background/terminated), exception khusus, dan unawaited catchError.
+description: "Trigger: saat menambahkan notifikasi lokal Flutter | Panduan flutter_local_notifications v23.0.0: cek platform, izin runtime, payload validation, lifecycle tap, exception khusus, unawaited catchError."
 metadata:
   kategori: "custom"
-  versi: "2.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "2.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Standar flutter_local_notifications v23.0.0 pada Notifikasi Harian

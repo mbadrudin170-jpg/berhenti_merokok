@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/helper/progres_milestone_helper.dart';
+import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/helper/progres_organ_helper.dart';
+import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/detail_organ_pemulihan_screen.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
+import 'package:berhenti_merokok/shared/konstanta/organ_pemulihan.dart';
 import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +85,9 @@ class _PemulihanKesehatanScreenState
       return _buildBelumBerhenti();
     }
 
+    final durasiKotor = DateTime.now().difference(tanggalBerhenti);
+    final durasi = durasiKotor.isNegative ? Duration.zero : durasiKotor;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
       body: SafeArea(
@@ -92,6 +98,7 @@ class _PemulihanKesehatanScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _HeaderPemulihan(tanggalBerhenti: tanggalBerhenti),
+              _buildRingkasanOrgan(context, durasi),
               Expanded(
                 child: ListView.separated(
                   itemCount: daftarMilestoneKesehatan.length,
@@ -114,7 +121,7 @@ class _PemulihanKesehatanScreenState
                     );
                     final labelProgres = tercapai
                         ? 'Tercapai · 100%'
-                        : '$persen% · Tersisa ${_formatTarget(sisa)}';
+                        : '$persen% · Tersisa ${ProgresOrganHelper.formatDurasi(sisa)}';
                     return Card(
                       key: ValueKey(m.judul),
                       child: ListTile(
@@ -139,15 +146,15 @@ class _PemulihanKesehatanScreenState
                           children: [
                             Text(m.deskripsi),
                             Text(
-                              'Target: ${_formatTarget(m.target)}',
+                              'Target: ${ProgresOrganHelper.formatTarget(m.target)}',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                             LinearProgressIndicator(
                               value: rasio,
                               minHeight: 6,
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHighest,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                               color: tercapai ? Colors.green : null,
                             ),
                             Text(
@@ -167,10 +174,77 @@ class _PemulihanKesehatanScreenState
                       const SizedBox(height: 8),
                 ),
               ),
+              Text(
+                'Ilustrasi umum, bukan kondisi medis Anda.',
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRingkasanOrgan(BuildContext context, Duration durasi) {
+    final textTheme = Theme.of(context).textTheme;
+    return SizedBox(
+      height: 108,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: OrganPemulihan.values.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final organ = OrganPemulihan.values[index];
+          final persen = ProgresOrganHelper.persentaseOrgan(durasi, organ);
+          final selesai = ProgresOrganHelper.organSelesai(durasi, organ);
+          return SizedBox(
+            width: 140,
+            child: Card(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => _bukaDetailOrgan(context, organ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      Icon(organ.icon, color: selesai ? Colors.green : null),
+                      Text(organ.label, style: textTheme.titleSmall),
+                      Text(
+                        ProgresOrganHelper.ringkasanStatus(durasi, organ),
+                        style: textTheme.bodySmall,
+                      ),
+                      LinearProgressIndicator(
+                        value: persen / 100,
+                        minHeight: 6,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        color: selesai ? Colors.green : null,
+                      ),
+                      Text('$persen%', style: textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _bukaDetailOrgan(BuildContext context, OrganPemulihan organ) {
+    unawaited(
+      Nav.to(context, DetailOrganPemulihanScreen(organ: organ)).catchError((
+        Object e,
+        StackTrace s,
+      ) {
+        L.e('Gagal membuka detail organ $organ: $e $s');
+        return null;
+      }),
     );
   }
 
@@ -214,33 +288,6 @@ class _PemulihanKesehatanScreenState
         return null;
       }),
     );
-  }
-
-  static String _formatTarget(Duration d) {
-    if (d.inDays >= 365) {
-      final tahun = (d.inDays / 365).round();
-      if (tahun == 1) return '1 tahun';
-      return '$tahun tahun';
-    }
-    if (d.inDays >= 30) {
-      final bulan = (d.inDays / 30).round();
-      if (bulan == 1) return '1 bulan';
-      return '$bulan bulan';
-    }
-    if (d.inDays >= 7) {
-      final minggu = (d.inDays / 7).round();
-      if (minggu == 1) return '1 minggu';
-      return '$minggu minggu';
-    }
-    if (d.inDays >= 1) {
-      if (d.inDays == 1) return '1 hari';
-      return '${d.inDays} hari';
-    }
-    if (d.inHours >= 1) {
-      if (d.inHours == 1) return '1 jam';
-      return '${d.inHours} jam';
-    }
-    return '${d.inMinutes} menit';
   }
 }
 
@@ -297,7 +344,7 @@ class _HeaderPemulihanState extends State<_HeaderPemulihan> {
               ),
             ),
             Text(
-              _formatDurasi(durasi),
+              ProgresOrganHelper.formatDurasi(durasi),
               style: textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -315,7 +362,7 @@ class _HeaderPemulihanState extends State<_HeaderPemulihan> {
                 ),
               ),
               Text(
-                'Tersisa ${_formatDurasi(berikutnya.target - durasi)}',
+                'Tersisa ${ProgresOrganHelper.formatDurasi(berikutnya.target - durasi)}',
                 style: textTheme.bodySmall,
               ),
             ] else
@@ -330,30 +377,5 @@ class _HeaderPemulihanState extends State<_HeaderPemulihan> {
         ),
       ),
     );
-  }
-
-  String _formatDurasi(Duration d) {
-    if (d.inDays > 0) {
-      final hari = d.inDays;
-      final jam = d.inHours % 24;
-      final menit = d.inMinutes % 60;
-      final bagian = <String>['$hari hari'];
-      if (jam > 0) bagian.add('$jam jam');
-      if (menit > 0) bagian.add('$menit menit');
-      return bagian.join(' ');
-    }
-    if (d.inHours > 0) {
-      final jam = d.inHours;
-      final menit = d.inMinutes % 60;
-      final detik = d.inSeconds % 60;
-      final bagian = <String>['$jam jam'];
-      if (menit > 0) bagian.add('$menit menit');
-      bagian.add('$detik detik');
-      return bagian.join(' ');
-    }
-    final menit = d.inMinutes;
-    final detik = d.inSeconds % 60;
-    if (menit > 0) return '$menit menit $detik detik';
-    return '$detik detik';
   }
 }

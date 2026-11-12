@@ -1,11 +1,11 @@
 ---
 name: kartu-motivasi-pintasan-dashboard
-description: Panduan kartu motivasi dan pintasan aksi cepat pada dashboard dan SOS Craving Flutter - navigasi pintasan pakai unawaited Nav.to dengan catchError dan L.e, akses data async opsional dengan asData?.value bukan requireValue, log variabel UI dengan L.i/L.w, FilterChip logging, dan SizedBox.shrink untuk data kosong.
+description: "Trigger: saat membuat kartu motivasi atau pintasan aksi dashboard | Panduan dashboard dan SOS Craving: unawaited Nav.to dengan catchError, asData?.value bukan requireValue, log L.i/L.w, SizedBox.shrink untuk data kosong."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

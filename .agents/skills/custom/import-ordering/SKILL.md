@@ -1,12 +1,12 @@
 ---
 name: import-ordering
-description: Panduan mengurutkan import secara alfabetis berdasarkan path package lengkap dan memberi komentar penjelas seperlunya.
+description: "Trigger: saat menambahkan atau merapikan import | Panduan urutan import alfabetis berdasarkan path package lengkap dengan komentar penjelas seperlunya."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "GPT-6"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Import Ordering (Urutan Import)

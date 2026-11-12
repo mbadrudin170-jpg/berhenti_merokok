@@ -1,12 +1,12 @@
 ---
 name: withvalues-opacity-warna
-description: "Indeks aturan withValues untuk opacity warna di Flutter - merujuk ke skill 'gaya' untuk panduan lengkap styling. Wajib menggunakan warna.withValues(alpha: ...) untuk opacity, DILARANG menggunakan warna.withOpacity() yang deprecated sejak Flutter 3.47+."
+description: "Trigger: saat mengatur opacity warna | Indeks aturan withValues(alpha:) bukan withOpacity() deprecated; lihat skill gaya untuk panduan lengkap."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Indeks: withValues Opacity Warna

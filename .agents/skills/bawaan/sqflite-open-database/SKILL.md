@@ -1,13 +1,12 @@
 ---
 name: sqflite-open-database
-description: >-
-  Use when opening, creating, migrating, closing or deleting a SQLite database
-  with package:sqflite in a Flutter app (Android, iOS, macOS): openDatabase,
-  openReadOnlyDatabase, OpenDatabaseOptions, version, onConfigure, onCreate,
-  onUpgrade, onDowngrade, onDatabaseDowngradeDelete, onOpen, getDatabasesPath,
-  deleteDatabase, databaseExists, inMemoryDatabasePath, singleInstance,
-  readOnly, databaseFactory, getVersion, setJournalMode (WAL), foreign keys,
-  copying an asset database, and the "database is locked" pitfalls.
+description: "Trigger: saat membuka atau migrasi database SQLite | openDatabase, OpenDatabaseOptions, version, onCreate/onUpgrade/onDowngrade, getDatabasesPath, deleteDatabase, WAL, foreign keys."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # sqflite: opening and migrating a database

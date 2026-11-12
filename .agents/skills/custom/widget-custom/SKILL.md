@@ -1,11 +1,11 @@
 ---
 name: widget-custom
-description: Indeks widget custom reusable di Flutter - merujuk ke skill spesifik untuk VisualTabunganImpian, timer widgets terisolasi, EmptyStateView (empty state bersama), dan loading view. Setiap widget custom wajib StatelessWidget, pure (tidak ada logika bisnis di dalam), aman untuk tema (ColorScheme), dan menggunakan Column.spacing bukan SizedBox berulang.
+description: "Trigger: saat membuat widget custom reusable | Indeks: visualisasi-progres-impian, isolasi-widget-timer, empty-state-daftar. Wajib StatelessWidget, pure, aman tema (ColorScheme), Column.spacing."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

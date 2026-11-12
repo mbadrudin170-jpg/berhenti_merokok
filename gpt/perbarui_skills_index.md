@@ -15,10 +15,12 @@ Memindai seluruh file `SKILL.md` di `.agents/skills/**/`, memvalidasi penempatan
    - Baca front matter YAML setiap file untuk mendapatkan: `name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.diperbarui`, `metadata.sumber-terakhir`.
    - Catat path relatif setiap file untuk keperluan validasi dan pelaporan.
 
-2. **Ekstrak trigger dari description.**
-   - Identifikasi bagian "Kapan digunakan (trigger/use case)" dari `description`.
-   - Tulis hanya trigger dalam bahasa Indonesia, tanpa mencampur cakupan/larangan/workflow.
-   - Jika trigger tidak teridentifikasi, tulis penanda eksplisit: `perlu dilengkapi trigger`.
+2. **Ekstrak trigger dari description (deterministik).**
+   - Baca nilai `description` dari front matter YAML setiap file.
+   - Cari literal `Trigger:` di posisi paling awal nilai `description` (konvensi `.agents/rules/global/aturan_skill.md` §8.2).
+   - Segmen trigger adalah teks dari setelah `Trigger:` sampai pemisah ` | ` pertama (spasi-pipe-spasi), atau sampai akhir string bila pemisah tidak ada.
+   - Tulis segmen trigger apa adanya; trigger wajib bahasa Indonesia dan tidak boleh memuat cakupan/larangan/workflow/referensi file.
+   - Jika `description` tidak diawali `Trigger:`, atau segmen trigger kosong, tulis penanda eksplisit: `perlu dilengkapi trigger` dan catat path file sebagai **anomali ringan** (laporan wajib, tidak menghentikan proses).
 
 3. **Tentukan kategori dari folder fisik.**
    - Ambil segmen folder tepat setelah `.agents/skills/` sebagai kategori (mis. `bawaan`, `custom`).
@@ -50,8 +52,9 @@ Memindai seluruh file `SKILL.md` di `.agents/skills/**/`, memvalidasi penempatan
    - **Konflik kategori**: folder fisik berbeda dengan nilai `metadata.kategori` (mis. folder `bawaan` tetapi `metadata.kategori: "custom"`).
    - **Fatal**: folder `.agents/skills/` tidak dapat dibaca, atau tidak ada satu pun `SKILL.md` ditemukan.
 
-   **B. Anomali ringan — hanya peringatan (tetap lanjut):**
-   - **Metadata kategori kosong**: skill tidak memiliki field `metadata.kategori`. Ini **wajar** untuk skill bawaan, jadi tidak menghentikan proses.
+    **B. Anomali ringan — hanya peringatan (tetap lanjut):**
+    - **Metadata kategori kosong**: skill tidak memiliki field `metadata.kategori`. Ini **wajar** untuk skill bawaan (sebelum migrasi front matter Kelompok 34), jadi tidak menghentikan proses.
+    - **Description tanpa `Trigger:`**: skill tidak diawali penanda literal `Trigger:` pada `description` (konvensi `aturan_skill.md` §8.2), sehingga ekstraksi trigger jatuh ke penanda `perlu dilengkapi trigger`.
 
 8. **Ambil keputusan berdasarkan tingkat anomali (WAJIB).**
    - Jika ada anomali serius/fatal: **STOP**. Cetak daftar anomali + ringkasan, **JANGAN menulis `SKILLS_INDEX.md`**, dan akhiri dengan status gagal.

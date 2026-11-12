@@ -1,12 +1,12 @@
 ---
 name: scaffold-struktur-layar
-description: Panduan penggunaan Scaffold, AppBar, body, floatingActionButton, bottomNavigationBar, dan drawer untuk struktur layar standar.
+description: "Trigger: saat menyusun struktur layar | Panduan Scaffold, AppBar, body, floatingActionButton, bottomNavigationBar, drawer untuk struktur layar standar."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Struktur Layar Standar (Scaffold)

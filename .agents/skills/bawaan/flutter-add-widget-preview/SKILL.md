@@ -1,9 +1,12 @@
 ---
 name: flutter-add-widget-preview
-description: Adds interactive widget previews to the project using the previews.dart system. Use when creating new UI components or updating existing screens to ensure consistent design and interactive testing.
+description: "Trigger: saat membuat atau memperbarui komponen UI | Interactive widget previews via previews.dart untuk desain konsisten dan testing interaktif."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Tue, 21 Apr 2026 20:05:23 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Previewing Flutter Widgets
 

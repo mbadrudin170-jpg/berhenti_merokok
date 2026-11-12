@@ -1,11 +1,12 @@
 ---
 name: dart-migrate-to-checks-package
-description: |-
-  Replace the usage of `expect` and similar functions from `package:matcher`
-  to `package:checks` equivalents.
+description: "Trigger: saat migrasi dari expect ke package:checks | Ganti expect dan sejenisnya dari package:matcher ke ekuivalen package:checks."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Tue, 09 Jun 2026 19:30:00 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Migrating Dart Tests to Package Checks
 

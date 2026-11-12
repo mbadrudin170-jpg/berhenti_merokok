@@ -1,12 +1,12 @@
 ---
 name: parsing-nullable-int
-description: Panduan parsing field nullable integer dari database memakai parseIntOrNull agar null tetap null dan tidak berubah menjadi nol, serta parseInt/parseBool dengan defaultValue untuk field non-nullable.
+description: "Trigger: saat membaca field integer nullable dari database | Panduan parseIntOrNull (null tetap null, tidak jadi 0) dan parseInt/parseBool dengan defaultValue untuk field non-nullable."
 metadata:
   kategori: "custom"
-  versi: "1.0.3"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.4"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Parsing Field Nullable Integer dari Database Menggunakan parseIntOrNull

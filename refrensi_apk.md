@@ -977,12 +977,6 @@ Catatan: fitur iOS-only pada 10 APK (lock screen, StandBy, Dynamic Island, Contr
 - **Saran:** 1–2 pertanyaan opsional (alasan utama berhenti; tingkat ketergantungan 1–10) untuk menyesuaikan konten/tips; simpan di SharedPreferences; jangan paksa.
 - **Prioritas:** Rendah.
 
-##### C16. Pemulihan Tubuh per Organ (paru/jantung/sirkulasi/saraf/kulit)
-
-> **Sudah dibuat PRD:** seluruh isi bagian ini (aplikasi serupa, pola UI, pola UX, pola layout, saran) dipindahkan ke `prd/prd_pemulihan_tubuh_per_organ.md` pada bagian 2–5. Nomor baris asal bagian ini: **980–987**.
-
-- **Prioritas:** Rendah.
-
 ### D. Penguatan Temuan Sebelumnya (referensi baru dari 10 APK)
 
 - **A1/C5/C10 (widget):** [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) (2 widget layar utama: uang dihemat + waktu sejak berhenti) · [QUIT Smoking SOS](https://play.google.com/store/apps/details?id=com.quitapp.quitsmoking) (Home Screen widget untuk streak) · [SmartQuit / BreatheFree V2](https://github.com/ShreyNagda/smartquit) (**1x1 Panic Widget**, Material You, tap = intervensi acak) — pola "widget aksi cepat" (panik/log) makin menguatkan A1 sebagai prioritas tinggi; untuk Android gunakan AppWidget/Glance.

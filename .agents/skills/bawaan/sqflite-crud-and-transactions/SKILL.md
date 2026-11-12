@@ -1,14 +1,12 @@
 ---
 name: sqflite-crud-and-transactions
-description: >-
-  Use when reading or writing rows with package:sqflite: execute, insert,
-  query, update, delete and their raw variants (rawInsert, rawQuery,
-  rawUpdate, rawDelete), where/whereArgs binding, ConflictAlgorithm (upsert
-  with replace/ignore), transaction (txn) and rollback, Batch commit/apply,
-  queryCursor/queryIterate for large results, SqfliteSqlCommand, supported
-  column types (int, num, String, Uint8List, no bool/DateTime), reserved-name
-  escaping (escapeName), Sqflite.firstIntValue for COUNT(*), and
-  DatabaseException handling (isUniqueConstraintError, isNoSuchTableError).
+description: "Trigger: saat membaca atau menulis baris sqflite | execute/insert/query/update/delete + raw variants, ConflictAlgorithm, transaction (txn), batch, cursor, Sqflite.firstIntValue, DatabaseException."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # sqflite: CRUD, transactions and batches

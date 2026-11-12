@@ -1,15 +1,12 @@
 ---
 name: sqflite-common-ffi-web-options
-description: >-
-  Use when customizing or debugging sqflite on the web with
-  package:sqflite_common_ffi_web beyond the default factory:
-  createDatabaseFactoryFfiWeb, SqfliteFfiWebOptions (sqlite3WasmUri,
-  sharedWorkerUri, indexedDbName, inMemory, forceAsBasicWorker), serving
-  sqlite3.wasm and sqflite_sw.js from another location or name, the
-  sw_js_file pubspec override, several isolated IndexedDB stores,
-  sqfliteFfiWebLoadSqlite3Wasm and sqfliteFfiWebStartSharedWorker,
-  SqfliteFfiWebContext, sqliteFfiWebDebugWebWorker, and inspecting the worker
-  in Chrome (chrome://inspect/#workers).
+description: "Trigger: saat customize atau debug sqflite di web | databaseFactoryFfiWeb, SqfliteFfiWebOptions (sqlite3WasmUri, swWorkerUri, indexedDbName), serving wasm/worker dari lokasi lain."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # sqflite_common_ffi_web: custom factories, options and debugging

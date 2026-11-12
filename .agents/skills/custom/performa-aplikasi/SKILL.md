@@ -1,12 +1,12 @@
 ---
 name: performa-aplikasi
-description: Aturan performa aplikasi Flutter - widget rebuild minimal, const constructor, ListView/GridView builder (lazy loading), image & asset caching, async gap & microtask yielding, memory leak prevention, const & final optimization, database query optimization, build size optimization, dan profiling & monitoring.
+description: "Trigger: saat mengoptimasi performa aplikasi | Aturan performa Flutter: rebuild minimal, const constructor, builder list (lazy), image caching, async gap yielding, memory leak, query DB optimization, profiling."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Aturan Performa Aplikasi

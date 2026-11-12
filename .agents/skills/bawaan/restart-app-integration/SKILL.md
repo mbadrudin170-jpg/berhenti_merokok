@@ -1,9 +1,12 @@
 ---
 name: restart-app-integration
-description: >-
-  Integrate or troubleshoot Flutter app restarts with restart_app, including
-  restart modes, results, saved data, web routes, desktop relaunches, and
-  requests from background isolates.
+description: "Trigger: saat integrasi atau troubleshoot restart aplikasi | restart_app: modes, results, saved data, web routes, desktop relaunch, background isolates."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Flutter app restart integration

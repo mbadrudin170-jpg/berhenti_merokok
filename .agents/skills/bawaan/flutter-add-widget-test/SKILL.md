@@ -1,9 +1,12 @@
 ---
 name: flutter-add-widget-test
-description: Implement a component-level test using `WidgetTester` to verify UI rendering and user interactions (tapping, scrolling, entering text). Use when validating that a specific widget displays correct data and responds to events as expected.
+description: "Trigger: saat memvalidasi widget tertentu | WidgetTester test: rendering dan interaksi (tap, scroll, input) sesuai perilaku yang diharapkan."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Tue, 21 Apr 2026 21:15:41 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Writing Flutter Widget Tests
 

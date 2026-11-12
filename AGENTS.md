@@ -1,4 +1,10 @@
-1. **WAJIB**: sebelum mengerjakan interaksi apa pun (task, pertanyaan, diskusi, review, penelusuran, perbaikan), **cari dan muat (load) skill yang relevan** terlebih dahulu. Gunakan `SKILLS_INDEX.md` untuk discovery, lalu baca `SKILL.md` skill terkait sebagai sumber kebenaran. **DILARANG** mengerjakan sesuatu tanpa panduan dari skill dan/atau rules yang relevan.
+1. **WAJIB**: sebelum mengerjakan interaksi apa pun (task, pertanyaan, diskusi, review, penelusuran, perbaikan), **cari dan muat (load) skill yang relevan** terlebih dahulu. Gunakan `SKILLS_INDEX.md` untuk discovery, lalu baca `SKILL.md` skill terkait sebagai sumber kebenaran. **DILARANG** mengerjakan sesuatu tanpa panduan dari skill dan/atau rules yang relevan. Peta skill wajib per jenis pekerjaan (muat sebelum mengerjakan):
+   - Pengerjaan kode → skill pada `.agents/skills/custom/` atau `.agents/skills/bawaan/` yang sesuai dengan area yang disentuh (ditemukan via `SKILLS_INDEX.md`), mis. `notifier-crud-database` untuk Notifier CRUD, `riverpod-pola` untuk Riverpod, `gaya` untuk styling.
+   - Pembahasan atau penulisan hasil diskusi → skill `memori-check` dan `penggunaan-tool-question`, serta aturan `.agents/rules/global/format_hasil_diskusi.md`.
+   - Pembuatan atau pembaruan `SKILL.md` → skill `aturan-pembuatan-skill` dan aturan `.agents/rules/global/aturan_skill.md`.
+   - Menulis atau memperbarui `SKILLS_INDEX.md` → perintah `.kilo/commands/perbarui_skills_index.md` (indeks dihasilkan ulang, jangan diketik manual).
+   - Penyusunan atau pembaruan PRD → aturan `.agents/rules/global/format_PRD.md`.
+   - Pembuatan atau pembaruan `task.md` → aturan `.agents/rules/global/format_task.md`.
 2. **WAJIB** membaca dan mematuhi seluruh panduan di `.agents/skills/`, terutama `.agents/skills/custom` dan `.agents/skills/bawaan`. Skill dan rules adalah petunjuk yang **wajib ditaati** oleh semua pihak yang mengerjakan proyek ini.
 3. **WAJIB**: jangan biarkan pihak mana pun mengubah kode di proyek tanpa panduan dari skill atau rules yang relevan. **DILARANG** melewatkan rujukan ke skill/rules yang sesuai konteks.
 4. **WAJIB** bekerja berdasarkan skill, aturan, dan SDK sebagai panduan. **DILARANG** berasumsi liar atau mengambil keputusan teknis tanpa dasar pada skill/rules/SDK yang berlaku.

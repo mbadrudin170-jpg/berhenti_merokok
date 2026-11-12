@@ -1,11 +1,11 @@
 ---
 name: gaya
-description: Panduan styling warna dan tema Flutter - wajib menggunakan withValues(alpha:) untuk opacity (bukan withOpacity yang deprecated), warna UI harus diambil dari ColorScheme/tema, hardcode warna hanya diperbolehkan untuk status semantic yang harus sama di light/dark mode (hijau sukses, merah error, kuning warning), dan EasyLoading wajib dilengkapi catchError pada unawaited.
+description: "Trigger: saat menata warna dan tema UI | Panduan styling Flutter: withValues(alpha:) bukan withOpacity, warna dari ColorScheme/tema, hardcode hanya status semantic (hijau/merah/kuning), EasyLoading dengan catchError."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

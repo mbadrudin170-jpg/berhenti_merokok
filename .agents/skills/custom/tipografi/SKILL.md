@@ -1,12 +1,12 @@
 ---
 name: tipografi
-description: Panduan tipografi Flutter - wajib menggunakan Theme.of(context).textTheme sebagai referensi utama, copyWith() untuk customisasi (bold, warna, ukuran), hierarki visual label/sub-label/nilai dengan properti gaya yang berbeda per tingkat, bold terarah pada informasi utama, FontFeature.tabularFigures() untuk timer dan angka monetary, dan penanganan overflow dengan FittedBox/Flexible hanya pada bagian yang memerlukan.
+description: "Trigger: saat mengatur tipografi | Panduan: Theme.of(context).textTheme utama, copyWith untuk kustomisasi, hierarki label/sub-label/nilai, bold terarah, FontFeature.tabularFigures() untuk angka/timer, FittedBox/Flexible secukupnya."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Panduan Tipografi

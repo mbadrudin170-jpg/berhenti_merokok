@@ -1,12 +1,12 @@
 ---
 name: konfirmasi-sebelum-simpan
-description: Panduan konfirmasi sebelum menyimpan pada form - tampilkan dialog konfirmasi, hanya simpan jika OK, flag loading + EasyLoading selama proses.
+description: "Trigger: saat menyimpan data dari form | Panduan dialog konfirmasi sebelum menyimpan, hanya simpan jika OK, flag loading + EasyLoading selama proses."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Konfirmasi sebelum Menyimpan pada Form

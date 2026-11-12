@@ -1,11 +1,11 @@
 ---
 name: pencarian-teks-ripgrep
-description: Panduan penggunaan ripgrep (`rg`) sebagai alat pencarian teks di dalam file pada proyek Flutter "berhenti_merokok" - kapan digunakan (mencari teks, pemanggilan fungsi, atau pola di dalam file sumber; juga saat tool `rg` gagal dengan `NotFound: ChildProcess.spawn (/home/thefarmercompanyba/.cache/kilo/bin/rg ...)`), apa yang di-cover (preferensi `rg` atas `grep -rn`, verifikasi ketersediaan `rg` dengan `which rg` sebelum memilih alternatif, pembagian tugas dengan `glob` dan `ls`, serta diagnosa dan pemulihan binary `rg` milik Kilo di `~/.cache/kilo/bin/rg`), apa yang harus dihindari (beralih ke `grep` saat `rg` tersedia/berfungsi atau sebelum binary Kilo dipulihkan, memilih alternatif tanpa cek `which rg`, memakai `rg` untuk mencari file berdasarkan nama atau melihat isi folder, menjalankan alias yang menghapus `~/.cache`), langkah kerja (cek `which rg` dan isi `~/.cache/kilo/bin/`, pasang dengan `install_rg`, salin binary sistem ke `~/.cache/kilo/bin/rg`, verifikasi dengan `rg --version`), dan referensi ke `.agents/rules/global/aturan_skill.md` serta skill format `.agents/skills/custom/bug-runtime/SKILL.md`. Jangan digunakan untuk mencari file berdasarkan nama (gunakan `glob`) atau melihat isi satu folder (gunakan `ls`).
+description: "Trigger: saat mencari teks, pemanggilan fungsi, atau pola di dalam file sumber | Panduan rg di proyek ini: rg atas grep -rn, which rg dulu, pembagian dengan glob/ls, pemulihan binary Kilo. Bukan untuk mencari nama file (glob) atau isi folder (ls)."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 07:05:03 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill rg setelah pemulihan binary Kilo (install_rg + salin /usr/bin/rg ke ~/.cache/kilo/bin/rg)"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

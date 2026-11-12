@@ -1,9 +1,12 @@
 ---
 name: restart-app-ios-engine-restart
-description: >-
-  Configure or debug restart_app Flutter engine restart on iOS, including
-  AppDelegate and UIScene registration, custom native shells, engine factories,
-  and explicit notification fallback.
+description: "Trigger: saat konfigurasi restart engine iOS | AppDelegate/UIScene registration, custom native shells, engine factories, notification fallback."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # iOS Flutter engine restart

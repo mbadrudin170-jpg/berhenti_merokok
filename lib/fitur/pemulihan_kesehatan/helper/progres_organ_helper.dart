@@ -60,4 +60,59 @@ class ProgresOrganHelper {
     if (aman < list.first.target) return 'Belum dimulai';
     return 'Berjalan';
   }
+
+  /// Mengembalikan format durasi lengkap (mis. `2 hari 4 jam 30 menit`).
+  static String formatDurasi(Duration d) {
+    if (d.inDays > 0) {
+      final hari = d.inDays;
+      final jam = d.inHours % 24;
+      final menit = d.inMinutes % 60;
+      final bagian = <String>['$hari hari'];
+      if (jam > 0) bagian.add('$jam jam');
+      if (menit > 0) bagian.add('$menit menit');
+      return bagian.join(' ');
+    }
+    if (d.inHours > 0) {
+      final jam = d.inHours;
+      final menit = d.inMinutes % 60;
+      final detik = d.inSeconds % 60;
+      final bagian = <String>['$jam jam'];
+      if (menit > 0) bagian.add('$menit menit');
+      bagian.add('$detik detik');
+      return bagian.join(' ');
+    }
+    final menit = d.inMinutes;
+    final detik = d.inSeconds % 60;
+    if (menit > 0) return '$menit menit $detik detik';
+    return '$detik detik';
+  }
+
+  /// Mengembalikan format singkat durasi target milestone (mis. `1 minggu`,
+  /// `3 bulan`, `1 tahun`).
+  static String formatTarget(Duration d) {
+    if (d.inDays >= 365) {
+      final tahun = (d.inDays / 365).round();
+      if (tahun == 1) return '1 tahun';
+      return '$tahun tahun';
+    }
+    if (d.inDays >= 30) {
+      final bulan = (d.inDays / 30).round();
+      if (bulan == 1) return '1 bulan';
+      return '$bulan bulan';
+    }
+    if (d.inDays >= 7) {
+      final minggu = (d.inDays / 7).round();
+      if (minggu == 1) return '1 minggu';
+      return '$minggu minggu';
+    }
+    if (d.inDays >= 1) {
+      if (d.inDays == 1) return '1 hari';
+      return '${d.inDays} hari';
+    }
+    if (d.inHours >= 1) {
+      if (d.inHours == 1) return '1 jam';
+      return '${d.inHours} jam';
+    }
+    return '${d.inMinutes} menit';
+  }
 }

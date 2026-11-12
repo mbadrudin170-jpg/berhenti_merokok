@@ -1,11 +1,11 @@
 ---
 name: normalisasi-tanggal
-description: Panduan normalisasi DateTime ke komponen tanggal saja (tahun, bulan, hari) sebelum perbandingan dan perhitungan berbasis hari, plus klamping nilai negatif ke nol.
+description: "Trigger: saat membandingkan atau menghitung tanggal | Panduan normalisasi DateTime ke komponen tanggal saja (tahun-bulan-hari) sebelum perbandingan/perhitungan berbasis hari, plus klamping nilai negatif ke nol."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

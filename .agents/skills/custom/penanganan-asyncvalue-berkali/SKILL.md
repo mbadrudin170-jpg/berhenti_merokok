@@ -1,12 +1,12 @@
 ---
 name: penanganan-asyncvalue-berkali
-description: Panduan menangani beberapa AsyncValue dengan loading gabungan, error terpisah, requireValue yang aman, dan tipe generic konkret.
+description: "Trigger: saat layar menangani beberapa AsyncValue | Panduan loading gabungan, error terpisah, requireValue yang aman, tipe generic konkret."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "GPT-6"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Penanganan Beberapa Provider Asynchronous pada Satu Layar

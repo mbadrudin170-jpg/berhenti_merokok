@@ -1,13 +1,12 @@
 ---
 name: sqflite-common-ffi-web-setup
-description: >-
-  Use when adding sqflite support to a web app (Flutter web or Dart web) with
-  package:sqflite_common_ffi_web: running dart run sqflite_common_ffi_web:setup
-  to install sqlite3.wasm and sqflite_sw.js under web/, databaseFactoryFfiWeb,
-  databaseFactoryFfiWebNoWebWorker, setting the global databaseFactory behind
-  kIsWeb, database names and IndexedDB persistence, shared worker vs basic
-  worker, importing a database with writeDatabaseBytes, limitations and
-  troubleshooting (missing worker file, port-bound storage, deleteDatabase).
+description: "Trigger: saat menambah dukungan sqflite untuk web | dart run sqflite_common_ffi_web:setup (install sqlite3.wasm + sqflite_sw.js), databaseFactoryFfiWeb, IndexedDB persistence, basic vs shared worker."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # sqflite_common_ffi_web: sqflite in the browser

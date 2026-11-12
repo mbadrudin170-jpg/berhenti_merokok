@@ -1,11 +1,11 @@
 ---
 name: notifier-crud-database
-description: Panduan pola Notifier CRUD pada database dengan Riverpod - keepAlive, build memanggil _ambilSemua, CRUD update state setelah operasi DB berhasil, catch Exception rethrow.
+description: "Trigger: saat membuat Notifier CRUD database | Panduan pola Notifier CRUD Riverpod: keepAlive, build memanggil _ambilSemua, CRUD update state setelah DB berhasil, catch Exception rethrow."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

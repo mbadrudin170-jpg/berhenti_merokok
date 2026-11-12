@@ -183,11 +183,12 @@ Setiap section di bawah ini **wajib ada** dalam setiap `SKILL.md`. Tidak perlu f
 ```yaml
 ---
 name: material-app-tema-lokalisasi
-description: Panduan konfigurasi MaterialApp dan WidgetsApp - tema (theme, darkTheme, themeMode), lokalisasi (locale, supportedLocales, localizationsDelegates), serta ScrollBehavior.
+description: Trigger: saat mengonfigurasi MaterialApp dan WidgetsApp | Panduan tema (theme, darkTheme, themeMode), lokalisasi (locale, supportedLocales, localizationsDelegates), serta ScrollBehavior.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "<hash-commit>"
+  diperbarui: "Wed Nov 11 2026 23:30:00 WIB"
+  sumber-terakhir: "<hash-commit>"
   model: "kilo-auto/free"
 ---
 ```
@@ -271,19 +272,17 @@ MaterialApp(
 ```
 ````
 
-````
-
 ### 9.8 `## Contoh Salah`
 
 Satu atau lebih blok kode Dart dengan komentar `// DILARANG` atau `// salah: ...` yang menjelaskan mengapa salah.
 
-```markdown
+````markdown
 ## Contoh Salah
 
 ```dart
 // darkTheme tanpa brightness dark
 darkTheme: ThemeData(primaryColor: Colors.blue), // salah: brightness default light
-````
+```
 
 ```dart
 // supportedLocales kosong
@@ -311,11 +310,12 @@ Berikut adalah contoh lengkap yang dapat langsung disalin sebagai template untuk
 ````markdown
 ---
 name: nama-skill-bahasa-indonesia
-description: Deskripsi sangat detail tentang kapan skill ini digunakan, apa yang di-cover, apa yang dihindari, langkah kerja, dan referensi file terkait.
+description: Trigger: saat <kondisi/tugas pemicu> | <deskripsi detail: cakupan yang di-cover, larangan penggunaan, langkah kerja, dan referensi file terkait>.
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "<hash-commit>"
+  diperbarui: "<waktu TZ=Asia/Jakarta date>"
+  sumber-terakhir: "<hash-commit atau perintah/hasil eksplisit pengguna>"
   model: "nama-model-ai"
 ---
 
@@ -370,7 +370,7 @@ NamaClass(
 
 - File: `path/to/file.dart`
 - Class terkait: `NamaClass1`, `NamaClass2`
-```
+````
 
 ## 11. Checklist Sebelum Menyelesaikan SKILL.md
 
@@ -379,11 +379,10 @@ Sebelum mengakhiri pembuatan atau pembaruan `SKILL.md`, verifikasi semua poin be
 - [ ] File berada di `.agents/skills/<kategori>/<nama-skill>/SKILL.md`
 - [ ] Nama folder menggunakan kebab-case, bahasa Indonesia, deskriptif
 - [ ] Tidak ada underscore, spasi, huruf besar, angka di awal, atau karakter selain `a-z0-9-`
-- [ ] Front matter YAML lengkap dengan field wajib (`name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.commit-terakhir`)
+- [ ] Front matter YAML lengkap dengan field wajib (`name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.diperbarui`, `metadata.sumber-terakhir`)
 - [ ] Semua section wajib ada (Judul/Intro, Cakupan, Aturan, Steps [jika diperlukan], Larangan, Contoh Benar, Contoh Salah, Sumber Evaluasi)
 - [ ] Isi mengikuti riwayat commit yang relevan (tidak diarang dari working directory/staging/untracked)
-- [ ] Deskripsi mencakup trigger, cakupan, larangan, workflow, dan referensi file
+- [ ] Deskripsi mencakup segmen trigger-only di awal (lihat §8.2), cakupan, larangan, workflow, dan referensi file
 - [ ] Bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi
 - [ ] Backtick digunakan untuk class, properti, method, package
 - [ ] Jika menemukan pelanggaran pada skill lama, telah melaporkan dan mengusulkan perbaikan
-```

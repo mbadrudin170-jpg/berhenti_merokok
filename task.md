@@ -578,7 +578,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : `aturan_skill.md` belum memiliki definisi trigger yang tegas dan konvensi ekstraksi/penormalan trigger dari `description` ke bahasa Indonesia yang dapat diekstrak secara deterministik. Field `metadata.diperbarui` dan `metadata.sumber-terakhir` belum ditetapkan secara final di front matter. Section §7.1 dan §8 perlu direkonsiliasi dengan konvensi trigger baru agar segmen trigger-only jelas untuk ekstraksi indeks tanpa menghapus informasi wajib.
 - Solusi : Perbarui `.agents/rules/global/aturan_skill.md` dengan: (a) definisi trigger (kondisi/tugas pemicu, hanya trigger, tanpa cakupan/larangan/workflow/referensi file), (b) konvensi format/penempatan trigger di `description` (penanda pola, pemisah segmen, penanganan bahasa ID/EN), (c) rekonsiliasi §7.1 dan §8 sehingga ada segmen trigger-only yang jelas, (d) tambahkan field wajib `metadata.diperbarui` dan `metadata.sumber-terakhir`, (e) perbarui template §7.3, §8, §10, dan checklist §11. Lalu selaraskan `.agents/skills/custom/aturan-pembuatan-skill/SKILL.md` dengan aturan yang sama (definisi, format, template, contoh, checklist, sumber evaluasi).
 - aturan dilanggar : (aturan_skill)[aturan_skill:95], (aturan_pembuatan_skill)[aturan-pembuatan-skill:32]
@@ -596,7 +596,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : ~84 skill existing memiliki format `description` yang bervariasi (ID/campuran/EN, posisi trigger berbeda, kadang implisit), sehingga ekstraksi trigger-only untuk `SKILLS_INDEX.md` tidak dapat dijamin valid. Strategi migrasi dan prioritas batch belum ditetapkan. Khusus `bawaan`, acuan waktu dari `skills_config.json` perlu diintegrasikan ke alur pembaruan.
 - Solusi : Buat strategi migrasi bertahap: (a) audit seluruh `SKILL.md` untuk mengklasifikasikan `description` (trigger eksplisit/implisit/tidak extractable), (b) normalisasi per batch kecil (mis. per folder atau 10–20 skill per putaran) dengan memperbarui segmen trigger di `description` sesuai konvensi baru, (c) perlakuan khusus `bawaan`: ambil satu `installedAt` dari baris pertama `skills_config.json`, konversi UTC ke Asia/Jakarta, perbarui skill `bawaan` jika acuan lebih baru, (d) setiap perubahan `SKILL.md` juga menaikkan `metadata.versi` (bump patch default) dan memperbarui `metadata.diperbarui` serta `metadata.sumber-terakhir`. Patuhi aturan sumber isi (berdasarkan riwayat commit) dan laporkan pelanggaran skill lama sebelum mengubah.
 - aturan dilanggar : (aturan_sumber_isi)[aturan_skill:56], (aturan_pelanggaran)[aturan_skill:86]
@@ -605,7 +605,7 @@ Tidak ada temuan.
 
 #### Task 2
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Deskripsi `SKILL.md` ditulis sebagai paragraf naratif (± 34,5 KB hanya untuk lima baris awal tiap berkas, ± 8–9k token sebelum isi dibaca), tanpa kata kunci trigger di posisi awal, sehingga pencocokan skill oleh model menjadi longgar dan mahal. Himpunan file sama dengan Task 1 (seluruh `SKILL.md`), sehingga digabung pada kelompok yang sama.
 - Solusi : Pangkas `description` setiap `SKILL.md` menjadi kata kunci trigger di posisi awal dengan batas ± 300 karakter, tanpa menghilangkan informasi wajib (trigger, cakupan, larangan, workflow, referensi file — lihat `aturan_skill.md` §8). Sinkronkan dengan konvensi trigger dari Kelompok 33 dan hasil R-1 pada `SKILLS_INDEX.md`. Perlakukan `bawaan` sesuai strategi Task 1 (acuan `installedAt` dari `skills_config.json`). Setiap perubahan menaikkan `metadata.versi` (bump patch default), memperbarui `metadata.diperbarui` dan `metadata.sumber-terakhir`. Patuhi aturan sumber isi (berbasis riwayat commit) dan laporkan pelanggaran skill lama sebelum mengubah. Verifikasi hasilnya: tidak ada deskripsi yang melebihi ± 300 karakter dan kata kunci trigger berada di awal kalimat.
 - aturan dilanggar : (aturan_sumber_isi)[aturan_skill:56], (aturan_pelanggaran)[aturan_skill:86], (format_task)[format_task:1]
@@ -624,7 +624,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Belum ada command untuk memindai `.agents/skills/**/SKILL.md`, mengekstrak trigger, membaca status diperbarui dari metadata, dan menulis `SKILLS_INDEX.md`. Referensi indeks juga belum tercantum di `AGENTS.md`.
 - Solusi : Buat draf command `.kilo/commands/perbarui_skills_index.md` dengan langkah: (a) scan seluruh `SKILL.md` di `.agents/skills/**/`, (b) ekstraksi trigger-only dari `description` sesuai konvensi yang disetujui (bahasa Indonesia), (c) baca `metadata.diperbarui` dari front matter setiap skill, (d) untuk `bawaan`, ambil satu `installedAt` dari baris pertama `skills_config.json`, konversi UTC ke Asia/Jakarta, bandingkan dengan status indeks/metadata, (e) tulis `SKILLS_INDEX.md` dengan heading `## <folder>`, entri `1. <path>`, `- Trigger : <isi>`, `- Status : diperbarui : <waktu>`, urut alfabetis, (f) pastikan referensi indeks di `AGENTS.md` terjaga, (g) validasi dan pelaporan skill dengan trigger tidak jelas (gunakan penanda "perlu dilengkapi trigger" tanpa menyalin non-trigger).
 - aturan dilanggar : (format_task)[format_task:1], (aturan_skill)[aturan_skill:125]
@@ -641,7 +641,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Butir ke-4 di `.kilo/commands/mode/mode_diskusi.md` masih kosong. Butir ini seharusnya menguraikan struktur dan field wajib file ringkasan diskusi (`diskusi_N.md`) agar mudah dipetakan.
 - Solusi : Isi butir ke-4 `mode_diskusi.md` dengan rincian field-field wajib: `## Status` (Draft/Batal/Final), `## Topik`, `## Ringkasan`, `## Keputusan`, `## Tindak Lanjut`, beserta format dan aturan pengisian masing-masing.
 - aturan dilanggar : (mode_diskusi)[mode_diskusi:7]
@@ -658,7 +658,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : `SKILLS_INDEX.md` memuat 55 entri dengan literal `Trigger : perlu dilengkapi trigger`, sehingga indeks tidak dapat dipakai sebagai peta routing tugas → skill (lihat `hasil_diskusi/diskusi_1.md` poin 3, R-1).
 - Solusi : Lengkapi trigger pada 55 entri tersebut dengan kata kunci pencarian dan pola path berkas yang biasa disentuh (mis. `lib/fitur/diary_craving/**`). Ambil kata kunci dari `description` tiap `SKILL.md` (sumber isi mengikuti riwayat commit, sesuai `aturan_skill.md` §5; laporkan skill lama yang melanggar sebelum mengubah). Pertahankan format baris `Trigger : ...` yang sudah ada; gunakan `rg "perlu dilengkapi trigger" SKILLS_INDEX.md` untuk menemukan sisa entri. Verifikasi akhir: tidak ada lagi literal `perlu dilengkapi trigger` di `SKILLS_INDEX.md`.
 - aturan dilanggar : (aturan_skill)[aturan_skill:56]
@@ -678,7 +678,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : Deskripsi skill indeks (`bug-runtime`, `pola-ui`, `pola-ux`, `widget-custom`) menyebut topik tanpa menyebut nama skill anak, sehingga routing membutuhkan dua tahap dan tahap kedua sering terlewat (lihat `hasil_diskusi/diskusi_1.md` poin 4, R-3).
 - Solusi : Cantumkan nama skill anak secara eksplisit pada `description` keempat skill indeks, dengan nama yang diambil dari isi masing-masing skill (bukan dikarang): `bug-runtime` → `type-promotion-null-safety`, `normalisasi-tanggal`, `penanganan-async-data-kosong`, `penanganan-asyncvalue-berkali`, `penanganan-error-unawaited`, `validasi-platform-izin`, `exception-khusus-deteksi-error`; `pola-ui` → `visualisasi-progres-impian`, `isolasi-widget-timer`, `withvalues-opacity-warna`, `normalisasi-tanggal`, `widget-custom`; `pola-ux` → `konfirmasi-sebelum-simpan`, `empty-state-daftar`, `kartu-motivasi-pintasan-dashboard`, `validasi-form-sebelum-penyimpanan`, `penanganan-asyncvalue-berkali`, `penanganan-async-data-kosong`; `widget-custom` → `visualisasi-progres-impian`, `isolasi-widget-timer`, `empty-state-daftar`. Hanya ubah segmen `description`; perbarui `metadata.diperbarui` dan `metadata.sumber-terakhir` (dan `metadata.model` bila tercantum). Verifikasi: `rg "bug-runtime" .agents/skills/custom/` (dst.) menampilkan nama skill anak di deskripsi.
 - aturan dilanggar : (aturan_skill)[aturan_skill:40], (aturan_skill)[aturan_skill:56]
@@ -696,7 +696,7 @@ Tidak ada temuan.
 
 #### Task 1
 
-- Status : kerjakan
+- Status : selesai
 - Masalah : `AGENTS.md` dan `.kilo/commands/mode/mode_diskusi.md` tidak memuat peta "skill wajib per jenis pekerjaan", sehingga agen mengandalkan tebakan saat memilih skill (lihat `hasil_diskusi/diskusi_1.md` poin 7, R-4).
 - Solusi : Tambahkan daftar ringkas "skill wajib per jenis pekerjaan" pada `AGENTS.md` (mis. pengerjaan kode → skill sesuai area yang disentuh; pembahasan diskusi → `memori-check`, `penggunaan-tool-question`, `format_hasil_diskusi`; pembuatan/pembaruan skill → `aturan-pembuatan-skill`; menulis/memerbarui `SKILLS_INDEX.md` → skill terkait indeks) serta daftar skill wajib untuk pekerjaan diskusi pada `.kilo/commands/mode/mode_diskusi.md`. Sebut nama skill secara eksplisit, gunakan bahasa Indonesia baku, dan pertahankan struktur poin `AGENTS.md` yang sudah ada (jangan menambah jumlah aturan berlebihan; lihat R-12).
 - aturan dilanggar : (aturan_skill)[aturan_skill:40]

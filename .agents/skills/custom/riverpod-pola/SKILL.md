@@ -1,11 +1,11 @@
 ---
 name: riverpod-pola
-description: Pola Riverpod standar - Notifier CRUD keepAlive, provider usage, Consumer/ref.watch/ref.read, family providers, autoDispose, overrides testing, ProviderScope & ProviderContainer, UncontrolledProviderScope, dan Vsync scheduleRefresh/scheduleDispose.
+description: "Trigger: saat memakai Riverpod | Pola standar: Notifier CRUD keepAlive, ref.watch/ref.read, family providers, autoDispose, overrides testing, ProviderScope & ProviderContainer, Vsync scheduleRefresh/scheduleDispose."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

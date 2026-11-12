@@ -1,11 +1,11 @@
 ---
 name: migrasi-skema-sqlite
-description: Panduan migrasi skema database SQLite - naikkan versi, update onCreate dan onUpgrade dengan kondisi versi, sinkronisasi definisi CREATE TABLE pada onCreate dengan perubahan kolom/indeks, verifikasi PRAGMA table_info, dan opsi pola satu sumber DDL (onCreate memakai langkah yang sama dengan onUpgrade); gunakan konstanta nama tabel/kolom. Gunakan saat menambah/mengubah tabel, kolom, indeks, atau migrasi data pada proyek Flutter ber-SQLite. Hindari untuk perubahan non-skema. Langkah kerja - ubah skema -> naikkan _versiDatabase -> cerminkan di onCreate -> tulis cabang onUpgrade -> verifikasi PRAGMA table_info -> dart analyze/flutter test.
+description: "Trigger: saat menambah atau mengubah tabel, kolom, indeks, atau migrasi SQLite | Naikkan versi, update onCreate dan onUpgrade, cerminkan perubahan di onCreate, verifikasi PRAGMA table_info; hindari untuk perubahan non-skema."
 metadata:
   kategori: "custom"
-  versi: "1.2.0"
-  diperbarui: "Fri Nov 13 04:56:47 WIB 2026"
-  sumber-terakhir: "commit `230f0b1` (fix(sqflite): perbaikan kolom pemicu pada migrasi database ke v15)"
+  versi: "1.2.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

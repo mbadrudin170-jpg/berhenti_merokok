@@ -1,12 +1,12 @@
 ---
 name: pola-ui
-description: Indeks pola UI standar di Flutter - merujuk ke skill spesifik untuk visualisasi progres impian, isolasi widget timer, withValues opacity, normalisasi tanggal UI, dan widget custom reusable. Setiap pola UI wajib mengikuti prinsip single responsibility, widget terisolasi untuk timer, dan styling konsisten melalui textTheme + copyWith.
+description: "Trigger: saat menerapkan pola UI Flutter | Indeks: visualisasi-progres-impian, isolasi-widget-timer, withvalues-opacity-warna, normalisasi-tanggal, widget-custom. Prinsip single responsibility dan textTheme + copyWith."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Indeks Pola UI Standar

@@ -10,6 +10,7 @@ Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendoku
 2. Selalu fokus pada topik yang sedang dibicarakan. Hindari pembahasan yang tidak relevan.
 3. Selama diskusi, model WAJIB menggunakan bahasa Indonesia.
 4. Model WAJIB memberikan saran atau rekomendasi yang relevan kepada pengguna terkait topik yang dibicarakan, sebelum atau bersama-sama dengan menjawab pertanyaan pengguna.
+5. **Skill wajib mode diskusi** (muat sebelum mengerjakan bagian mana pun dari mode ini): `memori-check` (baca `MEMORI.md` sebelum diskusi dan perbarui setelahnya), `penggunaan-tool-question` (bertanya kepada pengguna), dan aturan `.agents/rules/global/format_hasil_diskusi.md` (struktur, penamaan, dan penomoran berkas `diskusi_N.md`). Untuk diskusi yang membahas skill/`SKILL.md`, muat juga skill `aturan-pembuatan-skill`.
 
 ## 3. Aturan File Hasil Diskusi
 

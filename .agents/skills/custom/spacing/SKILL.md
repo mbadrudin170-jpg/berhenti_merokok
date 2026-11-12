@@ -1,12 +1,12 @@
 ---
 name: spacing
-description: Panduan pengaturan jarak antar elemen UI di Flutter - wajib menggunakan properti spacing pada Row/Column untuk jarak seragam, SizedBox hanya untuk kebutuhan khusus yang tidak bisa ditangani spacing, padding tepi layar adalah tanggung jawab parent halaman bukan widget reusable, dan nilai spacing wajib mengikuti skala standar dari optimasi_ui.md.
+description: "Trigger: saat mengatur jarak antar elemen UI | Panduan spacing pada Row/Column, SizedBox hanya khusus, padding tepi layar tanggung jawab parent, nilai spacing mengikuti skala standar optimasi_ui.md."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Panduan Spacing (Jarak Antar Elemen)

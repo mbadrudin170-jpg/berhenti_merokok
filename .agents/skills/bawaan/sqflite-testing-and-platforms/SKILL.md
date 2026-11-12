@@ -1,14 +1,12 @@
 ---
 name: sqflite-testing-and-platforms
-description: >-
-  Use when unit testing or widget testing code that uses package:sqflite,
-  running it on Linux/Windows/Dart VM (sqflite_common_ffi: sqfliteFfiInit,
-  databaseFactoryFfi, databaseFactoryFfiNoIsolate) or on the web
-  (sqflite_common_ffi_web: databaseFactoryFfiWeb), swapping the global
-  databaseFactory, and debugging SQL: SqfliteDatabaseFactoryLogger,
-  debugQuickLoggerWrapper, Sqflite.setDebugModeOn, setLogLevel,
-  setLockWarningInfo, "database has been locked", MissingPluginException,
-  isolates, Android WAL manifest, iOS unprotected folder, encryption.
+description: "Trigger: saat testing kode sqflite | sqflite_common_ffi/FfiWeb untuk Linux/Windows/VM/web, databaseFactory swapping, debug SQL (setDebugModeOn), database locked."
+metadata:
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # sqflite: tests, other platforms and debugging

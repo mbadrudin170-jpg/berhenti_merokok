@@ -1,9 +1,12 @@
 ---
 name: flutter-setup-localization
-description: Add `flutter_localizations` and `intl` dependencies, enable "generate true" in `pubspec.yaml`, and create an `l10n.yaml` configuration file. Use when initializing localization support for a new Flutter project.
+description: "Trigger: saat menginisialisasi lokalisasi proyek | flutter_localizations + intl, enable 'generate true' di pubspec.yaml, buat l10n.yaml."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Tue, 21 Apr 2026 21:27:35 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Internationalizing Flutter Applications
 

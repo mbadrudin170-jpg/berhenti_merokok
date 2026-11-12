@@ -1,9 +1,12 @@
 ---
 name: flutter-setup-declarative-routing
-description: Configure `MaterialApp.router` using a package like `go_router` for advanced URL-based navigation. Use when developing web applications or mobile apps that require specific deep linking and browser history support.
+description: "Trigger: saat butuh deep linking atau web routing | MaterialApp.router + go_router: URL-based navigation, deep linking, browser history."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Tue, 21 Apr 2026 21:08:03 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Implementing Routing and Deep Linking
 

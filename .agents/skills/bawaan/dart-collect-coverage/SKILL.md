@@ -1,9 +1,12 @@
 ---
 name: dart-collect-coverage
-description: Collect coverage using the coverage packge and create an LCOV report
+description: "Trigger: saat mengumpulkan coverage test | Coverage package dan pembuatan LCOV report."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Fri, 24 Apr 2026 15:14:32 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Implementing Dart and Flutter Test Coverage
 

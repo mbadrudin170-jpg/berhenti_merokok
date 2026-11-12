@@ -1,11 +1,11 @@
 ---
 name: penjadwalan-frame-dan-pemantauan-performa-flutter
-description: Panduan penjadwalan frame dan pemantauan performa Flutter menggunakan SchedulerBinding, PlatformDispatcher, Timeline, dan FrameTiming. Digunakan untuk mengatur siklus frame (scheduleFrame, scheduleWarmUpFrame, handleBeginFrame, handleDrawFrame), transient/persistent/post-frame callback, pemantauan performa via addTimingsCallback dan onReportTimings, serta pencatatan timeline via Timeline.timeSync/startSync/finishSync dan Flow.
+description: "Trigger: saat mengatur siklus frame dan pemantauan performa | Panduan SchedulerBinding, PlatformDispatcher, Timeline, FrameTiming: scheduleFrame, callbacks, addTimingsCallback, onReportTimings, Timeline.timeSync."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

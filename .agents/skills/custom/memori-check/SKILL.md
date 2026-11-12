@@ -1,12 +1,12 @@
 ---
 name: memori-check
-description: Panduan WAJIB pada SETIAP interaksi apa pun di proyek ini - bukan hanya saat mengerjakan task, tapi juga pertanyaan, diskusi, review, penelusuran, dan perbaikan kode/dokumen. Skill ini mewajibkan membaca `MEMORI.md` di root proyek sebelum interaksi apa pun untuk memperoleh konteks proyek yang konsisten, lalu memperbarui bagian yang relevan di `MEMORI.md` setelah interaksi yang mengubah proyek (kode, dokumen, state). Skill ini sengaja hanya mengatur PROSES (baca konteks -> terapkan -> perbarui bagian relevan) dan TIDAK mengunci nama section tertentu, sehingga tetap valid walau struktur `MEMORI.md` berubah. Jangan dilewati walau interaksi tampak kecil, obrolan biasa, atau tidak menyebut "memori" secara eksplisit.
+description: "Trigger: setiap interaksi apa pun di proyek ini | Panduan wajib baca MEMORI.md sebelum interaksi dan perbarui bagian relevan setelahnya (kode, dokumen, state). Jangan dilewati walau interaksi tampak kecil."
 metadata:
   kategori: "custom"
-  versi: "1.3.0"
-  diperbarui: "Thu Nov 12 2026 19:12:28 WIB"
-  sumber-terakhir: "perintah pengguna: skill jangan mutlak terhadap isi MEMORI.md - ubah ke panduan proses generik"
-  model: "kilo/kilo-auto/free"
+  versi: "1.3.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Memeriksa File MEMORI.md

@@ -1,12 +1,12 @@
 ---
 name: bug-runtime
-description: Indeks pencegahan bug runtime di Flutter - merujuk ke skill spesifik untuk type promotion null safety, normalisasi tanggal, AsyncValue handling, validasi form, error handling unawaited, validasi platform dan izin, tipe exception khusus, dan guard pembagian nol.
+description: "Trigger: saat mencegah bug runtime Flutter | Indeks skill spesifik: type-promotion-null-safety, normalisasi-tanggal, penanganan-async-data-kosong, penanganan-asyncvalue-berkali, penanganan-error-unawaited, validasi-platform-izin, exception-khusus-deteksi-error."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Indeks Pencegahan Bug Runtime

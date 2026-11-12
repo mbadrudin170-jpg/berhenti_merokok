@@ -1,12 +1,12 @@
 ---
 name: build-runner-codegen
-description: Build runner dan code generation Flutter - Freezed, Riverpod generator, build_runner commands (build, watch), watch mode, delete-conflicting-outputs, file generated (`.g.dart`, `.freezed.dart`, `.mocks.dart`) dilarang diedit manual, dan konfigurasi build.yaml.
+description: "Trigger: saat menjalankan code generation Flutter | Build runner dan codegen Flutter - Freezed, Riverpod generator, build_runner (build, watch), delete-conflicting-outputs; file generated (.g.dart, .freezed.dart, .mocks.dart) dilarang diedit manual."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Build Runner & Code Generation

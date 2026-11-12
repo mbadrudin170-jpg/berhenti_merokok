@@ -1,10 +1,12 @@
 ---
 name: dart-use-primary-constructors
-description: >
-  Help users write syntactically and semantically correct primary constructors in Dart, and migrate/use the new constructor syntax, empty-body semicolon syntax, in-body initializer list syntax, and abbreviated concise constructor syntax.
+description: "Trigger: saat menggunakan primary constructors Dart | Sintaks constructor baru: empty-body semicolon, initializer list in-body, concise syntax."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Thu, 09 Jul 2026 23:13:25 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Dart Primary Constructors & New Constructor Syntax Skill

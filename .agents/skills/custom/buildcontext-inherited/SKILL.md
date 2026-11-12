@@ -1,12 +1,12 @@
 ---
 name: buildcontext-inherited
-description: Panduan penggunaan BuildContext untuk akses widget induk - Theme.of, MediaQuery.of, dependOnInheritedWidgetOfExactType, findAncestorWidgetOfExactType, findAncestorStateOfType.
+description: "Trigger: saat mengakses widget induk dari BuildContext | Panduan Theme.of, MediaQuery.of, dependOnInheritedWidgetOfExactType, findAncestorWidgetOfExactType, findAncestorStateOfType."
 metadata:
   kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo-auto/free"
+  versi: "1.0.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # BuildContext dan Akses Widget Induk (InheritedWidget)

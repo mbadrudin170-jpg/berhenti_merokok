@@ -1,11 +1,11 @@
 ---
 name: pola-ux
-description: Indeks pola UX standar di Flutter - merujuk ke skill spesifik untuk dialog konfirmasi destruktif, empty state informatif, kartu motivasi dan pintasan aksi dashboard, perayaan pencapaian dengan toast sekali, validasi form sebelum simpan, penanganan multiple AsyncValue provider, dan penanganan state async serta data kosong.
+description: "Trigger: saat menerapkan pola UX Flutter | Indeks: konfirmasi-sebelum-simpan, empty-state-daftar, kartu-motivasi-pintasan-dashboard, validasi-form-sebelum-penyimpanan, penanganan-asyncvalue-berkali, penanganan-async-data-kosong."
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.1.1"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

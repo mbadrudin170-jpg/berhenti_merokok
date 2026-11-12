@@ -98,8 +98,7 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
       final konfirmasi = await showOkCancelAlertDialog(
         context: context,
         title: 'Ubah Jumlah',
-        message:
-            'Metrik uang dihemat, rokok tidak dihisap, dan target tapering akan ikut menyesuaikan. Lanjutkan simpan?',
+        message: 'Metrik uang dihemat, rokok tidak dihisap, dan target tapering akan ikut menyesuaikan. Lanjutkan simpan?',
         okLabel: 'Simpan',
         cancelLabel: 'Batal',
       );
@@ -232,7 +231,8 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
                     hintText: 'Pilih pemicu (opsional)',
                     border: OutlineInputBorder(),
                   ),
-                  value: _pemicu,
+                  // initialValue dipakai menggantikan `value` yang deprecated sejak Flutter 3.33 agar `flutter analyze` bersih.
+                  initialValue: _pemicu,
                   items: PemicuEnum.values.map((pemicu) {
                     return DropdownMenuItem<PemicuEnum>(
                       value: pemicu,

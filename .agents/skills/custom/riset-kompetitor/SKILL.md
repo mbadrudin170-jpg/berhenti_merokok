@@ -1,12 +1,12 @@
 ---
 name: riset-kompetitor
-description: Panduan melakukan riset kompetitor aplikasi berhenti merokok - mencatat daftar aplikasi serupa di berbagai store (Google Play, Apple App Store, F-Droid, GitHub, Amazon Appstore, APKPure, Aptoide, SlideME, Tencent MyApp, Huawei AppGallery, Samsung Galaxy Store, Uptodown, IzzyOnDroid), menyertakan ringkasan fitur relevan, link store/repositori yang terverifikasi otomatis (curl HTTP 200, iTunes lookup), mengikuti format tabel yang terstandarisasi di apk_kompetitor.md, serta menyusun laporan referensi mendalam refrensi_apk.md (fitur baru mobile, optimasi fitur eksisting, pola UI/UX/layout, rekomendasi ber-prioritas) dan menandai listing yang sudah dianalisa fitur-fiturnya **per baris tabel (kolom Status Analisa)** pada apk_kompetitor.md. Gunakan saat menambah/memperbarui apk_kompetitor.md, saat diminta mencari referensi fitur/UI/UX dari APK di apk_kompetitor.md yang **belum dianalisa** (perintah seperti `.kilo/commands/riset_kompetitor.md`), atau saat diminta menambah aplikasi baru (perintah seperti `.kilo/commands/cari_apk_kompetitor.md`).
+description: "Trigger: saat menambah atau memperbarui apk_kompetitor.md atau mencari referensi APK belum dianalisa | Panduan riset kompetitor: daftar store, verifikasi link (curl/iTunes lookup), format tabel apk_kompetitor.md, laporan refrensi_apk.md."
 metadata:
   kategori: "custom"
-  versi: "1.4.1"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "kilo/kilo-auto/free"
+  versi: "1.4.2"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Riset Kompetitor Aplikasi Berhenti Merokok

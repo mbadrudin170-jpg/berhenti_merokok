@@ -1,16 +1,12 @@
 ---
 name: dart-use-pattern-matching
-description: >-
-  Applies Dart 3 pattern matching, switch expressions, and destructuring
-  idiomatically to validate data schemas, handle algebraic data types, and
-  decompose control flow. Use when refactoring complex if-else chains,
-  parsing polymorphic JSON or API responses, destructuring Lists, URI/path
-  segments, String.split() tokens, Records, or Maps, or enforcing exhaustiveness
-  on sealed classes. Don't use for simple boolean conditions, single-variable
-  type promotion (use `is`), or basic collection filtering.
+description: "Trigger: saat merantai if-else kompleks atau destruktur data | Pattern matching Dart 3: switch expression, destructuring List/Map/Record, sealed class exhaustiveness, parsing JSON polimorfik."
 metadata:
-  model: models/gemini-3.1-pro-preview
-  last_modified: Tue, 13 Oct 2026 19:45:00 GMT
+  kategori: "bawaan"
+  versi: "1.0.0"
+  diperbarui: "Fri Nov 13 2026 05:33:40 WIB"
+  sumber-terakhir: "perintah pengguna: kerjakan task.md (Kelompok 34)"
+  model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 # Implementing Dart Patterns
 
