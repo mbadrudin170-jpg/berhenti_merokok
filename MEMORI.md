@@ -85,9 +85,10 @@ Provider dihasilkan dari notifier ber-anotasi `@Riverpod` (deklarasi ada di `*.n
 
 ## Lokasi Hasil Diskusi (PENTING)
 - Folder hasil diskusi berada di **`prd/hasil_diskusi/`** (BUKAN di root).
-- File tertinggi saat ini: `prd/hasil_diskusi/diskusi_4.md`; diskusi berikutnya = `diskusi_5.md`.
+- File tertinggi saat ini: `prd/hasil_diskusi/diskusi_5.md`; diskusi berikutnya = `diskusi_6.md`.
 - Aturan penomoran: nomor tertinggi + 1, gap tidak diisi (lihat `.kilo/commands/mode/mode_diskusi.md` bagian 3).
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 3, baris 16–22) sudah diperbaiki: path `hasil_diskusi/` → `prd/hasil_diskusi/`.
+- `.kilo/commands/mode/mode_diskusi.md` (bagian 4) sudah diselaraskan: dulu mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama), kini merujuk ke `format_PRD.md` sebagai satu-satunya sumber kebenaran tanpa hardcode jumlah/judul bagian.
 - `.kilo/commands/kerjakan_hasil_diskusi.md` (baris 2 & 5) juga diperbarui ke `prd/hasil_diskusi/diskusi_N.md`.
 
 ## Riwayat Diskusi
@@ -96,14 +97,15 @@ Format: `No | Tanggal | Topik | Status PRD | Tindak Lanjut`
 | No | Tanggal | Topik | Status PRD | Tindak Lanjut |
 |----|---------|-------|------------|---------------|
 | 4 | (lihat file) | Lihat isi `prd/hasil_diskusi/diskusi_4.md` | Final (lihat file) | Belum ditindaklanjuti |
+| 5 | 2026-11-12 | Penyelarasan aturan struktur bagian PRD antara `mode_diskusi.md` dan `format_PRD.md` | Final | Selesai diimplementasikan (perbaikan `mode_diskusi.md` §4.2 & §4.6) |
 | 7 | (lihat file) | Pembuatan skill penggunaan `ripgrep` | Final (sudah dihapus) | Selesai diimplementasikan (skill `pencarian-teks-ripgrep`) |
 
-Catatan: nomor 5 dan 6 tidak tersedia sebagai file (gap diisi sesuai aturan: nomor berikutnya = tertinggi + 1).
+Catatan: file yang tersedia hanya `diskusi_4.md` dan `diskusi_5.md`; nomor 1–3, 6, dan 7 tidak tersedia (gap diisi sesuai aturan: nomor berikutnya = tertinggi + 1).
 
 ## Riwayat Perubahan (Changelog)
 | Tanggal | Perubahan |
 |---------|-----------|
-| 2026-11-12 | Perbaikan path hasil diskusi di `mode_diskusi.md` & `kerjakan_hasil_diskusi.md` menjadi `prd/hasil_diskusi/`; penataan ulang total `MEMORI.md` (typo enum diperbaiki, daftar provider & enum disinkronkan dengan kode nyata, ditambah Riwayat Diskusi & Riwayat Perubahan) |
+| 2026-11-12 | Penyelarasan aturan PRD: `.kilo/commands/mode/mode_diskusi.md` §4.2 tidak lagi mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama yang sudah disederhanakan lewat commit `4ce508d`, `06634a2`, `aedb325`, `30ff01b` menjadi 6 bagian) dan kini merujuk ke `format_PRD.md` sebagai sumber kebenaran; §4.6 kini hanya menyebut bagian yang benar-benar ada (`Daftar Fitur`, `Alur Pengguna`, `Steps`, `File-File Terdampak`); penomoran butir §4 dirapikan menjadi 1–7; hasil diskusi didokumentasikan pada `prd/hasil_diskusi/diskusi_5.md` |
 | 2026-11-12 | Pembaruan skill `memori-check` ke v1.3.0: diubah dari daftar section yang di-hardcode menjadi panduan proses generik (baca konteks → terapkan → perbarui bagian relevan) agar tidak wajib diubah setiap kali struktur `MEMORI.md` berubah; `Sumber Evaluasi` diperbaiki (commit `1823940`, `5e2a55d`, `b7f2b05`; path `prd/hasil_diskusi/`) |
 
 ## Catatan Teknis Penting
