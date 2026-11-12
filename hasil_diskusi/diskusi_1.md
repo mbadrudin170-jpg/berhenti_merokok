@@ -57,11 +57,20 @@ Konteks pemeriksaan:
 - Tanya: Apakah berkas yang terdaftar pada `instructions` selalu dikirim sistem kepada agen?
 - Kesimpulan: Ya, selalu, dan **isinya dikirim penuh**, bukan hanya nama berkas. Berkas pada `instructions` dibaca lalu disuntikkan ke system prompt pada setiap sesi tanpa mempertimbangkan relevansi. Tanda pengenalnya berupa blok berformat `Instructions from: <path lengkap>` yang diikuti isi berkas secara verbatim (bukan tautan, bukan placeholder, bukan panggilan tool). Bukti: system prompt sesi ini memuat tepat lima blok `Instructions from:` yang berkorespondensi dengan lima entri `instructions`, dengan total ± 30,6 KB (`AGENTS.md` 4.158 B, `aturan_skill.md` 12.343 B, `format_PRD.md` 4.161 B, `format_hasil_diskusi.md` 8.342 B, `format_task.md` 1.657 B); kalimat pembuka `format_task.md` dan butir-butir `format_hasil_diskusi.md` hadir utuh di konteks. Sebaliknya, skill hanya dikirim sebagai `name` + `description`, dan command/mode hanya dikirim saat dipanggil.
 
+### 11. Pendaftaran `MEMORI.md` ke `instructions`
+- Tanya: Apakah `MEMORI.md` juga sebaiknya didaftarkan ke `instructions` seperti `SKILLS_INDEX.md`?
+- Kesimpulan: Tidak disarankan. `instructions` menyuntikkan snapshot saat sesi dimulai, sedangkan `MEMORI.md` adalah dokumen hidup yang berubah setiap interaksi. Bukti: `MEMORI.md` berubah dari 23.029 B menjadi 28.428 B di tengah sesi ini karena ada pihak lain (sesi `riset_kompetitor`) yang menulis bersamaan. Snapshot usang di prompt lebih berbahaya daripada tidak ada salinan, karena agen cenderung mempercayai salinan tersebut dan tidak sadar isinya sudah usang — memperburuk risiko yang didokumentasikan pada diskusi no. 2. Biaya bila didaftarkan: total `instructions` naik menjadi ± 74,4 KB (± 19k token) per sesi. `AGENTS.md` poin 5 sudah mewajibkan pembacaan `MEMORI.md` via tool, yang menjamin kesegaran isi.
+
+### 12. Faktor yang membuat model mematuhi aturan
+- Tanya: Apa yang membuat model AI selalu mematuhi aturan?
+- Kesimpulan: Tidak ada jaminan kepatuhan mutlak. Kepatuhan bersifat probabilistik dan hanya sebagian lapisan bersifat penegakan keras. Lapisan lunak: isi system prompt (`instructions`, `AGENTS.md`), skema tool, dan deskripsi skill. Lapisan keras: `permission` pada `kilo.jsonc` (`allow`/`ask`/`deny`) yang dieksekusi harness, validasi konfigurasi Kilo, linter/test, dan git hook. Bukti penegakan keras pada sesi ini: percobaan `sed -n ...` ditolak harness dengan `{"permission":"bash","pattern":"sed *","action":"deny","source":"global"}` sebelum perintah berjalan. Faktor yang memengaruhi tingkat kepatuhan: kekuatan model (model free lebih labil), posisi instruksi, kekonkretan aturan, jumlah aturan (dilusi), dan keberadaan umpan balik deterministik.
+
 ## Keputusan
 - K-1: `SKILLS_INDEX.md` didaftarkan pada `instructions` di `~/.config/kilo/kilo.jsonc` tanpa menghapus lima entri yang sudah ada, sehingga indeks skill selalu dikirim sebagai isi penuh pada setiap sesi di proyek ini.
 - K-2: Pendaftaran memakai pola relatif (`"SKILLS_INDEX.md"`), mengikuti pola entri yang sudah ada (`.agents/rules/global/*.md`), yang terbukti diselesaikan terhadap direktori kerja proyek; proyek lain yang tidak memiliki berkas tersebut tidak terpengaruh.
 - K-3: Pendaftaran dilakukan lebih dahulu (R-2), sedangkan pelengkapan 55 trigger kosong (R-1) menyusul; hal ini disepakati karena pengguna memilih penerapan langsung.
 - K-4: Biaya tambahan ± 15,3 KB (± 4k token) per sesi diterima sebagai konsekuensi dari K-1.
+- K-5: `MEMORI.md` **tidak** didaftarkan ke `instructions`. Alasannya: `instructions` hanya menyuntikkan snapshot saat sesi dimulai, sedangkan `MEMORI.md` berubah setiap interaksi (terbukti 23.029 B → 28.428 B di tengah sesi ini akibat penulisan bersamaan oleh pihak lain). Pembacaan via tool dipertahankan agar isinya selalu segar, sesuai `AGENTS.md` poin 5.
 
 ## Rekomendasi
 - R-1: Lengkapi 55 trigger kosong pada `SKILLS_INDEX.md` dengan kata kunci pencarian dan path berkas yang biasa disentuh (mis. `lib/fitur/diary_craving/**`).
@@ -70,6 +79,13 @@ Konteks pemeriksaan:
 - R-4: Tambahkan daftar "skill wajib per jenis pekerjaan" pada `AGENTS.md` dan pada setiap command/mode (termasuk `mode_diskusi.md`).
 - R-5: Pangkas deskripsi `SKILL.md` menjadi kata kunci trigger di posisi awal dengan batas ± 300 karakter.
 - R-6: Perbaiki atau hapus `skills.paths` yang menunjuk lokasi `/home/thefarmercompanyba/...` agar sinkron dengan workspace aktif.
+- R-7: Jangan daftarkan `MEMORI.md` utuh ke `instructions`; pertahankan pembacaan via tool (K-5).
+- R-8: Bila di masa depan diperlukan konteks proyek yang selalu hadir, buat berkas ringkas dan stabil (mis. `STATUS_PROYEK.md`, ± 2–3 KB: nama, versi, status implementasi, konvensi inti, path penting) lalu daftarkan berkas tersebut — bukan `MEMORI.md` penuh.
+- R-9: Bila kebijakan K-5 diubah dan `MEMORI.md` tetap didaftarkan, wajib menambahkan kewajiban membaca ulang `MEMORI.md` dari disk sebelum mengubah proyek, disertai peringatan bahwa isi yang terinjeksi adalah snapshot.
+- R-10: Pindahkan aturan penting dari prosa ke `permission` `deny`/`ask` pada `kilo.jsonc`, mis. larangan edit berkas generated (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) dan larangan `git push --force`.
+- R-11: Jadikan pemeriksaan deterministik sebagai gerbang wajib: `dart format --output=none --set-exit-if-changed`, `dart analyze`, `flutter test`.
+- R-12: Kurangi jumlah butir pada `AGENTS.md` agar aturan penting tidak terdilusi; hapus aturan yang jarang relevan alih-alih menambah terus.
+- R-13: Untuk kewajiban yang tidak dapat ditegakkan secara teknis (mis. memuat skill tertentu sebelum bekerja), pindahkan ke checklist eksplisit pada command/mode per jenis pekerjaan dan verifikasi setelah aksi.
 
 Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 
@@ -85,6 +101,8 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 | 7 | Mengerjakan R-5 (pemangkasan deskripsi) | `.agents/skills/**/SKILL.md` | belum |
 | 8 | Mengerjakan R-6 (perbaiki `skills.paths`) | `~/.config/kilo/kilo.jsonc` | belum |
 | 9 | Verifikasi pada sesi baru bahwa `SKILLS_INDEX.md` muncul sebagai blok `Instructions from:` | `~/.config/kilo/kilo.jsonc` | belum |
+| 10 | Memastikan `MEMORI.md` tetap dibaca via tool pada setiap interaksi (K-5), tidak didaftarkan ke `instructions` | `AGENTS.md` | selesai |
+| 11 | Evaluasi pembuatan `STATUS_PROYEK.md` ringkas bila konteks selalu-hadir diperlukan (R-8) | belum ditentukan | belum |
 
 ## File Terdampak
 | Lokasi File | Status Perubahan | Deskripsi |
@@ -105,6 +123,7 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 - Apakah cakupan perbaikan mencakup R-6 (`skills.paths`) dan R-5 (pemangkasan deskripsi)?
 - Apakah `SKILLS_INDEX.md` yang penuh dipertahankan, atau diganti dengan berkas routing ringkas yang lebih hemat token? (keputusan K-1 memilih versi penuh; evaluasi ulang setelah R-1)
 - Apakah perubahan isi berkas `instructions` di tengah sesi langsung berlaku, atau memerlukan sesi/reload baru? (belum diverifikasi)
+- Apakah R-8 (`STATUS_PROYEK.md` ringkas) akan dibuat, atau pembacaan `MEMORI.md` via tool dinilai sudah cukup?
 
 ## Riwayat Perubahan
 | Tanggal | Perubahan |
@@ -112,3 +131,5 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 | 2026-11-12 | Dibuat `hasil_diskusi/diskusi_1.md` (Draft) berisi analisis sembilan penyebab skill spesifik tidak termuat serta rekomendasi R-1 sampai R-6. |
 | 2026-11-12 | Ditambahkan poin diskusi 10 mengenai status pengiriman berkas `instructions` (selalu dikirim penuh setiap sesi), R-2 disesuaikan agar memakai berkas routing ringkas, dan dua pertanyaan terbuka diperbarui. |
 | 2026-11-12 | Penerapan K-1: `"SKILLS_INDEX.md"` ditambahkan ke `instructions` pada `~/.config/kilo/kilo.jsonc` (validasi konfigurasi berhasil). Status berubah menjadi `Sedang Diimplementasikan`; ditambahkan K-1..K-4, tindak lanjut 4 ditandai selesai, dan tindak lanjut 9 (verifikasi pada sesi baru) ditambahkan. |
+| 2026-11-12 | Ditambahkan poin diskusi 11 dan K-5: `MEMORI.md` tidak didaftarkan ke `instructions` (snapshot usang vs dokumen hidup), ditambah R-7..R-9 dan tindak lanjut 10–11. |
+| 2026-11-12 | Ditambahkan poin diskusi 12 tentang faktor kepatuhan model (lapisan lunak vs penegakan keras, bukti `sed *` ditolak harness) serta R-10..R-13. |
