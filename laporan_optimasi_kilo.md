@@ -7,8 +7,8 @@
 - **Versi editor:** VS Code OSS (Code-OSS), data dir `/home/mbadrudin170/.codeoss`, konfigurasi pengguna di `/home/mbadrudin170/.vscode`
 - **Platform:** Linux (x64)
 - **Lingkungan kerja:** Google Cloud Shell (terminal profile "Google Cloud Shell"), tanpa emulator Android; pengujian aplikasi Flutter dilakukan via Web Server
-- **Lokasi konfigurasi global:** `/home/mbadrudin170/.config/kilo/kilo.jsonc`
-- **Lokasi konfigurasi proyek:** Tidak ada `kilo.jsonc`/`kilo.json` di root proyek `berhenti_merokok`; proyek menggunakan konfigurasi global + `AGENTS.md` di root proyek
+- **Lokasi konfigurasi global:** `/home/mbadrudin170/.config/kilo/kilo.jsonc` (snapshot 2026-11-07; **usang per 2026-11-12: config global kini nyaris kosong, hanya `$schema`**)
+- **Lokasi konfigurasi proyek:** `.kilo/kilo.jsonc` di root proyek `berhenti_merokok` (**sudah dibuat pada 2026-11-12**; ikut ter-clone bersama repo; menjadi sumber kebenaran `permission`, `instructions`, dan `agent.code`). Pada saat laporan ini ditulis (2026-11-07), proyek belum memiliki konfigurasi tingkat proyek.
 - **Lokasi ekstensi:** `/home/mbadrudin170/.codeoss/extensions/kilocode.kilo-code-7.8.27-linux-x64`
 - **Lokasi data Kilo:** `/home/mbadrudin170/.local/share/kilo` (kilo.db ~270 MB), state `/home/mbadrudin170/.local/state/kilo`, cache `/home/mbadrudin170/.cache/kilo`
 - **Custom commands (workflows):** 24 file di `.kilo/commands/`
@@ -75,7 +75,7 @@ Seluruh 40 URL berikut telah diperiksa satu per satu. Status: `DIBACA LENGKAP` (
 ## 4. Kondisi Konfigurasi Saat Ini
 
 ### Konfigurasi yang tersedia dan aktif
-- Global config `/home/mbadrudin170/.config/kilo/kilo.jsonc` (valid JSONC, divalidasi oleh Kilo).
+- Global config `/home/mbadrudin170/.config/kilo/kilo.jsonc` (valid JSONC, divalidasi oleh Kilo) — kondisi 2026-11-07; **per 2026-11-12 config global ini nyaris kosong (hanya `$schema`)**; konfigurasi aktif dipindahkan ke `.kilo/kilo.jsonc` proyek (enam entri `instructions` ditulis ulang, `agent.code.prompt` = `{file:./prompts/code.md}`, model `agent.code` = `openrouter/thinkingmachines/inkling-2-small:free` variant `max`; `skills.paths` dipertahankan dan diubah dari path usang `/home/thefarmercompanyba/...` menjadi path relatif `.agents/skills/custom`, `.agents/skills`, `.agents/skills/bawaan` pada 2026-11-12).
 - Model utama: `kilo/reflection/beam-free` (variant max) untuk agent `code`/`ask`; `kilo/stepfun/step-5-preview-free` (variant high) untuk `plan`/`orchestrator`/`debug`; compaction: `kilo/reflection/beam-free` (variant high).
 - small_model: `openrouter/recursive/flint-v1.0:free` (gratis).
 - subagent_model: `kilo/reflection/beam-free`.
@@ -88,7 +88,7 @@ Seluruh 40 URL berikut telah diperiksa satu per satu. Status: `DIBACA LENGKAP` (
 - default_agent: code.
 - commit_message.prompt: bahasa Indonesia baku sesuai diff.
 - experimental: batch_tool, shared_agent_board, continue_loop_on_deny, multi_project_agent_manager true; openTelemetry false; codebase_search false; mcp_timeout 30000.
-- instructions (global): `["AGENTS.md"]` (memuat AGENTS.md root proyek; ukuran ~347 KB).
+- instructions (global): `["AGENTS.md"]` (memuat AGENTS.md root proyek) — kondisi 2026-11-07. **Per 2026-11-12 instructions aktif berada di `.kilo/kilo.jsonc` proyek: `["AGENTS.md", ".agents/rules/global/aturan_skill.md", ".agents/rules/global/format_PRD.md", ".agents/rules/global/format_hasil_diskusi.md", ".agents/rules/global/format_task.md", "SKILLS_INDEX.md"]`.**
 
 ### Konfigurasi yang belum digunakan / dinonaktifkan
 - Codebase indexing: `indexing.enabled = false`. Tidak ada provider embedding terpasang (Ollama tidak tersedia); mengaktifkannya memerlukan API key berbayar atau setup lokal yang tidak ada. Tetap dinonaktifkan sesuai keterbatasan.
@@ -108,13 +108,13 @@ Seluruh 40 URL berikut telah diperiksa satu per satu. Status: `DIBACA LENGKAP` (
 | Jalur external_directory salah (pengguna + versi ekstensi) | `~/.config/kilo/kilo.jsonc` → `permission.external_directory` | Konfigurasi disalin dari lingkungan lain (`muhamadbadrudin1000`, ekstensi 7.8.18) | Izin akses eksternal ke pub-cache, Flutter SDK, share_global_saya, dan ekstensi tidak berfungsi; AI tidak dapat membaca/mengedit file di luar proyek | Tinggi — **Diperbaiki** |
 | AGENTS.md sangat besar (~347 KB) dimuat tiap sesi | Root proyek `AGENTS.md` (referensi di `instructions`) | Aturan proyek yang sangat banyak dan detail | Membebani context window; memperlambat respons dan meningkatkan biaya token | Menengah — Belum dilakukan (butuh keputusan pengguna) |
 | Codebase indexing dinonaktifkan | `kilo.jsonc` → `indexing.enabled: false` | Tidak ada provider embedding lokal (Ollama tidak terpasang) dan tidak ada API key berbayar | Tidak ada semantic search; AI mengandalkan glob/grep | Rendah — Sesuai keterbatasan (tetap dinonaktifkan) |
-| Tidak ada project-level kilo.jsonc | Root proyek | Hanya konfigurasi global | Aturan yang seharusnya project-specific (mis. instructions) bergantung pada global; sulit dibagi tim | Rendah — Belum dilakukan (opsional) |
+| Tidak ada project-level kilo.jsonc | Root proyek | Hanya konfigurasi global | Aturan yang seharusnya project-specific (mis. instructions) bergantung pada global; sulit dibagi tim | Rendah — **Sudah dilakukan pada 2026-11-12** (`.kilo/kilo.jsonc` dibuat, divalidasi Kilo) |
 | Kilo database besar (~270 MB) | `~/.local/share/kilo/kilo.db` | Banyak sesi/riwayat tersimpan | Penggunaan disk; pencarian sesi lebih lambat | Rendah — Belum dilakukan (butuh persetujuan; auto-cleanup default off) |
 | .kilocodeignore tidak ada | Root proyek | Belum dibuat | Tidak ada pengecualian akses file tambahan selain watcher.ignore dan permission | Rendah — Tidak wajib (watcher.ignore sudah cukup) |
 
 ## 6. Analisis Konflik dan Kompatibilitas
 
-- **Konfigurasi global vs proyek:** Tidak ada konflik karena tidak ada `kilo.jsonc` project-level; global config berlaku untuk semua proyek. `instructions: ["AGENTS.md"]` bersifat relatif ke direktori kerja (proyek), sehingga AGENTS.md proyek yang aktif dimuat — sesuai perilaku docs (findUp/auto-discovery).
+- **Konfigurasi global vs proyek:** Kondisi 2026-11-07: tidak ada konflik karena belum ada `kilo.jsonc` project-level. **Per 2026-11-12: `.kilo/kilo.jsonc` proyek dibuat dan menjadi sumber kebenaran; config global nyaris kosong, sehingga global vs proyek tidak lagi menjadi sumber konfigurasi aktif yang bersaing.** `instructions` pada config proyek bersifat relatif ke direktori proyek.
 - **Custom Modes vs Agents:** Proyek tidak memiliki `.kilo/agents/` custom agent; menggunakan built-in agents (code/ask/plan/orchestrator/debug) yang di-override model/prompt-nya di global config. Tidak ada konflik.
 - **Rules vs Skills vs AGENTS.md:** `.agents/rules/` dan `.agents/skills/` ada di proyek; Kilo juga membaca `.agents/skills/` (compatibility directory) otomatis. Tidak ada duplikasi yang terdeteksi. Aturan proyek di `.agents/rules/global` dan `.agents/rules/proyek` juga direferensikan oleh `AGENTS.md` (347 KB). Potensi duplikasi konteks antara AGENTS.md dan `.agents/rules` — perlu audit manual jika ingin mengurangi ukuran.
 - **Legacy:** Tidak ada `.kilocodemodes`, `custom_modes.yaml`, atau `.kilocode/` legacy di proyek maupun globalStorage. Tidak ada migrasi yang diperlukan.
@@ -129,7 +129,7 @@ Seluruh 40 URL berikut telah diperiksa satu per satu. Status: `DIBACA LENGKAP` (
 
 ### Prioritas Menengah
 2. **Pertimbangkan memecah AGENTS.md** menjadi instruksi yang lebih ringkas atau menggunakan `.kilo/rules/*.md` yang dirujuk via `instructions` glob, agar context window tidak terbebani 347 KB setiap sesi. Risiko: perubahan besar pada instruksi AI; butuh persetujuan pengguna dan audit konten.
-3. **Buat `kilo.jsonc` project-level** untuk pengaturan khusus proyek (mis. instructions, watcher.ignore sudah global). Manfaat: konfigurasi dapat di-version-control dan dibagi tim. Risiko: duplikasi dengan global; butuh perencanaan.
+3. **Buat `kilo.jsonc` project-level** untuk pengaturan khusus proyek (mis. instructions, watcher.ignore sudah global) — **sudah dilakukan pada 2026-11-12** (`.kilo/kilo.jsonc`, enam entri `instructions`, `agent.code.prompt` = `{file:./prompts/code.md}`; divalidasi Kilo).
 
 ### Prioritas Rendah
 4. **Aktifkan auto-cleanup session** (retention 30 hari) untuk mengecilkan kilo.db. Risiko: penghapusan permanen riwayat; butuh persetujuan pengguna.
@@ -167,7 +167,7 @@ Seluruh 40 URL berikut telah diperiksa satu per satu. Status: `DIBACA LENGKAP` (
 | Nama pekerjaan | Alasan belum dilakukan | Risiko/kendala | Persetujuan yang diperlukan |
 |---|---|---|---|
 | Memecah AGENTS.md (347 KB) | Perubahan besar pada instruksi AI; butuh audit konten | Konteks AI bisa berubah; aturan proyek mungkin hilang | Persetujuan pengguna |
-| Membuat kilo.jsonc project-level | Opsional; global config sudah berfungsi | Duplikasi konfigurasi | Persetujuan pengguna |
+| Membuat kilo.jsonc project-level | Selesai pada 2026-11-12 (`.kilo/kilo.jsonc` divalidasi Kilo) | — | — |
 | Mengaktifkan auto-cleanup session | Penghapusan permanen riwayat | Kehilangan history | Persetujuan pengguna |
 | Memasang Ollama + mengaktifkan indexing | Butuh sumber daya dan waktu; tidak sebanding | Konsumsi disk/CPU | Persetujuan pengguna |
 | Membuat .kilocodeignore | Tidak wajib; watcher.ignore + permission sudah cukup | — | Tidak perlu |
@@ -181,3 +181,13 @@ Setelah optimasi, Kilo Code menggunakan konfigurasi global yang telah diselarask
 Audit dan optimasi Kilo Code selesai dengan pembacaan lengkap seluruh 40 dokumentasi resmi (status DIBACA LENGKAP, 0 gagal). Satu perbaikan konfigurasi diterapkan (jalur `external_directory`), satu file konfigurasi diubah, dan tidak ada ekstensi versi lama yang ditemukan. Tidak ada klaim keberhasilan yang tidak dapat dibuktikan. Pekerjaan yang belum dilakukan dicatat secara terbuka dengan alasan dan persetujuan yang diperlukan. Laporan ini mencerminkan kondisi aktual setelah optimasi.
 
 **Lokasi laporan:** `./laporan_optimasi_kilo.md`
+
+## 13. Pembaruan 2026-11-12
+
+Laporan ini merekam kondisi per 2026-11-07 dan diperbarui pada 2026-11-12 agar tidak menyesatkan pembaca mengenai sumber konfigurasi aktif:
+
+- **Konfigurasi aktif kini di proyek**: `.kilo/kilo.jsonc` dibuat 2026-11-12 (enam entri `instructions`, `agent.code.prompt` = `{file:./prompts/code.md}`, `agent.code.model` = `openrouter/thinkingmachines/inkling-2-small:free` variant `max`) dan ikut ter-clone bersama repo.
+- **Config global nyaris kosong**: `~/.config/kilo/kilo.jsonc` kini hanya memuat `$schema`; `docs/kilo/kilo_global.txt` (salinan arsip config global lama) sudah ditandai usang di `MEMORI.md`.
+- **`skills.paths` diperbaiki** pada `.kilo/kilo.jsonc`: tiga entri tetap ada, path diubah dari `/home/thefarmercompanyba/berhenti_merokok/.agents/skills/...` menjadi path relatif `.agents/skills/custom`, `.agents/skills`, `.agents/skills/bawaan` (portabel antar akun/mesin). (Sempat dihapus lebih dulu, dikembalikan dengan path absolut, lalu diubah ke path relatif atas permintaan pengguna.)
+- **`AGENTS.md` aturan 11** kini menunjuk `.kilo/kilo.jsonc` proyek sebagai sumber kebenaran `permission` (bukan konfigurasi global).
+- Bagian-bagian historis yang merekam kondisi 2026-11-07 (ukuran AGENTS.md, jalur `external_directory`, perilaku global) dipertahankan apa adanya sebagai catatan, kecuali yang menyesatkan mengenai lokasi config aktif.
