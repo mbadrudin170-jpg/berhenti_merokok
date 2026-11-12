@@ -2,7 +2,7 @@
 
 ## 1. Tujuan
 
-Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendokumentasikan hasil diskusi ke dalam file PRD yang terstruktur.
+Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendokumentasikan hasil diskusi ke dalam berkas hasil diskusi yang terstruktur.
 
 ## 2. Aturan Diskusi
 
@@ -13,24 +13,27 @@ Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendoku
 
 ## 3. Aturan File Hasil Diskusi
 
-1. Setiap hasil diskusi WAJIB didokumentasikan dalam file baru di folder `hasil_diskusi/`.
-2. Semua file hasil diskusi WAJIB disimpan di folder `hasil_diskusi/` (bukan di lokasi lain).
-3. Nama file WAJIB menggunakan format `diskusi_N.md` dan disimpan sebagai `hasil_diskusi/diskusi_N.md` (contoh: `hasil_diskusi/diskusi_1.md`, `hasil_diskusi/diskusi_2.md`).
-4. Penentuan nomor file:
+1. Seluruh ketentuan lokasi, penamaan, dan penomoran berkas hasil diskusi **WAJIB** mengikuti `.agents/rules/global/format_hasil_diskusi.md`.
+2. Setiap hasil diskusi WAJIB didokumentasikan dalam file baru di folder `hasil_diskusi/`.
+3. Semua file hasil diskusi WAJIB disimpan di folder `hasil_diskusi/` (bukan di lokasi lain).
+4. Nama file WAJIB menggunakan format `diskusi_N.md` dan disimpan sebagai `hasil_diskusi/diskusi_N.md` (contoh: `hasil_diskusi/diskusi_1.md`, `hasil_diskusi/diskusi_2.md`).
+5. Penentuan nomor file:
    - Jika folder `hasil_diskusi/` kosong (belum ada file `diskusi_N.md`), buat `hasil_diskusi/diskusi_1.md`.
    - Jika sudah ada file, cari nomor tertinggi dari semua file `diskusi_N.md` di folder `hasil_diskusi/`, lalu buat file baru `hasil_diskusi/diskusi_<tertinggi+1>.md` (contoh: tertinggi `diskusi_11.md` → buat `hasil_diskusi/diskusi_12.md`).
    - Jika terdapat nomor yang terlewat (gap), tetap gunakan nomor `tertinggi + 1`. Jangan mengisi gap.
 
 ## 4. Struktur dan Isi File Hasil Diskusi
 
-1. Isi file `diskusi_N.md` WAJIB mengikuti struktur dan aturan pengisian PRD lengkap sesuai `.agents/rules/global/format_PRD.md`.
-2. File WAJIB mencakup seluruh bagian PRD dari **Bagian 1 sampai Bagian 21**, termasuk judul, metadata status, pemisah, konteks penggunaan, aturan pengisian, dan format tabel/isi pada setiap bagian sebagaimana ditetapkan di `format_PRD.md`.
-3. Penyesuaian status untuk mode diskusi:
-   - `**Status Dokumen:**` WAJIB diisi salah satu dari: `Draft`, `Batal`, atau `Final` sesuai status hasil diskusi.
-   - `**Status Implementasi:**` diisi sesuai kondisi aktual; jika belum diketahui atau belum relevan, tandai secara jelas tanpa mengarang.
-4. Seluruh isi PRD WAJIB didasarkan pada hasil diskusi dan informasi proyek yang diketahui. DILARANG mengarang informasi.
-5. Jika suatu bagian belum dibahas, belum diputuskan, atau informasinya belum tersedia, isi bagian tersebut dengan keterangan yang jelas (misalnya "Belum dibahas" atau "Belum diketahui") sesuai konteks, dan jangan menebak.
-6. Keputusan, tindak lanjut, dan poin penting dari diskusi WAJIB tercermin pada bagian PRD yang relevan (misalnya Latar Belakang, Tujuan Produk, Ruang Lingkup, Detail Persyaratan Fitur, Kriteria Penerimaan, Ketentuan Tambahan, dan/atau Riwayat Perubahan), agar hasil diskusi dapat dipetakan secara utuh.
+1. Struktur dan isi berkas hasil diskusi **WAJIB** mengikuti `.agents/rules/global/format_hasil_diskusi.md`.
+2. Berkas hasil diskusi **BUKAN** dokumen PRD. **DILARANG** memakai struktur PRD (bagian "Konteks penggunaan", "Aturan pengisian", atau 6 bagian PRD) untuk berkas hasil diskusi.
+3. Bagian wajib berurutan: `## Status`, `## Latar Belakang`, `## Poin Diskusi`, `## Keputusan`, `## Rekomendasi`, `## Tindak Lanjut`, `## File Terdampak`, `## Pertanyaan Terbuka`, dan `## Riwayat Perubahan`; judul dan urutan **persis** mengikuti aturan.
+4. Penyesuaian status untuk mode diskusi:
+   - `Dokumen` pada `## Status` WAJIB diisi salah satu dari: `Draft`, `Batal`, atau `Final` sesuai status hasil diskusi.
+   - `Implementasi` pada `## Status` diisi sesuai kondisi aktual; jika belum diketahui atau belum relevan, tandai secara jelas tanpa mengarang.
+5. Seluruh isi WAJIB didasarkan pada hasil diskusi dan informasi proyek yang diketahui. DILARANG mengarang informasi.
+6. Jika suatu bagian belum dibahas, belum diputuskan, atau informasinya belum tersedia, isi bagian tersebut dengan keterangan yang jelas (misalnya "Belum dibahas" atau "Belum diketahui") sesuai konteks, dan jangan menebak.
+7. Keputusan, tindak lanjut, dan poin penting dari diskusi WAJIB tercermin pada bagian `## Keputusan` dan `## Tindak Lanjut` agar hasil diskusi dapat ditindaklanjuti oleh `kerjakan_hasil_diskusi.md`.
+8. Setelah berkas dibuat, diperbarui, atau dihapus, WAJIB perbarui `MEMORI.md` pada bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`.
 
 ## 5. Aturan Penggunaan Tool `question`
 

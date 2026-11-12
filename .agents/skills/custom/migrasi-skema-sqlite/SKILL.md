@@ -1,17 +1,17 @@
 ---
 name: migrasi-skema-sqlite
-description: Panduan migrasi skema database SQLite - naikkan versi, update onCreate dan onUpgrade dengan kondisi versi, gunakan konstanta nama tabel/kolom.
+description: Panduan migrasi skema database SQLite - naikkan versi, update onCreate dan onUpgrade dengan kondisi versi, sinkronisasi definisi CREATE TABLE pada onCreate dengan perubahan kolom/indeks, verifikasi PRAGMA table_info, dan opsi pola satu sumber DDL (onCreate memakai langkah yang sama dengan onUpgrade); gunakan konstanta nama tabel/kolom. Gunakan saat menambah/mengubah tabel, kolom, indeks, atau migrasi data pada proyek Flutter ber-SQLite. Hindari untuk perubahan non-skema. Langkah kerja - ubah skema -> naikkan _versiDatabase -> cerminkan di onCreate -> tulis cabang onUpgrade -> verifikasi PRAGMA table_info -> dart analyze/flutter test.
 metadata:
   kategori: "custom"
-  versi: "1.1.0"
-  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
+  versi: "1.2.0"
+  diperbarui: "Fri Nov 13 04:56:47 WIB 2026"
+  sumber-terakhir: "commit `230f0b1` (fix(sqflite): perbaikan kolom pemicu pada migrasi database ke v15)"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
 # Migrasi Skema Database SQLite
 
-Setiap perubahan skema wajib menaikkan versi database, update `onCreate` dan `onUpgrade` dengan kondisi versi yang sesuai.
+Setiap perubahan skema wajib menaikkan versi database, update `onCreate` dan `onUpgrade` dengan kondisi versi yang sesuai. Perubahan kolom/indeks pada tabel yang sudah ada wajib dicerminkan di definisi `CREATE TABLE` pada `onCreate`, bukan hanya di `onUpgrade`.
 
 ## Aturan
 
@@ -26,6 +26,17 @@ Setiap perubahan skema wajib menaikkan versi database, update `onCreate` dan `on
 9. Tambahkan komentar singkat di atas konstanta `_versiDatabase` yang menjelaskan isi setiap versi (mis. `// Versi 13: tabel rencana_darurat (if-then plan).`).
 10. Ratakan indentasi blok `onUpgrade` agar konsisten dengan blok lain (spasi, bukan campuran tab/spasi).
 11. Indeks (`CREATE INDEX IF NOT EXISTS ...`) pada tabel baru wajib dibuat di cabang versi yang sama dengan pembuatan tabelnya, bukan di cabang versi lain.
+12. Perubahan kolom/indeks pada tabel yang sudah ada wajib dicerminkan di definisi `CREATE TABLE` pada `onCreate` (dan/atau definisi indeks di `_buatTabel`) sehingga `onCreate` selalu mencerminkan skema versi terkini secara penuh; pengguna lama mendapatkannya lewat cabang `onUpgrade`, pengguna baru langsung dari `onCreate`. Bug yang terjadi pada v14 (migrasi `ALTER TABLE ... ADD COLUMN pemicu` hanya di `onUpgrade`, definisi `CREATE TABLE konsumsi_rokok` di `onCreate` tidak di-update → instalasi baru gagal `INSERT OR REPLACE ... pemicu` dengan `SqfliteFfiException(1) no column named pemicu`) adalah contoh langsung pelanggaran aturan ini; perbaikannya ada di v15 (lihat `230f0b1`).
+13. Setelah mengubah skema, verifikasi skema hasil `onCreate` dan hasil chain `onUpgrade` per tabel memakai `PRAGMA table_info(<nama_tabel>)` (kolom wajib ada, nama dan tipe sesuai) sebelum perubahan dinyatakan selesai; untuk kolom yang ditambahkan kondisional, gunakan pola cek `PRAGMA table_info` lalu `ALTER TABLE` hanya bila kolom belum ada (aman untuk database yang terlanjur dibuat tanpa kolom).
+14. Rekomendasi (bukan kewajiban refactor): pertimbangkan pola satu sumber DDL — `onCreate` membangun skema lewat langkah-langkah (`_createV1`, `_upgradeV1ToV2`, dst.) yang sama dengan `onUpgrade`, sebagaimana pola "Migration chain with batches" pada skill `sqflite-open-database` — agar DDL tidak diduplikasi dan tidak bisa tidak sinkron. Pada proyek ini `sqflite.dart` masih memakai definisi duplikat; refactor ke pola ini harus dibahas/disetujui terpisah sebelum dilakukan.
+
+## Steps
+
+1. Tambahkan/ubah definisi kolom, tabel, atau indeks di `_buatTabel` (`onCreate`) agar skema versi terkini tercermin di instalasi baru.
+2. Naikkan `_versiDatabase` dan tambahkan komentar versi di atas konstanta tersebut.
+3. Tambahkan cabang `if (oldVersion < N)` di `_onUpgrade` untuk pengguna lama (`ALTER TABLE ... ADD COLUMN` / `CREATE TABLE` / `CREATE INDEX` sesuai kebutuhan; gunakan cek `PRAGMA table_info` bila kolom bisa saja sudah ada).
+4. Verifikasi skema per tabel dengan `PRAGMA table_info(<nama_tabel>)` untuk database instalasi baru dan database hasil chain `onUpgrade` (kolom, nama, tipe harus sama).
+5. Jalankan `dart analyze` dan `flutter test`; dokumentasikan perubahan skema di `MEMORI.md` dan berkas diskusi/PRD terkait.
 
 ## Larangan
 
@@ -33,6 +44,8 @@ Setiap perubahan skema wajib menaikkan versi database, update `onCreate` dan `on
 - Jangan membuat tabel baru hanya di `onCreate` tanpa menangani `onUpgrade` (pengguna lama tidak akan mendapatkan tabel).
 - Jangan menduplikasi `CREATE TABLE` tabel yang sama di dua cabang `if (oldVersion < N)`; satu tabel tepat satu cabang versinya.
 - Jangan mengubah nilai enum yang tersimpan di kolom database tanpa migrasi data pada cabang versi baru.
+- Jangan menambah kolom/indeks hanya di `onUpgrade` tanpa mencerminkannya di definisi `CREATE TABLE` pada `onCreate` (instalasi baru akan gagal saat menulis kolom tersebut).
+- Jangan menyatakan perubahan skema selesai tanpa verifikasi `PRAGMA table_info` per tabel.
 - Jangan menggunakan string literal untuk nama tabel/kolom baru.
 - Jangan menghapus data pengguna saat migrasi kecuali memang diperlukan dan terdokumentasi.
 
@@ -70,6 +83,28 @@ if (oldVersion < 13) {
   // HANYA rencana_darurat.
   await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(...)');
 }
+
+// v14: tambah kolom pemicu (TEXT, nullable) pada tabel konsumsi_rokok.
+// JANGAN lupa: definisi CREATE TABLE konsumsi_rokok di onCreate wajib
+// ikut menyertakan ${NamaKolom.pemicu} (aturan 12).
+if (oldVersion < 14) {
+  await db.execute(
+    'ALTER TABLE ${NamaTabel.konsumsiRokok} '
+    'ADD COLUMN ${NamaKolom.pemicu} TEXT',
+  );
+}
+// v15: perbaikan bug instalasi baru (onCreate versi 14 tanpa kolom pemicu).
+// Cek PRAGMA table_info agar aman untuk database yang sudah punya kolom.
+if (oldVersion < 15) {
+  final info = await db.rawQuery('PRAGMA table_info(${NamaTabel.konsumsiRokok})');
+  final sudahAda = info.any((kolom) => kolom['name'] == NamaKolom.pemicu);
+  if (!sudahAda) {
+    await db.execute(
+      'ALTER TABLE ${NamaTabel.konsumsiRokok} '
+      'ADD COLUMN ${NamaKolom.pemicu} TEXT',
+    );
+  }
+}
 ```
 
 ## Contoh Salah
@@ -81,7 +116,17 @@ static const int _versiDatabase = 5;
 // onUpgrade: (kosong / tidak menangani v5)
 ```
 
+```dart
+// Bug v14 yang sebenarnya terjadi (lihat commit 230f0b1): migrasi hanya di
+// onUpgrade, definisi CREATE TABLE konsumsi_rokok di onCreate tidak di-update.
+static const int _versiDatabase = 14;
+// onCreate: CREATE TABLE konsumsi_rokok (id, tanggal, jumlah, is_slip, catatan, dibuat)
+//           ^ TIDAK ada kolom pemicu → instalasi baru gagal INSERT OR REPLACE ... pemicu
+// onUpgrade: if (oldVersion < 14) { ALTER TABLE konsumsi_rokok ADD COLUMN pemicu TEXT; }
+// Instalasi baru versi 14 tidak pernah melewati cabang onUpgrade → kolom pemicu absen.
+```
+
 ## Sumber Evaluasi
 
-- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `a15acd9603fe5d1251afa4acc3817e7e9c1607b1` (DDL ganda v9/v11), `a5beae01b86a4d9753963380818bc437c2b4741a` (migrasi enum v12), `db5dd32f28e92346b9a8d3467fa9b2838e013a02` (v13 rencana_darurat), `2462af81050e12b2933717f457a33a5b05d3719f` (hapus duplikasi v11), `50c1be708e595449fa2fd18e3491d4418943c565` (hapus DDL ganda dari v9)
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `a15acd9603fe5d1251afa4acc3817e7e9c1607b1` (DDL ganda v9/v11), `a5beae01b86a4d9753963380818bc437c2b4741a` (migrasi enum v12), `db5dd32f28e92346b9a8d3467fa9b2838e013a02` (v13 rencana_darurat), `2462af81050e12b2933717f457a33a5b05d3719f` (hapus duplikasi v11), `50c1be708e595449fa2fd18e3491d4418943c565` (hapus DDL ganda dari v9), `230f0b1e12c4eae186bb6aa424bc6cc0b8d4fe41` (v14 bug onCreate tanpa kolom `pemicu` → v15 kondisional `PRAGMA table_info`)
 - File: `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_tabel.dart`, `lib/shared/konstanta/nama_kolom.dart`
