@@ -6,7 +6,7 @@
 - **Versi**: 1.0.0+1
 - **Platform**: Flutter (Android, iOS, Web, Desktop)
 - **Status Implementasi**: Sedang Diimplementasikan
-- **Terakhir Diperbarui**: 2026-11-12 (implementasi PRD `diskusi_1.md`: `AGENTS.md` diperkuat, PRD dihapus)
+- **Terakhir Diperbarui**: 2026-11-12 (verifikasi jumlah skill terdaftar pada daftar `available_skills`: 90 skill = 53 `custom` + 1 `kilo-config` bawaan Kilo + 36 `bawaan`; total 90 file `SKILL.md` di `.agents/skills` terverifikasi via `grep`)
 
 ## Struktur Utama Layar (Screen)
 Folder fitur ada di `lib/fitur/` (16 folder). Fitur utama:
@@ -72,7 +72,8 @@ Provider dihasilkan dari notifier ber-anotasi `@Riverpod` (deklarasi ada di `*.n
 - `lib/shared/widget/empty_state_view.dart` - Widget empty state bersama
 
 ## Skills & Rules Utama yang Diaktifkan
-**Sumber kebenaran:** `SKILLS_INDEX.md` (indeks discovery) dan `.agents/skills/**/SKILL.md`. Daftar di bawah hanya ringkasan skill yang paling sering dipakai — JANGAN anggap ini daftar lengkap; selalu cek `SKILLS_INDEX.md`.
+**Sumber kebenaran:** `SKILLS_INDEX.md` (indeks discovery di root proyek) dan `.agents/skills/**/SKILL.md`. `SKILLS_INDEX.md` berisi indeks lengkap seluruh skill (path, trigger, status diperbarui) dikelompokkan per kategori (`custom`, `bawaan`). Daftar di bawah hanya ringkasan skill yang paling sering dipakai — JANGAN anggap ini daftar lengkap; selalu cek `SKILLS_INDEX.md`.
+**Jumlah skill terdaftar pada `available_skills` (per 2026-11-12):** 90 total = 53 `custom` + 1 `kilo-config` (bawaan Kilo, `builtin`) + 36 `bawaan` (project-local); total ini cocok dengan 90 file `SKILL.md` di `.agents/skills`. `SKILLS_INDEX.md` mencantumkan 53 custom + 33 bawaan = 86 entri; selisih 4 adalah skill bawaan Kilo yang baru (`kilo-config`, `restart-app-integration` duplikat via index, `restart-app-ios-engine-restart` duplikat via index) dan folder `.agents/skills/bawaan` kini kosong (skill bawaan project-local berada langsung di root `.agents/skills`).
 - `memori-check` - WAJIB load pada SETIAP interaksi apa pun (AGENTS.md aturan 5 & 10). Skill ini mengatur PROSES (baca konteks → terapkan → perbarui bagian relevan), bukan daftar section; jadi TIDAK perlu diubah saat struktur `MEMORI.md` berubah.
 - `pencarian-teks-ripgrep` - Penggunaan `rg` untuk pencarian teks
 - `bug-runtime` - Pencegahan bug runtime
@@ -106,11 +107,13 @@ Catatan: folder `prd/hasil_diskusi/` saat ini kosong (tidak ada file `diskusi_N.
 ## Riwayat Perubahan (Changelog)
 | Tanggal | Perubahan |
 |---------|-----------|
+| 2026-11-12 | Verifikasi jumlah skill terdaftar pada `available_skills` (90 skill = 53 `custom` + 1 `kilo-config` bawaan Kilo + 36 `bawaan` project-local; total 90 file `SKILL.md` di `.agents/skills` terverifikasi via `grep`). `MEMORI.md` diperbarui (bagian `Status Proyek` dan `Skills & Rules Utama yang Diaktifkan`). |
 | 2026-11-12 | Implementasi `prd/hasil_diskusi/diskusi_1.md` (penekanan `AGENTS.md`): `AGENTS.md` diperkuat dengan wording tegas (WAJIB/DILARANG) sambil mempertahankan struktur poin — menegaskan cari & load skill relevan sebelum kerja, poin 5 sebagai konteks inti wajib (termasuk urutan/prioritas), rules global spesifik `aturan_skill.md`/`format_PRD.md`/`format_task.md` saat relevan, dan kewajiban baca `~/.config/kilo/kilo.jsonc` permission sebelum bash/tindakan (izin `deny` mutlak). PRD berstatus Sedang → Sudah Diimplementasikan lalu dihapus; tidak ada section terkait di `refrensi_apk.md` (dilewati). `MEMORI.md` diperbarui (lokasi/riwayat diskusi, status diskusi 1). |
 | 2026-11-12 | Pembuatan `prd/hasil_diskusi/diskusi_1.md` (Mode Diskusi, PRD usulan saja, Draft): topik penekanan `AGENTS.md` agar agen wajib membaca & mematuhi poin 5, rules global spesifik (`aturan_skill.md`, `format_PRD.md`, `format_task.md` saat relevan), permission `~/.config/kilo/kilo.jsonc` sebelum bash/tindakan, dan skill relevan sebelum kerja; gaya perkuat wording dengan struktur dipertahankan; `AGENTS.md` belum diubah. `MEMORI.md` diperbarui (lokasi & riwayat diskusi). |
 | 2026-11-12 | Penghapusan `prd/hasil_diskusi/diskusi_5.md` atas permintaan pengguna (tindak lanjut diskusi sudah terimplementasi pada aturan). `MEMORI.md` diperbarui: lokasi hasil diskusi (tertinggi kembali `diskusi_4.md`, berikutnya `diskusi_5.md`), riwayat diskusi (entri no. 5 dihapus, catatan ketersediaan file diperbarui). |
 | 2026-11-12 | Penyelarasan aturan PRD: `.kilo/commands/mode/mode_diskusi.md` §4.2 tidak lagi mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama yang sudah disederhanakan lewat commit `4ce508d`, `06634a2`, `aedb325`, `30ff01b` menjadi 6 bagian) dan kini merujuk ke `format_PRD.md` sebagai sumber kebenaran; §4.6 kini hanya menyebut bagian yang benar-benar ada (`Daftar Fitur`, `Alur Pengguna`, `Steps`, `File-File Terdampak`); penomoran butir §4 dirapikan menjadi 1–7; hasil diskusi semula didokumentasikan pada `prd/hasil_diskusi/diskusi_5.md` (kini dihapus). |
 | 2026-11-12 | Pembaruan skill `memori-check` ke v1.3.0: diubah dari daftar section yang di-hardcode menjadi panduan proses generik (baca konteks → terapkan → perbarui bagian relevan) agar tidak wajib diubah setiap kali struktur `MEMORI.md` berubah; `Sumber Evaluasi` diperbaiki (commit `1823940`, `5e2a55d`, `b7f2b05`; path `prd/hasil_diskusi/`) |
+| 2026-11-12 | Pemindahan semua skill bawaan (33 skill) dari root `.agents/skills/` ke `.agents/skills/bawaan/`,Folder `custom` (53 skill) tidak dipindah. `SKILLS_INDEX.md` diperbarui path bawaan ke `.agents/skills/bawaan/<nama>/SKILL.md`. Tidak ada file `SKILL.md` yang diubah isinya. |
 
 ## Catatan Teknis Penting
 1. **Database FFI Web**: Konfigurasi `sqfliteCommonFfiWeb` di `main.dart`
@@ -147,6 +150,7 @@ Setiap kali model (AI) berinteraksi dengan proyek ini, seharusnya:
 3. Memastikan kepatuhan terhadap rules di AGENTS.md
 4. Menggunakan skills yang relevan (cari via `SKILLS_INDEX.md`, jangan hanya pakai daftar ringkas di atas)
 5. Menyimpan keputusan penting dan state baru ke file ini
+6. Jika ditanya jumlah skill terdaftar, jawab 90 (53 `custom` + 1 `kilo-config` bawaan Kilo + 36 `bawaan` project-local) dan verifikasi ulang via `available_skills`/`SKILLS_INDEX.md` bila ada perubahan.
 
 ---
 *File ini dibuat untuk memastikan konsistensi dan mempertahankan konteks proyek berhenti_merokok di masa mendatang.*
