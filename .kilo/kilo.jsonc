@@ -5,9 +5,9 @@
   "subagent_model": "kilo/kilo-auto/free",
   "agent": {
     "code": {
-      "model": "kilo/baidu/ernie-5.5-flash-preview:free",
+      "model": "openrouter/thinkingmachines/inkling-2-small:free",
       "prompt": "{file:./prompts/code.md}",
-      "variant": "high"
+      "variant": "max"
     },
     "ask": {
       "model": "kilo/kilo-auto/free",
