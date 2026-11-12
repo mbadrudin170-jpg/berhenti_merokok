@@ -214,6 +214,10 @@
 - Trigger : perlu dilengkapi trigger
 - Status : diperbarui : Thu Nov 12 2026 06:27:35 WIB
 
+54. .agents/skills/custom/penggunaan-tool-question/SKILL.md
+- Trigger : saat menyusun pertanyaan ke pengguna, meminta klarifikasi, atau meminta keputusan/input yang bergantung pada input pengguna
+- Status : diperbarui : Fri Nov 13 2026 01:48:40 WIB
+
 ## bawaan
 
 1. .agents/skills/bawaan/adaptive_dialog-dialogs/SKILL.md

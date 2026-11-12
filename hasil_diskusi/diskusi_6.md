@@ -1,8 +1,8 @@
 # Hasil Diskusi 6 — Pembuatan Skill Penggunaan Tool Question
 
 ## Status
-- Dokumen: Draft
-- Implementasi: Belum Diimplementasikan
+- Dokumen: Final
+- Implementasi: Sudah Diimplementasikan
 - Tanggal: 2026-11-12
 - Topik: Pembuatan skill baru untuk panduan penggunaan tool `question` dalam Mode Diskusi
 
@@ -14,19 +14,22 @@ Mode Diskusi mewajibkan model menggunakan tool `question` ketika perlu bertanya,
 
 ### 1. Apakah perlu skill terpisah untuk tool `question`?
 - Tanya: Apakah penggunaan tool `question` memerlukan skill sendiri, atau cukup diatur dalam Mode Diskusi?
-- Kesimpulan: Belum diputuskan. Perlu evaluasi apakah cukup dengan aturan dalam Mode Diskusi atau memerlukan skill terstruktur di `.agents/skills/`.
+- Kesimpulan: Perlu skill terpisah agar aturan penggunaan tool `question` dapat dipakai lintas interaksi (Mode Diskusi dan lainnya) secara konsisten, tanpa menduplikasi isi `mode_diskusi.md`.
 
 ### 2. Apa yang harus di-cover dalam skill `question`?
 - Tanya: Trigger, format header (maks 30 karakter), opsi jawaban, aturan `multiple`, dan contoh penggunaan mana yang harus dicakup?
-- Kesimpulan: Belum dibahas.
+- Kesimpulan: Dicakup trigger (kapan pakai `question`), `header` maks. 30 karakter, struktur opsi `label` (1-5 kata) + `description`, aturan `multiple` vs single-select, opsi `default`, opsi rekomendasi "(Recommended)", larangan catch-all, varian i18n, serta contoh benar/salah.
 
 ### 3. Lokasi skill baru
 - Tanya: Apakah skill baru ditempatkan di `.agents/skills/custom/` atau `.agents/skills/bawaan/`?
-- Kesimpulan: Belum dibahas. Asumsi awal: `custom/` karena merupakan panduan proyek spesifik.
+- Kesimpulan: Ditempatkan di `.agents/skills/custom/penggunaan-tool-question/` karena merupakan panduan khusus proyek ini.
 
 ## Keputusan
 
-Belum ada keputusan final (dokumen masih Draft).
+- K-1: Skill `question` dibuat sebagai skill terpisah di `.agents/skills/custom/penggunaan-tool-question/SKILL.md` mengikuti `.agents/rules/global/aturan_skill.md`.
+- K-2: Skill mencakup trigger, format `header` (maks. 30 karakter), struktur opsi jawaban (`label` + `description`), aturan `multiple` vs single-select, opsi `default`/rekomendasi, larangan catch-all, varian i18n, serta contoh benar/salah.
+- K-3: Sumber isi skill diambil dari riwayat commit relevan (`208e3ec` yang menambahkan §5 `mode_diskusi.md`) dan skema tool `question`, bukan dari working directory/staging/untracked.
+- K-4: Skill didaftarkan ke `SKILLS_INDEX.md` dan `MEMORI.md` diperbarui.
 
 ## Rekomendasi
 
@@ -39,10 +42,10 @@ Belum ada keputusan final (dokumen masih Draft).
 
 | No | Tindakan | File Terdampak | Status |
 |----|----------|----------------|--------|
-| 1 | Buat skill `penggunaan-tool-question` di `.agents/skills/custom/` | `.agents/skills/custom/penggunaan-tool-question/SKILL.md` | belum |
-| 2 | Daftarkan skill baru ke `SKILLS_INDEX.md` | `SKILLS_INDEX.md` | belum |
-| 3 | Perbarui `MEMORI.md` (Skills & Rules Utama yang Diaktifkan) | `MEMORI.md` | belum |
-| 4 | Verifikasi `dart analyze` tidak error setelah penambahan skill | — | belum |
+| 1 | Buat skill `penggunaan-tool-question` di `.agents/skills/custom/` | `.agents/skills/custom/penggunaan-tool-question/SKILL.md` | sudah |
+| 2 | Daftarkan skill baru ke `SKILLS_INDEX.md` | `SKILLS_INDEX.md` | sudah |
+| 3 | Perbarui `MEMORI.md` (Skills & Rules Utama yang Diaktifkan) | `MEMORI.md` | sudah |
+| 4 | Verifikasi `dart analyze` tidak error setelah penambahan skill | — | sudah |
 
 ## File Terdampak
 
@@ -54,11 +57,11 @@ Belum ada keputusan final (dokumen masih Draft).
 
 ## Pertanyaan Terbuka
 
-- Apakah skill `question` cukup diatur dalam Mode Diskusi atau memerlukan file `SKILL.md` terpisah?
-- Apakah pengguna menyetujui lokasi `.agents/skills/custom/penggunaan-tool-question/`?
+Belum ada.
 
 ## Riwayat Perubahan
 
 | Tanggal | Perubahan |
 |---------|-----------|
 | 2026-11-12 | Buat berkas diskusi 6 (Draft) tentang pembuatan skill tool `question` |
+| 2026-11-12 | Status diubah ke `Final`; keputusan K-1..K-4 ditetapkan; tindak lanjut diimplementasikan (skill `penggunaan-tool-question` dibuat, didaftarkan ke `SKILLS_INDEX.md`, `MEMORI.md` diperbarui) |
