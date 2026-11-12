@@ -93,6 +93,10 @@ Konteks pemeriksaan:
 - Tanya: Apakah konfigurasi dapat disimpan di `.kilo/` proyek?
 - Kesimpulan: Ya, `.kilo/kilo.json` (atau `.kilo/kilo.jsonc`) adalah lokasi config tingkat proyek yang sah, dimuat setelah config global dengan prioritas lebih tinggi, dan **ikut ter-clone bersama repo** sehingga tidak perlu restore manual saat berpindah akun cloud shell. Folder `.kilo/` sudah dipakai proyek ini (`.kilo/commands/`). Perlu diperhatikan: (a) `{file:./prompts/code.md}` diresolusi relatif terhadap lokasi config, sehingga berkas prompt harus berada di `.kilo/prompts/code.md`; (b) array `instructions` pada config proyek kemungkinan menggantikan daftar global, sehingga keenam entri ditulis ulang agar tidak ada yang hilang; (c) `KILO_DISABLE_PROJECT_CONFIG` akan mengabaikan seluruh config proyek; (d) config proyek hanya berlaku untuk proyek ini, sedangkan kebutuhan lintas proyek tetap memerlukan repository dotfiles.
 
+### 20. Konfigurasi diterapkan pada `.kilo/kilo.json`
+- Tanya: Apakah konfigurasi `kilo.jsonc` global perlu dipindah ke repo?
+- Kesimpulan: Ya dan telah dilakukan. `.kilo/kilo.json` (174 baris) dibuat di root repo dengan enam entri `instructions` ditulis ulang penuh, `agent.code.prompt` = `"{file:./prompts/code.md}"`, dan `skills.paths` (home akun lama) dihapus. Berkas prompt dipindah ke `.kilo/prompts/code.md`; root `prompts/code.md` ditandai sudah dipindah. Config divalidasi Kilo tanpa error. Karena `instructions` array ditulis penuh, tidak ada entri rules yang hilang meskipun config global tidak dimuat.
+
 ## Keputusan
 - K-1: `SKILLS_INDEX.md` didaftarkan pada `instructions` di `~/.config/kilo/kilo.jsonc` tanpa menghapus lima entri yang sudah ada, sehingga indeks skill selalu dikirim sebagai isi penuh pada setiap sesi di proyek ini.
 - K-2: Pendaftaran memakai pola relatif (`"SKILLS_INDEX.md"`), mengikuti pola entri yang sudah ada (`.agents/rules/global/*.md`), yang terbukti diselesaikan terhadap direktori kerja proyek; proyek lain yang tidak memiliki berkas tersebut tidak terpengaruh.
@@ -105,7 +109,7 @@ Konteks pemeriksaan:
 - K-9: `skills.paths` pada config global terbukti berisi path home akun lama (`/home/thefarmercompanyba/...`), sehingga dikonfirmasi harus dihapus (R-6), bukan diperbaiki.
 - K-10: Berkas tidak dapat dititipkan pada `/home/<pengguna>/` sebagai solusi portabilitas, karena lokasi tersebut adalah `$HOME` per akun Google yang hilang saat berpindah akun.
 - K-11: Bila konfigurasi diperlukan lintas proyek, gunakan repository tersendiri (dotfiles) yang dapat di-clone di setiap akun baru; untuk proyek ini, `docs/kilo/kilo_global.txt` dicadangkan sebagai salinan config global.
-- K-12: Untuk kebutuhan proyek ini, konfigurasi dititipkan pada `.kilo/kilo.json` di dalam repo (bukan `~/.config/kilo/`), karena lokasi tersebut ikut ter-clone, tidak perlu restore manual, dan tidak hilang saat berpindah akun Google.
+- K-12: Untuk kebutuhan proyek ini, konfigurasi dititipkan pada `.kilo/kilo.json` di dalam repo (bukan `~/.config/kilo/`), karena lokasi tersebut ikut ter-clone, tidak perlu restore manual, dan tidak hilang saat berpindah akun Google. — **DITERAPKAN** (`.kilo/kilo.json` dan `.kilo/prompts/code.md` dibuat, config divalidasi Kilo; `skills.paths` global masih ada, R-6 belum dikerjakan).
 
 ## Rekomendasi
 - R-1: Lengkapi 55 trigger kosong pada `SKILLS_INDEX.md` dengan kata kunci pencarian dan path berkas yang biasa disentuh (mis. `lib/fitur/diary_craving/**`).
@@ -144,7 +148,7 @@ Konteks pemeriksaan:
 - R-22: Struktur repository konfigurasi terpisah: `kilo.jsonc` (kanonis), `prompts/code.md`, `bootstrap.sh` (menyalin `kilo.jsonc` → `~/.config/kilo/kilo.jsonc` dan `prompts/code.md` → `~/.config/kilo/prompts/code.md`), serta `README.md` berisi tiga langkah pemakaian di akun baru.
 - R-23: Alur pemakaian di akun baru: `git clone <repo-config>`, jalankan `bash bootstrap.sh`, lalu buka proyek. Bila repo proyek privat, siapkan autentikasi git terlebih dahulu.
 - R-24: Untuk `kilo.jsonc` berukuran kecil (± 4,6 KB), lebih ringkas memakai unduhan langsung `curl -fsSL <raw-url>` ke `~/.config/kilo/kilo.jsonc` dan `~/.config/kilo/prompts/code.md` daripada clone; clone hanya dianjurkan bila riwayat versi config ingin dilacak.
-- R-25: Buat `.kilo/kilo.json` berisi enam entri `instructions` (diulang penuh, bukan hanya tambahan) dan `agent.code.prompt` = `{file:./prompts/code.md}`; pindahkan berkas prompt ke `.kilo/prompts/code.md` agar resolusi path benar.
+- R-25: Buat `.kilo/kilo.json` berisi enam entri `instructions` (diulang penuh, bukan hanya tambahan) dan `agent.code.prompt` = `{file:./prompts/code.md}`; pindahkan berkas prompt ke `.kilo/prompts/code.md` agar resolusi path benar. — **DITERAPKAN**.
 - R-26: Simpan `.kilo/kilo.json` di repo (jangan masukkan ke `.gitignore`), pertahankan `docs/kilo/kilo_global.txt` sebagai cadangan global, dan dokumentasikan bahwa `KILO_DISABLE_PROJECT_CONFIG` harus tetap tidak diset.
 
 Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
@@ -163,15 +167,18 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 | 9 | Verifikasi pada sesi baru bahwa `SKILLS_INDEX.md` muncul sebagai blok `Instructions from:` | `~/.config/kilo/kilo.jsonc` | belum |
 | 10 | Memastikan `MEMORI.md` tetap dibaca via tool pada setiap interaksi (K-5), tidak didaftarkan ke `instructions` | `AGENTS.md` | selesai |
 | 11 | Evaluasi pembuatan `STATUS_PROYEK.md` ringkas bila konteks selalu-hadir diperlukan (R-8) | belum ditentukan | belum |
-| 12 | Verifikasi keberlakuan `agent.code.prompt` melalui `/status` atau Settings → Agent Behaviour (R-14) | `~/.config/kilo/kilo.jsonc` | belum |
-| 13 | Wire prompt ke `kilo.json` proyek dengan `{file:./prompts/code.md}` setelah verifikasi (R-16) | `kilo.json` (baru), `prompts/code.md` | belum |
+| 12 | Verifikasi keberlakuan `agent.code.prompt` melalui `/status` atau Settings → Agent Behaviour (R-14) | `~/.config/kilo/kilo.jsonc` | selesai |
+| 13 | Wire prompt ke `kilo.json` proyek dengan `{file:./prompts/code.md}` setelah verifikasi (R-16) | `kilo.json` (baru), `prompts/code.md` | selesai |
+| 15 | Validasi `.kilo/kilo.json` (R-25/R-26) | `.kilo/kilo.json`, `.kilo/prompts/code.md` | selesai |
 | 14 | Hapus `skills.paths` pada `kilo.jsonc` global (R-6) | `~/.config/kilo/kilo.jsonc` | belum |
 
 ## File Terdampak
 | Lokasi File | Status Perubahan | Deskripsi |
 |-------------|------------------|-----------|
 | `hasil_diskusi/diskusi_1.md` | Dibuat | Berkas hasil diskusi ini (Draft). |
-| `prompts/code.md` | Dibuat | Prompt agent `code` versi berkas (K-6); belum diwire ke konfigurasi (K-7). |
+| `prompts/code.md` | Dipindah ke `.kilo/prompts/code.md` | Prompt agent `code` versi berkas; root tidak lagi digunakan oleh konfigurasi. |
+| `.kilo/kilo.json` | Dibuat | Config tingkat proyek: enam entri `instructions` ditulis ulang + `agent.code.prompt` = `{file:./prompts/code.md}` (K-12, R-25). |
+| `.kilo/prompts/code.md` | Dibuat | Prompt agent `code` versi berkas (dipindah dari root `prompts/code.md`). |
 | `SKILLS_INDEX.md` | Belum ditentukan (kandidat Diubah) | Kandidat pelengkapan 55 trigger kosong (R-1). |
 | `~/.config/kilo/kilo.jsonc` | Diubah | Penambahan `"SKILLS_INDEX.md"` pada `instructions` (K-1); `skills.paths` masih menunggu R-6. |
 | `AGENTS.md` | Belum ditentukan (kandidat Diubah) | Kandidat tabel routing dan peta skill wajib per pekerjaan (R-2, R-4). |
@@ -205,3 +212,4 @@ Prioritas termurah dengan dampak tertinggi: R-1, R-2, dan R-3.
 | 2026-11-12 | Ditambahkan poin 17, K-11, R-22, R-23: repository konfigurasi terpisah (dotfiles) sebagai solusi portabilitas; terverifikasi `git` dan `gh` tersedia, remote proyek `mbadrudin170-jpg/berhenti_merokok`, dan `kilo.jsonc` tidak memuat rahasia. |
 | 2026-11-12 | Ditambahkan poin 18 dan R-24: hasil clone bersifat sementara; alternatif unduh langsung via `curl` dari `raw.githubusercontent.com` tanpa clone. |
 | 2026-11-12 | Ditambahkan poin 19, K-12, R-25, R-26: `.kilo/kilo.json` sebagai lokasi config tingkat proyek yang ikut ter-clone dan tidak perlu restore manual; catatan resolusi `{file:...}`, penggantian array `instructions`, `KILO_DISABLE_PROJECT_CONFIG`, dan cakupan hanya satu proyek. |
+| 2026-11-12 | Penerapan K-12/R-25/R-26: `.kilo/kilo.json` dibuat di repo (enam entri `instructions` ditulis ulang, `agent.code.prompt` = `{file:./prompts/code.md}`, `skills.paths` tidak diwariskan dari config global), `.kilo/prompts/code.md` dibuat, root `prompts/code.md` ditandai sudah dipindah, dan config divalidasi Kilo tanpa error. Dokumen masih `Draft`; K-12, R-25, R-26, dan tindak lanjut 12/13/15 ditandai selesai. |

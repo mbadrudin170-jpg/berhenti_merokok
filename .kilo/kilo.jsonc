@@ -6,7 +6,7 @@
   "agent": {
     "code": {
       "model": "kilo/baidu/ernie-5.5-flash-preview:free",
-      "prompt": "kamu adalah pekerja saya",
+      "prompt": "{file:./prompts/code.md}",
       "variant": "high"
     },
     "ask": {
