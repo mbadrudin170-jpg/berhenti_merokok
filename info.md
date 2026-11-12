@@ -18,8 +18,6 @@ Tidak ada temuan.
 
 ## Rendah
 
----
-
 # Kelompok 2
 
 ## File terdampak
@@ -70,7 +68,36 @@ Tidak ada temuan.
 
 ## Sedang
 
+#### Task 1
+
+- Status: kerjakan
+- Masalah: Pada `form_biodata.dart`, parsing `penurunanPerMinggu` menggunakan `int.parse(...replaceAll(RegExp(r'[^0-9]'), ''))` yang dapat melempar `FormatException` jika input kosong/tidak valid, dan pembersihan karakter non-digit dapat menyembunyikan input yang tidak valid. Selain itu, field `jumlahRokokPerHari` dan `batangPerBungkus` tidak memiliki validator khusus dan parsingnya menggunakan `tryParse(...) ?? 0`/`?? 20.0`, yang dapat menyembunyikan input tidak valid menjadi nilai default. Hal ini bertentangan dengan aturan validasi form yang mewajibkan validasi aturan bisnis (nilai positif) sebelum penyimpanan dan larangan mengganti input tidak valid dengan nilai default.
+- Solusi: Gunakan `int.tryParse` dengan penanganan null yang eksplisit (tanpa penggantian senyap), tambahkan validator pada field `jumlahRokokPerHari` dan `batangPerBungkus` (mis. nilai > 0), dan pastikan validasi `Form` dijalankan sebelum parsing/penyimpanan. Jika parsing gagal, tampilkan pesan error dan hentikan penyimpanan.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L492); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L937)
+- File bermasalah: [form_biodata.dart](lib/fitur/biodata/screens/form_biodata.dart#L199)
+- Prompt:
+
 ## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Log debug yang ditambahkan pada fitur tapering dicatat pada getter dan `build()` yang dapat dipanggil berulang. `ModeBerhentiExtension.label` memanggil `L.i('mode=$this')` pada setiap akses (termasuk saat `biodata.modeBerhenti.label` dibaca di `build()`), `BiodataModelPerhitungan.targetRokokHariIni` memanggil `L.i` pada setiap akses (termasuk saat dibaca di `build()`), dan `biodata_screen.dart` memanggil `L.i` dengan field tanggal di dalam `build()`. Hal ini menyebabkan pencatatan berulang pada setiap rebuild meskipun nilai tidak berubah, menambah noise log.
+- Solusi: Pindahkan logging ke titik perubahan data atau proses yang tidak berfrekuensi tinggi (mis. `initState`, method helper, perhitungan yang dipicu aksi), dan hindari log di dalam getter/`build()` yang dipanggil berulang.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
+- File bermasalah: [mode_berhenti.dart](lib/fitur/biodata/enum/mode_berhenti.dart#L9); [biodata_model.dart](lib/fitur/biodata/model/biodata_model.dart#L124); [biodata_screen.dart](lib/fitur/biodata/screens/biodata_screen.dart#L69)
+- Prompt:
+
+
+#### Task 2
+
+- Status: kerjakan
+- Masalah: Pada `sqflite.dart`, import `package:flutter/foundation.dart` ditempatkan sebelum import `package:berhenti_merokok/...`, sehingga urutan import tidak mengikuti urutan alfabetis berdasarkan path package. Aturan proyek mewajibkan import diurutkan secara alfabetis berdasarkan path package lengkap.
+- Solusi: Pindahkan import `package:flutter/foundation.dart` ke posisi yang sesuai secara alfabetis (setelah import `package:berhenti_merokok/...` dan sebelum/sesuai urutan `package:path` dan `package:sqflite`), tanpa mengubah logika.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
+- File bermasalah: [sqflite.dart](lib/shared/db/sqflite/sqflite.dart#L1)
+- Prompt:
+
 
 # Kelompok 5
 
@@ -79,6 +106,15 @@ Tidak ada temuan.
 - [app.dart](lib/app.dart)
 
 ## Rendah
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `app.dart`, import tidak diurutkan secara alfabetis berdasarkan path package. Import `package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart` dan `package:berhenti_merokok/fitur/tema/...` muncul sebelum `package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart`, sehingga urutan import tidak sesuai aturan.
+- Solusi: Urutkan import pada `app.dart` secara alfabetis berdasarkan path package lengkap, misalnya `fitur/biodata/notifier/...` sebelum `fitur/biodata/screens/...` dan `fitur/tema/...`, tanpa mengubah logika.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L99)
+- File bermasalah: [app.dart](lib/app.dart#L2)
+- Prompt:
 
 # Kelompok 6
 
@@ -89,6 +125,15 @@ Tidak ada temuan.
 
 ## Rendah
 
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `badge_helper.dart` (fungsi `hitungBadge`) dan `badge_screen.dart` (method `build`), pemanggilan `L.i(...)` berada pada jalur yang dapat dipanggil berulang saat build, sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam build/getter yang dipanggil berulang.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
+- File bermasalah: [badge_helper.dart](lib/fitur/badge/helper/badge_helper.dart#L29); [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart#L33)
+- Prompt:
+
 # Kelompok 7
 
 ## File terdampak
@@ -96,6 +141,15 @@ Tidak ada temuan.
 - [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart)
 
 ## Sedang
+
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `biodata_notifier.dart`, `BiodataNotifier` menggunakan anotasi `@riverpod` (auto-dispose) padahal notifier ini mengakses database; aturan proyek mewajibkan notifier database menggunakan `@Riverpod(keepAlive: true)`. Selain itu, `build()` memanggil `_ambilData()` bukan `_ambilSemua()` sesuai pola notifier CRUD, dan log pada `simpan()` mencatat properti model (`biodata.id`, `biodata.nama`) secara terurai alih-alih menampilkan objek model langsung.
+- Solusi: Ubah anotasi menjadi `@Riverpod(keepAlive: true)`, sesuaikan method pengambilan data awal dengan pola `_ambilSemua()`, dan ganti log properti model dengan `L.i('biodata=$biodata')` (atau logging objek secara langsung). Regenerasi file `.g.dart` sesuai sumber.
+- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L348); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1)
+- File bermasalah: [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L11); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L14); [biodata_notifier.dart](lib/fitur/biodata/notifier/biodata_notifier.dart#L34)
+- Prompt:
 
 # Kelompok 8
 
@@ -105,9 +159,25 @@ Tidak ada temuan.
 
 ## Sedang
 
+#### Task 3
+
+- Status: Belum dikerjakan
+- Masalah: Pada `dashboard_screen.dart` sekitar baris 313-318, perhitungan `totalHariMerokok` menggunakan `tanggalBerhenti.difference(tanggalMulaiMerokok).inDays` tanpa normalisasi tanggal ke komponen tanggal saja. Hasil perhitungan hari dapat bergeser akibat komponen waktu pada nilai `DateTime`.
+- Solusi: Normalisasi kedua tanggal dengan `DateTime(tanggal.year, tanggal.month, tanggal.day)` sebelum menghitung selisih hari, agar hasil perhitungan berbasis hari akurat.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L303); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L620)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L313)
+- Prompt:
+
 ## Rendah
 
-Tidak ada temuan.
+#### Task 1
+
+- Status: Belum dikerjakan
+- Masalah: Pada `dashboard_screen.dart`, pemanggilan `L.i(...)` berada langsung di dalam `build()` (baris 39, 75, dan 81), sehingga log berulang pada setiap rebuild meskipun nilai tidak berubah dan menambah noise.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan hindari log di dalam `build()`.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L11); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L21)
+- File bermasalah: [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L39); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L75); [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart#L81)
+- Prompt:
 
 # Kelompok 9
 
@@ -116,6 +186,7 @@ Tidak ada temuan.
 - [diary_craving_notifier.dart](lib/fitur/diary_craving/notifier/diary_craving_notifier.dart)
 
 ## Rendah
+
 
 # Kelompok 10
 
@@ -126,524 +197,23 @@ Tidak ada temuan.
 
 ## Rendah
 
-# Kelompok 11
-
-## File terdampak
-
-- [pubspec.yaml](pubspec.yaml)
-
-## Sedang
-
-# Kelompok 12
-
-## File terdampak
-
-- [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
-
-## Rendah
-
-# Kelompok 13
-
-## File terdampak
-
-- [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
-
-## Tinggi
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-# Kelompok 14
-
-## File terdampak
-
-- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 15
-
-## file terdampak
-
-- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
-- [konsumsi_hitung_helper.dart](lib/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart)
-- [konsumsi_rokok_model.dart](lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart)
-- [konsumsi_rokok_notifier.dart](lib/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart)
-- [konsumsi_rokok_state.dart](lib/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart)
-- [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart)
-- [form_konsumsi_rokok.dart](lib/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart)
-- [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart)
-- [lainnya_screen.dart](lib/lainnya_screen.dart)
-- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
-- [shared_keys.dart](lib/shared/helper/shared_keys.dart)
-- [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart)
-- [nama_tabel.dart](lib/shared/konstanta/nama_tabel.dart)
-- [cadangan_helper.dart](lib/fitur/cadangan/helper/cadangan_helper.dart)
-- [toxin_hitung_helper.dart](lib/fitur/toxin_pelacakan/helper/toxin_hitung_helper.dart)
-- [toxin_model.dart](lib/fitur/toxin_pelacakan/model/toxin_model.dart)
-- [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart)
-- [toxin_pelacakan_state.dart](lib/fitur/toxin_pelacakan/state/toxin_pelacakan_state.dart)
-- [pubspec.yaml](pubspec.yaml)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 16
-
-## file terdampak
-
-- [hasil_craving_enum.dart](lib/fitur/diary_craving/enum/hasil_craving_enum.dart)
-- [strategi_craving_enum.dart](lib/fitur/diary_craving/enum/strategi_craving_enum.dart)
-- [hasil_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart)
-- [jenis_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart)
-- [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart)
-- [sos_intervensi_model.dart](lib/fitur/sos_craving/model/sos_intervensi_model.dart)
-- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
-- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
-- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 17
-
-## file terdampak
-
-- [sos_intervensi_notifier.dart](lib/fitur/sos_craving/notifier/sos_intervensi_notifier.dart)
-- [pubspec.yaml](pubspec.yaml)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 18
-
-## file terdampak
-
-- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
-- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 19
-
-## file terdampak
-
-- [kalender_smoke_free_screen.dart](lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 20
-
-## file terdampak
-
-- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 21
-
-## file terdampak
-
-- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 22
-
-## file terdampak
-
-- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-
-# Kelompok 23
-
-## file terdampak
-
-- [lainnya_screen.dart](lib/lainnya_screen.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 24
-
-## file terdampak
-
-- [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 25
-
-## file terdampak
-
-- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 26
-
-## file terdampak
-
-- [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart)
-- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
-- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
-- [detail_impian_screen.dart](lib/fitur/impian/screens/detail_impian_screen.dart)
-- [kalender_smoke_free_screen.dart](lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart)
-- [konsumsi_rokok_screen.dart](lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart)
-- [pemulihan_kesehatan_screen.dart](lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart)
-- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
-- [toxin_pelacakan_screen.dart](lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart)
-- [empty_state_view.dart](lib/shared/widget/empty_state_view.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
----
-
-# Kelompok 27
-
-## file terdampak
-
-- [hasil_craving_enum.dart](lib/fitur/diary_craving/enum/hasil_craving_enum.dart)
-- [strategi_craving_enum.dart](lib/fitur/diary_craving/enum/strategi_craving_enum.dart)
-- [hasil_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart)
-- [jenis_intervensi_sos_enum.dart](lib/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart)
-- [pola_craving_helper.dart](lib/fitur/diary_craving/helper/pola_craving_helper.dart)
-- [sos_intervensi_model.dart](lib/fitur/sos_craving/model/sos_intervensi_model.dart)
-- [diary_craving_screen.dart](lib/fitur/diary_craving/screens/diary_craving_screen.dart)
-- [sos_craving_screen.dart](lib/fitur/sos_craving/screens/sos_craving_screen.dart)
-- [box_breathing_view.dart](lib/fitur/sos_craving/widgets/box_breathing_view.dart)
-- [distraksi_view.dart](lib/fitur/sos_craving/widgets/distraksi_view.dart)
-- [grounding_54321_view.dart](lib/fitur/sos_craving/widgets/grounding_54321_view.dart)
-- [napas_478_view.dart](lib/fitur/sos_craving/widgets/napas_478_view.dart)
-- [napas_90_detik_view.dart](lib/fitur/sos_craving/widgets/napas_90_detik_view.dart)
-- [timer_craving_view.dart](lib/fitur/sos_craving/widgets/timer_craving_view.dart)
-- [urge_surfing_view.dart](lib/fitur/sos_craving/widgets/urge_surfing_view.dart)
-- [sheet_hasil_intervensi.dart](lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
----
-
-# Kelompok 28
-
-## file terdampak
-
-- [sqflite.dart](lib/shared/db/sqflite/sqflite.dart)
-- [nama_kolom.dart](lib/shared/konstanta/nama_kolom.dart)
-- [nama_tabel.dart](lib/shared/konstanta/nama_tabel.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
----
-
-# Kelompok 29
-
-## file terdampak
-
-- [badge_screen.dart](lib/fitur/badge/screens/badge_screen.dart)
-- [kalender_smoke_free_screen.dart](lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart)
-- [pubspec.yaml](pubspec.yaml)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
----
-
-# Kelompok 30
-
-## file terdampak
-
-- [dashboard_screen.dart](lib/fitur/dashboard/screens/dashboard_screen.dart)
-- [impian_screen.dart](lib/fitur/impian/screens/impian_screen.dart)
-- [lainnya_screen.dart](lib/lainnya_screen.dart)
-- [rencana_darurat_model.dart](lib/fitur/rencana_darurat/model/rencana_darurat_model.dart)
-- [rencana_darurat_state.dart](lib/fitur/rencana_darurat/state/rencana_darurat_state.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
----
-
-# Kelompok 31
-
-## file terdampak
-
-- [rencana_darurat_screen.dart](lib/fitur/rencana_darurat/screens/rencana_darurat_screen.dart)
-- [form_rencana_darurat.dart](lib/fitur/rencana_darurat/screens/form_rencana_darurat.dart)
-- [cadangan_screen.dart](lib/fitur/cadangan/screens/cadangan_screen.dart)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 32
-
-## file terdampak
-
-- [cadangan_helper.dart](lib/fitur/cadangan/helper/cadangan_helper.dart)
-- [cadangan_screen.dart](lib/fitur/cadangan/screens/cadangan_screen.dart)
-- [sqflite_op.dart](lib/shared/db/sqflite/sqflite_op.dart)
-- [pubspec.yaml](pubspec.yaml)
-
-## Tinggi
-
-Tidak ada temuan.
-
-## Sedang
-
-Tidak ada temuan.
-
-## Rendah
-
-Tidak ada temuan.
-
-# Kelompok 33
-
-## file terdampak
-
-- [aturan_skill.md](.agents/rules/global/aturan_skill.md)
-- [aturan-pembuatan-skill/SKILL.md](.agents/skills/custom/aturan-pembuatan-skill/SKILL.md)
-
-## Tinggi
-
 #### Task 1
 
-- Status : kerjakan
-- Masalah : `aturan_skill.md` belum memiliki definisi trigger yang tegas dan konvensi ekstraksi/penormalan trigger dari `description` ke bahasa Indonesia yang dapat diekstrak secara deterministik. Field `metadata.diperbarui` dan `metadata.sumber-terakhir` belum ditetapkan secara final di front matter. Section §7.1 dan §8 perlu direkonsiliasi dengan konvensi trigger baru agar segmen trigger-only jelas untuk ekstraksi indeks tanpa menghapus informasi wajib.
-- Solusi : Perbarui `.agents/rules/global/aturan_skill.md` dengan: (a) definisi trigger (kondisi/tugas pemicu, hanya trigger, tanpa cakupan/larangan/workflow/referensi file), (b) konvensi format/penempatan trigger di `description` (penanda pola, pemisah segmen, penanganan bahasa ID/EN), (c) rekonsiliasi §7.1 dan §8 sehingga ada segmen trigger-only yang jelas, (d) tambahkan field wajib `metadata.diperbarui` dan `metadata.sumber-terakhir`, (e) perbarui template §7.3, §8, §10, dan checklist §11. Lalu selaraskan `.agents/skills/custom/aturan-pembuatan-skill/SKILL.md` dengan aturan yang sama (definisi, format, template, contoh, checklist, sumber evaluasi).
-- aturan dilanggar : (aturan_skill)[aturan_skill:95], (aturan_pembuatan_skill)[aturan-pembuatan-skill:32]
-- file bermasalah : [aturan_skill.md](.agents/rules/global/aturan_skill.md), [aturan-pembuatan-skill/SKILL.md](.agents/skills/custom/aturan-pembuatan-skill/SKILL.md)
-- prompt : hanya diisi oleh saya
+- Status: Belum dikerjakan
+- Masalah: Pada `form_alasan_berhenti.dart`, pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` dilepas dengan `unawaited(...)` tanpa penanganan error (`.catchError(...)`). Aturan notifikasi #14 dan optimasi bug runtime mewajibkan penanganan error pada Future yang dilepas, agar kegagalan menampilkan/menutup loading tidak menjadi unhandled error.
+- Solusi: Bungkus pemanggilan `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `.catchError((Object e, StackTrace s) { L.e('...: $e $s'); })`, sesuai pola pada `pengaturan_screen.dart`.
+- Aturan dilanggar: [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L787); [optimasi_bug_runtime.md](.agents/rules/global/optimasi_bug_runtime.md#L6)
+- File bermasalah: [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart#L70); [form_alasan_berhenti.dart](lib/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart#L101)
+- Prompt:
 
-# Kelompok 34
+#### Task 2
 
-## file terdampak
-
-- [skills_config.json](.config/dart_skills/skills_config.json)
-- Semua `SKILL.md` di `.agents/skills/custom/` dan `.agents/skills/bawaan/` (~84 file)
-
-## Tinggi
-
-#### Task 1
-
-- Status : kerjakan
-- Masalah : ~84 skill existing memiliki format `description` yang bervariasi (ID/campuran/EN, posisi trigger berbeda, kadang implisit), sehingga ekstraksi trigger-only untuk `SKILLS_INDEX.md` tidak dapat dijamin valid. Strategi migrasi dan prioritas batch belum ditetapkan. Khusus `bawaan`, acuan waktu dari `skills_config.json` perlu diintegrasikan ke alur pembaruan.
-- Solusi : Buat strategi migrasi bertahap: (a) audit seluruh `SKILL.md` untuk mengklasifikasikan `description` (trigger eksplisit/implisit/tidak extractable), (b) normalisasi per batch kecil (mis. per folder atau 10–20 skill per putaran) dengan memperbarui segmen trigger di `description` sesuai konvensi baru, (c) perlakuan khusus `bawaan`: ambil satu `installedAt` dari baris pertama `skills_config.json`, konversi UTC ke Asia/Jakarta, perbarui skill `bawaan` jika acuan lebih baru, (d) setiap perubahan `SKILL.md` juga menaikkan `metadata.versi` (bump patch default) dan memperbarui `metadata.diperbarui` serta `metadata.sumber-terakhir`. Patuhi aturan sumber isi (berdasarkan riwayat commit) dan laporkan pelanggaran skill lama sebelum mengubah.
-- aturan dilanggar : (aturan_sumber_isi)[aturan_skill:56], (aturan_pelanggaran)[aturan_skill:86]
-- file bermasalah : Semua `SKILL.md` di `.agents/skills/custom/` dan `.agents/skills/bawaan/`, [skills_config.json](.config/dart_skills/skills_config.json)
-- prompt : hanya diisi oleh saya
-
-# Kelompok 35
-
-## file terdampak
-
-- [perbarui_skills_index.md](.kilo/commands/perbarui_skills_index.md) (baru)
-- [SKILLS_INDEX.md](SKILLS_INDEX.md) (baru/diperbarui)
-- [AGENTS.md](AGENTS.md) (diubah - referensi indeks)
-
-## Tinggi
-
-#### Task 1
-
-- Status : kerjakan
-- Masalah : Belum ada command untuk memindai `.agents/skills/**/SKILL.md`, mengekstrak trigger, membaca status diperbarui dari metadata, dan menulis `SKILLS_INDEX.md`. Referensi indeks juga belum tercantum di `AGENTS.md`.
-- Solusi : Buat draf command `.kilo/commands/perbarui_skills_index.md` dengan langkah: (a) scan seluruh `SKILL.md` di `.agents/skills/**/`, (b) ekstraksi trigger-only dari `description` sesuai konvensi yang disetujui (bahasa Indonesia), (c) baca `metadata.diperbarui` dari front matter setiap skill, (d) untuk `bawaan`, ambil satu `installedAt` dari baris pertama `skills_config.json`, konversi UTC ke Asia/Jakarta, bandingkan dengan status indeks/metadata, (e) tulis `SKILLS_INDEX.md` dengan heading `## <folder>`, entri `1. <path>`, `- Trigger : <isi>`, `- Status : diperbarui : <waktu>`, urut alfabetis, (f) pastikan referensi indeks di `AGENTS.md` terjaga, (g) validasi dan pelaporan skill dengan trigger tidak jelas (gunakan penanda "perlu dilengkapi trigger" tanpa menyalin non-trigger).
-- aturan dilanggar : (format_task)[format_task:1], (aturan_skill)[aturan_skill:125]
-- file bermasalah : [perbarui_skills_index.md](.kilo/commands/perbarui_skills_index.md), [SKILLS_INDEX.md](SKILLS_INDEX.md), [AGENTS.md](AGENTS.md)
-- prompt : hanya diisi oleh saya
-
-# Kelompok 36
-
-## file terdampak
-
-- [mode_diskusi.md](.kilo/commands/mode/mode_diskusi.md)
-
-## Rendah
-
-#### Task 1
-
-- Status : kerjakan
-- Masalah : Butir ke-4 di `.kilo/commands/mode/mode_diskusi.md` masih kosong. Butir ini seharusnya menguraikan struktur dan field wajib file ringkasan diskusi (`diskusi_N.md`) agar mudah dipetakan.
-- Solusi : Isi butir ke-4 `mode_diskusi.md` dengan rincian field-field wajib: `## Status` (Draft/Batal/Final), `## Topik`, `## Ringkasan`, `## Keputusan`, `## Tindak Lanjut`, beserta format dan aturan pengisian masing-masing.
-- aturan dilanggar : (mode_diskusi)[mode_diskusi:7]
-- file bermasalah : [mode_diskusi.md](.kilo/commands/mode/mode_diskusi.md)
-- prompt : hanya diisi oleh saya
-
+- Status: Belum dikerjakan
+- Masalah: Pada `alasan_berhenti_screen.dart`, pemanggilan `L.i(...)` berada langsung di dalam `build()` (baris 64-67) dan di dalam `itemBuilder` (baris 119), sehingga log berulang pada setiap rebuild dan setiap item, meskipun nilai tidak berubah, menambah noise. Selain itu, log pada `itemBuilder` menguraikan properti model (`item.id`, `item.teks`) alih-alih menampilkan objek model langsung.
+- Solusi: Pindahkan logging ke titik yang tidak berfrekuensi tinggi (mis. aksi pengguna, inisialisasi, atau method helper yang dipicu perubahan data), dan untuk objek model gunakan `$model` alih-alih menguraikan properti. Hindari log di dalam `build()` dan `itemBuilder`.
+- Aturan dilanggar: [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L1); [aturan_bersama.md](.agents/rules/global/aturan_bersama.md#L3); [aturan_khusus.md](.agents/rules/proyek/aturan_khusus.md#L1)
+- File bermasalah: [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart#L64); [alasan_berhenti_screen.dart](lib/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart#L119)
+- Prompt:
 
 
 
@@ -827,241 +397,64 @@ Future<void> main() async {
 // FILE: lib/lainnya_screen.dart
 // ============================================================
 ```dart
-import 'dart:async';
-
 import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/diary_craving_screen.dart';
 import 'package:berhenti_merokok/fitur/dummy/screens/dummy_screen.dart';
 import 'package:berhenti_merokok/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/pengaturan/screens/pengaturan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
-import 'package:berhenti_merokok/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:share_global_saya/core_shared.dart';
-
-/// Navigasi pintasan yang aman: Nav.to mengembalikan Future yang bisa gagal,
-/// jadi wajib di-`unawaited` dengan `.catchError` yang mencatat `L.e` agar
-/// error tidak menjadi unhandled. Diekstrak agar pola tidak diulang per item.
-void _navigasi(BuildContext context, Widget page, String nama) {
-  unawaited(
-    Nav.to(context, page).catchError((Object e, StackTrace s) {
-      L.e('Gagal navigasi ke $nama: $e $s');
-      return null;
-    }),
-  );
-}
 
 class LainnyaScreen extends StatelessWidget {
   const LainnyaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    // Struktur grup statis; item baru masuk ke grup yang sesuai.
-    // DummyScreen hanya tampil pada build debug/development.
-    final grup = <_GrupLainnya>[
-      _GrupLainnya(
-        label: 'Dukungan',
-        items: [
-          _ItemLainnya(
-            ikon: Icons.sos,
-            label: 'SOS Craving',
-            ontap: () => _navigasi(context, const SosCravingScreen(), 'SOS Craving'),
-          ),
-          _ItemLainnya(
-            ikon: CupertinoIcons.heart,
-            label: 'Alasan Berhenti',
-            ontap: () => _navigasi(context, const AlasanBerhentiScreen(), 'Alasan Berhenti'),
-          ),
-        ],
-      ),
-      _GrupLainnya(
-        label: 'Riwayat & Data',
-        items: [
-          _ItemLainnya(
-            ikon: CupertinoIcons.smoke,
-            label: 'Konsumsi Rokok',
-            ontap: () => _navigasi(context, const KonsumsiRokokScreen(), 'Konsumsi Rokok'),
-          ),
-          _ItemLainnya(
-            ikon: CupertinoIcons.book,
-            label: 'Diary Craving',
-            ontap: () => _navigasi(context, const DiaryCravingScreen(), 'Diary Craving'),
-          ),
-          _ItemLainnya(
-            ikon: CupertinoIcons.calendar,
-            label: 'Kalender Smoke-Free',
-            ontap: () => _navigasi(context, const KalenderSmokeFreeScreen(), 'Kalender Smoke-Free'),
-          ),
-        ],
-      ),
-      _GrupLainnya(
-        label: 'Alat',
-        items: [
-          _ItemLainnya(
-            ikon: CupertinoIcons.bandage,
-            label: 'Pemulihan Kesehatan',
-            ontap: () => _navigasi(context, const PemulihanKesehatanScreen(), 'Pemulihan Kesehatan'),
-          ),
-          _ItemLainnya(
-            ikon: CupertinoIcons.cloud,
-            label: 'Pelacakan Toxin',
-            ontap: () => _navigasi(context, const ToxinPelacakanScreen(), 'Pelacakan Toxin'),
-          ),
-        ],
-      ),
-      _GrupLainnya(
-        label: 'Pengaturan',
-        items: [
-          _ItemLainnya(
-            ikon: CupertinoIcons.gear,
-            label: 'Pengaturan',
-            ontap: () => _navigasi(context, const PengaturanScreen(), 'Pengaturan'),
-          ),
-          if (kDebugMode)
-            _ItemLainnya(
-              ikon: CupertinoIcons.wrench,
-              label: 'Dummy',
-              ontap: () => _navigasi(context, DummyScreen(), 'Dummy'),
-            ),
-        ],
-      ),
-    ];
-
     return Scaffold(
       appBar: AppBar(title: const Text('Lainnya')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            for (final g in grup) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 4),
-                child: Text(
-                  g.label,
-                  style: textTheme.labelLarge?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              for (final item in g.items)
-                ListTile(
-                  leading: Icon(item.ikon),
-                  onTap: item.ontap,
-                  title: Text(item.label),
-                  trailing: const Icon(CupertinoIcons.chevron_right),
-                ),
-            ],
+            _buildTombolCustom(
+              () => Nav.to(context, const PengaturanScreen()),
+              'Pengaturan',
+            ),
+            _buildTombolCustom(() => Nav.to(context, DummyScreen()), 'Dummy'),
+            _buildTombolCustom(
+              () => Nav.to(context, const SosCravingScreen()),
+              'SOS Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const PemulihanKesehatanScreen()),
+              'Pemulihan Kesehatan',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const DiaryCravingScreen()),
+              'Diary Craving',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const AlasanBerhentiScreen()),
+              'Alasan Berhenti',
+            ),
+            _buildTombolCustom(
+              () => Nav.to(context, const KalenderSmokeFreeScreen()),
+              'Kalender Smoke-Free',
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-class _GrupLainnya {
-  const _GrupLainnya({required this.label, required this.items});
-
-  final String label;
-  final List<_ItemLainnya> items;
-}
-
-class _ItemLainnya {
-  const _ItemLainnya({
-    required this.ikon,
-    required this.label,
-    required this.ontap,
-  });
-
-  final IconData ikon;
-  final String label;
-  final VoidCallback ontap;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/shared/widget/empty_state_view.dart
-// ============================================================
-```dart
-import 'package:flutter/material.dart';
-
-/// Komponen empty state bersama: ikon + judul + deskripsi + CTA opsional.
-///
-/// Dipakai pada kondisi "belum ada data" di layar daftar maupun layar
-/// non-daftar agar pola tampilan konsisten. Widget bersifat pure (tidak
-/// membaca provider); pemanggil yang menyediakan teks dan aksi.
-class EmptyStateView extends StatelessWidget {
-  const EmptyStateView({
-    super.key,
-    required this.ikon,
-    required this.judul,
-    required this.deskripsi,
-    this.ctaLabel,
-    this.onCta,
-  }) : assert(
-         (ctaLabel == null) == (onCta == null),
-         'ctaLabel dan onCta harus diisi berpasangan atau keduanya null',
-       );
-
-  final IconData ikon;
-  final String judul;
-  final String deskripsi;
-
-  /// Label tombol CTA. Wajib berpasangan dengan [onCta].
-  final String? ctaLabel;
-
-  /// Aksi tombol CTA, misalnya navigasi ke form tambah atau pemulihan data.
-  final VoidCallback? onCta;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
-            children: [
-              Icon(
-                ikon,
-                size: 48,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              Text(
-                judul,
-                textAlign: TextAlign.center,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                deskripsi,
-                textAlign: TextAlign.center,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              if (ctaLabel != null && onCta != null)
-                OutlinedButton(
-                  onPressed: onCta,
-                  child: Text(ctaLabel!),
-                ),
-            ],
-          ),
-        ),
-      ),
+  Widget _buildTombolCustom(VoidCallback ontap, String title) {
+    return ListTile(
+      onTap: ontap,
+      title: Text(title),
+      trailing: Icon(CupertinoIcons.chevron_right),
     );
   }
 }
@@ -1073,9 +466,9 @@ class EmptyStateView extends StatelessWidget {
 // FILE: lib/shared/db/sqflite/sqflite.dart
 // ============================================================
 ```dart
+import 'package:flutter/foundation.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -1091,9 +484,7 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  // Versi 12: migrasi nilai enum snake_case lama ke lowerCamelCase.
-  // Versi 13: tabel rencana_darurat (if-then plan).
-  static const int _versiDatabase = 13;
+  static const int _versiDatabase = 7;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -1129,8 +520,7 @@ class AppDatabase {
         ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT,
         ${NamaKolom.modeBerhenti} TEXT,
         ${NamaKolom.penurunanPerMinggu} INTEGER,
-        ${NamaKolom.tanggalMulaiTapering} TEXT,
-        ${NamaKolom.targetSmokeFreeHari} INTEGER
+        ${NamaKolom.tanggalMulaiTapering} TEXT
       )
     ''');
 
@@ -1151,10 +541,6 @@ class AppDatabase {
         ${NamaKolom.pemicu} TEXT NOT NULL,
         ${NamaKolom.intensitas} INTEGER,
         ${NamaKolom.catatan} TEXT,
-        ${NamaKolom.durasiMenit} INTEGER,
-        ${NamaKolom.mood} TEXT,
-        ${NamaKolom.strategi} TEXT,
-        ${NamaKolom.hasil} TEXT,
         ${NamaKolom.dibuat} TEXT
       )
     ''');
@@ -1164,41 +550,6 @@ class AppDatabase {
         ${NamaKolom.id} TEXT PRIMARY KEY,
         ${NamaKolom.teks} TEXT NOT NULL,
         ${NamaKolom.dibuat} TEXT
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.tanggal} TEXT NOT NULL,
-        ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
-        ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
-        ${NamaKolom.catatan} TEXT,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-    await db.execute('''
-      CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
-      ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
-        ${NamaKolom.detail} TEXT,
-        ${NamaKolom.hasilIntervensi} TEXT,
-        ${NamaKolom.diaryCravingId} TEXT,
-        ${NamaKolom.dibuat} TEXT NOT NULL
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
-        ${NamaKolom.id} TEXT PRIMARY KEY,
-        ${NamaKolom.jika} TEXT NOT NULL,
-        ${NamaKolom.maka} TEXT NOT NULL,
-        ${NamaKolom.dibuat} TEXT NOT NULL
       )
     ''');
   }
@@ -1267,125 +618,6 @@ class AppDatabase {
           ${NamaKolom.id} TEXT PRIMARY KEY,
           ${NamaKolom.teks} TEXT NOT NULL,
           ${NamaKolom.dibuat} TEXT
-        )
-      ''');
-    }
-    if (oldVersion < 8) {
-      await db.execute(
-        'ALTER TABLE ${NamaTabel.biodata} '
-        'ADD COLUMN ${NamaKolom.targetSmokeFreeHari} INTEGER',
-      );
-    }
-    // v9: tabel konsumsi_rokok. Tabel sos_intervensi dibuat di cabang v11 (lihat bawah)
-    // agar setiap tabel didefinisikan tepat sekali pada kondisi versinya masing-masing.
-    if (oldVersion < 9) {
-      await db.execute('''
-        CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
-          ${NamaKolom.id} TEXT PRIMARY KEY,
-          ${NamaKolom.tanggal} TEXT NOT NULL,
-          ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
-          ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
-          ${NamaKolom.catatan} TEXT,
-          ${NamaKolom.dibuat} TEXT NOT NULL
-        )
-      ''');
-      await db.execute('''
-        CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
-        ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
-      ''');
-    }
-    if (oldVersion < 10) {
-      await db.execute(
-        'ALTER TABLE ${NamaTabel.diaryCraving} '
-        'ADD COLUMN ${NamaKolom.durasiMenit} INTEGER',
-      );
-      await db.execute(
-        'ALTER TABLE ${NamaTabel.diaryCraving} '
-        'ADD COLUMN ${NamaKolom.mood} TEXT',
-      );
-      await db.execute(
-        'ALTER TABLE ${NamaTabel.diaryCraving} '
-        'ADD COLUMN ${NamaKolom.strategi} TEXT',
-      );
-      await db.execute(
-        'ALTER TABLE ${NamaTabel.diaryCraving} '
-        'ADD COLUMN ${NamaKolom.hasil} TEXT',
-      );
-    }
-    if (oldVersion < 11) {
-      await db.execute('''
-        CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
-          ${NamaKolom.id} TEXT PRIMARY KEY,
-          ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
-          ${NamaKolom.detail} TEXT,
-          ${NamaKolom.hasilIntervensi} TEXT,
-          ${NamaKolom.diaryCravingId} TEXT,
-          ${NamaKolom.dibuat} TEXT NOT NULL
-        )
-      ''');
-    }
-    // v12: petakan nilai enum snake_case yang tersimpan ke lowerCamelCase.
-    // Tanpa migrasi ini nilai lama tidak terparse oleh safeParseEnum.
-    if (oldVersion < 12) {
-      const pemetaanCraving = <String, String>{
-        'napas_478': 'napas478',
-        'minum_air': 'minumAir',
-        'alih_aktivitas': 'alihAktivitas',
-        'tunda_5_menit': 'tunda5Menit',
-      };
-      const pemetaanHasil = <String, String>{
-        'berhasil_menahan': 'berhasilMenahan',
-        'tetap_merokok': 'tetapMerokok',
-        'belum_selesai': 'belumSelesai',
-      };
-      const pemetaanJenisIntervensi = <String, String>{
-        'napas_478': 'napas478',
-        'timer_3_menit': 'timer3Menit',
-        'napas_box': 'napasBox',
-        'napas_90_detik': 'napas90Detik',
-        'grounding_54321': 'grounding54321',
-        'urge_surfing': 'urgeSurfing',
-        'timer_craving': 'timerCraving',
-      };
-      for (final entry in pemetaanCraving.entries) {
-        await db.rawUpdate(
-          'UPDATE ${NamaTabel.diaryCraving} '
-          'SET ${NamaKolom.strategi} = ? '
-          'WHERE ${NamaKolom.strategi} = ?',
-          [entry.value, entry.key],
-        );
-      }
-      for (final entry in pemetaanHasil.entries) {
-        await db.rawUpdate(
-          'UPDATE ${NamaTabel.diaryCraving} '
-          'SET ${NamaKolom.hasil} = ? '
-          'WHERE ${NamaKolom.hasil} = ?',
-          [entry.value, entry.key],
-        );
-        await db.rawUpdate(
-          'UPDATE ${NamaTabel.sosIntervensi} '
-          'SET ${NamaKolom.hasilIntervensi} = ? '
-          'WHERE ${NamaKolom.hasilIntervensi} = ?',
-          [entry.value, entry.key],
-        );
-      }
-      for (final entry in pemetaanJenisIntervensi.entries) {
-        await db.rawUpdate(
-          'UPDATE ${NamaTabel.sosIntervensi} '
-          'SET ${NamaKolom.jenisIntervensi} = ? '
-          'WHERE ${NamaKolom.jenisIntervensi} = ?',
-          [entry.value, entry.key],
-        );
-      }
-    }
-    // v13: tabel rencana_darurat (if-then plan).
-    if (oldVersion < 13) {
-      await db.execute('''
-        CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
-          ${NamaKolom.id} TEXT PRIMARY KEY,
-          ${NamaKolom.jika} TEXT NOT NULL,
-          ${NamaKolom.maka} TEXT NOT NULL,
-          ${NamaKolom.dibuat} TEXT NOT NULL
         )
       ''');
     }
@@ -1698,12 +930,6 @@ class NotifikasiService {
   /// ID notifikasi uji coba (terpisah dari pengingat utama).
   static const int _idUjiCoba = 1002;
 
-  /// ID notifikasi check-in pagi (terpisah dari pengingat harian).
-  static const int _idCheckinPagi = 1003;
-
-  /// ID notifikasi pengingat pola craving (terpisah dari pengingat harian).
-  static const int _idPolaCraving = 1004;
-
   /// GlobalKey navigator untuk navigasi saat notifikasi ditekan.
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
@@ -1841,9 +1067,7 @@ class NotifikasiService {
     L.i('kategori=$kategori, id=$id');
 
     final context = navigator.context;
-    if (kategori == 'pengingat_harian' ||
-        kategori == 'checkin_pagi' ||
-        kategori == 'pola_craving') {
+    if (kategori == 'pengingat_harian') {
       unawaited(
         Nav.pushAndRemoveUntil(context, const Home()).catchError((
           Object e,
@@ -2029,189 +1253,6 @@ class NotifikasiService {
     }
   }
 
-  /// Menjadwalkan check-in pagi pada jam dan menit tertentu.
-  static Future<void> jadwalkanCheckinPagi({
-    required int jam,
-    required int menit,
-  }) async {
-    L.i('checkinPagi jam=$jam, menit=$menit');
-    if (kIsWeb ||
-        defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows) {
-      L.w('platform tidak mendukung penjadwalan terjadwal');
-      throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
-    }
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      jam,
-      menit,
-    );
-    if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(const Duration(days: 1));
-    }
-
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'checkin_pagi',
-        'Check-in Pagi',
-        channelDescription: 'Check-in pagi smoke-free',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-        icon: 'ic_launcher',
-      ),
-      iOS: DarwinNotificationDetails(),
-    );
-
-    try {
-      await _plugin.zonedSchedule(
-        id: _idCheckinPagi,
-        scheduledDate: scheduled,
-        notificationDetails: details,
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        title: 'Check-in Pagi',
-        body: 'Selamat pagi! Jaga komitmen smoke-free Anda hari ini.',
-        payload: 'kategori=checkin_pagi&id=$_idCheckinPagi',
-        matchDateTimeComponents: DateTimeComponents.time,
-      );
-      final izinDiberikan = await _periksaIzinSistem();
-      if (!izinDiberikan) {
-        L.w('izin notifikasi tidak diberikan, batalkan check-in pagi');
-        await _plugin.cancel(id: _idCheckinPagi);
-        await setAktifCheckinPagi(false);
-        throw const IzinNotifikasiTidakDiberikanException();
-      }
-      final aktifLama = await aktifCheckinPagi();
-      final jamLama = await jamCheckinPagi();
-      final menitLama = await menitCheckinPagi();
-      try {
-        await setWaktuCheckinPagi(jam, menit);
-        await setAktifCheckinPagi(true);
-      } on Exception catch (e, s) {
-        L.e('Gagal menyimpan preferensi check-in pagi, rollback: $e $s');
-        try {
-          await setWaktuCheckinPagi(jamLama, menitLama);
-          await setAktifCheckinPagi(aktifLama);
-        } on Exception catch (e2, s2) {
-          L.e('Gagal rollback preferensi check-in pagi: $e2 $s2');
-        }
-        try {
-          await _plugin.cancel(id: _idCheckinPagi);
-        } on Exception catch (e2, s2) {
-          L.e('Gagal membatalkan jadwal check-in pagi saat rollback: $e2 $s2');
-        }
-        rethrow;
-      }
-      L.s('Check-in pagi dijadwalkan jam=$jam:$menit');
-    } on Exception catch (e, s) {
-      L.e('Gagal menjadwalkan check-in pagi: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Membatalkan check-in pagi.
-  static Future<void> batalkanCheckinPagi() async {
-    try {
-      await _plugin.cancel(id: _idCheckinPagi);
-      await setAktifCheckinPagi(false);
-      L.s('Check-in pagi dibatalkan');
-    } on Exception catch (e, s) {
-      L.e('Gagal membatalkan check-in pagi: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Menjadwalkan pengingat pola craving pada jam tertentu.
-  static Future<void> jadwalkanPolaCraving(int jam) async {
-    L.i('polaCraving jam=$jam');
-    if (kIsWeb ||
-        defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows) {
-      L.w('platform tidak mendukung penjadwalan terjadwal');
-      throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
-    }
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      jam,
-      0,
-    );
-    if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(const Duration(days: 1));
-    }
-
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'pola_craving',
-        'Pengingat Pola Craving',
-        channelDescription: 'Pengingat berbasis pola jam craving',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-        icon: 'ic_launcher',
-      ),
-      iOS: DarwinNotificationDetails(),
-    );
-
-    try {
-      await _plugin.zonedSchedule(
-        id: _idPolaCraving,
-        scheduledDate: scheduled,
-        notificationDetails: details,
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        title: 'Pengingat Pola Craving',
-        body: 'Ini biasanya jam Anda mengalami craving. Tetap semangat!',
-        payload: 'kategori=pola_craving&id=$_idPolaCraving',
-        matchDateTimeComponents: DateTimeComponents.time,
-      );
-      final izinDiberikan = await _periksaIzinSistem();
-      if (!izinDiberikan) {
-        L.w('izin notifikasi tidak diberikan, batalkan pola craving');
-        await _plugin.cancel(id: _idPolaCraving);
-        await setAktifPolaCraving(false);
-        throw const IzinNotifikasiTidakDiberikanException();
-      }
-      final aktifLama = await aktifPolaCraving();
-      try {
-        await setAktifPolaCraving(true);
-      } on Exception catch (e, s) {
-        L.e('Gagal menyimpan preferensi pola craving, rollback: $e $s');
-        try {
-          await setAktifPolaCraving(aktifLama);
-        } on Exception catch (e2, s2) {
-          L.e('Gagal rollback preferensi pola craving: $e2 $s2');
-        }
-        try {
-          await _plugin.cancel(id: _idPolaCraving);
-        } on Exception catch (e2, s2) {
-          L.e('Gagal membatalkan jadwal pola craving saat rollback: $e2 $s2');
-        }
-        rethrow;
-      }
-      L.s('Pengingat pola craving dijadwalkan jam=$jam:00');
-    } on Exception catch (e, s) {
-      L.e('Gagal menjadwalkan pola craving: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Membatalkan pengingat pola craving.
-  static Future<void> batalkanPolaCraving() async {
-    try {
-      await _plugin.cancel(id: _idPolaCraving);
-      await setAktifPolaCraving(false);
-      L.s('Pengingat pola craving dibatalkan');
-    } on Exception catch (e, s) {
-      L.e('Gagal membatalkan pola craving: $e $s');
-      rethrow;
-    }
-  }
-
   /// Menampilkan notifikasi langsung (untuk uji coba).
   static Future<void> tampilkanSekarang() async {
     const details = NotificationDetails(
@@ -2268,80 +1309,24 @@ class NotifikasiService {
     await prefs.setInt(SharedKeys.notifikasiMenit, menit);
   }
 
-  // --- Preferensi Check-in Pagi ---
-
-  static Future<bool> aktifCheckinPagi() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(SharedKeys.notifikasiCheckinPagi) ?? false;
-  }
-
-  static Future<void> setAktifCheckinPagi(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(SharedKeys.notifikasiCheckinPagi, value);
-  }
-
-  static Future<int> jamCheckinPagi() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(SharedKeys.notifikasiCheckinPagiJam) ?? 7;
-  }
-
-  static Future<int> menitCheckinPagi() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(SharedKeys.notifikasiCheckinPagiMenit) ?? 0;
-  }
-
-  static Future<void> setWaktuCheckinPagi(int jam, int menit) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(SharedKeys.notifikasiCheckinPagiJam, jam);
-    await prefs.setInt(SharedKeys.notifikasiCheckinPagiMenit, menit);
-  }
-
-  // --- Preferensi Pola Craving ---
-
-  static Future<bool> aktifPolaCraving() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(SharedKeys.notifikasiPolaCraving) ?? false;
-  }
-
-  static Future<void> setAktifPolaCraving(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(SharedKeys.notifikasiPolaCraving, value);
-  }
-
   /// Jadwalkan ulang pengingat jika aktif (dipanggil saat app start).
   static Future<void> jadwalkanUlangJikaAktif() async {
     try {
-      // Pengingat harian existing.
       final isAktif = await aktif();
-      L.i('pengingatHarian isAktif=$isAktif');
-      if (isAktif) {
-        final izinDiberikan = await _periksaIzinSistem();
-        if (!izinDiberikan) {
-          L.w('izin notifikasi tidak diberikan, nonaktifkan pengingat harian');
-          await setAktif(false);
-        } else {
-          final j = await jam();
-          final m = await menit();
-          await jadwalkanPengingatHarian(jam: j, menit: m);
-        }
+      L.i('isAktif=$isAktif');
+      if (!isAktif) return;
+      // Periksa izin sistem; pengguna dapat mencabutnya melalui pengaturan.
+      final izinDiberikan = await _periksaIzinSistem();
+      if (!izinDiberikan) {
+        L.w('izin notifikasi tidak diberikan, nonaktifkan pengingat');
+        await setAktif(false);
+        return;
       }
-
-      // Check-in pagi.
-      final isCheckinPagiAktif = await aktifCheckinPagi();
-      L.i('checkinPagi isAktif=$isCheckinPagiAktif');
-      if (isCheckinPagiAktif) {
-        final izinDiberikan = await _periksaIzinSistem();
-        if (!izinDiberikan) {
-          L.w('izin notifikasi tidak diberikan, nonaktifkan check-in pagi');
-          await setAktifCheckinPagi(false);
-        } else {
-          final j = await jamCheckinPagi();
-          final m = await menitCheckinPagi();
-          await jadwalkanCheckinPagi(jam: j, menit: m);
-        }
-      }
+      final j = await jam();
+      final m = await menit();
+      await jadwalkanPengingatHarian(jam: j, menit: m);
     } on Exception catch (e, s) {
-      L.e('Gagal menjadwalkan ulang pengingat harian/check-in pagi: $e $s');
+      L.e('Gagal menjadwalkan ulang pengingat harian: $e $s');
     } on UnsupportedError catch (e, s) {
       L.e('Platform tidak mendukung penjadwalan ulang: $e $s');
     }
@@ -2388,9 +1373,6 @@ class SharedKeys {
   /// Kunci untuk menyimpan preferensi tema aplikasi.
   static const String tema = 'tema';
 
-  /// Kunci untuk menyimpan preferensi tema visual metafora impian.
-  static const String temaVisualImpian = 'tema_visual_impian';
-
   /// Kunci untuk menyimpan status aktif pengingat harian.
   static const String notifikasiHarian = 'notifikasi_harian';
 
@@ -2399,18 +1381,6 @@ class SharedKeys {
 
   /// Kunci untuk menyimpan menit pengingat harian.
   static const String notifikasiMenit = 'notifikasi_menit';
-
-  /// Kunci untuk menyimpan status aktif check-in pagi.
-  static const String notifikasiCheckinPagi = 'notifikasi_checkin_pagi';
-
-  /// Kunci untuk menyimpan jam check-in pagi.
-  static const String notifikasiCheckinPagiJam = 'notifikasi_checkin_pagi_jam';
-
-  /// Kunci untuk menyimpan menit check-in pagi.
-  static const String notifikasiCheckinPagiMenit = 'notifikasi_checkin_pagi_menit';
-
-  /// Kunci untuk menyimpan status aktif pengingat pola craving.
-  static const String notifikasiPolaCraving = 'notifikasi_pola_craving';
 }
 ```
 
@@ -2564,9 +1534,6 @@ class NamaKolom {
   /// Kolom tanggal mulai rencana penurunan (tapering).
   static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
 
-  /// Kolom target smoke-free (hari) pada biodata.
-  static const String targetSmokeFreeHari = 'target_smoke_free_hari';
-
   // Kolom tabel impian.
   /// Kolom target tanggal impian.
   static const String targetTanggal = 'target_tanggal';
@@ -2590,44 +1557,8 @@ class NamaKolom {
   /// Kolom catatan craving.
   static const String catatan = 'catatan';
 
-  /// Kolom durasi craving dalam menit.
-  static const String durasiMenit = 'durasi_menit';
-
-  /// Kolom suasana hati saat craving.
-  static const String mood = 'mood';
-
-  /// Kolom strategi yang dicoba saat craving.
-  static const String strategi = 'strategi';
-
-  /// Kolom hasil dari craving.
-  static const String hasil = 'hasil';
-
   /// Kolom teks alasan berhenti.
   static const String teks = 'teks';
-
-  // Kolom tabel rencana_darurat.
-  /// Kolom situasi pemicu (jika …) pada rencana darurat.
-  static const String jika = 'jika';
-
-  /// Kolom tindakan konkret (maka …) pada rencana darurat.
-  static const String maka = 'maka';
-
-  // Kolom tabel konsumsi_rokok.
-  /// Kolom flag slip/relapse konsumsi rokok.
-  static const String isSlip = 'is_slip';
-
-  // Kolom tabel sos_intervensi.
-  /// Kolom jenis intervensi SOS (napas478, timer3Menit, distraksi).
-  static const String jenisIntervensi = 'jenis_intervensi';
-
-  /// Kolom nama aktivitas distraksi yang dipilih (nullable).
-  static const String detail = 'detail';
-
-  /// Kolom hasil intervensi (berkurang, tetap, belumSelesai; nullable).
-  static const String hasilIntervensi = 'hasil_intervensi';
-
-  /// Kolom referensi entri diary craving (FK logis, nullable).
-  static const String diaryCravingId = 'diary_craving_id';
 }
 ```
 
@@ -2652,15 +1583,6 @@ class NamaTabel {
 
   /// Tabel catatan alasan berhenti (reasons vault).
   static const String alasanBerhenti = 'alasan_berhenti';
-
-  /// Tabel pencatatan konsumsi rokok aktual.
-  static const String konsumsiRokok = 'konsumsi_rokok';
-
-  /// Tabel riwayat intervensi SOS Craving.
-  static const String sosIntervensi = 'sos_intervensi';
-
-  /// Tabel rencana darurat if-then (jika… maka…).
-  static const String rencanaDarurat = 'rencana_darurat';
 }
 ```
 
@@ -3018,43 +1940,6 @@ abstract class ImpianModel with _$ImpianModel {
 
 
 // ============================================================
-// FILE: lib/fitur/impian/enum/tema_visual_impian.dart
-// ============================================================
-```dart
-import 'package:flutter/material.dart';
-
-/// Tema visual metafora impian (objek yang tumbuh mengikuti progres tabungan).
-///
-/// Disimpan di penyimpanan lokal (`SharedPreferences`) dan langsung
-/// diterapkan tanpa restart aplikasi. Tema tidak mengubah data numerik
-/// maupun perhitungan progres.
-enum TemaVisualImpian { toples, pohon }
-
-/// Extension yang menyediakan label dan ikon untuk [TemaVisualImpian].
-extension TemaVisualImpianExtension on TemaVisualImpian {
-  String get label {
-    switch (this) {
-      case TemaVisualImpian.toples:
-        return 'Toples';
-      case TemaVisualImpian.pohon:
-        return 'Pohon';
-    }
-  }
-
-  IconData get icon {
-    switch (this) {
-      case TemaVisualImpian.toples:
-        return Icons.cookie_outlined;
-      case TemaVisualImpian.pohon:
-        return Icons.park_outlined;
-    }
-  }
-}
-```
-
-
-
-// ============================================================
 // FILE: lib/fitur/impian/enum/sort_impian.dart
 // ============================================================
 ```dart
@@ -3111,102 +1996,6 @@ extension SortImpianExtension on SortImpian {
 
 
 // ============================================================
-// FILE: lib/fitur/impian/widget/visual_tabungan_impian.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/impian/enum/tema_visual_impian.dart';
-import 'package:flutter/material.dart';
-
-/// Widget visual tabungan impian: objek visual (sesuai [tema]) yang tumbuh
-/// proporsional terhadap rasio progres, dengan `LinearProgressIndicator`
-/// di bawahnya sebagai indikator utama.
-///
-/// Menggunakan komponen Flutter bawaan tanpa Lottie/aset gambar baru.
-/// Objek visual tidak menggantikan data numerik aktual; angka progres
-/// tetap ditampilkan oleh pemanggil.
-class VisualTabunganImpian extends StatelessWidget {
-  const VisualTabunganImpian({
-    super.key,
-    required this.rasio,
-    required this.tercapai,
-    required this.tema,
-    this.pakaiAktual = false,
-    this.labelSaldo,
-  });
-
-  /// Rasio progres (0.0 - 1.0).
-  final double rasio;
-
-  /// Apakah impian sudah tercapai.
-  final bool tercapai;
-
-  /// Tema visual metafora impian (objek yang ditampilkan).
-  final TemaVisualImpian tema;
-
-  /// Apakah progres dihitung dari saldo aktual ("dari catatan"); false berarti
-  /// dari estimasi baseline. Menentukan label aksesibilitas/tooltip.
-  final bool pakaiAktual;
-
-  /// Label sumber saldo untuk tooltip, aksesibilitas, dan caption di bawah
-  /// progress bar. Bila kosong, diturunkan dari [pakaiAktual].
-  final String? labelSaldo;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final aman = rasio.clamp(0.0, 1.0);
-    // Objek visual tumbuh proporsional terhadap rasio progres (0-1).
-    final ukuranIkon = 20.0 + (28.0 * aman);
-    final tooltip =
-        labelSaldo ??
-        (pakaiAktual
-            ? 'Progres tabungan dari catatan konsumsi'
-            : 'Progres tabungan estimasi dari biodata');
-    return Tooltip(
-      message: tooltip,
-      child: Semantics(
-        label: tooltip,
-        container: true,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 4,
-          children: [
-            Icon(
-              tema.icon,
-              size: ukuranIkon,
-              color: tercapai ? cs.primary : cs.secondary,
-            ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: aman,
-                minHeight: 12,
-                backgroundColor: cs.surfaceContainerHighest,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  tercapai ? cs.primary : cs.secondary,
-                ),
-              ),
-            ),
-            Text(
-              tooltip,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: cs.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
 // FILE: lib/fitur/impian/screens/impian_screen.dart
 // ============================================================
 ```dart
@@ -3215,24 +2004,15 @@ import 'dart:async';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/enum/sort_impian.dart';
-import 'package:berhenti_merokok/fitur/impian/enum/tema_visual_impian.dart';
-import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
-import 'package:berhenti_merokok/fitur/impian/notifier/tema_visual_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/detail_impian_screen.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
-import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ImpianScreen extends ConsumerStatefulWidget {
   const ImpianScreen({super.key});
@@ -3243,44 +2023,15 @@ class ImpianScreen extends ConsumerStatefulWidget {
 
 class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   SortImpian _sortImpian = SortImpian.mendekatiTerkumpulAz;
-  final Set<String> _sudahDiraikan = <String>{};
 
   @override
   void initState() {
     super.initState();
-    _muatSudahDiraikan();
   }
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  Future<void> _muatSudahDiraikan() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final daftar = prefs.getStringList('impian_diraikan') ?? <String>[];
-      if (mounted) {
-        setState(() {
-          _sudahDiraikan.addAll(daftar);
-        });
-      }
-    } catch (e, s) {
-      L.e('Gagal memuat daftar impian diraikan: $e $s');
-    }
-  }
-
-  Future<void> _tandaiSudahDiraikan(String id) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final daftar = prefs.getStringList('impian_diraikan') ?? <String>[];
-      if (!daftar.contains(id)) {
-        daftar.add(id);
-        await prefs.setStringList('impian_diraikan', daftar);
-      }
-    } catch (e, s) {
-      L.e('Gagal menyimpan impian diraikan: $e $s');
-    }
   }
 
   void _showModalSort() {
@@ -3326,14 +2077,8 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   Widget build(BuildContext context) {
     final impianAsync = ref.watch(impianProvider);
     final biodataAsync = ref.watch(biodataProvider);
-    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
-    // Tema visual metafora impian: bila gagal dimuat/invalid, gunakan
-    // tema default pertama.
-    final temaVisualAsync = ref.watch(temaVisualProvider);
-    final temaVisual = temaVisualAsync.asData?.value ?? TemaVisualImpian.toples;
-    L.i('temaVisual=$temaVisual');
     L.i(
-      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}, konsumsiAsync.isLoading=${konsumsiAsync.isLoading}, hasError=${konsumsiAsync.hasError}',
+      'impianAsync.isLoading=${impianAsync.isLoading}, hasError=${impianAsync.hasError}',
     );
 
     if (impianAsync.isLoading) {
@@ -3367,18 +2112,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
       'listImpian.length=${listImpianAsli.length}, totalJumlah=${impianState.totalJumlah}',
     );
 
-    // Catatan konsumsi dipakai untuk saldo aktual ("dari catatan"). Bila belum
-    // ada (atau gagal dimuat), progress memakai estimasi baseline biodata.
-    var konsumsiList = const <KonsumsiRokokModel>[];
-    if (konsumsiAsync.isLoading) {
-      L.w('konsumsiAsync loading');
-    } else if (konsumsiAsync.hasError) {
-      L.w('konsumsiAsync error=${konsumsiAsync.error}');
-    } else {
-      konsumsiList = konsumsiAsync.requireValue.listKonsumsi;
-    }
-
-    // Saldo terkumpul: estimasi dari biodata dan aktual dari catatan konsumsi.
+    // Saldo terkumpul = uang yang dihemat dari tidak merokok (berdasarkan biodata).
     BiodataModel? biodata;
     if (biodataAsync.isLoading) {
       L.w('biodataAsync loading');
@@ -3387,21 +2121,8 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
     } else {
       biodata = biodataAsync.requireValue;
     }
-    final uangEstimasi = biodata == null
-        ? 0.0
-        : MetrikBerhentiHelper.hitungUangDihematEstimasi(biodata);
-    final uangAktual = biodata == null
-        ? 0.0
-        : MetrikBerhentiHelper.hitungUangDihematAktual(biodata, konsumsiList);
-    final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
-      konsumsiList,
-    );
-    final pakaiAktual = hariTercatat > 0;
-    // Progres impian: aktual bila ada catatan, fallback estimasi.
-    final saldoUntukProgres = pakaiAktual ? uangAktual : uangEstimasi;
-    L.i(
-      'uangEstimasi=$uangEstimasi, uangAktual=$uangAktual, hariTercatat=$hariTercatat, pakaiAktual=$pakaiAktual, saldoUntukProgres=$saldoUntukProgres',
-    );
+    final uangDihemat = biodata?.uangDihemat ?? 0;
+    L.i('uangDihemat=$uangDihemat');
 
     final List<ImpianModel> listImpian = listImpianAsli.sorted((a, b) {
       switch (_sortImpian) {
@@ -3414,79 +2135,30 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
         case SortImpian.jumlahZa:
           return b.jumlah.compareTo(a.jumlah);
         case SortImpian.mendekatiTerkumpulAz:
-          final sisaA = ImpianProgresHelper.sisa(saldoUntukProgres, a.jumlah);
-          final sisaB = ImpianProgresHelper.sisa(saldoUntukProgres, b.jumlah);
+          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
           return sisaA.compareTo(sisaB);
         case SortImpian.mendekatiTerkumpulZa:
-          final sisaA = ImpianProgresHelper.sisa(saldoUntukProgres, a.jumlah);
-          final sisaB = ImpianProgresHelper.sisa(saldoUntukProgres, b.jumlah);
+          final sisaA = (a.jumlah - uangDihemat).clamp(0.0, double.infinity);
+          final sisaB = (b.jumlah - uangDihemat).clamp(0.0, double.infinity);
           return sisaB.compareTo(sisaA);
       }
     });
     final jumlahTercapai = listImpian
-        .where(
-          (item) =>
-              ImpianProgresHelper.tercapai(saldoUntukProgres, item.jumlah),
-        )
+        .where((item) => uangDihemat >= item.jumlah)
         .length;
     L.i('jumlahTercapai=$jumlahTercapai/${listImpian.length}');
-
-    // Cek impian yang baru tercapai. Toast dan penandaan dijadwalkan
-    // setelah build selesai agar AppToast (FToast.showToast) tidak memanggil
-    // setState/insert Overlay selama fase build, dan agar _sudahDiraikan
-    // terupdate sehingga toast tidak muncul berulang pada setiap rebuild.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      for (final item in listImpian) {
-        final sudahTercapai = ImpianProgresHelper.tercapai(
-          saldoUntukProgres,
-          item.jumlah,
-        );
-        if (sudahTercapai && !_sudahDiraikan.contains(item.id)) {
-          L.i('impianTercapai=${item.nama}, id=${item.id}');
-          AppToast.sukses(
-            context,
-            'Selamat! Impian "${item.nama}" telah tercapai!',
-          );
-          unawaited(_tandaiSudahDiraikan(item.id));
-          setState(() {
-            _sudahDiraikan.add(item.id);
-          });
-        }
-      }
-    });
 
     if (listImpian.isEmpty) {
       L.w('listImpian kosong');
       return Scaffold(
-        appBar: AppBar(title: const Text('Impian'), scrolledUnderElevation: 2),
-        body: EmptyStateView(
-          ikon: CupertinoIcons.star,
-          judul: 'Belum ada impian',
-          deskripsi:
-              'Catat impian yang ingin kamu capai dengan uang yang dihemat '
-              'dari berhenti merokok.',
-          ctaLabel: 'Tambah Impian',
-          onCta: () => unawaited(
-            Nav.to(context, const FormImpian()).catchError((
-              Object e,
-              StackTrace s,
-            ) {
-              L.e('Gagal navigasi ke Form Impian: $e $s');
-              return null;
-            }),
-          ),
+        appBar: AppBar(
+          title: const Text('Impian'),
+          scrolledUnderElevation: 2,
         ),
+        body: const _EmptyImpian(),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => unawaited(
-            Nav.to(context, const FormImpian()).catchError((
-              Object e,
-              StackTrace s,
-            ) {
-              L.e('Gagal navigasi ke Form Impian: $e $s');
-              return null;
-            }),
-          ),
+          onPressed: () => unawaited(Nav.to(context, const FormImpian())),
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -3509,12 +2181,7 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           child: Column(
             spacing: 8,
             children: [
-              _buildSaldoTerkumpul(
-                uangEstimasi,
-                uangAktual,
-                pakaiAktual,
-                hariTercatat,
-              ),
+              _buildSaldoTerkumpul(uangDihemat),
               Text(
                 '$jumlahTercapai dari ${listImpian.length} impian tercapai',
                 style: Theme.of(context).textTheme.titleMedium
@@ -3528,18 +2195,6 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                     L.i(
                       'item.id=${item.id}, item.nama=${item.nama}, item.jumlah=${item.jumlah}',
                     );
-                    final rasio = ImpianProgresHelper.rasio(
-                      saldoUntukProgres,
-                      item.jumlah,
-                    );
-                    final sudahTercapai = ImpianProgresHelper.tercapai(
-                      saldoUntukProgres,
-                      item.jumlah,
-                    );
-                    final sisa = ImpianProgresHelper.sisa(
-                      saldoUntukProgres,
-                      item.jumlah,
-                    );
                     return Card(
                       key: ValueKey(item.id),
                       child: ListTile(
@@ -3551,43 +2206,18 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 4,
                           children: [
-                            if (item.jumlah <= 0)
-                              Text(
-                                'Atur target impian terlebih dahulu',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                    ),
-                              ),
-                            VisualTabunganImpian(
-                              rasio: rasio,
-                              tercapai: sudahTercapai,
-                              tema: temaVisual,
-                              pakaiAktual: pakaiAktual,
-                              labelSaldo: pakaiAktual
-                                  ? 'Progres dari catatan (berdasarkan $hariTercatat hari tercatat)'
-                                  : 'Progres estimasi dari biodata',
+                            LinearProgressIndicator(
+                              value: uangDihemat <= 0 || item.jumlah <= 0
+                                  ? 0
+                                  : (uangDihemat / item.jumlah).clamp(0.0, 1.0),
                             ),
-                            if (sudahTercapai)
-                              Text(
-                                'Tercapai',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
                             // Bungkus Text dengan Flexible agar tidak overflow pada layar sempit.
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Flexible(
                                   child: Text(
-                                    'Sisa: ${FormatUang.formatRupiah(sisa)}',
+                                    'Sisa: ${FormatUang.formatRupiah((item.jumlah - uangDihemat).clamp(0.0, double.infinity))}',
                                   ),
                                 ),
                                 Flexible(
@@ -3612,70 +2242,25 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
           ),
         ),
       ),
-      // floatingActionButton: indentasi Nav.to diselaraskan dengan dua
-      // pemanggilan unawaited() lain di file ini (baris 251 dan 261).
       floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(
-          Nav.to(context, const FormImpian()).catchError((
-            Object e,
-            StackTrace s,
-          ) {
-            L.e('Gagal navigasi ke Form Impian: $e $s');
-            return null;
-          }),
-        ),
+        onPressed: () => unawaited(Nav.to(context, const FormImpian())),
         child: const Icon(CupertinoIcons.add),
       ),
     );
   }
 
-  Widget _buildSaldoTerkumpul(
-    double estimasi,
-    double aktual,
-    bool pakaiAktual,
-    int hariTercatat,
-  ) {
-    L.i(
-      'estimasi=$estimasi, aktual=$aktual, pakaiAktual=$pakaiAktual, hariTercatat=$hariTercatat',
-    );
+  Widget _buildSaldoTerkumpul(double saldoTerkumpul) {
+    L.i('saldoTerkumpul=$saldoTerkumpul');
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        // Jarak seragam antar-anak Row diatur dengan properti spacing
-        // (optimasi_ui.md #4), bukan SizedBox individual.
         child: Column(
-          spacing: 8,
           children: [
+            Text('Saldo terkumpul'),
             Text(
-              'Saldo terkumpul',
-              style: Theme.of(context).textTheme.titleSmall
+              '${FormatUang.formatRupiah(saldoTerkumpul)}',
+              style: Theme.of(context).textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 12,
-              children: [
-                const Icon(Icons.savings_outlined),
-                _SaldoItem(
-                  label: 'Estimasi',
-                  nilai: FormatUang.formatRupiah(estimasi),
-                ),
-                _SaldoItem(
-                  label: 'Dari catatan',
-                  nilai: pakaiAktual
-                      ? FormatUang.formatRupiah(aktual)
-                      : 'Belum ada catatan',
-                ),
-              ],
-            ),
-            Text(
-              pakaiAktual
-                  ? 'Aktual berdasarkan $hariTercatat hari tercatat. Estimasi dari kebiasaan harian biodata.'
-                  : 'Belum ada catatan konsumsi. Menampilkan estimasi dari kebiasaan harian biodata.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -3684,37 +2269,36 @@ class _ImpianScreenState extends ConsumerState<ImpianScreen> {
   }
 }
 
-/// Item saldo dengan label sumber angka ("Estimasi" / "Dari catatan").
-class _SaldoItem extends StatelessWidget {
-  const _SaldoItem({required this.label, required this.nilai});
-
-  final String label;
-  final String nilai;
+/// Widget untuk state kosong daftar impian.
+class _EmptyImpian extends StatelessWidget {
+  const _EmptyImpian();
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: 4,
-      children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall
-              ?.copyWith(color: colorScheme.onSurfaceVariant),
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.star, size: 48),
+              Text(
+                'Belum ada impian',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Tekan tombol + untuk menambah impian pertama.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-        Text(
-          nilai,
-          style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
+      ),
     );
   }
 }
-
-
 ```
 
 
@@ -3725,20 +2309,9 @@ class _SaldoItem extends StatelessWidget {
 ```dart
 import 'dart:async';
 
-import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
-import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
-import 'package:berhenti_merokok/fitur/impian/enum/tema_visual_impian.dart';
-import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
-import 'package:berhenti_merokok/fitur/impian/helper/riwayat_tabungan_helper.dart';
 import 'package:berhenti_merokok/fitur/impian/model/impian_model.dart';
-// Urutan paket alfabetis: notifier diurutkan sebelum screens, sesuai aturan import ordering.
-import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
-import 'package:berhenti_merokok/fitur/impian/notifier/tema_visual_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/screens/form_impian.dart';
-import 'package:berhenti_merokok/fitur/impian/widget/visual_tabungan_impian.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
+import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -3752,17 +2325,8 @@ class DetailImpianScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final impianAsync = ref.watch(impianProvider);
-    final biodataAsync = ref.watch(biodataProvider);
-    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
-    // Tema visual metafora impian: bila gagal dimuat/invalid, gunakan
-    // tema default pertama.
-    final temaVisualAsync = ref.watch(temaVisualProvider);
-    final temaVisual = temaVisualAsync.asData?.value ?? TemaVisualImpian.toples;
-    L.i('temaVisual=$temaVisual');
 
-    if (impianAsync.isLoading ||
-        biodataAsync.isLoading ||
-        konsumsiAsync.isLoading) {
+    if (impianAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -3775,65 +2339,12 @@ class DetailImpianScreen extends ConsumerWidget {
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                spacing: 8,
                 children: [
                   const Text('Gagal memuat data impian'),
+                  const SizedBox(height: 8),
                   OutlinedButton(
                     onPressed: () {
                       final _ = ref.refresh(impianProvider);
-                    },
-                    child: const Text('Coba lagi'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (biodataAsync.hasError) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Detail Impian')),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 8,
-                children: [
-                  const Text('Gagal memuat data biodata'),
-                  OutlinedButton(
-                    onPressed: () {
-                      final _ = ref.refresh(biodataProvider);
-                    },
-                    child: const Text('Coba lagi'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (konsumsiAsync.hasError) {
-      L.e('konsumsiAsync error: ${konsumsiAsync.error}');
-      return Scaffold(
-        appBar: AppBar(title: const Text('Detail Impian')),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 8,
-                children: [
-                  const Text('Gagal memuat data konsumsi'),
-                  OutlinedButton(
-                    onPressed: () {
-                      final _ = ref.refresh(konsumsiRokokProvider);
                     },
                     child: const Text('Coba lagi'),
                   ),
@@ -3853,44 +2364,14 @@ class DetailImpianScreen extends ConsumerWidget {
     if (impian == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Detail Impian')),
-        body: EmptyStateView(
-          ikon: CupertinoIcons.question_circle,
-          judul: 'Impian tidak ditemukan',
-          deskripsi:
-              'Impian ini mungkin sudah dihapus atau tidak tersedia lagi.',
-          ctaLabel: 'Kembali',
-          onCta: () => Nav.pop(context),
+        body: const SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: Text('Impian tidak ditemukan')),
+          ),
         ),
       );
     }
-
-    final BiodataModel? biodata = biodataAsync.requireValue;
-    final konsumsiList = konsumsiAsync.requireValue.listKonsumsi;
-    final uangEstimasi = biodata == null
-        ? 0.0
-        : MetrikBerhentiHelper.hitungUangDihematEstimasi(biodata);
-    final uangAktual = biodata == null
-        ? 0.0
-        : MetrikBerhentiHelper.hitungUangDihematAktual(biodata, konsumsiList);
-    final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
-      konsumsiList,
-    );
-    final pakaiAktual = hariTercatat > 0;
-    // Progres impian: aktual bila ada catatan, fallback estimasi.
-    final saldoUntukProgres = pakaiAktual ? uangAktual : uangEstimasi;
-    // Riwayat penghematan per hari (aktual) dari catatan konsumsi.
-    final riwayatEntries = biodata == null
-        ? const <RiwayatTabunganEntry>[]
-        : RiwayatTabunganHelper.dariKonsumsi(biodata, konsumsiList);
-    L.i(
-      'uangEstimasi=$uangEstimasi, uangAktual=$uangAktual, hariTercatat=$hariTercatat, pakaiAktual=$pakaiAktual, saldoUntukProgres=$saldoUntukProgres, riwayatEntries.length=${riwayatEntries.length}',
-    );
-    final rasio = ImpianProgresHelper.rasio(saldoUntukProgres, impian.jumlah);
-    final sudahTercapai = ImpianProgresHelper.tercapai(
-      saldoUntukProgres,
-      impian.jumlah,
-    );
-    final sisa = ImpianProgresHelper.sisa(saldoUntukProgres, impian.jumlah);
 
     return Scaffold(
       appBar: AppBar(
@@ -3898,15 +2379,8 @@ class DetailImpianScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(CupertinoIcons.pencil),
-            onPressed: () => unawaited(
-              Nav.to(context, FormImpian(impian: impian)).catchError((
-                Object e,
-                StackTrace s,
-              ) {
-                L.e('Gagal navigasi ke Form Impian: $e $s');
-                return null;
-              }),
-            ),
+            onPressed: () =>
+                unawaited(Nav.to(context, FormImpian(impian: impian))),
           ),
         ],
       ),
@@ -3918,52 +2392,6 @@ class DetailImpianScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 12,
               children: [
-                if (impian.jumlah <= 0)
-                  Text(
-                    'Atur target impian terlebih dahulu',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                VisualTabunganImpian(
-                  rasio: rasio,
-                  tercapai: sudahTercapai,
-                  tema: temaVisual,
-                  pakaiAktual: pakaiAktual,
-                  labelSaldo: pakaiAktual
-                      ? 'Progres dari catatan (berdasarkan $hariTercatat hari tercatat)'
-                      : 'Progres estimasi dari biodata',
-                ),
-                Row(
-                  spacing: 12,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: _buildItem(
-                        context,
-                        'Estimasi',
-                        FormatUang.formatRupiah(uangEstimasi),
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildItem(
-                        context,
-                        'Dari catatan',
-                        pakaiAktual
-                            ? FormatUang.formatRupiah(uangAktual)
-                            : 'Belum ada catatan',
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  pakaiAktual
-                      ? 'Aktual berdasarkan $hariTercatat hari tercatat. Estimasi dari kebiasaan harian biodata.'
-                      : 'Belum ada catatan konsumsi. Menampilkan estimasi dari kebiasaan harian biodata.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
                 _buildItem(context, 'Nama', impian.nama),
                 _buildItem(
                   context,
@@ -3980,137 +2408,11 @@ class DetailImpianScreen extends ConsumerWidget {
                   'Dibuat',
                   FormatTanggal.formatDasar(impian.dibuat),
                 ),
-                _buildItem(
-                  context,
-                  'Status',
-                  sudahTercapai ? 'Tercapai' : 'Belum tercapai',
-                ),
-                _buildItem(
-                  context,
-                  pakaiAktual ? 'Progres' : 'Progres (estimasi)',
-                  '${(rasio * 100).toStringAsFixed(0)}%',
-                ),
-                _buildItem(
-                  context,
-                  'Sumber progres',
-                  pakaiAktual
-                      ? 'Dari catatan ($hariTercatat hari tercatat)'
-                      : 'Estimasi (belum ada catatan)',
-                ),
-                _buildItem(
-                  context,
-                  pakaiAktual ? 'Sisa' : 'Sisa (estimasi)',
-                  FormatUang.formatRupiah(sisa),
-                ),
-                _buildSectionTitle(context, 'Tema visual'),
-                RadioGroup<TemaVisualImpian>(
-                  groupValue: temaVisual,
-                  onChanged: (TemaVisualImpian? nilai) {
-                    if (nilai == null) {
-                      L.w('tema visual yang dipilih null');
-                      return;
-                    }
-                    L.i('temaVisual dipilih=$nilai');
-                    unawaited(
-                      ref
-                          .read(temaVisualProvider.notifier)
-                          .set(nilai)
-                          .catchError((Object e, StackTrace s) {
-                            L.e('Gagal menyimpan tema visual impian: $e $s');
-                          }),
-                    );
-                  },
-                  child: Column(
-                    spacing: 0,
-                    children: [
-                      for (final tema in TemaVisualImpian.values)
-                        RadioListTile<TemaVisualImpian>(
-                          value: tema,
-                          title: Text(tema.label),
-                          secondary: Icon(tema.icon),
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                        ),
-                    ],
-                  ),
-                ),
-                _buildSectionTitle(context, 'Riwayat penghematan (dari catatan)'),
-                _buildRiwayat(context, riwayatEntries),
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSectionTitle(BuildContext context, String teks) {
-    return Text(
-      teks,
-      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _buildRiwayat(BuildContext context, List<RiwayatTabunganEntry> entri) {
-    if (entri.isEmpty) {
-      return const EmptyStateView(
-        ikon: CupertinoIcons.money_dollar_circle,
-        judul: 'Belum ada riwayat',
-        deskripsi:
-            'Riwayat penghematan per hari akan muncul di sini setelah Anda '
-            'mencatat konsumsi.',
-      );
-    }
-    const tabular = <FontFeature>[FontFeature.tabularFigures()];
-    return Column(
-      spacing: 8,
-      children: [
-        for (var i = 0; i < entri.length; i++) ...[
-          if (i > 0) const Divider(height: 1, thickness: 1),
-          _buildRiwayatItem(context, entri[i], tabular),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildRiwayatItem(
-    BuildContext context,
-    RiwayatTabunganEntry entri,
-    List<FontFeature> tabular,
-  ) {
-    final labelTanggal = FormatTanggal.formatDasar(entri.tanggal);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 2,
-      children: [
-        Row(
-          spacing: 8,
-          children: [
-            Expanded(
-              child: Text(
-                labelTanggal,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            Text(
-              '+${FormatUang.formatRupiah(entri.nilai)}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontFeatures: tabular,
-              ),
-            ),
-          ],
-        ),
-        Text(
-          '${entri.rokokDihindari} batang dihindari · Saldo ${FormatUang.formatRupiah(entri.saldoSetelah)}',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            fontFeatures: tabular,
-          ),
-        ),
-      ],
     );
   }
 
@@ -4674,122 +2976,6 @@ abstract class ImpianState with _$ImpianState {
 
 
 // ============================================================
-// FILE: lib/fitur/impian/helper/impian_progres_helper.dart
-// ============================================================
-```dart
-/// Helper murni untuk perhitungan progres impian.
-/// Tanpa ketergantungan pada BuildContext atau provider.
-class ImpianProgresHelper {
-  const ImpianProgresHelper._();
-
-  /// Menghitung rasio progres (0.0 - 1.0).
-  static double rasio(double saldo, double target) {
-    if (target <= 0) return 0.0;
-    return (saldo / target).clamp(0.0, 1.0);
-  }
-
-  /// Menghitung sisa dana untuk mencapai target.
-  static double sisa(double saldo, double target) {
-    final nilai = target - saldo;
-    return nilai < 0 ? 0.0 : nilai;
-  }
-
-  /// Mengecek apakah impian sudah tercapai.
-  static bool tercapai(double saldo, double target) {
-    if (target <= 0) return false;
-    return saldo >= target;
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/impian/helper/riwayat_tabungan_helper.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-
-/// Entri riwayat penghematan per hari (aktual dari catatan konsumsi).
-class RiwayatTabunganEntry {
-  const RiwayatTabunganEntry({
-    required this.tanggal,
-    required this.rokokDihindari,
-    required this.nilai,
-    required this.saldoSetelah,
-  });
-
-  /// Tanggal hari tersebut (komponen tanggal saja, waktu lokal).
-  final DateTime tanggal;
-
-  /// Jumlah rokok yang dihindari hari itu (clamp minimal 0).
-  final int rokokDihindari;
-
-  /// Nilai uang yang dihemat hari itu (rupiah).
-  final double nilai;
-
-  /// Saldo kumulatif dari hari terlama hingga hari entri ini (rupiah).
-  final double saldoSetelah;
-}
-
-/// Helper murni untuk riwayat penghematan tabungan impian.
-///
-/// Tidak bergantung pada `BuildContext` atau provider. Rumus per hari
-/// konsisten dengan `MetrikBerhentiHelper.hitungUangDihematAktual`:
-/// `terhindar = max(0, targetRokokHariIni − konsumsiHarian)` dan
-/// `nilai = terhindar / batangPerBungkus × hargaRokokPerBungkus`.
-class RiwayatTabunganHelper {
-  const RiwayatTabunganHelper._();
-
-  /// Riwayat penghematan per hari yang **punya catatan** konsumsi,
-  /// diurutkan dari tanggal terbaru dahulu.
-  ///
-  /// Hari tanpa catatan dikecualikan (bukan bukti pengguna tidak merokok).
-  /// Mengembalikan daftar kosong bila tidak ada catatan atau
-  /// `batangPerBungkus <= 0`.
-  static List<RiwayatTabunganEntry> dariKonsumsi(
-    BiodataModel biodata,
-    List<KonsumsiRokokModel> list,
-  ) {
-    if (biodata.batangPerBungkus <= 0) return const [];
-    final ringkasan = KonsumsiHitungHelper.ringkasanHarian(list);
-    if (ringkasan.isEmpty) return const [];
-    final target = biodata.targetRokokHariIni;
-    final entriAscending = <RiwayatTabunganEntry>[];
-    var saldo = 0.0;
-    final kunciUrut = ringkasan.keys.toList()..sort();
-    for (final kunci in kunciUrut) {
-      final bagian = kunci.split('-');
-      if (bagian.length != 3) continue;
-      final tahun = int.tryParse(bagian[0]);
-      final bulan = int.tryParse(bagian[1]);
-      final hari = int.tryParse(bagian[2]);
-      if (tahun == null || bulan == null || hari == null) continue;
-      final terhindar = target - (ringkasan[kunci] ?? 0);
-      final rokokDihindari = terhindar > 0 ? terhindar : 0;
-      final nilai =
-          (rokokDihindari / biodata.batangPerBungkus) *
-          biodata.hargaRokokPerBungkus;
-      saldo += nilai;
-      entriAscending.add(
-        RiwayatTabunganEntry(
-          tanggal: DateTime(tahun, bulan, hari),
-          rokokDihindari: rokokDihindari,
-          nilai: nilai,
-          saldoSetelah: saldo,
-        ),
-      );
-    }
-    return entriAscending.reversed.toList();
-  }
-}
-```
-
-
-
-// ============================================================
 // FILE: lib/fitur/impian/notifier/impian_notifier.g.dart
 // ============================================================
 ```dart
@@ -5109,107 +3295,6 @@ class ImpianNotifier extends _$ImpianNotifier {
       L.e('Gagal mengubah impian (batch): $e $s');
       rethrow;
     }
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/impian/notifier/tema_visual_notifier.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/impian/enum/tema_visual_impian.dart';
-import 'package:berhenti_merokok/shared/helper/shared_keys.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-part 'tema_visual_notifier.g.dart';
-
-// State hanya menyimpan satu nilai enum TemaVisualImpian, sehingga tidak
-// memerlukan state Freezed tersendiri, konsisten dengan TemaNotifier.
-@Riverpod(keepAlive: true)
-class TemaVisualNotifier extends _$TemaVisualNotifier {
-  @override
-  Future<TemaVisualImpian> build() async {
-    final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getString(SharedKeys.temaVisualImpian);
-    return TemaVisualImpian.values.firstWhere(
-      (e) => e.name == value,
-      // Tema tidak valid/tidak tersimpan → tema default pertama.
-      orElse: () => TemaVisualImpian.toples,
-    );
-  }
-
-  Future<void> set([TemaVisualImpian? tema]) async {
-    final nilai = tema ?? state.asData?.value ?? TemaVisualImpian.toples;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(SharedKeys.temaVisualImpian, nilai.name);
-    state = AsyncValue.data(nilai);
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/impian/notifier/tema_visual_notifier.g.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'tema_visual_notifier.dart';
-
-// **************************************************************************
-// RiverpodGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-
-@ProviderFor(TemaVisualNotifier)
-final temaVisualProvider = TemaVisualNotifierProvider._();
-
-final class TemaVisualNotifierProvider
-    extends $AsyncNotifierProvider<TemaVisualNotifier, TemaVisualImpian> {
-  TemaVisualNotifierProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'temaVisualProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$temaVisualNotifierHash();
-
-  @$internal
-  @override
-  TemaVisualNotifier create() => TemaVisualNotifier();
-}
-
-String _$temaVisualNotifierHash() =>
-    r'da441595ca23cf18329ca489f281ee0b8289b799';
-
-abstract class _$TemaVisualNotifier extends $AsyncNotifier<TemaVisualImpian> {
-  FutureOr<TemaVisualImpian> build();
-  @$mustCallSuper
-  @override
-  WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<TemaVisualImpian>, TemaVisualImpian>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<TemaVisualImpian>, TemaVisualImpian>,
-              AsyncValue<TemaVisualImpian>,
-              Object?,
-              Object?
-            >;
-    return element.handleCreate(ref, build);
   }
 }
 ```
@@ -5660,7 +3745,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DiaryCravingModel {
 
- String get id; DateTime get tanggal; PemicuEnum get pemicu; int get intensitas; String? get catatan; int? get durasiMenit; MoodCravingEnum? get mood; StrategiCravingEnum? get strategi; HasilCravingEnum? get hasil; DateTime get dibuat;
+ String get id; DateTime get tanggal; PemicuEnum get pemicu; int get intensitas; String? get catatan; DateTime get dibuat;
 /// Create a copy of DiaryCravingModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -5672,20 +3757,20 @@ $DiaryCravingModelCopyWith<DiaryCravingModel> get copyWith => _$DiaryCravingMode
 @override
 bool operator ==(Object other) {
   final _this = this as DiaryCravingModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DiaryCravingModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.pemicu, _this.pemicu) || other.pemicu == _this.pemicu)&&(identical(other.intensitas, _this.intensitas) || other.intensitas == _this.intensitas)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.durasiMenit, _this.durasiMenit) || other.durasiMenit == _this.durasiMenit)&&(identical(other.mood, _this.mood) || other.mood == _this.mood)&&(identical(other.strategi, _this.strategi) || other.strategi == _this.strategi)&&(identical(other.hasil, _this.hasil) || other.hasil == _this.hasil)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DiaryCravingModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.pemicu, _this.pemicu) || other.pemicu == _this.pemicu)&&(identical(other.intensitas, _this.intensitas) || other.intensitas == _this.intensitas)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
 }
 
 
 @override
 int get hashCode {
   final _this = this as DiaryCravingModel;
-  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.pemicu,_this.intensitas,_this.catatan,_this.durasiMenit,_this.mood,_this.strategi,_this.hasil,_this.dibuat);
+  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.pemicu,_this.intensitas,_this.catatan,_this.dibuat);
 }
 
 @override
 String toString() {
   final _this = this as DiaryCravingModel;
-  return 'DiaryCravingModel(id: ${_this.id}, tanggal: ${_this.tanggal}, pemicu: ${_this.pemicu}, intensitas: ${_this.intensitas}, catatan: ${_this.catatan}, durasiMenit: ${_this.durasiMenit}, mood: ${_this.mood}, strategi: ${_this.strategi}, hasil: ${_this.hasil}, dibuat: ${_this.dibuat})';
+  return 'DiaryCravingModel(id: ${_this.id}, tanggal: ${_this.tanggal}, pemicu: ${_this.pemicu}, intensitas: ${_this.intensitas}, catatan: ${_this.catatan}, dibuat: ${_this.dibuat})';
 }
 
 
@@ -5696,7 +3781,7 @@ abstract mixin class $DiaryCravingModelCopyWith<$Res>  {
   factory $DiaryCravingModelCopyWith(DiaryCravingModel value, $Res Function(DiaryCravingModel) _then) = _$DiaryCravingModelCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, int? durasiMenit, MoodCravingEnum? mood, StrategiCravingEnum? strategi, HasilCravingEnum? hasil, DateTime dibuat
+ String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, DateTime dibuat
 });
 
 
@@ -5713,18 +3798,14 @@ class _$DiaryCravingModelCopyWithImpl<$Res>
 
 /// Create a copy of DiaryCravingModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? durasiMenit = freezed,Object? mood = freezed,Object? strategi = freezed,Object? hasil = freezed,Object? dibuat = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? dibuat = null,}) {
   return _then(DiaryCravingModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
 as DateTime,pemicu: null == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
 as PemicuEnum,intensitas: null == intensitas ? _self.intensitas : intensitas // ignore: cast_nullable_to_non_nullable
 as int,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,durasiMenit: freezed == durasiMenit ? _self.durasiMenit : durasiMenit // ignore: cast_nullable_to_non_nullable
-as int?,mood: freezed == mood ? _self.mood : mood // ignore: cast_nullable_to_non_nullable
-as MoodCravingEnum?,strategi: freezed == strategi ? _self.strategi : strategi // ignore: cast_nullable_to_non_nullable
-as StrategiCravingEnum?,hasil: freezed == hasil ? _self.hasil : hasil // ignore: cast_nullable_to_non_nullable
-as HasilCravingEnum?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -5810,10 +3891,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  int? durasiMenit,  MoodCravingEnum? mood,  StrategiCravingEnum? strategi,  HasilCravingEnum? hasil,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DiaryCravingModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.durasiMenit,_that.mood,_that.strategi,_that.hasil,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
   return orElse();
 
 }
@@ -5831,10 +3912,10 @@ return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  int? durasiMenit,  MoodCravingEnum? mood,  StrategiCravingEnum? strategi,  HasilCravingEnum? hasil,  DateTime dibuat)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)  $default,) {final _that = this;
 switch (_that) {
 case _DiaryCravingModel():
-return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.durasiMenit,_that.mood,_that.strategi,_that.hasil,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -5851,10 +3932,10 @@ return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  int? durasiMenit,  MoodCravingEnum? mood,  StrategiCravingEnum? strategi,  HasilCravingEnum? hasil,  DateTime dibuat)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  PemicuEnum pemicu,  int intensitas,  String? catatan,  DateTime dibuat)?  $default,) {final _that = this;
 switch (_that) {
 case _DiaryCravingModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.durasiMenit,_that.mood,_that.strategi,_that.hasil,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catatan,_that.dibuat);case _:
   return null;
 
 }
@@ -5866,7 +3947,7 @@ return $default(_that.id,_that.tanggal,_that.pemicu,_that.intensitas,_that.catat
 
 
 class _DiaryCravingModel extends DiaryCravingModel {
-  const _DiaryCravingModel({required this.id, required this.tanggal, required this.pemicu, this.intensitas = 3, this.catatan, this.durasiMenit, this.mood, this.strategi, this.hasil, required this.dibuat}): super._();
+  const _DiaryCravingModel({required this.id, required this.tanggal, required this.pemicu, this.intensitas = 3, this.catatan, required this.dibuat}): super._();
   
 
 @override final  String id;
@@ -5874,10 +3955,6 @@ class _DiaryCravingModel extends DiaryCravingModel {
 @override final  PemicuEnum pemicu;
 @override@JsonKey() final  int intensitas;
 @override final  String? catatan;
-@override final  int? durasiMenit;
-@override final  MoodCravingEnum? mood;
-@override final  StrategiCravingEnum? strategi;
-@override final  HasilCravingEnum? hasil;
 @override final  DateTime dibuat;
 
 /// Create a copy of DiaryCravingModel
@@ -5890,18 +3967,18 @@ _$DiaryCravingModelCopyWith<_DiaryCravingModel> get copyWith => __$DiaryCravingM
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DiaryCravingModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.pemicu, pemicu) || other.pemicu == pemicu)&&(identical(other.intensitas, intensitas) || other.intensitas == intensitas)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.durasiMenit, durasiMenit) || other.durasiMenit == durasiMenit)&&(identical(other.mood, mood) || other.mood == mood)&&(identical(other.strategi, strategi) || other.strategi == strategi)&&(identical(other.hasil, hasil) || other.hasil == hasil)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DiaryCravingModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.pemicu, pemicu) || other.pemicu == pemicu)&&(identical(other.intensitas, intensitas) || other.intensitas == intensitas)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,tanggal,pemicu,intensitas,catatan,durasiMenit,mood,strategi,hasil,dibuat);
+    return Object.hash(runtimeType,id,tanggal,pemicu,intensitas,catatan,dibuat);
 }
 
 @override
 String toString() {
-    return 'DiaryCravingModel(id: $id, tanggal: $tanggal, pemicu: $pemicu, intensitas: $intensitas, catatan: $catatan, durasiMenit: $durasiMenit, mood: $mood, strategi: $strategi, hasil: $hasil, dibuat: $dibuat)';
+    return 'DiaryCravingModel(id: $id, tanggal: $tanggal, pemicu: $pemicu, intensitas: $intensitas, catatan: $catatan, dibuat: $dibuat)';
 }
 
 
@@ -5912,7 +3989,7 @@ abstract mixin class _$DiaryCravingModelCopyWith<$Res> implements $DiaryCravingM
   factory _$DiaryCravingModelCopyWith(_DiaryCravingModel value, $Res Function(_DiaryCravingModel) _then) = __$DiaryCravingModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, int? durasiMenit, MoodCravingEnum? mood, StrategiCravingEnum? strategi, HasilCravingEnum? hasil, DateTime dibuat
+ String id, DateTime tanggal, PemicuEnum pemicu, int intensitas, String? catatan, DateTime dibuat
 });
 
 
@@ -5929,18 +4006,14 @@ class __$DiaryCravingModelCopyWithImpl<$Res>
 
 /// Create a copy of DiaryCravingModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? durasiMenit = freezed,Object? mood = freezed,Object? strategi = freezed,Object? hasil = freezed,Object? dibuat = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? pemicu = null,Object? intensitas = null,Object? catatan = freezed,Object? dibuat = null,}) {
   return _then(_DiaryCravingModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
 as DateTime,pemicu: null == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
 as PemicuEnum,intensitas: null == intensitas ? _self.intensitas : intensitas // ignore: cast_nullable_to_non_nullable
 as int,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,durasiMenit: freezed == durasiMenit ? _self.durasiMenit : durasiMenit // ignore: cast_nullable_to_non_nullable
-as int?,mood: freezed == mood ? _self.mood : mood // ignore: cast_nullable_to_non_nullable
-as MoodCravingEnum?,strategi: freezed == strategi ? _self.strategi : strategi // ignore: cast_nullable_to_non_nullable
-as StrategiCravingEnum?,hasil: freezed == hasil ? _self.hasil : hasil // ignore: cast_nullable_to_non_nullable
-as HasilCravingEnum?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -5957,10 +4030,7 @@ as DateTime,
 // FILE: lib/fitur/diary_craving/model/diary_craving_model.dart
 // ============================================================
 ```dart
-import 'package:berhenti_merokok/fitur/diary_craving/enum/hasil_craving_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/mood_craving_enum.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/strategi_craving_enum.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -5977,10 +4047,6 @@ abstract class DiaryCravingModel with _$DiaryCravingModel {
     required PemicuEnum pemicu,
     @Default(3) int intensitas,
     String? catatan,
-    int? durasiMenit,
-    MoodCravingEnum? mood,
-    StrategiCravingEnum? strategi,
-    HasilCravingEnum? hasil,
     required DateTime dibuat,
   }) = _DiaryCravingModel;
 
@@ -6002,19 +4068,6 @@ abstract class DiaryCravingModel with _$DiaryCravingModel {
         defaultValue: 3,
       ),
       catatan: ParserUtil.parseStringOrNull(row[NamaKolom.catatan]),
-      durasiMenit: ParserUtil.parseIntOrNull(row[NamaKolom.durasiMenit]),
-      mood: ParserUtil.safeParseEnum(
-        MoodCravingEnum.values,
-        ParserUtil.parseStringOrNull(row[NamaKolom.mood]),
-      ),
-      strategi: ParserUtil.safeParseEnum(
-        StrategiCravingEnum.values,
-        ParserUtil.parseStringOrNull(row[NamaKolom.strategi]),
-      ),
-      hasil: ParserUtil.safeParseEnum(
-        HasilCravingEnum.values,
-        ParserUtil.parseStringOrNull(row[NamaKolom.hasil]),
-      ),
       dibuat:
           ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
           DateTime.now(),
@@ -6029,10 +4082,6 @@ abstract class DiaryCravingModel with _$DiaryCravingModel {
       NamaKolom.pemicu: pemicu.name,
       NamaKolom.intensitas: intensitas,
       NamaKolom.catatan: catatan,
-      NamaKolom.durasiMenit: durasiMenit,
-      NamaKolom.mood: mood?.name,
-      NamaKolom.strategi: strategi?.name,
-      NamaKolom.hasil: hasil?.name,
       NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
     };
   }
@@ -6113,127 +4162,16 @@ extension PemicuEnumExtension on PemicuEnum {
 
 
 // ============================================================
-// FILE: lib/fitur/diary_craving/enum/mood_craving_enum.dart
-// ============================================================
-```dart
-/// Suasana hati saat craving menyerang.
-enum MoodCravingEnum {
-  senang,
-  netral,
-  sedih,
-  cemas,
-  marah,
-  stres,
-}
-
-/// Extension yang menyediakan label untuk [MoodCravingEnum].
-extension MoodCravingEnumExtension on MoodCravingEnum {
-  String get label {
-    switch (this) {
-      case MoodCravingEnum.senang:
-        return 'Senang';
-      case MoodCravingEnum.netral:
-        return 'Netral';
-      case MoodCravingEnum.sedih:
-        return 'Sedih';
-      case MoodCravingEnum.cemas:
-        return 'Cemas';
-      case MoodCravingEnum.marah:
-        return 'Marah';
-      case MoodCravingEnum.stres:
-        return 'Stres';
-    }
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/diary_craving/enum/hasil_craving_enum.dart
-// ============================================================
-```dart
-/// Hasil akhir dari craving.
-// Enum value di-lowerCamelCase sesuai konvensi penamaan proyek (sebelumnya
-// snake_case yang ikut tersimpan ke kolom database).
-enum HasilCravingEnum {
-  berhasilMenahan,
-  tetapMerokok,
-  belumSelesai,
-}
-
-/// Extension yang menyediakan label untuk [HasilCravingEnum].
-extension HasilCravingEnumExtension on HasilCravingEnum {
-  String get label {
-    switch (this) {
-      case HasilCravingEnum.berhasilMenahan:
-        return 'Berhasil menahan';
-      case HasilCravingEnum.tetapMerokok:
-        return 'Tetap merokok';
-      case HasilCravingEnum.belumSelesai:
-        return 'Belum selesai';
-    }
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/diary_craving/enum/strategi_craving_enum.dart
-// ============================================================
-```dart
-/// Strategi yang dicoba untuk menahan craving.
-// Enum value di-lowerCamelCase sesuai konvensi penamaan proyek (sebelumnya
-// snake_case yang ikut tersimpan ke kolom database).
-enum StrategiCravingEnum {
-  napas478,
-  minumAir,
-  jalan,
-  alihAktivitas,
-  tunda5Menit,
-  lainnya,
-}
-
-/// Extension yang menyediakan label untuk [StrategiCravingEnum].
-extension StrategiCravingEnumExtension on StrategiCravingEnum {
-  String get label {
-    switch (this) {
-      case StrategiCravingEnum.napas478:
-        return 'Napas 4-7-8';
-      case StrategiCravingEnum.minumAir:
-        return 'Minum air';
-      case StrategiCravingEnum.jalan:
-        return 'Jalan';
-      case StrategiCravingEnum.alihAktivitas:
-        return 'Alih aktivitas';
-      case StrategiCravingEnum.tunda5Menit:
-        return 'Tunda 5 menit';
-      case StrategiCravingEnum.lainnya:
-        return 'Lainnya';
-    }
-  }
-}
-```
-
-
-
-// ============================================================
 // FILE: lib/fitur/diary_craving/screens/diary_craving_screen.dart
 // ============================================================
 ```dart
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/hasil_craving_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/mood_craving_enum.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/strategi_craving_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/helper/pola_craving_helper.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/screens/form_diary_craving.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6257,18 +4195,6 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
   void dispose() {
     L.i('DiaryCravingScreen dispose');
     super.dispose();
-  }
-
-  void _navigasiKeForm() {
-    unawaited(
-      Nav.to(context, const FormDiaryCraving()).catchError((
-        Object e,
-        StackTrace s,
-      ) {
-        L.e('Gagal navigasi ke Form Diary Craving: $e $s');
-        return null;
-      }),
-    );
   }
 
   Future<void> _hapus(DiaryCravingModel item) async {
@@ -6304,6 +4230,9 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
   @override
   Widget build(BuildContext context) {
     final cravingAsync = ref.watch(diaryCravingProvider);
+    L.i(
+      'cravingAsync.isLoading=${cravingAsync.isLoading}, hasError=${cravingAsync.hasError}',
+    );
 
     if (cravingAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -6333,40 +4262,14 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
 
     final state = cravingAsync.requireValue;
     final list = state.listCraving;
-
-    // Hitung frekuensi pemicu untuk ringkasan analisis pemicu.
-    final Map<PemicuEnum, int> freqPemicu = {};
-    for (final c in list) {
-      freqPemicu[c.pemicu] = (freqPemicu[c.pemicu] ?? 0) + 1;
-    }
-    final entriPemicu = freqPemicu.entries.toList()
-      ..sort((a, b) {
-        final cmp = b.value.compareTo(a.value);
-        if (cmp != 0) return cmp;
-        // Tie-breaker deterministik: urutkan berdasarkan index enum saat jumlah sama,
-        // agar topPemicu dan agregat konsisten di seluruh rebuild (List.sort tidak stabil).
-        return a.key.index.compareTo(b.key.index);
-      });
-    final topPemicu = entriPemicu.take(3).toList();
-    final jumlahLainnya = entriPemicu.skip(3).fold<int>(
-      0,
-      (total, e) => total + e.value,
-    );
+    L.i('list.length=${list.length}');
 
     if (list.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Diary Craving')),
-        body: EmptyStateView(
-          ikon: CupertinoIcons.book,
-          judul: 'Belum ada catatan craving',
-          deskripsi:
-              'Catat setiap dorongan merokok untuk memahami pemicu dan '
-              'strategi yang paling membantu.',
-          ctaLabel: 'Catat Craving',
-          onCta: _navigasiKeForm,
-        ),
+        body: const _EmptyDiaryCraving(),
         floatingActionButton: FloatingActionButton(
-          onPressed: _navigasiKeForm,
+          onPressed: () => unawaited(Nav.to(context, const FormDiaryCraving())),
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -6377,325 +4280,78 @@ class _DiaryCravingScreenState extends ConsumerState<DiaryCravingScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [
-              if (topPemicu.isNotEmpty)
-                _RingkasanPemicu(
-                  topPemicu: topPemicu,
-                  jumlahLainnya: jumlahLainnya,
-                ),
-              if (list.length >= PolaCravingHelper.minimumEntri)
-                _RingkasanWawasan(list: list)
-              else
-                const _PlaceholderWawasan(),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    final item = list[index];
-                    final mood = item.mood;
-                    final hasil = item.hasil;
-                    return Card(
-                      key: ValueKey(item.id),
-                      child: ListTile(
-                        leading: Icon(item.pemicu.icon),
-                        title: Text(item.pemicu.label),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 4,
-                          children: [
-                            Text(
-                              'Intensitas: ${item.intensitas}/5  •  ${FormatWaktuLengkap.formatSingkat(item.tanggal)}',
-                            ),
-                            if (item.catatan != null && item.catatan!.isNotEmpty)
-                              Text(item.catatan!),
-                            if (mood != null || hasil != null)
-                              Row(
-                                spacing: 8,
-                                children: [
-                                  if (mood != null)
-                                    _PenandaDetail(
-                                      icon: Icons.mood_outlined,
-                                      label: mood.label,
-                                    ),
-                                  if (hasil != null)
-                                    _PenandaDetail(
-                                      icon: hasil ==
-                                              HasilCravingEnum.berhasilMenahan
-                                          ? Icons.check_circle_outline
-                                          : Icons.radio_button_unchecked,
-                                      label: hasil.label,
-                                    ),
-                                ],
-                              ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          tooltip: 'Hapus',
-                          onPressed: () => unawaited(_hapus(item)),
-                        ),
-                        onTap: () => unawaited(
-                          Nav.to(context, FormDiaryCraving(craving: item)).catchError((
-                            Object e,
-                            StackTrace s,
-                          ) {
-                            L.e('Gagal navigasi ke Form Diary Craving: $e $s');
-                            return null;
-                          }),
-                        ),
+          child: ListView.separated(
+            itemCount: list.length,
+            itemBuilder: (context, index) {
+              final item = list[index];
+              L.i(
+                'item.id=${item.id}, item.pemicu=${item.pemicu}, item.intensitas=${item.intensitas}',
+              );
+              return Card(
+                key: ValueKey(item.id),
+                child: ListTile(
+                  leading: Icon(item.pemicu.icon),
+                  title: Text(item.pemicu.label),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        'Intensitas: ${item.intensitas}/5  •  ${FormatWaktuLengkap.formatSingkat(item.tanggal)}',
                       ),
-                    );
-                  },
-                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                      if (item.catatan != null && item.catatan!.isNotEmpty)
+                        Text(item.catatan!),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Hapus',
+                    onPressed: () => unawaited(_hapus(item)),
+                  ),
+                  onTap: () => unawaited(
+                    Nav.to(context, FormDiaryCraving(craving: item)),
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigasiKeForm,
+        onPressed: () => unawaited(Nav.to(context, const FormDiaryCraving())),
         child: const Icon(CupertinoIcons.add),
       ),
     );
   }
 }
 
-/// Ringkasan analisis pemicu: menampilkan 3 pemicu teratas beserta jumlahnya,
-/// ditambah label "Lainnya" dengan jumlah sisa jika ada pemicu di luar top 3.
-class _RingkasanPemicu extends StatelessWidget {
-  const _RingkasanPemicu({
-    required this.topPemicu,
-    required this.jumlahLainnya,
-  });
-
-  final List<MapEntry<PemicuEnum, int>> topPemicu;
-  final int jumlahLainnya;
+class _EmptyDiaryCraving extends StatelessWidget {
+  const _EmptyDiaryCraving();
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Card(
+    return const SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
-          children: [
-            Text(
-              'Pemicu Teratas',
-              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            ...topPemicu.map(
-              (e) => _BarisPemicu(
-                icon: e.key.icon,
-                label: e.key.label,
-                jumlah: e.value,
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.book, size: 48),
+              Text(
+                'Belum ada catatan craving',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
-                if (jumlahLainnya > 0)
-              _BarisPemicu(
-                icon: Icons.more_horiz,
-                label: 'Kategori lain',
-                jumlah: jumlahLainnya,
+              Text(
+                'Tekan tombol + untuk mencatat craving pertama.',
+                textAlign: TextAlign.center,
               ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Satu baris ringkasan pemicu: ikon, label, dan jumlah kemunculan.
-class _BarisPemicu extends StatelessWidget {
-  const _BarisPemicu({
-    required this.icon,
-    required this.label,
-    required this.jumlah,
-  });
-
-  final IconData icon;
-  final String label;
-  final int jumlah;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      spacing: 8,
-      children: [
-        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-        Expanded(
-          child: Text(
-            label,
-            style: textTheme.bodyMedium,
-            overflow: TextOverflow.ellipsis,
+            ],
           ),
         ),
-        Text(
-          '$jumlah',
-          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-}
-
-/// Ringkasan wawasan craving: rata-rata intensitas 7/30 hari, jam rawan,
-/// dan strategi paling membantu (bila data memadai).
-class _RingkasanWawasan extends StatelessWidget {
-  const _RingkasanWawasan({required this.list});
-
-  final List<DiaryCravingModel> list;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final sekarang = DateTime.now();
-    L.i('list.length=${list.length}, sekarang=$sekarang');
-    final rataRata7 = PolaCravingHelper.rataRataIntensitas(
-      PolaCravingHelper.pola7Hari(list, sekarang: sekarang),
-    );
-    final rataRata30 = PolaCravingHelper.rataRataIntensitas(
-      PolaCravingHelper.pola30Hari(list, sekarang: sekarang),
-    );
-    final jamRawan = PolaCravingHelper.jamTeratas(list);
-    final strategi = PolaCravingHelper.strategiPalingMembantu(list);
-    L.i(
-      'rataRata7=$rataRata7, rataRata30=$rataRata30, jamRawan=$jamRawan, strategi=$strategi',
-    );
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
-          children: [
-            Text(
-              'Wawasan',
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            _BarisWawasan(
-              label: 'Rata-rata intensitas 7 hari',
-              nilai: rataRata7 == null
-                  ? '-'
-                  : '${rataRata7.toStringAsFixed(1)}/5',
-            ),
-            _BarisWawasan(
-              label: 'Rata-rata intensitas 30 hari',
-              nilai: rataRata30 == null
-                  ? '-'
-                  : '${rataRata30.toStringAsFixed(1)}/5',
-            ),
-            _BarisWawasan(
-              label: 'Jam rawan',
-              nilai: jamRawan == null
-                  ? '-'
-                  : '${jamRawan.toString().padLeft(2, '0')}.00',
-            ),
-            if (strategi != null)
-              _BarisWawasan(
-                label: 'Strategi paling membantu',
-                nilai: strategi.label,
-              ),
-          ],
-        ),
       ),
-    );
-  }
-}
-
-/// Satu baris ringkasan wawasan: label dan nilai.
-class _BarisWawasan extends StatelessWidget {
-  const _BarisWawasan({required this.label, required this.nilai});
-
-  final String label;
-  final String nilai;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      spacing: 8,
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: textTheme.bodyMedium,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        Text(
-          nilai,
-          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-}
-
-/// Placeholder kecil yang ditampilkan saat entri belum cukup untuk wawasan.
-class _PlaceholderWawasan extends StatelessWidget {
-  const _PlaceholderWawasan();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          spacing: 8,
-          children: [
-            Icon(
-              CupertinoIcons.info_circle,
-              size: 18,
-              color: colorScheme.primary,
-            ),
-            Expanded(
-              child: Text(
-                'Catat minimal 3 craving untuk melihat wawasan',
-                style: textTheme.bodySmall,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Penanda kecil untuk menampilkan mood/hasil pada item daftar craving.
-class _PenandaDetail extends StatelessWidget {
-  const _PenandaDetail({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 4,
-      children: [
-        Icon(icon, size: 14, color: colorScheme.primary),
-        Flexible(
-          child: Text(
-            label,
-            style: textTheme.bodySmall,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -6710,10 +4366,7 @@ class _PenandaDetail extends StatelessWidget {
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/hasil_craving_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/mood_craving_enum.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/strategi_craving_enum.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
 import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
 import 'package:flutter/material.dart';
@@ -6734,14 +4387,10 @@ class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
   final _formKey = GlobalKey<FormState>();
   final _catatanController = TextEditingController();
   final _catatanFocusNode = FocusNode();
-  final _durasiController = TextEditingController();
 
   PemicuEnum _pemicu = PemicuEnum.stres;
   int _intensitas = 3;
   DateTime _tanggal = DateTime.now();
-  MoodCravingEnum? _mood;
-  StrategiCravingEnum? _strategi;
-  HasilCravingEnum? _hasil;
 
   bool _isLoading = false;
 
@@ -6755,12 +4404,8 @@ class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
       _intensitas = craving.intensitas;
       _tanggal = craving.tanggal;
       _catatanController.text = craving.catatan ?? '';
-      _durasiController.text = craving.durasiMenit?.toString() ?? '';
-      _mood = craving.mood;
-      _strategi = craving.strategi;
-      _hasil = craving.hasil;
       L.i(
-        '_pemicu=$_pemicu, _intensitas=$_intensitas, _tanggal=$_tanggal, _catatanController.text=${_catatanController.text}, _durasiController.text=${_durasiController.text}, _mood=$_mood, _strategi=$_strategi, _hasil=$_hasil',
+        '_pemicu=$_pemicu, _intensitas=$_intensitas, _tanggal=$_tanggal, _catatanController.text=${_catatanController.text}',
       );
     }
   }
@@ -6769,7 +4414,6 @@ class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
   void dispose() {
     _catatanController.dispose();
     _catatanFocusNode.dispose();
-    _durasiController.dispose();
     super.dispose();
   }
 
@@ -6841,9 +4485,6 @@ class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
       return;
     }
     if (!mounted) return;
-    final durasiText = _durasiController.text.trim();
-    L.i('durasiText=$durasiText');
-    final durasiMenit = durasiText.isEmpty ? null : int.parse(durasiText);
 
     setState(() => _isLoading = true);
     L.i('_isLoading=$_isLoading');
@@ -6862,10 +4503,6 @@ class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
         catatan: _catatanController.text.trim().isEmpty
             ? null
             : _catatanController.text.trim(),
-        durasiMenit: durasiMenit,
-        mood: _mood,
-        strategi: _strategi,
-        hasil: _hasil,
         dibuat: widget.craving?.dibuat ?? DateTime.now(),
       );
       L.i('model=$model');
@@ -6963,68 +4600,6 @@ class _FormDiaryCravingState extends ConsumerState<FormDiaryCraving> {
                   wajib: false,
                   minLines: 2,
                   maxLines: 4,
-                ),
-                ExpansionTile(
-                  title: const Text('Detail tambahan (opsional)'),
-                  tilePadding: EdgeInsets.zero,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: 12,
-                      children: [
-                        InputTeks(
-                          controller: _durasiController,
-                          label: 'Durasi (menit)',
-                          hintText: 'Contoh: 15',
-                          wajib: false,
-                          suffixText: 'menit',
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return null;
-                            }
-                            final angka = int.tryParse(value.trim());
-                            if (angka == null || angka < 0) {
-                              return 'Durasi harus berupa angka 0 atau lebih';
-                            }
-                            return null;
-                          },
-                        ),
-                        InputDropdown<MoodCravingEnum?>(
-                          value: _mood,
-                          label: 'Suasana hati',
-                          items: const [null, ...MoodCravingEnum.values],
-                          displayString: (item) => item?.label ?? 'Tidak diisi',
-                          wajib: false,
-                          onChanged: (value) {
-                            setState(() => _mood = value);
-                            L.i('_mood=$_mood');
-                          },
-                        ),
-                        InputDropdown<StrategiCravingEnum?>(
-                          value: _strategi,
-                          label: 'Strategi yang dicoba',
-                          items: const [null, ...StrategiCravingEnum.values],
-                          displayString: (item) => item?.label ?? 'Tidak diisi',
-                          wajib: false,
-                          onChanged: (value) {
-                            setState(() => _strategi = value);
-                            L.i('_strategi=$_strategi');
-                          },
-                        ),
-                        InputDropdown<HasilCravingEnum?>(
-                          value: _hasil,
-                          label: 'Hasil',
-                          items: const [null, ...HasilCravingEnum.values],
-                          displayString: (item) => item?.label ?? 'Tidak diisi',
-                          wajib: false,
-                          onChanged: (value) {
-                            setState(() => _hasil = value);
-                            L.i('_hasil=$_hasil');
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
@@ -7359,166 +4934,6 @@ as int,
 
 
 // ============================================================
-// FILE: lib/fitur/diary_craving/helper/pola_craving_helper.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/diary_craving/enum/hasil_craving_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/enum/strategi_craving_enum.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Helper murni untuk menghitung pola dan wawasan dari data Diary Craving.
-class PolaCravingHelper {
-  const PolaCravingHelper._();
-
-  /// Jumlah entri minimum sebelum wawasan dapat ditampilkan.
-  static const int minimumEntri = 3;
-
-  /// Jumlah entri minimum per strategi sebelum rasio berhasil dihitung.
-  static const int minimumEntriStrategi = 3;
-
-  /// Normalisasi [waktu] ke komponen tanggal saja (tahun, bulan, hari).
-  static DateTime _tanggalSaja(DateTime waktu) {
-    return DateTime(waktu.year, waktu.month, waktu.day);
-  }
-
-  /// Menyaring [daftar] menjadi entri yang terjadi dalam [jumlahHari] hari
-  /// terakhir (termasuk hari ini). Perbandingan dilakukan pada komponen
-  /// tanggal saja.
-  static List<DiaryCravingModel> filterNHari(
-    List<DiaryCravingModel> daftar,
-    int jumlahHari, {
-    DateTime? sekarang,
-  }) {
-    final hariIni = _tanggalSaja(sekarang ?? DateTime.now());
-    final batasAwal = hariIni.subtract(Duration(days: jumlahHari - 1));
-    L.i('jumlahHari=$jumlahHari, batasAwal=$batasAwal, hariIni=$hariIni');
-    return daftar.where((c) {
-      final tanggal = _tanggalSaja(c.tanggal);
-      return !tanggal.isBefore(batasAwal) && !tanggal.isAfter(hariIni);
-    }).toList();
-  }
-
-  /// Entri dalam 7 hari terakhir (termasuk hari ini).
-  static List<DiaryCravingModel> pola7Hari(
-    List<DiaryCravingModel> daftar, {
-    DateTime? sekarang,
-  }) {
-    return filterNHari(daftar, 7, sekarang: sekarang);
-  }
-
-  /// Entri dalam 30 hari terakhir (termasuk hari ini).
-  static List<DiaryCravingModel> pola30Hari(
-    List<DiaryCravingModel> daftar, {
-    DateTime? sekarang,
-  }) {
-    return filterNHari(daftar, 30, sekarang: sekarang);
-  }
-
-  /// Rata-rata intensitas dari [daftar], atau `null` bila daftar kosong.
-  static double? rataRataIntensitas(List<DiaryCravingModel> daftar) {
-    if (daftar.isEmpty) {
-      return null;
-    }
-    final total = daftar.fold<int>(0, (acc, c) => acc + c.intensitas);
-    final rataRata = total / daftar.length;
-    L.i('daftar.length=${daftar.length}, rataRata=$rataRata');
-    return rataRata;
-  }
-
-  /// Mengembalikan jam lokal (0-23) yang paling sering muncul dalam [daftar],
-  /// atau `null` jika jumlah entri kurang dari [minimumEntri].
-  ///
-  /// Perhitungan bersifat murni dan hanya membaca data; tidak menulis database.
-  static int? jamTeratas(List<DiaryCravingModel> daftar) {
-    L.i('daftar.length=${daftar.length}');
-    if (daftar.length < minimumEntri) {
-      return null;
-    }
-
-    final Map<int, int> freq = {};
-    for (final c in daftar) {
-      final jam = c.tanggal.hour;
-      freq[jam] = (freq[jam] ?? 0) + 1;
-    }
-
-    int? jamTeratas;
-    int jumlahTerbesar = 0;
-    freq.forEach((jam, jumlah) {
-      if (jumlah > jumlahTerbesar) {
-        jumlahTerbesar = jumlah;
-        jamTeratas = jam;
-      }
-    });
-
-    L.i('jamTeratas=$jamTeratas, jumlah=$jumlahTerbesar');
-    return jamTeratas;
-  }
-
-  /// Pemicu yang muncul minimal [minimumEntri] kali, diurutkan dari yang
-  /// paling sering. Tie-breaker deterministik berdasarkan index enum.
-  static List<MapEntry<PemicuEnum, int>> pemicuBerulang(
-    List<DiaryCravingModel> daftar, {
-    int minimumEntri = minimumEntri,
-  }) {
-    L.i('daftar.length=${daftar.length}, minimumEntri=$minimumEntri');
-    final Map<PemicuEnum, int> freq = {};
-    for (final c in daftar) {
-      freq[c.pemicu] = (freq[c.pemicu] ?? 0) + 1;
-    }
-
-    final hasil = freq.entries
-        .where((e) => e.value >= minimumEntri)
-        .toList()
-      ..sort((a, b) {
-        final cmp = b.value.compareTo(a.value);
-        if (cmp != 0) return cmp;
-        return a.key.index.compareTo(b.key.index);
-      });
-    L.i('pemicuBerulang=$hasil');
-    return hasil;
-  }
-
-  /// Strategi dengan rasio `berhasilMenahan` tertinggi, minimal
-  /// [minimumEntri] entri per strategi. `null` bila tidak ada strategi
-  /// yang memadai.
-  static StrategiCravingEnum? strategiPalingMembantu(
-    List<DiaryCravingModel> daftar, {
-    int minimumEntri = minimumEntriStrategi,
-  }) {
-    L.i('daftar.length=${daftar.length}, minimumEntri=$minimumEntri');
-    final Map<StrategiCravingEnum, List<DiaryCravingModel>> grup = {};
-    for (final c in daftar) {
-      final s = c.strategi;
-      if (s != null) {
-        grup.putIfAbsent(s, () => []).add(c);
-      }
-    }
-
-    StrategiCravingEnum? terbaik;
-    var rasioTerbaik = -1.0;
-    grup.forEach((s, entries) {
-      if (entries.length < minimumEntri) return;
-      final sukses = entries
-          .where((e) => e.hasil == HasilCravingEnum.berhasilMenahan)
-          .length;
-      final rasio = sukses / entries.length;
-      if (rasio > rasioTerbaik) {
-        rasioTerbaik = rasio;
-        terbaik = s;
-      }
-    });
-
-    L.i('strategiPalingMembantu=$terbaik, rasio=$rasioTerbaik');
-    return terbaik;
-  }
-}
-```
-
-
-
-// ============================================================
 // FILE: lib/fitur/diary_craving/notifier/diary_craving_notifier.g.dart
 // ============================================================
 ```dart
@@ -7702,61 +5117,17 @@ class DiaryCravingNotifier extends _$DiaryCravingNotifier {
 ```dart
 import 'dart:async';
 
-import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 
-/// Status kalender per tanggal, diturunkan dari log konsumsi yang ada.
-///
-/// Hari tanpa catatan tidak pernah dianggap bebas rokok; status di bawah
-/// adalah cerminan apa adanya dari data konsumsi.
-enum StatusKalender {
-  adaKonsumsi,
-  slip,
-  tanpaCatatan,
-  belumMulai,
-  mendatang,
-}
-
-/// Kunci tanggal `yyyy-MM-dd` (waktu lokal).
-///
-/// Format sama dengan `KonsumsiHitungHelper.ringkasanHarian` agar konsisten.
-String _keyTanggal(DateTime d) =>
-    '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-
-/// Menentukan status kalender untuk satu [tanggal].
-StatusKalender _statusTanggal({
-  required DateTime tanggal,
-  required DateTime tanggalBerhenti,
-  required DateTime hariIni,
-  required Map<String, int> ringkasan,
-  required Map<String, int> slipPerTanggal,
-}) {
-  if (tanggal.isBefore(tanggalBerhenti)) return StatusKalender.belumMulai;
-  if (tanggal.isAfter(hariIni)) return StatusKalender.mendatang;
-  final key = _keyTanggal(tanggal);
-  if (slipPerTanggal.containsKey(key)) return StatusKalender.slip;
-  if ((ringkasan[key] ?? 0) > 0) return StatusKalender.adaKonsumsi;
-  return StatusKalender.tanpaCatatan;
-}
-
-// Streak dihitung lewat MetrikBerhentiHelper.hitungStreak (helper bersama)
-// agar logika tidak ditulis dua kali di layar ini.
-
 /// Halaman kalender smoke-free.
 ///
-/// Menampilkan kalender bulanan yang jujur terhadap log konsumsi: hari
-/// tanpa catatan tampil netral (bukan bebas rokok), hari dengan catatan
-/// konsumsi/slip diberi warna sesuai status, dan progres kumulatif
-/// dipisahkan dari streak saat ini.
+/// Menampilkan kalender bulanan yang menandai hari-hari smoke-free sejak
+/// tanggal mulai berhenti merokok, beserta ringkasan progres.
 class KalenderSmokeFreeScreen extends ConsumerStatefulWidget {
   const KalenderSmokeFreeScreen({super.key});
 
@@ -7815,9 +5186,8 @@ class _KalenderSmokeFreeScreenState
   @override
   Widget build(BuildContext context) {
     final biodataAsync = ref.watch(biodataProvider);
-    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
 
-    if (biodataAsync.isLoading || konsumsiAsync.isLoading) {
+    if (biodataAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (biodataAsync.hasError) {
@@ -7848,37 +5218,8 @@ class _KalenderSmokeFreeScreenState
         ),
       );
     }
-    if (konsumsiAsync.hasError) {
-      L.e(
-        'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
-      );
-      return Scaffold(
-        appBar: AppBar(title: const Text('Kalender Smoke-Free')),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 8,
-                children: [
-                  const Text('Gagal memuat data konsumsi'),
-                  OutlinedButton(
-                    onPressed: () {
-                      final _ = ref.refresh(konsumsiRokokProvider);
-                    },
-                    child: const Text('Coba lagi'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
 
     final biodata = biodataAsync.requireValue;
-    final konsumsiState = konsumsiAsync.requireValue;
     if (biodata == null) {
       return _buildBiodataNull();
     }
@@ -7896,27 +5237,9 @@ class _KalenderSmokeFreeScreenState
       tanggalBerhenti.day,
     );
 
-    // Kelompokkan catatan konsumsi per tanggal lokal, sekali untuk seluruh grid.
-    final ringkasan = konsumsiState.ringkasanHarian;
-    final catatanPerTanggal = <String, List<KonsumsiRokokModel>>{};
-    final slipPerTanggal = <String, int>{};
-    for (final m in konsumsiState.listKonsumsi) {
-      final lokal = m.tanggal.toLocal();
-      final key = _keyTanggal(lokal);
-      catatanPerTanggal.putIfAbsent(key, () => []).add(m);
-      if (m.isSlip) {
-        slipPerTanggal[key] = (slipPerTanggal[key] ?? 0) + m.jumlah;
-      }
-    }
-
     final totalSmokeFree =
         hariIniDate.difference(tanggalBerhentiDate).inDays + 1;
     final totalSmokeFreeAman = totalSmokeFree < 0 ? 0 : totalSmokeFree;
-    final streak = MetrikBerhentiHelper.hitungStreak(konsumsiState.listKonsumsi);
-    L.i(
-      'streak=$streak, totalSmokeFree=$totalSmokeFreeAman, '
-      'ringkasan.length=${ringkasan.length}',
-    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Kalender Smoke-Free')),
@@ -7930,7 +5253,6 @@ class _KalenderSmokeFreeScreenState
               _RingkasanSmokeFree(
                 tanggalBerhenti: tanggalBerhentiDate,
                 totalSmokeFree: totalSmokeFreeAman,
-                streak: streak,
               ),
               _NavigasiBulan(
                 bulan: _bulanDitampilkan,
@@ -7943,20 +5265,9 @@ class _KalenderSmokeFreeScreenState
                   bulan: _bulanDitampilkan,
                   tanggalBerhenti: tanggalBerhentiDate,
                   hariIni: hariIniDate,
-                  biodata: biodata,
-                  ringkasan: ringkasan,
-                  slipPerTanggal: slipPerTanggal,
-                  catatanPerTanggal: catatanPerTanggal,
                 ),
               ),
               const _Legenda(),
-              Text(
-                'Hari tanpa catatan tidak dihitung sebagai bebas rokok. '
-                'Catat konsumsi agar kalender akurat.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
             ],
           ),
         ),
@@ -7967,14 +5278,25 @@ class _KalenderSmokeFreeScreenState
   Widget _buildBiodataNull() {
     return Scaffold(
       appBar: AppBar(title: const Text('Kalender Smoke-Free')),
-      body: EmptyStateView(
-        ikon: CupertinoIcons.person,
-        judul: 'Belum ada data biodata',
-        deskripsi:
-            'Kalender smoke-free membutuhkan biodata untuk mengetahui '
-            'kebiasaan merokokmu sebelum berhenti.',
-        ctaLabel: 'Isi Biodata',
-        onCta: _bukaFormBiodata,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Text('Belum ada data biodata'),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -7982,27 +5304,36 @@ class _KalenderSmokeFreeScreenState
   Widget _buildBelumBerhenti() {
     return Scaffold(
       appBar: AppBar(title: const Text('Kalender Smoke-Free')),
-      body: EmptyStateView(
-        ikon: CupertinoIcons.calendar,
-        judul: 'Belum ada tanggal mulai berhenti',
-        deskripsi:
-            'Isi tanggal mulai berhenti pada biodata untuk melihat '
-            'kalender smoke-free.',
-        ctaLabel: 'Isi Biodata',
-        onCta: _bukaFormBiodata,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Icon(CupertinoIcons.calendar, size: 48),
+                const Text(
+                  'Belum ada tanggal mulai berhenti merokok.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  'Isi tanggal mulai berhenti pada biodata untuk melihat '
+                  'kalender smoke-free.',
+                  textAlign: TextAlign.center,
+                ),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-    );
-  }
-
-  void _bukaFormBiodata() {
-    unawaited(
-      Nav.to(context, const FormBiodata(buatPertama: false)).catchError((
-        Object e,
-        StackTrace s,
-      ) {
-        L.e('Gagal navigasi ke Form Biodata: $e $s');
-        return null;
-      }),
     );
   }
 }
@@ -8011,17 +5342,14 @@ class _RingkasanSmokeFree extends StatelessWidget {
   const _RingkasanSmokeFree({
     required this.tanggalBerhenti,
     required this.totalSmokeFree,
-    required this.streak,
   });
 
   final DateTime tanggalBerhenti;
   final int totalSmokeFree;
-  final int streak;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -8030,44 +5358,21 @@ class _RingkasanSmokeFree extends StatelessWidget {
           spacing: 4,
           children: [
             Text(
-              'Streak saat ini',
-              style: textTheme.labelLarge?.copyWith(
+              'Total hari smoke-free',
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            Text(
-              '$streak hari',
-              style: textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.primary,
-              ),
-            ),
-            Text(
-              'Hari berturut-turut tanpa catatan konsumsi/slip sampai hari ini',
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const Divider(),
-            Text(
-              'Total hari sejak berhenti',
-              style: textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurfaceVariant,
               ),
             ),
             Text(
               '$totalSmokeFree hari',
               style: textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: Colors.green,
               ),
             ),
             Text(
               'Sejak ${FormatTanggal.formatDasar(tanggalBerhenti)}',
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
+              style: textTheme.bodySmall,
             ),
           ],
         ),
@@ -8156,19 +5461,11 @@ class _GridKalender extends StatelessWidget {
     required this.bulan,
     required this.tanggalBerhenti,
     required this.hariIni,
-    required this.biodata,
-    required this.ringkasan,
-    required this.slipPerTanggal,
-    required this.catatanPerTanggal,
   });
 
   final DateTime bulan;
   final DateTime tanggalBerhenti;
   final DateTime hariIni;
-  final BiodataModel biodata;
-  final Map<String, int> ringkasan;
-  final Map<String, int> slipPerTanggal;
-  final Map<String, List<KonsumsiRokokModel>> catatanPerTanggal;
 
   @override
   Widget build(BuildContext context) {
@@ -8190,10 +5487,6 @@ class _GridKalender extends StatelessWidget {
           tanggal: tanggal,
           tanggalBerhenti: tanggalBerhenti,
           hariIni: hariIni,
-          biodata: biodata,
-          ringkasan: ringkasan,
-          slipPerTanggal: slipPerTanggal,
-          catatanPerTanggal: catatanPerTanggal,
         ),
       );
     }
@@ -8217,287 +5510,47 @@ class _SelHari extends StatelessWidget {
     required this.tanggal,
     required this.tanggalBerhenti,
     required this.hariIni,
-    required this.biodata,
-    required this.ringkasan,
-    required this.slipPerTanggal,
-    required this.catatanPerTanggal,
   });
 
   final DateTime tanggal;
   final DateTime tanggalBerhenti;
   final DateTime hariIni;
-  final BiodataModel biodata;
-  final Map<String, int> ringkasan;
-  final Map<String, int> slipPerTanggal;
-  final Map<String, List<KonsumsiRokokModel>> catatanPerTanggal;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
+    final sebelumBerhenti = tanggal.isBefore(tanggalBerhenti);
+    final setelahHariIni = tanggal.isAfter(hariIni);
     final hariIniFlag = tanggal == hariIni;
-    final key = _keyTanggal(tanggal);
-    final status = _statusTanggal(
-      tanggal: tanggal,
-      tanggalBerhenti: tanggalBerhenti,
-      hariIni: hariIni,
-      ringkasan: ringkasan,
-      slipPerTanggal: slipPerTanggal,
-    );
-    final slipBatang = slipPerTanggal[key] ?? 0;
-    final catatan = catatanPerTanggal[key] ?? const <KonsumsiRokokModel>[];
-    final sedangTapering =
-        biodata.sedangTapering && biodata.targetRokokHariIni > 0;
 
     Color? warnaLatar;
-    switch (status) {
-      case StatusKalender.adaKonsumsi:
-        warnaLatar = Colors.orange.withValues(alpha: 0.25);
-      case StatusKalender.slip:
-        warnaLatar = Colors.red.withValues(alpha: 0.25);
-      case StatusKalender.tanpaCatatan:
-        warnaLatar = colorScheme.surfaceContainerHighest;
-      case StatusKalender.belumMulai:
-      case StatusKalender.mendatang:
-        warnaLatar = null;
+    if (sebelumBerhenti) {
+      warnaLatar = null;
+    } else if (setelahHariIni) {
+      warnaLatar = null;
+    } else {
+      warnaLatar = Colors.green.withValues(alpha: 0.25);
     }
 
-    Border? border;
-    if (hariIniFlag) {
-      border = Border.all(color: colorScheme.primary, width: 2);
-    } else if (sedangTapering &&
-        status != StatusKalender.belumMulai &&
-        status != StatusKalender.mendatang) {
-      border = Border.all(color: colorScheme.tertiary, width: 1.5);
-    }
-
-    final Color warnaTeks;
-    switch (status) {
-      case StatusKalender.adaKonsumsi:
-        warnaTeks = Colors.orange.shade900;
-      case StatusKalender.slip:
-        warnaTeks = Colors.red.shade800;
-      case StatusKalender.tanpaCatatan:
-        warnaTeks = colorScheme.onSurface;
-      case StatusKalender.belumMulai:
-      case StatusKalender.mendatang:
-        warnaTeks = Theme.of(context).disabledColor;
-    }
-
-    final sel = Container(
+    return Container(
       decoration: BoxDecoration(
         color: warnaLatar,
         borderRadius: BorderRadius.circular(8),
-        border: border,
+        border: hariIniFlag
+            ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
+            : null,
       ),
       alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '${tanggal.day}',
-            style: textTheme.bodyMedium?.copyWith(
-              fontWeight: hariIniFlag ? FontWeight.bold : FontWeight.normal,
-              color: warnaTeks,
-            ),
-          ),
-          if (status == StatusKalender.slip)
-            Text(
-              '$slipBatang btg',
-              style: textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.red.shade800,
-              ),
-            ),
-        ],
-      ),
-    );
-
-    final bisaKetuk = status != StatusKalender.belumMulai &&
-        status != StatusKalender.mendatang;
-    if (!bisaKetuk) {
-      return sel;
-    }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: () => unawaited(
-          showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled: true,
-            builder: (_) => _DetailTanggal(
-              tanggal: tanggal,
-              status: status,
-              catatan: catatan,
-              biodata: biodata,
-            ),
-          ).catchError((Object e, StackTrace s) {
-            L.e('Gagal membuka detail tanggal: $e $s');
-            return null;
-          }),
-        ),
-        child: sel,
-      ),
-    );
-  }
-}
-
-class _DetailTanggal extends StatelessWidget {
-  const _DetailTanggal({
-    required this.tanggal,
-    required this.status,
-    required this.catatan,
-    required this.biodata,
-  });
-
-  final DateTime tanggal;
-  final StatusKalender status;
-  final List<KonsumsiRokokModel> catatan;
-  final BiodataModel biodata;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final (String statusLabel, Color statusWarna) = switch (status) {
-      StatusKalender.adaKonsumsi => (
-          'Ada konsumsi tercatat',
-          Colors.orange.shade900,
-        ),
-      StatusKalender.slip => (
-          'Slip (kekambuhan) tercatat',
-          Colors.red.shade800,
-        ),
-      StatusKalender.tanpaCatatan => (
-          'Tanpa catatan',
-          colorScheme.onSurfaceVariant,
-        ),
-      StatusKalender.belumMulai => (
-          'Belum mulai',
-          colorScheme.onSurfaceVariant,
-        ),
-      StatusKalender.mendatang => (
-          'Mendatang',
-          colorScheme.onSurfaceVariant,
-        ),
-    };
-
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          spacing: 12,
-          children: [
-            Text(
-              FormatTanggal.formatSingkat(tanggal),
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Row(
-              spacing: 8,
-              children: [
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: statusWarna,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Text(
-                  statusLabel,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: statusWarna,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            if (catatan.isEmpty)
-              Text(
-                'Tidak ada catatan konsumsi pada tanggal ini.',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              )
-            else ...[
-              Text(
-                'Catatan (${catatan.length})',
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              for (final m in catatan) _BarisCatatan(konsumsi: m),
-            ],
-            if (biodata.sedangTapering)
-              Text(
-                'Target tapering saat ini: ${biodata.targetRokokHariIni} batang',
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-          ],
+      child: Text(
+        '${tanggal.day}',
+        style: TextStyle(
+          fontWeight: hariIniFlag ? FontWeight.bold : FontWeight.normal,
+          color: sebelumBerhenti
+              ? Theme.of(context).disabledColor
+              : (setelahHariIni
+                    ? Theme.of(context).disabledColor
+                    : Colors.green.shade800),
         ),
       ),
-    );
-  }
-}
-
-class _BarisCatatan extends StatelessWidget {
-  const _BarisCatatan({required this.konsumsi});
-
-  final KonsumsiRokokModel konsumsi;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    final isSlip = konsumsi.isSlip;
-    final catatanTeks = konsumsi.catatan;
-
-    return Row(
-      spacing: 12,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          Icons.smoking_rooms,
-          size: 20,
-          color: isSlip ? Colors.red.shade800 : colorScheme.onSurfaceVariant,
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 2,
-            children: [
-              Text(
-                '${konsumsi.jumlah} batang${isSlip ? '  •  SLIP' : ''}',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: isSlip ? FontWeight.bold : FontWeight.normal,
-                  color: isSlip ? Colors.red.shade800 : null,
-                ),
-              ),
-              if (catatanTeks != null && catatanTeks.isNotEmpty)
-                Text(
-                  catatanTeks,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              Text(
-                FormatWaktuLengkap.formatSingkat(konsumsi.tanggal.toLocal()),
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -8508,32 +5561,19 @@ class _Legenda extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return Wrap(
-      spacing: 12,
-      runSpacing: 8,
+    return Row(
+      spacing: 16,
       children: [
         _ItemLegenda(
-          warna: Colors.orange.withValues(alpha: 0.25),
-          label: 'Ada konsumsi',
+          warna: Colors.green.withValues(alpha: 0.25),
+          label: 'Smoke-free',
           textTheme: textTheme,
-        ),
-        _ItemLegenda(
-          warna: Colors.red.withValues(alpha: 0.25),
-          label: 'Slip',
-          textTheme: textTheme,
-        ),
-        _ItemLegenda(
-          warna: colorScheme.surfaceContainerHighest,
-          label: 'Tanpa catatan',
-          textTheme: textTheme,
-          border: true,
         ),
         _ItemLegenda(
           warna: null,
-          label: 'Tapering',
+          label: 'Belum/Lainnya',
           textTheme: textTheme,
-          borderColor: colorScheme.tertiary,
+          border: true,
         ),
       ],
     );
@@ -8546,19 +5586,15 @@ class _ItemLegenda extends StatelessWidget {
     required this.label,
     required this.textTheme,
     this.border = false,
-    this.borderColor,
   });
 
   final Color? warna;
   final String label;
   final TextTheme textTheme;
   final bool border;
-  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
-    final warnaBorder = borderColor ??
-        (border ? Theme.of(context).disabledColor : null);
     return Row(
       spacing: 6,
       children: [
@@ -8568,8 +5604,8 @@ class _ItemLegenda extends StatelessWidget {
           decoration: BoxDecoration(
             color: warna,
             borderRadius: BorderRadius.circular(4),
-            border: warnaBorder != null
-                ? Border.all(color: warnaBorder)
+            border: border
+                ? Border.all(color: Theme.of(context).disabledColor)
                 : null,
           ),
         ),
@@ -8583,2216 +5619,81 @@ class _ItemLegenda extends StatelessWidget {
 
 
 // ============================================================
-// FILE: lib/fitur/toxin_pelacakan/model/toxin_model.dart
-// ============================================================
-```dart
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'toxin_model.freezed.dart';
-
-/// Model data untuk satu entri toxin yang dihindari tubuh saat tidak merokok.
-///
-/// Data ini bersifat referensi statis, tidak disimpan ke SQLite, dan tidak
-/// diubah oleh pengguna. Setiap entri mencakup nama toxin, jenis zat, faktor
-/// konversi per batang rokok, efek singkat, serta sumber referensi umum
-/// (WHO / CDC / AHA / ACS sebagai landasan, bukan klaim medis aplikasi).
-@freezed
-abstract class ToxinModel with _$ToxinModel {
-  const ToxinModel._();
-
-  const factory ToxinModel({
-    required String nama,
-    required String jenisZat,
-    required double faktorPerBatang,
-    required String efekSingkat,
-    required String sumberReferensi,
-    @Default(0.0) double kuantitasDiHindari,
-  }) = _ToxinModel;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/toxin_pelacakan/model/toxin_model.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'toxin_model.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$ToxinModel {
-
- String get nama; String get jenisZat; double get faktorPerBatang; String get efekSingkat; String get sumberReferensi; double get kuantitasDiHindari;
-/// Create a copy of ToxinModel
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ToxinModelCopyWith<ToxinModel> get copyWith => _$ToxinModelCopyWithImpl<ToxinModel>(this as ToxinModel, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as ToxinModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToxinModel&&(identical(other.nama, _this.nama) || other.nama == _this.nama)&&(identical(other.jenisZat, _this.jenisZat) || other.jenisZat == _this.jenisZat)&&(identical(other.faktorPerBatang, _this.faktorPerBatang) || other.faktorPerBatang == _this.faktorPerBatang)&&(identical(other.efekSingkat, _this.efekSingkat) || other.efekSingkat == _this.efekSingkat)&&(identical(other.sumberReferensi, _this.sumberReferensi) || other.sumberReferensi == _this.sumberReferensi)&&(identical(other.kuantitasDiHindari, _this.kuantitasDiHindari) || other.kuantitasDiHindari == _this.kuantitasDiHindari));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as ToxinModel;
-  return Object.hash(runtimeType,_this.nama,_this.jenisZat,_this.faktorPerBatang,_this.efekSingkat,_this.sumberReferensi,_this.kuantitasDiHindari);
-}
-
-@override
-String toString() {
-  final _this = this as ToxinModel;
-  return 'ToxinModel(nama: ${_this.nama}, jenisZat: ${_this.jenisZat}, faktorPerBatang: ${_this.faktorPerBatang}, efekSingkat: ${_this.efekSingkat}, sumberReferensi: ${_this.sumberReferensi}, kuantitasDiHindari: ${_this.kuantitasDiHindari})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $ToxinModelCopyWith<$Res>  {
-  factory $ToxinModelCopyWith(ToxinModel value, $Res Function(ToxinModel) _then) = _$ToxinModelCopyWithImpl;
-@useResult
-$Res call({
- String nama, String jenisZat, double faktorPerBatang, String efekSingkat, String sumberReferensi, double kuantitasDiHindari
-});
-
-
-
-
-}
-/// @nodoc
-class _$ToxinModelCopyWithImpl<$Res>
-    implements $ToxinModelCopyWith<$Res> {
-  _$ToxinModelCopyWithImpl(this._self, this._then);
-
-  final ToxinModel _self;
-  final $Res Function(ToxinModel) _then;
-
-/// Create a copy of ToxinModel
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? nama = null,Object? jenisZat = null,Object? faktorPerBatang = null,Object? efekSingkat = null,Object? sumberReferensi = null,Object? kuantitasDiHindari = null,}) {
-  return _then(ToxinModel(
-nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
-as String,jenisZat: null == jenisZat ? _self.jenisZat : jenisZat // ignore: cast_nullable_to_non_nullable
-as String,faktorPerBatang: null == faktorPerBatang ? _self.faktorPerBatang : faktorPerBatang // ignore: cast_nullable_to_non_nullable
-as double,efekSingkat: null == efekSingkat ? _self.efekSingkat : efekSingkat // ignore: cast_nullable_to_non_nullable
-as String,sumberReferensi: null == sumberReferensi ? _self.sumberReferensi : sumberReferensi // ignore: cast_nullable_to_non_nullable
-as String,kuantitasDiHindari: null == kuantitasDiHindari ? _self.kuantitasDiHindari : kuantitasDiHindari // ignore: cast_nullable_to_non_nullable
-as double,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [ToxinModel].
-extension ToxinModelPatterns on ToxinModel {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ToxinModel value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _ToxinModel() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ToxinModel value)  $default,){
-final _that = this;
-switch (_that) {
-case _ToxinModel():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ToxinModel value)?  $default,){
-final _that = this;
-switch (_that) {
-case _ToxinModel() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String nama,  String jenisZat,  double faktorPerBatang,  String efekSingkat,  String sumberReferensi,  double kuantitasDiHindari)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _ToxinModel() when $default != null:
-return $default(_that.nama,_that.jenisZat,_that.faktorPerBatang,_that.efekSingkat,_that.sumberReferensi,_that.kuantitasDiHindari);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String nama,  String jenisZat,  double faktorPerBatang,  String efekSingkat,  String sumberReferensi,  double kuantitasDiHindari)  $default,) {final _that = this;
-switch (_that) {
-case _ToxinModel():
-return $default(_that.nama,_that.jenisZat,_that.faktorPerBatang,_that.efekSingkat,_that.sumberReferensi,_that.kuantitasDiHindari);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String nama,  String jenisZat,  double faktorPerBatang,  String efekSingkat,  String sumberReferensi,  double kuantitasDiHindari)?  $default,) {final _that = this;
-switch (_that) {
-case _ToxinModel() when $default != null:
-return $default(_that.nama,_that.jenisZat,_that.faktorPerBatang,_that.efekSingkat,_that.sumberReferensi,_that.kuantitasDiHindari);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _ToxinModel extends ToxinModel {
-  const _ToxinModel({required this.nama, required this.jenisZat, required this.faktorPerBatang, required this.efekSingkat, required this.sumberReferensi, this.kuantitasDiHindari = 0.0}): super._();
-  
-
-@override final  String nama;
-@override final  String jenisZat;
-@override final  double faktorPerBatang;
-@override final  String efekSingkat;
-@override final  String sumberReferensi;
-@override@JsonKey() final  double kuantitasDiHindari;
-
-/// Create a copy of ToxinModel
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$ToxinModelCopyWith<_ToxinModel> get copyWith => __$ToxinModelCopyWithImpl<_ToxinModel>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ToxinModel&&(identical(other.nama, nama) || other.nama == nama)&&(identical(other.jenisZat, jenisZat) || other.jenisZat == jenisZat)&&(identical(other.faktorPerBatang, faktorPerBatang) || other.faktorPerBatang == faktorPerBatang)&&(identical(other.efekSingkat, efekSingkat) || other.efekSingkat == efekSingkat)&&(identical(other.sumberReferensi, sumberReferensi) || other.sumberReferensi == sumberReferensi)&&(identical(other.kuantitasDiHindari, kuantitasDiHindari) || other.kuantitasDiHindari == kuantitasDiHindari));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,nama,jenisZat,faktorPerBatang,efekSingkat,sumberReferensi,kuantitasDiHindari);
-}
-
-@override
-String toString() {
-    return 'ToxinModel(nama: $nama, jenisZat: $jenisZat, faktorPerBatang: $faktorPerBatang, efekSingkat: $efekSingkat, sumberReferensi: $sumberReferensi, kuantitasDiHindari: $kuantitasDiHindari)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$ToxinModelCopyWith<$Res> implements $ToxinModelCopyWith<$Res> {
-  factory _$ToxinModelCopyWith(_ToxinModel value, $Res Function(_ToxinModel) _then) = __$ToxinModelCopyWithImpl;
-@override @useResult
-$Res call({
- String nama, String jenisZat, double faktorPerBatang, String efekSingkat, String sumberReferensi, double kuantitasDiHindari
-});
-
-
-
-
-}
-/// @nodoc
-class __$ToxinModelCopyWithImpl<$Res>
-    implements _$ToxinModelCopyWith<$Res> {
-  __$ToxinModelCopyWithImpl(this._self, this._then);
-
-  final _ToxinModel _self;
-  final $Res Function(_ToxinModel) _then;
-
-/// Create a copy of ToxinModel
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? nama = null,Object? jenisZat = null,Object? faktorPerBatang = null,Object? efekSingkat = null,Object? sumberReferensi = null,Object? kuantitasDiHindari = null,}) {
-  return _then(_ToxinModel(
-nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
-as String,jenisZat: null == jenisZat ? _self.jenisZat : jenisZat // ignore: cast_nullable_to_non_nullable
-as String,faktorPerBatang: null == faktorPerBatang ? _self.faktorPerBatang : faktorPerBatang // ignore: cast_nullable_to_non_nullable
-as double,efekSingkat: null == efekSingkat ? _self.efekSingkat : efekSingkat // ignore: cast_nullable_to_non_nullable
-as String,sumberReferensi: null == sumberReferensi ? _self.sumberReferensi : sumberReferensi // ignore: cast_nullable_to_non_nullable
-as String,kuantitasDiHindari: null == kuantitasDiHindari ? _self.kuantitasDiHindari : kuantitasDiHindari // ignore: cast_nullable_to_non_nullable
-as double,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/toxin_pelacakan/screens/toxin_pelacakan_screen.dart
+// FILE: lib/fitur/sos_craving/screens/sos_craving_screen.dart
 // ============================================================
 ```dart
 import 'dart:async';
 
-import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
-import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart';
-import 'package:berhenti_merokok/fitur/toxin_pelacakan/helper/toxin_hitung_helper.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
 
-/// Layar pelacakan toxin yang dihindari tubuh sejak tidak merokok.
+/// Halaman bantuan cepat saat craving (SOS Craving).
 ///
-/// Menampilkan daftar zat berbahaya berdasarkan estimasi rokok yang tidak
-/// dihisap dari biodata berdampingan dengan aktual dari catatan konsumsi
-/// (`MetrikBerhentiHelper`).
-class ToxinPelacakanScreen extends ConsumerStatefulWidget {
-  const ToxinPelacakanScreen({super.key});
+/// Menyediakan latihan napas 4-7-8, timer craving 3 menit, dan daftar
+/// distraksi untuk membantu pengguna melewati dorongan merokok.
+class SosCravingScreen extends ConsumerStatefulWidget {
+  const SosCravingScreen({super.key});
 
   @override
-  ConsumerState<ToxinPelacakanScreen> createState() =>
-      _ToxinPelacakanScreenState();
+  ConsumerState<SosCravingScreen> createState() => _SosCravingScreenState();
 }
 
-class _ToxinPelacakanScreenState extends ConsumerState<ToxinPelacakanScreen> {
+class _SosCravingScreenState extends ConsumerState<SosCravingScreen>
+    with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    L.i('ToxinPelacakanScreen initState');
+    L.i('SosCravingScreen initState');
   }
 
   @override
   void dispose() {
-    L.i('ToxinPelacakanScreen dispose');
+    L.i('SosCravingScreen dispose');
     super.dispose();
-  }
-
-  void _bukaKonsumsiRokok() {
-    unawaited(
-      Nav.to(context, const KonsumsiRokokScreen()).catchError((
-        Object e,
-        StackTrace s,
-      ) {
-        L.e('Gagal navigasi ke Konsumsi Rokok: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  void _bukaFormBiodata() {
-    unawaited(
-      Nav.to(
-        context,
-        const FormBiodata(buatPertama: false),
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal navigasi ke Form Biodata: $e $s');
-        return null;
-      }),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final biodataAsync = ref.watch(biodataProvider);
-    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
-
-    if (biodataAsync.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    if (biodataAsync.hasError) {
-      L.e(
-        'biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}',
-      );
-      return Scaffold(
-        appBar: AppBar(title: const Text('Pelacakan Toxin')),
+    final textTheme = Theme.of(context).textTheme;
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('SOS Craving'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Napas 4-7-8'),
+              Tab(text: 'Timer 3 Menit'),
+              Tab(text: 'Distraksi'),
+            ],
+          ),
+        ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 12,
-                children: [
-                  const Text('Gagal memuat data'),
-                  OutlinedButton(
-                    onPressed: () {
-                      final _ = ref.refresh(biodataProvider);
-                    },
-                    child: const Text('Coba lagi'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    final biodata = biodataAsync.requireValue;
-    if (biodata == null) {
-      return _buildBiodataNull();
-    }
-
-    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-    if (tanggalBerhenti == null) {
-      return _buildBelumBerhenti();
-    }
-
-    final rokokEstimasi = MetrikBerhentiHelper.hitungRokokTidakDiHisapEstimasi(
-      biodata,
-    );
-    final konsumsiList = konsumsiAsync.asData?.value.listKonsumsi;
-    final adaCatatan = konsumsiList != null && konsumsiList.isNotEmpty;
-    final hariTercatat = adaCatatan
-        ? MetrikBerhentiHelper.hitungJumlahHariTercatat(konsumsiList)
-        : 0;
-    final rokokAktual = adaCatatan
-        ? MetrikBerhentiHelper.hitungRokokDihindariAktual(biodata, konsumsiList)
-        : 0;
-
-    if (konsumsiAsync.hasError) {
-      L.e(
-        'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
-      );
-    }
-
-    // Fallback seperti badge: aktual bila ada catatan, estimasi bila belum ada.
-    final rokokTidakDiHisap = adaCatatan ? rokokAktual : rokokEstimasi;
-
-    if (rokokTidakDiHisap == 0) {
-      return _buildBelumAdaRokokDiHindari();
-    }
-
-    final daftarToxin = ToxinHitungHelper.hitung(rokokTidakDiHisap);
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pelacakan Toxin')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12,
+          child: TabBarView(
             children: [
-              Text(
-                'Zat berbahaya yang dihindari',
-                style: Theme.of(context).textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Rokok yang tidak dihisap sejak '
-                '${FormatTanggal.formatDasar(tanggalBerhenti)}:',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Text(
-                'Estimasi (baseline): $rokokEstimasi batang',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              if (konsumsiAsync.isLoading)
-                Text(
-                  'Menghitung dari catatan…',
-                  style: Theme.of(context).textTheme.bodySmall,
-                )
-              else if (konsumsiAsync.hasError)
-                Text(
-                  'Catatan konsumsi gagal dimuat; menampilkan estimasi.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                )
-              else if (!adaCatatan) ...[
-                Text(
-                  'Belum ada catatan konsumsi — aktual tersedia setelah Anda '
-                  'mencatat.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                TextButton(
-                  onPressed: _bukaKonsumsiRokok,
-                  child: const Text('Buka Konsumsi Rokok'),
-                ),
-              ]
-              else
-                Text(
-                  'Dari catatan: $rokokAktual batang dihindari '
-                  '(berdasarkan $hariTercatat hari tercatat)',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: daftarToxin.length,
-                  itemBuilder: (context, index) {
-                    final toxin = daftarToxin[index];
-                    return Card(
-                      key: ValueKey(toxin.nama),
-                      child: ListTile(
-                        leading: Icon(
-                          CupertinoIcons.cloud,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        title: Text(
-                          toxin.nama,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 4,
-                          children: [
-                            Text(
-                              '${toxin.jenisZat} · '
-                              '${toxin.kuantitasDiHindari.toStringAsFixed(1)} unit',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            Text(
-                              toxin.efekSingkat,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withValues(alpha: 0.7),
-                                  ),
-                            ),
-                          ],
-                        ),
-                        trailing: Text(
-                          'Sumber: ${toxin.sumberReferensi}',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                fontStyle: FontStyle.italic,
-                                color: Theme.of(context).colorScheme.onSurface
-                                    .withValues(alpha: 0.5),
-                              ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const Divider(),
-              Text(
-                'Data perkiraan ilustratif berdasarkan referensi kesehatan umum '
-                '(WHO / CDC / AHA / ACS), bukan klaim medis aplikasi.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface
-                      .withValues(alpha: 0.6),
-                ),
-              ),
+              _Napas478View(textTheme: textTheme),
+              const _TimerCravingView(),
+              const _DistraksiView(),
             ],
           ),
         ),
       ),
     );
   }
-
-  Widget _buildBiodataNull() {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pelacakan Toxin')),
-      body: EmptyStateView(
-        ikon: CupertinoIcons.person,
-        judul: 'Belum ada data biodata',
-        deskripsi:
-            'Isi biodata dan tentukan tanggal mulai berhenti untuk melihat '
-            'pelacakan toxin.',
-        ctaLabel: 'Isi Biodata',
-        onCta: _bukaFormBiodata,
-      ),
-    );
-  }
-
-  Widget _buildBelumBerhenti() {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pelacakan Toxin')),
-      body: EmptyStateView(
-        ikon: CupertinoIcons.heart,
-        judul: 'Tanggal mulai berhenti belum ditetapkan',
-        deskripsi:
-            'Isi tanggal mulai berhenti pada biodata untuk melihat '
-            'pelacakan toxin.',
-        ctaLabel: 'Isi Biodata',
-        onCta: _bukaFormBiodata,
-      ),
-    );
-  }
-
-  Widget _buildBelumAdaRokokDiHindari() {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pelacakan Toxin')),
-      body: EmptyStateView(
-        ikon: CupertinoIcons.check_mark_circled,
-        judul: 'Belum ada rokok yang dihindari',
-        deskripsi:
-            'Data toxin akan tersedia setelah Anda melewati hari pertama '
-            'smoke-free.',
-        ctaLabel: 'Isi Biodata',
-        onCta: _bukaFormBiodata,
-      ),
-    );
-  }
 }
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/toxin_pelacakan/state/toxin_pelacakan_state.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'toxin_pelacakan_state.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$ToxinPelacakanState {
-
- List<ToxinModel> get daftarToxin; ToxinStatus get status;
-/// Create a copy of ToxinPelacakanState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ToxinPelacakanStateCopyWith<ToxinPelacakanState> get copyWith => _$ToxinPelacakanStateCopyWithImpl<ToxinPelacakanState>(this as ToxinPelacakanState, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as ToxinPelacakanState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToxinPelacakanState&&const DeepCollectionEquality().equals(other.daftarToxin, _this.daftarToxin)&&(identical(other.status, _this.status) || other.status == _this.status));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as ToxinPelacakanState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.daftarToxin),_this.status);
-}
-
-@override
-String toString() {
-  final _this = this as ToxinPelacakanState;
-  return 'ToxinPelacakanState(daftarToxin: ${_this.daftarToxin}, status: ${_this.status})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $ToxinPelacakanStateCopyWith<$Res>  {
-  factory $ToxinPelacakanStateCopyWith(ToxinPelacakanState value, $Res Function(ToxinPelacakanState) _then) = _$ToxinPelacakanStateCopyWithImpl;
-@useResult
-$Res call({
- List<ToxinModel> daftarToxin, ToxinStatus status
-});
-
-
-
-
-}
-/// @nodoc
-class _$ToxinPelacakanStateCopyWithImpl<$Res>
-    implements $ToxinPelacakanStateCopyWith<$Res> {
-  _$ToxinPelacakanStateCopyWithImpl(this._self, this._then);
-
-  final ToxinPelacakanState _self;
-  final $Res Function(ToxinPelacakanState) _then;
-
-/// Create a copy of ToxinPelacakanState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? daftarToxin = null,Object? status = null,}) {
-  return _then(ToxinPelacakanState(
-daftarToxin: null == daftarToxin ? _self.daftarToxin : daftarToxin // ignore: cast_nullable_to_non_nullable
-as List<ToxinModel>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as ToxinStatus,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [ToxinPelacakanState].
-extension ToxinPelacakanStatePatterns on ToxinPelacakanState {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ToxinPelacakanState value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _ToxinPelacakanState() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ToxinPelacakanState value)  $default,){
-final _that = this;
-switch (_that) {
-case _ToxinPelacakanState():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ToxinPelacakanState value)?  $default,){
-final _that = this;
-switch (_that) {
-case _ToxinPelacakanState() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ToxinModel> daftarToxin,  ToxinStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _ToxinPelacakanState() when $default != null:
-return $default(_that.daftarToxin,_that.status);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ToxinModel> daftarToxin,  ToxinStatus status)  $default,) {final _that = this;
-switch (_that) {
-case _ToxinPelacakanState():
-return $default(_that.daftarToxin,_that.status);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ToxinModel> daftarToxin,  ToxinStatus status)?  $default,) {final _that = this;
-switch (_that) {
-case _ToxinPelacakanState() when $default != null:
-return $default(_that.daftarToxin,_that.status);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _ToxinPelacakanState extends ToxinPelacakanState {
-  const _ToxinPelacakanState({ List<ToxinModel> daftarToxin = const [], this.status = ToxinStatus.belumDimuat}): _daftarToxin = daftarToxin,super._();
-  
-
- final  List<ToxinModel> _daftarToxin;
-@override@JsonKey() List<ToxinModel> get daftarToxin {
-  if (_daftarToxin is EqualUnmodifiableListView) return _daftarToxin;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_daftarToxin);
-}
-
-@override@JsonKey() final  ToxinStatus status;
-
-/// Create a copy of ToxinPelacakanState
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$ToxinPelacakanStateCopyWith<_ToxinPelacakanState> get copyWith => __$ToxinPelacakanStateCopyWithImpl<_ToxinPelacakanState>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ToxinPelacakanState&&const DeepCollectionEquality().equals(other.daftarToxin, _daftarToxin)&&(identical(other.status, status) || other.status == status));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_daftarToxin),status);
-}
-
-@override
-String toString() {
-    return 'ToxinPelacakanState(daftarToxin: $daftarToxin, status: $status)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$ToxinPelacakanStateCopyWith<$Res> implements $ToxinPelacakanStateCopyWith<$Res> {
-  factory _$ToxinPelacakanStateCopyWith(_ToxinPelacakanState value, $Res Function(_ToxinPelacakanState) _then) = __$ToxinPelacakanStateCopyWithImpl;
-@override @useResult
-$Res call({
- List<ToxinModel> daftarToxin, ToxinStatus status
-});
-
-
-
-
-}
-/// @nodoc
-class __$ToxinPelacakanStateCopyWithImpl<$Res>
-    implements _$ToxinPelacakanStateCopyWith<$Res> {
-  __$ToxinPelacakanStateCopyWithImpl(this._self, this._then);
-
-  final _ToxinPelacakanState _self;
-  final $Res Function(_ToxinPelacakanState) _then;
-
-/// Create a copy of ToxinPelacakanState
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? daftarToxin = null,Object? status = null,}) {
-  return _then(_ToxinPelacakanState(
-daftarToxin: null == daftarToxin ? _self._daftarToxin : daftarToxin // ignore: cast_nullable_to_non_nullable
-as List<ToxinModel>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as ToxinStatus,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/toxin_pelacakan/state/toxin_pelacakan_state.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/toxin_pelacakan/model/toxin_model.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'toxin_pelacakan_state.freezed.dart';
-
-/// Status muat data toxin pelacakan.
-enum ToxinStatus { belumDimuat, dimuat, error }
-
-/// State hasil perhitungan daftar toxin yang dihindari.
-///
-/// Tidak ada notifier terpisah untuk state ini; state hanya menampung
-/// hasil perhitungan dari [ToxinHitungHelper] yang dikonsumsi langsung di layar.
-@freezed
-abstract class ToxinPelacakanState with _$ToxinPelacakanState {
-  const ToxinPelacakanState._();
-
-  const factory ToxinPelacakanState({
-    @Default([]) List<ToxinModel> daftarToxin,
-    @Default(ToxinStatus.belumDimuat) ToxinStatus status,
-  }) = _ToxinPelacakanState;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/toxin_pelacakan/helper/toxin_hitung_helper.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/toxin_pelacakan/model/toxin_model.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Helper murni untuk perhitungan kuantitas toxin yang dihindari tubuh.
-///
-/// Tidak bergantung pada [BuildContext] atau provider. Semua data referensi
-/// bersifat statis dan ilustratif dengan catatan sumber umum (WHO / CDC /
-/// AHA / ACS sebagai landasan referensi, bukan klaim medis aplikasi).
-class ToxinHitungHelper {
-  const ToxinHitungHelper._();
-
-  /// Daftar referensi toxin statis. Faktor per batang adalah perkiraan
-  /// ilustratif untuk tujuan visualisasi progres, bukan data klinis.
-  static const List<ToxinModel> _daftarReferensi = <ToxinModel>[
-    ToxinModel(
-      nama: 'Tar',
-      jenisZat: 'Zat terpangkal',
-      faktorPerBatang: 12.0,
-      efekSingkat: 'Menyumbat paru-paru dan mengganggu pertukaran oksigen.',
-      sumberReferensi: 'WHO / CDC / AHA / ACS',
-    ),
-    ToxinModel(
-      nama: 'Nikotin',
-      jenisZat: 'Zat adiktif',
-      faktorPerBatang: 1.2,
-      efekSingkat: 'Mendorong ketergantungan dan meningkatkan detak jantung.',
-      sumberReferensi: 'WHO / CDC / AHA / ACS',
-    ),
-    ToxinModel(
-      nama: 'Karbon Monoksida',
-      jenisZat: 'Gas beracun',
-      faktorPerBatang: 18.0,
-      efekSingkat: 'Menggantikan oksigen pada hemoglobin darah.',
-      sumberReferensi: 'WHO / CDC / AHA / ACS',
-    ),
-    ToxinModel(
-      nama: 'Formaldehida',
-      jenisZat: 'Zat kimia industri',
-      faktorPerBatang: 0.08,
-      efekSingkat: 'Mengiritasi mata, hidung, dan tenggorokan.',
-      sumberReferensi: 'WHO / CDC / AHA / ACS',
-    ),
-    ToxinModel(
-      nama: 'Bensen',
-      jenisZat: 'Zat karsinogen',
-      faktorPerBatang: 0.15,
-      efekSingkat: 'Berisiko merusak sumsum darah dan sistem imun.',
-      sumberReferensi: 'WHO / CDC / AHA / ACS',
-    ),
-    ToxinModel(
-      nama: 'Ammonia',
-      jenisZat: 'Zat penguat nikotin',
-      faktorPerBatang: 0.5,
-      efekSingkat: 'Mempercepat penyerapan nikotin di paru-paru.',
-      sumberReferensi: 'WHO / CDC / AHA / ACS',
-    ),
-    ToxinModel(
-      nama: 'Arsen',
-      jenisZat: 'Zat beracun berat',
-      faktorPerBatang: 0.02,
-      efekSingkat: 'Beracuk bagi jantung, paru-paru, dan kulit.',
-      sumberReferensi: 'WHO / CDC / AHA / ACS',
-    ),
-  ];
-
-  /// Menghitung daftar toxin yang dihindari berdasarkan jumlah rokok
-  /// yang tidak dihisap.
-  ///
-  /// Mengembalikan list kosong jika [rokokTidakDiHisap] nol atau negatif
-  /// (guard pembagian/nol dan nilai valid).
-  static List<ToxinModel> hitung(int rokokTidakDiHisap) {
-    L.i('rokokTidakDiHisap=$rokokTidakDiHisap');
-    if (rokokTidakDiHisap <= 0) {
-      return const [];
-    }
-    return _daftarReferensi.map((t) {
-      return t.copyWith(
-        kuantitasDiHindari: t.faktorPerBatang * rokokTidakDiHisap,
-      );
-    }).toList();
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/model/sos_intervensi_model.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-part 'sos_intervensi_model.freezed.dart';
-
-@freezed
-abstract class SosIntervensiModel with _$SosIntervensiModel {
-  const SosIntervensiModel._();
-
-  const factory SosIntervensiModel({
-    required String id,
-    required JenisIntervensiSos jenisIntervensi,
-    String? detail,
-    HasilIntervensiSos? hasilIntervensi,
-    String? diaryCravingId,
-    required DateTime dibuat,
-  }) = _SosIntervensiModel;
-
-  /// Membuat [SosIntervensiModel] dari baris database SQLite.
-  factory SosIntervensiModel.fromSqflite(Map<String, Object?> row) {
-    return SosIntervensiModel(
-      id: ParserUtil.parseString(row[NamaKolom.id]),
-      jenisIntervensi:
-          ParserUtil.safeParseEnum(
-            JenisIntervensiSos.values,
-            ParserUtil.parseStringOrNull(row[NamaKolom.jenisIntervensi]),
-          ) ??
-          // Fallback default ikut nama enum baru (lowerCamelCase).
-          JenisIntervensiSos.napas478,
-      detail: ParserUtil.parseStringOrNull(row[NamaKolom.detail]),
-      hasilIntervensi: ParserUtil.safeParseEnum(
-        HasilIntervensiSos.values,
-        ParserUtil.parseStringOrNull(row[NamaKolom.hasilIntervensi]),
-      ),
-      diaryCravingId: ParserUtil.parseStringOrNull(row[NamaKolom.diaryCravingId]),
-      dibuat:
-          ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
-          DateTime.now(),
-    );
-  }
-
-  /// Mengonversi [SosIntervensiModel] menjadi Map untuk disimpan ke SQLite.
-  Map<String, Object?> toSqflite() {
-    return <String, Object?>{
-      NamaKolom.id: id,
-      NamaKolom.jenisIntervensi: jenisIntervensi.name,
-      NamaKolom.detail: detail,
-      NamaKolom.hasilIntervensi: hasilIntervensi?.name,
-      NamaKolom.diaryCravingId: diaryCravingId,
-      NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
-    };
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/model/sos_intervensi_model.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'sos_intervensi_model.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$SosIntervensiModel {
-
- String get id; JenisIntervensiSos get jenisIntervensi; String? get detail; HasilIntervensiSos? get hasilIntervensi; String? get diaryCravingId; DateTime get dibuat;
-/// Create a copy of SosIntervensiModel
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$SosIntervensiModelCopyWith<SosIntervensiModel> get copyWith => _$SosIntervensiModelCopyWithImpl<SosIntervensiModel>(this as SosIntervensiModel, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as SosIntervensiModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SosIntervensiModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.jenisIntervensi, _this.jenisIntervensi) || other.jenisIntervensi == _this.jenisIntervensi)&&(identical(other.detail, _this.detail) || other.detail == _this.detail)&&(identical(other.hasilIntervensi, _this.hasilIntervensi) || other.hasilIntervensi == _this.hasilIntervensi)&&(identical(other.diaryCravingId, _this.diaryCravingId) || other.diaryCravingId == _this.diaryCravingId)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as SosIntervensiModel;
-  return Object.hash(runtimeType,_this.id,_this.jenisIntervensi,_this.detail,_this.hasilIntervensi,_this.diaryCravingId,_this.dibuat);
-}
-
-@override
-String toString() {
-  final _this = this as SosIntervensiModel;
-  return 'SosIntervensiModel(id: ${_this.id}, jenisIntervensi: ${_this.jenisIntervensi}, detail: ${_this.detail}, hasilIntervensi: ${_this.hasilIntervensi}, diaryCravingId: ${_this.diaryCravingId}, dibuat: ${_this.dibuat})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $SosIntervensiModelCopyWith<$Res>  {
-  factory $SosIntervensiModelCopyWith(SosIntervensiModel value, $Res Function(SosIntervensiModel) _then) = _$SosIntervensiModelCopyWithImpl;
-@useResult
-$Res call({
- String id, JenisIntervensiSos jenisIntervensi, String? detail, HasilIntervensiSos? hasilIntervensi, String? diaryCravingId, DateTime dibuat
-});
-
-
-
-
-}
-/// @nodoc
-class _$SosIntervensiModelCopyWithImpl<$Res>
-    implements $SosIntervensiModelCopyWith<$Res> {
-  _$SosIntervensiModelCopyWithImpl(this._self, this._then);
-
-  final SosIntervensiModel _self;
-  final $Res Function(SosIntervensiModel) _then;
-
-/// Create a copy of SosIntervensiModel
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jenisIntervensi = null,Object? detail = freezed,Object? hasilIntervensi = freezed,Object? diaryCravingId = freezed,Object? dibuat = null,}) {
-  return _then(SosIntervensiModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,jenisIntervensi: null == jenisIntervensi ? _self.jenisIntervensi : jenisIntervensi // ignore: cast_nullable_to_non_nullable
-as JenisIntervensiSos,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
-as String?,hasilIntervensi: freezed == hasilIntervensi ? _self.hasilIntervensi : hasilIntervensi // ignore: cast_nullable_to_non_nullable
-as HasilIntervensiSos?,diaryCravingId: freezed == diaryCravingId ? _self.diaryCravingId : diaryCravingId // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
-as DateTime,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [SosIntervensiModel].
-extension SosIntervensiModelPatterns on SosIntervensiModel {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SosIntervensiModel value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _SosIntervensiModel() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SosIntervensiModel value)  $default,){
-final _that = this;
-switch (_that) {
-case _SosIntervensiModel():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SosIntervensiModel value)?  $default,){
-final _that = this;
-switch (_that) {
-case _SosIntervensiModel() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _SosIntervensiModel() when $default != null:
-return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.dibuat);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  DateTime dibuat)  $default,) {final _that = this;
-switch (_that) {
-case _SosIntervensiModel():
-return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.dibuat);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  DateTime dibuat)?  $default,) {final _that = this;
-switch (_that) {
-case _SosIntervensiModel() when $default != null:
-return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.dibuat);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _SosIntervensiModel extends SosIntervensiModel {
-  const _SosIntervensiModel({required this.id, required this.jenisIntervensi, this.detail, this.hasilIntervensi, this.diaryCravingId, required this.dibuat}): super._();
-  
-
-@override final  String id;
-@override final  JenisIntervensiSos jenisIntervensi;
-@override final  String? detail;
-@override final  HasilIntervensiSos? hasilIntervensi;
-@override final  String? diaryCravingId;
-@override final  DateTime dibuat;
-
-/// Create a copy of SosIntervensiModel
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$SosIntervensiModelCopyWith<_SosIntervensiModel> get copyWith => __$SosIntervensiModelCopyWithImpl<_SosIntervensiModel>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SosIntervensiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jenisIntervensi, jenisIntervensi) || other.jenisIntervensi == jenisIntervensi)&&(identical(other.detail, detail) || other.detail == detail)&&(identical(other.hasilIntervensi, hasilIntervensi) || other.hasilIntervensi == hasilIntervensi)&&(identical(other.diaryCravingId, diaryCravingId) || other.diaryCravingId == diaryCravingId)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,id,jenisIntervensi,detail,hasilIntervensi,diaryCravingId,dibuat);
-}
-
-@override
-String toString() {
-    return 'SosIntervensiModel(id: $id, jenisIntervensi: $jenisIntervensi, detail: $detail, hasilIntervensi: $hasilIntervensi, diaryCravingId: $diaryCravingId, dibuat: $dibuat)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$SosIntervensiModelCopyWith<$Res> implements $SosIntervensiModelCopyWith<$Res> {
-  factory _$SosIntervensiModelCopyWith(_SosIntervensiModel value, $Res Function(_SosIntervensiModel) _then) = __$SosIntervensiModelCopyWithImpl;
-@override @useResult
-$Res call({
- String id, JenisIntervensiSos jenisIntervensi, String? detail, HasilIntervensiSos? hasilIntervensi, String? diaryCravingId, DateTime dibuat
-});
-
-
-
-
-}
-/// @nodoc
-class __$SosIntervensiModelCopyWithImpl<$Res>
-    implements _$SosIntervensiModelCopyWith<$Res> {
-  __$SosIntervensiModelCopyWithImpl(this._self, this._then);
-
-  final _SosIntervensiModel _self;
-  final $Res Function(_SosIntervensiModel) _then;
-
-/// Create a copy of SosIntervensiModel
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jenisIntervensi = null,Object? detail = freezed,Object? hasilIntervensi = freezed,Object? diaryCravingId = freezed,Object? dibuat = null,}) {
-  return _then(_SosIntervensiModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,jenisIntervensi: null == jenisIntervensi ? _self.jenisIntervensi : jenisIntervensi // ignore: cast_nullable_to_non_nullable
-as JenisIntervensiSos,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
-as String?,hasilIntervensi: freezed == hasilIntervensi ? _self.hasilIntervensi : hasilIntervensi // ignore: cast_nullable_to_non_nullable
-as HasilIntervensiSos?,diaryCravingId: freezed == diaryCravingId ? _self.diaryCravingId : diaryCravingId // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
-as DateTime,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart
-// ============================================================
-```dart
-/// Jenis intervensi yang tersedia pada SOS Craving.
-// Enum value di-lowerCamelCase sesuai konvensi penamaan proyek (sebelumnya
-// snake_case yang ikut tersimpan ke kolom database).
-enum JenisIntervensiSos {
-  napas478,
-  timer3Menit,
-  distraksi,
-  napasBox,
-  napas90Detik,
-  grounding54321,
-  urgeSurfing,
-  timerCraving,
-}
-
-/// Extension yang menyediakan label untuk [JenisIntervensiSos].
-extension JenisIntervensiSosExtension on JenisIntervensiSos {
-  String get label {
-    switch (this) {
-      case JenisIntervensiSos.napas478:
-        return 'Napas 4-7-8';
-      case JenisIntervensiSos.timer3Menit:
-        return 'Timer 3 Menit';
-      case JenisIntervensiSos.distraksi:
-        return 'Distraksi';
-      case JenisIntervensiSos.napasBox:
-        return 'Box Breathing';
-      case JenisIntervensiSos.napas90Detik:
-        return 'Napas 90 Detik';
-      case JenisIntervensiSos.grounding54321:
-        return 'Grounding 5-4-3-2-1';
-      case JenisIntervensiSos.urgeSurfing:
-        return 'Urge Surfing';
-      case JenisIntervensiSos.timerCraving:
-        return 'Timer Craving';
-    }
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart
-// ============================================================
-```dart
-/// Hasil intervensi SOS Craving dari pertanyaan "Apakah dorongan merokok berkurang?".
-// Enum value di-lowerCamelCase sesuai konvensi penamaan proyek (sebelumnya
-// snake_case yang ikut tersimpan ke kolom database).
-enum HasilIntervensiSos {
-  berkurang,
-  tetap,
-  belumSelesai,
-}
-
-/// Extension yang menyediakan label untuk [HasilIntervensiSos].
-extension HasilIntervensiSosExtension on HasilIntervensiSos {
-  String get label {
-    switch (this) {
-      case HasilIntervensiSos.berkurang:
-        return 'Berkurang';
-      case HasilIntervensiSos.tetap:
-        return 'Tetap';
-      case HasilIntervensiSos.belumSelesai:
-        return 'Belum selesai';
-    }
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/widgets/timer_craving_view.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Timer craving dengan pilihan durasi 3 / 5 / 10 menit.
-class TimerCravingView extends ConsumerStatefulWidget {
-  const TimerCravingView({super.key});
-
-  @override
-  ConsumerState<TimerCravingView> createState() => _TimerCravingViewState();
-}
-
-class _TimerCravingViewState extends ConsumerState<TimerCravingView> {
-  static const List<int> _pilihanDurasi = [3, 5, 10];
-
-  int _menitTerpilih = 3;
-  int get _durasiAwal => _menitTerpilih * 60;
-
-  Timer? _timer;
-  bool _berjalan = false;
-  int _sisa = 3 * 60;
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('TimerCravingView initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('TimerCravingView dispose');
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _pilihDurasi(int menit) {
-    if (_berjalan) return;
-    L.i('durasi timer dipilih: $menit menit');
-    setState(() {
-      _menitTerpilih = menit;
-      _sisa = _durasiAwal;
-    });
-  }
-
-  void _mulai() {
-    if (_berjalan) return;
-    if (_sisa <= 0) {
-      _sisa = _durasiAwal;
-    }
-    L.i('timer craving mulai, sisa=$_sisa');
-    setState(() {
-      _berjalan = true;
-    });
-    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-  }
-
-  void _tick(Timer _) {
-    if (!mounted) return;
-    setState(() {
-      _sisa--;
-      if (_sisa <= 0) {
-        _selesai();
-      }
-    });
-  }
-
-  void _selesai() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _sisa = 0;
-    });
-    L.i('timer craving selesai, durasi=$_menitTerpilih menit');
-    AppToast.sukses(
-      context,
-      '$_menitTerpilih menit berlalu. Craving biasanya singkat. '
-      'Anda berhasil!',
-    );
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: ref,
-        jenisIntervensi: JenisIntervensiSos.timerCraving,
-        detail: '$_menitTerpilih menit',
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi timer: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  void _jeda() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-    });
-    L.i('timer craving dijeda');
-  }
-
-  void _reset() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _sisa = _durasiAwal;
-    });
-    L.i('timer craving reset');
-  }
-
-  String get _teksWaktu {
-    final menit = (_sisa ~/ 60).toString().padLeft(2, '0');
-    final detik = (_sisa % 60).toString().padLeft(2, '0');
-    return '$menit:$detik';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final progres = 1 - (_sisa / _durasiAwal);
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        spacing: 16,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Timer Craving',
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Craving biasanya berlangsung beberapa menit. '
-            'Tahan dorongan hingga waktu habis.',
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
-          ),
-          Wrap(
-            spacing: 8,
-            alignment: WrapAlignment.center,
-            children: [
-              for (final menit in _pilihanDurasi)
-                ChoiceChip(
-                  label: Text('$menit menit'),
-                  selected: _menitTerpilih == menit,
-                  onSelected: _berjalan ? null : (_) => _pilihDurasi(menit),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: 200,
-            height: 200,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                CircularProgressIndicator(
-                  value: progres.clamp(0.0, 1.0),
-                  strokeWidth: 12,
-                ),
-                Center(
-                  child: Text(
-                    _teksWaktu,
-                    style: textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_berjalan)
-                FilledButton.icon(
-                  onPressed: _mulai,
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(_sisa == 0 ? 'Ulangi' : 'Mulai'),
-                )
-              else
-                FilledButton.icon(
-                  onPressed: _jeda,
-                  icon: const Icon(Icons.pause),
-                  label: const Text('Jeda'),
-                ),
-              OutlinedButton.icon(
-                onPressed: _reset,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Reset'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/widgets/napas_90_detik_view.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Napas 90 detik: latihan napas singkat satu tarikan panjang,
-/// diulang selama ±90 detik. Tarik 4 detik, hembuskan 6 detik.
-class Napas90DetikView extends ConsumerStatefulWidget {
-  const Napas90DetikView({super.key});
-
-  @override
-  ConsumerState<Napas90DetikView> createState() => _Napas90DetikViewState();
-}
-
-class _Napas90DetikViewState extends ConsumerState<Napas90DetikView> {
-  static const int _durasiAwal = 90;
-
-  Timer? _timer;
-  bool _berjalan = false;
-  int _sisa = _durasiAwal;
-  int _faseNapas = 0; // 0 tarik (4 detik), 1 hembus (6 detik)
-  int _sisaFase = 4;
-
-  static const List<({String label, int durasi})> _fase = [
-    (label: 'Tarik napas', durasi: 4),
-    (label: 'Hembuskan', durasi: 6),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('Napas90DetikView initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('Napas90DetikView dispose');
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _mulai() {
-    if (_berjalan) return;
-    if (_sisa <= 0) {
-      _sisa = _durasiAwal;
-      _faseNapas = 0;
-      _sisaFase = _fase[0].durasi;
-    }
-    L.i('napas 90 detik mulai, sisa=$_sisa');
-    setState(() {
-      _berjalan = true;
-    });
-    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-  }
-
-  void _tick(Timer _) {
-    if (!mounted) return;
-    setState(() {
-      _sisa--;
-      _sisaFase--;
-      if (_sisaFase <= 0) {
-        _faseNapas = (_faseNapas + 1) % _fase.length;
-        _sisaFase = _fase[_faseNapas].durasi;
-      }
-      if (_sisa <= 0) {
-        _selesai();
-      }
-    });
-  }
-
-  void _selesai() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _sisa = 0;
-    });
-    L.i('napas 90 detik selesai');
-    AppToast.sukses(context, '90 detik berlalu. Craving Anda melemah!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: ref,
-        jenisIntervensi: JenisIntervensiSos.napas90Detik,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi napas 90 detik: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  void _henti() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-    });
-    L.i('napas 90 detik dihentikan');
-  }
-
-  void _reset() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _sisa = _durasiAwal;
-      _faseNapas = 0;
-      _sisaFase = _fase[0].durasi;
-    });
-    L.i('napas 90 detik reset');
-  }
-
-  String get _teksSisa {
-    final menit = (_sisa ~/ 60).toString().padLeft(2, '0');
-    final detik = (_sisa % 60).toString().padLeft(2, '0');
-    return '$menit:$detik';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final fase = _fase[_faseNapas];
-    final progres = 1 - (_sisa / _durasiAwal);
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        spacing: 16,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Napas 90 Detik',
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Tarik napas dalam 4 detik, hembuskan perlahan 6 detik. '
-            'Ulangi hingga 90 detik berlalu.',
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: 200,
-            height: 200,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                CircularProgressIndicator(
-                  value: progres.clamp(0.0, 1.0),
-                  strokeWidth: 12,
-                ),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _berjalan ? fase.label : 'Siap',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _teksSisa,
-                        style: textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontFeatures: const [
-                            FontFeature.tabularFigures(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_berjalan)
-                FilledButton.icon(
-                  onPressed: _mulai,
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(_sisa == 0 ? 'Ulangi' : 'Mulai'),
-                )
-              else
-                FilledButton.icon(
-                  onPressed: _henti,
-                  icon: const Icon(Icons.pause),
-                  label: const Text('Jeda'),
-                ),
-              OutlinedButton.icon(
-                onPressed: _reset,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Reset'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/widgets/urge_surfing_view.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Urge surfing: "menunggangi" gelombang craving hingga mereda.
-/// Timer 10 / 15 / 20 menit dengan fase gelombang naik → puncak → reda.
-class UrgeSurfingView extends ConsumerStatefulWidget {
-  const UrgeSurfingView({super.key});
-
-  @override
-  ConsumerState<UrgeSurfingView> createState() => _UrgeSurfingViewState();
-}
-
-class _UrgeSurfingViewState extends ConsumerState<UrgeSurfingView> {
-  static const List<int> _pilihanDurasi = [10, 15, 20];
-
-  int _menitTerpilih = 10;
-  int get _durasiAwal => _menitTerpilih * 60;
-
-  Timer? _timer;
-  bool _berjalan = false;
-  int _sisa = 10 * 60;
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('UrgeSurfingView initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('UrgeSurfingView dispose');
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _pilihDurasi(int menit) {
-    if (_berjalan) return;
-    L.i('durasi urge surfing dipilih: $menit menit');
-    setState(() {
-      _menitTerpilih = menit;
-      _sisa = _durasiAwal;
-    });
-  }
-
-  void _mulai() {
-    if (_berjalan) return;
-    if (_sisa <= 0) {
-      _sisa = _durasiAwal;
-    }
-    L.i('urge surfing mulai, sisa=$_sisa');
-    setState(() {
-      _berjalan = true;
-    });
-    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-  }
-
-  void _tick(Timer _) {
-    if (!mounted) return;
-    setState(() {
-      _sisa--;
-      if (_sisa <= 0) {
-        _selesai();
-      }
-    });
-  }
-
-  void _selesai() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-    });
-    L.i('urge surfing selesai, durasi=$_menitTerpilih menit');
-    AppToast.sukses(context, 'Gelombang craving berhasil dilewati!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: ref,
-        jenisIntervensi: JenisIntervensiSos.urgeSurfing,
-        detail: '$_menitTerpilih menit',
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi urge surfing: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  void _jeda() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-    });
-    L.i('urge surfing dijeda');
-  }
-
-  void _reset() {
-    _timer?.cancel();
-    _timer = null;
-    setState(() {
-      _berjalan = false;
-      _sisa = _durasiAwal;
-    });
-    L.i('urge surfing reset');
-  }
-
-  /// Tiga fase gelombang craving: naik → puncak → reda.
-  ({String fase, String afirmasi}) get _faseGelombang {
-    final berlalu = _durasiAwal - _sisa;
-    final pertiga = _durasiAwal / 3;
-    if (berlalu < pertiga) {
-      return (
-        fase: 'Naik',
-        afirmasi: 'Craving sedang naik. Rasakan tanpa dilawan — '
-            'ini hanya gelombang, pasti berlalu.',
-      );
-    }
-    if (berlalu < 2 * pertiga) {
-      return (
-        fase: 'Puncak',
-        afirmasi: 'Kamu di puncak gelombang. Tetap di sini, perhatikan '
-            'sensasinya tanpa bereaksi.',
-      );
-    }
-    return (
-      fase: 'Reda',
-      afirmasi: 'Gelombang mulai reda. Kamu lebih kuat dari craving ini.',
-    );
-  }
-
-  String get _teksWaktu {
-    final menit = (_sisa ~/ 60).toString().padLeft(2, '0');
-    final detik = (_sisa % 60).toString().padLeft(2, '0');
-    return '$menit:$detik';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    final progres = 1 - (_sisa / _durasiAwal);
-    final fase = _faseGelombang;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        spacing: 16,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Urge Surfing',
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Tunggangi gelombang craving hingga reda, '
-            'tanpa melawannya.',
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
-          ),
-          Wrap(
-            spacing: 8,
-            alignment: WrapAlignment.center,
-            children: [
-              for (final menit in _pilihanDurasi)
-                ChoiceChip(
-                  label: Text('$menit menit'),
-                  selected: _menitTerpilih == menit,
-                  onSelected: _berjalan ? null : (_) => _pilihDurasi(menit),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: 200,
-            height: 200,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                CircularProgressIndicator(
-                  value: progres.clamp(0.0, 1.0),
-                  strokeWidth: 12,
-                ),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _berjalan ? 'Fase ${fase.fase}' : 'Siap',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _teksWaktu,
-                        style: textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontFeatures: const [
-                            FontFeature.tabularFigures(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (_berjalan)
-            Text(
-              fase.afirmasi,
-              textAlign: TextAlign.center,
-              style: textTheme.bodySmall,
-            ),
-          const SizedBox(height: 8),
-          Row(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_berjalan)
-                FilledButton.icon(
-                  onPressed: _mulai,
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(_sisa == 0 ? 'Ulangi' : 'Mulai'),
-                )
-              else
-                FilledButton.icon(
-                  onPressed: _jeda,
-                  icon: const Icon(Icons.pause),
-                  label: const Text('Jeda'),
-                ),
-              OutlinedButton.icon(
-                onPressed: _selesai,
-                icon: const Icon(Icons.done),
-                label: const Text('Selesai'),
-              ),
-              OutlinedButton.icon(
-                onPressed: _reset,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Reset'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/widgets/napas_478_view.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
 
 /// Latihan napas 4-7-8: tarik 4 detik, tahan 7 detik, hembuskan 8 detik.
-class Napas478View extends ConsumerStatefulWidget {
-  const Napas478View({super.key});
+class _Napas478View extends StatefulWidget {
+  const _Napas478View({required this.textTheme});
+
+  final TextTheme textTheme;
 
   @override
-  ConsumerState<Napas478View> createState() => _Napas478ViewState();
+  State<_Napas478View> createState() => _Napas478ViewState();
 }
 
-class _Napas478ViewState extends ConsumerState<Napas478View> {
+class _Napas478ViewState extends State<_Napas478View> {
   Timer? _timer;
   bool _berjalan = false;
   int _faseIndex = 0; // 0 tarik, 1 tahan, 2 hembus
@@ -10859,16 +5760,6 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
     });
     L.i('napas 4-7-8 selesai, siklus=$_siklus');
     AppToast.sukses(context, 'Latihan napas selesai. Anda hebat!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: ref,
-        jenisIntervensi: JenisIntervensiSos.napas478,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi napas: $e $s');
-        return null;
-      }),
-    );
   }
 
   void _henti() {
@@ -10912,7 +5803,6 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final fase = _fase[_faseIndex];
     final warna = Theme.of(context).colorScheme.primary;
     return Padding(
@@ -10923,7 +5813,7 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
         children: [
           Text(
             'Latihan Napas 4-7-8',
-            style: textTheme.titleLarge?.copyWith(
+            style: widget.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -10931,7 +5821,7 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
             'Tarik napas 4 detik, tahan 7 detik, hembuskan 8 detik. '
             'Ulangi $_targetSiklus kali.',
             textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
+            style: widget.textTheme.bodyMedium,
           ),
           const SizedBox(height: 8),
           AnimatedContainer(
@@ -10950,16 +5840,15 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
               children: [
                 Text(
                   _berjalan ? fase.label : 'Siap',
-                  style: textTheme.titleMedium?.copyWith(
+                  style: widget.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _berjalan ? '$_sisaFase' : '$_targetSiklus siklus',
-                  style: textTheme.headlineMedium?.copyWith(
+                  style: widget.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
               ],
@@ -10968,7 +5857,7 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
           if (_berjalan)
             Text(
               'Siklus ${_siklus + 1} dari $_targetSiklus',
-              style: textTheme.bodyMedium,
+              style: widget.textTheme.bodyMedium,
             ),
           const SizedBox(height: 8),
           Row(
@@ -10999,68 +5888,42 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
     );
   }
 }
-```
 
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/widgets/box_breathing_view.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Box breathing 4-4-4-4: tarik 4 detik, tahan 4 detik,
-/// hembuskan 4 detik, tahan 4 detik. Default 4 siklus.
-class BoxBreathingView extends ConsumerStatefulWidget {
-  const BoxBreathingView({super.key});
+/// Timer craving 3 menit.
+class _TimerCravingView extends StatefulWidget {
+  const _TimerCravingView();
 
   @override
-  ConsumerState<BoxBreathingView> createState() => _BoxBreathingViewState();
+  State<_TimerCravingView> createState() => _TimerCravingViewState();
 }
 
-class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
+class _TimerCravingViewState extends State<_TimerCravingView> {
+  static const int _durasiAwal = 3 * 60;
   Timer? _timer;
   bool _berjalan = false;
-  int _faseIndex = 0; // 0 tarik, 1 tahan, 2 hembus, 3 tahan
-  int _sisaFase = 4;
-  int _siklus = 0;
-
-  static const List<({String label, int durasi})> _fase = [
-    (label: 'Tarik napas', durasi: 4),
-    (label: 'Tahan', durasi: 4),
-    (label: 'Hembuskan', durasi: 4),
-    (label: 'Tahan', durasi: 4),
-  ];
-
-  static const int _targetSiklus = 4;
+  int _sisa = _durasiAwal;
 
   @override
   void initState() {
     super.initState();
-    L.i('BoxBreathingView initState');
+    L.i('TimerCravingView initState');
   }
 
   @override
   void dispose() {
-    L.i('BoxBreathingView dispose');
+    L.i('TimerCravingView dispose');
     _timer?.cancel();
     super.dispose();
   }
 
   void _mulai() {
     if (_berjalan) return;
-    L.i('mulai box breathing');
+    if (_sisa <= 0) {
+      _sisa = _durasiAwal;
+    }
+    L.i('timer craving mulai, sisa=$_sisa');
     setState(() {
       _berjalan = true;
-      _faseIndex = 0;
-      _sisaFase = _fase[0].durasi;
-      _siklus = 0;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
   }
@@ -11068,18 +5931,9 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
   void _tick(Timer _) {
     if (!mounted) return;
     setState(() {
-      _sisaFase--;
-      if (_sisaFase <= 0) {
-        _faseIndex++;
-        if (_faseIndex >= _fase.length) {
-          _faseIndex = 0;
-          _siklus++;
-          if (_siklus >= _targetSiklus) {
-            _selesai();
-            return;
-          }
-        }
-        _sisaFase = _fase[_faseIndex].durasi;
+      _sisa--;
+      if (_sisa <= 0) {
+        _selesai();
       }
     });
   }
@@ -11089,28 +5943,22 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
     _timer = null;
     setState(() {
       _berjalan = false;
+      _sisa = 0;
     });
-    L.i('box breathing selesai, siklus=$_siklus');
-    AppToast.sukses(context, 'Box breathing selesai. Anda hebat!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: ref,
-        jenisIntervensi: JenisIntervensiSos.napasBox,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi box breathing: $e $s');
-        return null;
-      }),
+    L.i('timer craving selesai');
+    AppToast.sukses(
+      context,
+      '3 menit berlalu. Craving biasanya singkat. Anda berhasil!',
     );
   }
 
-  void _henti() {
+  void _jeda() {
     _timer?.cancel();
     _timer = null;
     setState(() {
       _berjalan = false;
     });
-    L.i('box breathing dihentikan');
+    L.i('timer craving dijeda');
   }
 
   void _reset() {
@@ -11118,36 +5966,21 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
     _timer = null;
     setState(() {
       _berjalan = false;
-      _faseIndex = 0;
-      _sisaFase = _fase[0].durasi;
-      _siklus = 0;
+      _sisa = _durasiAwal;
     });
-    L.i('box breathing reset');
+    L.i('timer craving reset');
   }
 
-  double get _skalaLingkaran {
-    if (!_berjalan) return 0.6;
-    const durasi = 4;
-    final progres = 1 - (_sisaFase / durasi);
-    switch (_faseIndex) {
-      case 0: // tarik: membesar
-        return 0.6 + (0.4 * progres);
-      case 1: // tahan setelah tarik
-        return 1.0;
-      case 2: // hembus: mengecil
-        return 1.0 - (0.4 * progres);
-      case 3: // tahan setelah hembus
-        return 0.6;
-      default:
-        return 0.6;
-    }
+  String get _teksWaktu {
+    final menit = (_sisa ~/ 60).toString().padLeft(2, '0');
+    final detik = (_sisa % 60).toString().padLeft(2, '0');
+    return '$menit:$detik';
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final fase = _fase[_faseIndex];
-    final warna = Theme.of(context).colorScheme.primary;
+    final progres = 1 - (_sisa / _durasiAwal);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -11155,54 +5988,37 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Box Breathing',
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            'Timer Craving',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
-            'Tarik 4 detik, tahan 4 detik, hembuskan 4 detik, tahan 4 detik. '
-            'Ulangi $_targetSiklus kali.',
+            'Craving biasanya berlangsung sekitar 3 menit. '
+            'Tahan dorongan hingga waktu habis.',
             textAlign: TextAlign.center,
             style: textTheme.bodyMedium,
           ),
           const SizedBox(height: 8),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 900),
-            curve: Curves.easeInOut,
-            width: 200 * _skalaLingkaran,
-            height: 200 * _skalaLingkaran,
-            decoration: BoxDecoration(
-              color: warna.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-              border: Border.all(color: warna, width: 3),
-            ),
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+          SizedBox(
+            width: 200,
+            height: 200,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                Text(
-                  _berjalan ? fase.label : 'Siap',
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                CircularProgressIndicator(
+                  value: progres.clamp(0.0, 1.0),
+                  strokeWidth: 12,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  _berjalan ? '$_sisaFase' : '$_targetSiklus siklus',
-                  style: textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+                Center(
+                  child: Text(
+                    _teksWaktu,
+                    style: textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          if (_berjalan)
-            Text(
-              'Siklus ${_siklus + 1} dari $_targetSiklus',
-              style: textTheme.bodyMedium,
-            ),
           const SizedBox(height: 8),
           Row(
             spacing: 12,
@@ -11212,11 +6028,11 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
                 FilledButton.icon(
                   onPressed: _mulai,
                   icon: const Icon(Icons.play_arrow),
-                  label: const Text('Mulai'),
+                  label: Text(_sisa == 0 ? 'Ulangi' : 'Mulai'),
                 )
               else
                 FilledButton.icon(
-                  onPressed: _henti,
+                  onPressed: _jeda,
                   icon: const Icon(Icons.pause),
                   label: const Text('Jeda'),
                 ),
@@ -11232,33 +6048,17 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
     );
   }
 }
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/widgets/distraksi_view.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
 
 /// Daftar distraksi sederhana.
-class DistraksiView extends ConsumerStatefulWidget {
-  const DistraksiView({super.key});
+class _DistraksiView extends StatefulWidget {
+  const _DistraksiView();
 
   @override
-  ConsumerState<DistraksiView> createState() => _DistraksiViewState();
+  State<_DistraksiView> createState() => _DistraksiViewState();
 }
 
-class _DistraksiViewState extends ConsumerState<DistraksiView> {
+class _DistraksiViewState extends State<_DistraksiView> {
   int _berhasil = 0;
-  String? _aktivitasTerpilih;
 
   static const List<String> _aktivitas = [
     'Minum segelas air putih',
@@ -11289,17 +6089,6 @@ class _DistraksiViewState extends ConsumerState<DistraksiView> {
     });
     L.i('distraksi berhasil, total=$_berhasil');
     AppToast.sukses(context, 'Craving berhasil dilewati!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: ref,
-        jenisIntervensi: JenisIntervensiSos.distraksi,
-        detail: _aktivitasTerpilih,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi distraksi: $e $s');
-        return null;
-      }),
-    );
   }
 
   @override
@@ -11342,9 +6131,6 @@ class _DistraksiViewState extends ConsumerState<DistraksiView> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     L.i('distraksi dipilih: $aktivitas');
-                    setState(() {
-                      _aktivitasTerpilih = aktivitas;
-                    });
                     AppToast.info(context, aktivitas);
                   },
                 );
@@ -11370,1271 +6156,16 @@ class _DistraksiViewState extends ConsumerState<DistraksiView> {
 
 
 // ============================================================
-// FILE: lib/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart
-// ============================================================
-```dart
-import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/model/sos_intervensi_model.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/notifier/sos_intervensi_notifier.dart';
-import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Bottom sheet satu pertanyaan opsi hasil intervensi SOS Craving.
-///
-/// Tampilkan setelah intervensi selesai. Opsi: Berkurang / Tetap / Belum selesai,
-/// plus aksi Lewati. Hasil dikembalikan sebagai [HasilIntervensiSos] atau null
-/// bila pengguna menekan Lewati / menutup sheet tanpa memilih.
-class SheetHasilIntervensi extends ConsumerWidget {
-  const SheetHasilIntervensi({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final textTheme = Theme.of(context).textTheme;
-    final warnaSurface = Theme.of(context).colorScheme.surface;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: warnaSurface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 12,
-          children: [
-            Text(
-              'Apakah dorongan merokok berkurang?',
-              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Pilih salah satu atau lewati.',
-              style: textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            _TombolHasil(
-              label: HasilIntervensiSos.berkurang.label,
-              value: HasilIntervensiSos.berkurang,
-              onTap: () => Navigator.pop(context, HasilIntervensiSos.berkurang),
-            ),
-            _TombolHasil(
-              label: HasilIntervensiSos.tetap.label,
-              value: HasilIntervensiSos.tetap,
-              onTap: () => Navigator.pop(context, HasilIntervensiSos.tetap),
-            ),
-            _TombolHasil(
-              label: HasilIntervensiSos.belumSelesai.label,
-              value: HasilIntervensiSos.belumSelesai,
-              onTap: () =>
-                  Navigator.pop(context, HasilIntervensiSos.belumSelesai),
-            ),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context, null),
-              child: const Text('Lewati'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Satu tombol pilihan hasil intervensi dalam bottom sheet.
-class _TombolHasil extends StatelessWidget {
-  const _TombolHasil({
-    required this.label,
-    required this.value,
-    required this.onTap,
-  });
-
-  final String label;
-  final HasilIntervensiSos value;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: onTap,
-      child: Text(label),
-    );
-  }
-}
-
-/// Mengambil entri diary craving terbaru untuk hari ini.
-///
-/// Entri diary disimpan dari waktu lokal yang dikonversi ke UTC, sehingga
-/// pencarian memakai rentang UTC dari batas hari lokal (00:00 lokal sampai
-/// 00:00 lokal besok), bukan prefix tanggal UTC — prefix UTC meleset satu
-/// hari untuk zona UTC+X pada pagi hari.
-///
-/// Mengembalikan `id` entri terbaru bila ditemukan, atau `null` bila tidak ada.
-Future<String?> _ambilEntriDiaryTerbaruHariIni() async {
-  try {
-    final op = const SqfliteOp();
-    final now = DateTime.now();
-    // Batas hari lokal dinormalisasi lalu dikonversi ke UTC agar konsisten
-    // dengan cara tanggal disimpan di kolom `tanggal`.
-    final awalLokal = DateTime(now.year, now.month, now.day);
-    final awalUtc = awalLokal.toUtc().toIso8601String();
-    final akhirUtc =
-        awalLokal.add(const Duration(days: 1)).toUtc().toIso8601String();
-    final rows = await op.ambil(
-      NamaTabel.diaryCraving,
-      where: '${NamaKolom.tanggal} >= ? AND ${NamaKolom.tanggal} < ?',
-      whereArgs: [awalUtc, akhirUtc],
-      orderBy: '${NamaKolom.tanggal} DESC',
-      limit: 1,
-    );
-    if (rows.isEmpty) {
-      return null;
-    }
-    return rows.first[NamaKolom.id] as String?;
-  } on Exception catch (e, s) {
-    L.w('Gagal mencari entri diary hari ini: $e $s');
-    return null;
-  }
-}
-
-/// Menampilkan bottom sheet pertanyaan hasil intervensi dan menyimpan hasilnya.
-///
-/// Setelah menyimpan, bila ada entri diary craving hari ini, tawarkan
-/// "Tautkan ke catatan craving?" bila pengguna setuju.
-///
-/// [jenisIntervensi] wajib valid enum. [detail] hanya untuk tab Distraksi.
-/// Mengembalikan [HasilIntervensiSos] yang dipilih, atau null bila dilewati.
-Future<HasilIntervensiSos?> tampilkanDanSimpanHasilIntervensi({
-  required BuildContext context,
-  required WidgetRef ref,
-  required JenisIntervensiSos jenisIntervensi,
-  String? detail,
-}) async {
-  final hasil = await showModalBottomSheet<HasilIntervensiSos>(
-    context: context,
-    isScrollControlled: true,
-    builder: (_) => const SheetHasilIntervensi(),
-  );
-
-  SosIntervensiModel? modelDisimpan;
-  try {
-    modelDisimpan = await ref
-        .read(sosIntervensiProvider.notifier)
-        .simpan(
-          jenis: jenisIntervensi,
-          detail: detail,
-          hasil: hasil,
-        );
-    if (context.mounted) {
-      AppToast.sukses(
-        context,
-        'Hasil intervensi tersimpan${hasil == null ? ' (dilewati)' : ''}',
-      );
-    }
-  } on Exception catch (e, s) {
-    L.e('Gagal menyimpan hasil intervensi SOS: $e $s');
-    if (context.mounted) {
-      AppToast.gagal(context, 'Gagal menyimpan hasil intervensi');
-    }
-    return hasil;
-  }
-
-  // Tawarkan tautan ke diary craving bila ada entri hari ini dan model tersimpan.
-  if (context.mounted) {
-    final diaryId = await _ambilEntriDiaryTerbaruHariIni();
-    if (diaryId != null) {
-      final konfirmasi = await showOkCancelAlertDialog(
-        context: context,
-        title: 'Tautkan ke catatan craving?',
-        message:
-            'Hasil intervensi ini akan ditautkan ke entri craving hari ini '
-            'agar Anda bisa melihat hubungan antara pemicu dan teknik yang '
-            'dicoba.',
-        okLabel: 'Tautkan',
-        cancelLabel: 'Batal',
-      );
-      if (konfirmasi == OkCancelResult.ok) {
-        try {
-          await ref
-              .read(sosIntervensiProvider.notifier)
-              .ubahDiaryCravingId(
-                id: modelDisimpan.id,
-                diaryCravingId: diaryId,
-              );
-          if (context.mounted) {
-            AppToast.sukses(context, 'Tautkan ke catatan craving berhasil');
-          }
-        } on Exception catch (e, s) {
-          L.w('Gagal menautkan ke catatan craving: $e $s');
-          if (context.mounted) {
-            AppToast.gagal(context, 'Gagal menautkan ke catatan craving');
-          }
-        }
-      }
-    }
-  }
-
-  return hasil;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/widgets/grounding_54321_view.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/sheet_hasil_intervensi.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Grounding 5-4-3-2-1: mengalihkan perhatian dari craving ke
-/// sensasi tubuh/indra saat ini, langkah demi langkah.
-class Grounding54321View extends ConsumerStatefulWidget {
-  const Grounding54321View({super.key});
-
-  @override
-  ConsumerState<Grounding54321View> createState() => _Grounding54321ViewState();
-}
-
-class _Grounding54321ViewState extends ConsumerState<Grounding54321View> {
-  int _langkah = 0; // 0..4
-
-  static const List<({String indra, String instruksi, IconData ikon})> _langkahList = [
-    (
-      indra: '5 hal yang kamu LIHAT',
-      instruksi: 'Sebutkan dalam hati 5 benda yang terlihat di sekitarmu '
-          'saat ini, satu per satu.',
-      ikon: Icons.visibility,
-    ),
-    (
-      indra: '4 hal yang kamu SENTUH',
-      instruksi: 'Rasakan 4 benda yang bisa kamu sentuh: tekstur meja, '
-          'pakaian, atau kursi.',
-      ikon: Icons.touch_app,
-    ),
-    (
-      indra: '3 hal yang kamu DENGAR',
-      instruksi: 'Dengarkan 3 suara di sekitarmu: kendaraan, kipas angin, '
-          'atau suara napasmu sendiri.',
-      ikon: Icons.hearing,
-    ),
-    (
-      indra: '2 hal yang kamu CIUM',
-      instruksi: 'Cium 2 aroma di sekitarmu: kopi, sabun, atau udara '
-          'segar.',
-      ikon: Icons.air,
-    ),
-    (
-      indra: '1 hal yang kamu KECAP',
-      instruksi: 'Rasakan 1 rasa di mulutmu: sisa makanan, air, atau '
-          'permen mint.',
-      ikon: Icons.restaurant,
-    ),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('Grounding54321View initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('Grounding54321View dispose');
-    super.dispose();
-  }
-
-  void _selanjutnya() {
-    L.i('grounding langkah ${_langkah + 1} selesai');
-    if (_langkah >= _langkahList.length - 1) {
-      _selesai();
-      return;
-    }
-    setState(() {
-      _langkah++;
-    });
-  }
-
-  void _sebelumnya() {
-    if (_langkah == 0) return;
-    L.i('grounding kembali ke langkah $_langkah');
-    setState(() {
-      _langkah--;
-    });
-  }
-
-  void _selesai() {
-    L.i('grounding 5-4-3-2-1 selesai');
-    AppToast.sukses(context, 'Grounding selesai. Pikiran lebih tenang!');
-    unawaited(
-      tampilkanDanSimpanHasilIntervensi(
-        context: context,
-        ref: ref,
-        jenisIntervensi: JenisIntervensiSos.grounding54321,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi grounding: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    final langkah = _langkahList[_langkah];
-    final progres = (_langkah + 1) / _langkahList.length;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        spacing: 16,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Grounding 5-4-3-2-1',
-            textAlign: TextAlign.center,
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Langkah ${_langkah + 1} dari ${_langkahList.length}',
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
-          ),
-          LinearProgressIndicator(value: progres.clamp(0.0, 1.0)),
-          const SizedBox(height: 8),
-          Icon(
-            langkah.ikon,
-            size: 96,
-            color: colorScheme.primary,
-          ),
-          Text(
-            langkah.indra,
-            textAlign: TextAlign.center,
-            style: textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            langkah.instruksi,
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          Row(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_langkah > 0)
-                OutlinedButton.icon(
-                  onPressed: _sebelumnya,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Kembali'),
-                ),
-              FilledButton.icon(
-                onPressed: _selanjutnya,
-                icon: const Icon(Icons.check),
-                label: const Text('Sudah'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/screens/sos_craving_screen.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
-import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/widgets/kartu_rencana_darurat.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/box_breathing_view.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/distraksi_view.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/grounding_54321_view.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/napas_478_view.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/napas_90_detik_view.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/timer_craving_view.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/widgets/urge_surfing_view.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Halaman bantuan cepat saat craving (SOS Craving).
-///
-/// Menampilkan kartu "Ingat alasanmu" di atas menu kartu teknik.
-/// Mengetuk kartu teknik membuka tampilan detail teknik; tombol kembali
-/// pada AppBar mengembalikan ke menu kartu.
-class SosCravingScreen extends ConsumerStatefulWidget {
-  const SosCravingScreen({super.key});
-
-  @override
-  ConsumerState<SosCravingScreen> createState() => _SosCravingScreenState();
-}
-
-class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
-  JenisIntervensiSos? _teknikTerpilih;
-
-  /// Daftar kartu teknik sesuai urutan yang disepakati:
-  /// Napas 4-7-8 → Timer Craving → Box Breathing → Napas 90 Detik →
-  /// Grounding 5-4-3-2-1 → Distraksi → Urge Surfing.
-  static const List<({JenisIntervensiSos jenis, IconData ikon, String nama, String deskripsi})>
-      _kartuTeknik = [
-    (
-      jenis: JenisIntervensiSos.napas478,
-      ikon: Icons.air,
-      nama: 'Napas 4-7-8',
-      deskripsi: 'Tarik 4, tahan 7, hembus 8',
-    ),
-    (
-      jenis: JenisIntervensiSos.timerCraving,
-      ikon: Icons.timer_outlined,
-      nama: 'Timer Craving',
-      deskripsi: 'Tahan 3, 5, atau 10 menit',
-    ),
-    (
-      jenis: JenisIntervensiSos.napasBox,
-      ikon: Icons.crop_square,
-      nama: 'Box Breathing',
-      deskripsi: 'Napas kotak 4-4-4-4',
-    ),
-    (
-      jenis: JenisIntervensiSos.napas90Detik,
-      ikon: Icons.hourglass_bottom,
-      nama: 'Napas 90 Detik',
-      deskripsi: '90 detik napas lega',
-    ),
-    (
-      jenis: JenisIntervensiSos.grounding54321,
-      ikon: Icons.touch_app,
-      nama: 'Grounding 5-4-3-2-1',
-      deskripsi: 'Sadar 5 indra sekitar',
-    ),
-    (
-      jenis: JenisIntervensiSos.distraksi,
-      ikon: Icons.gamepad_outlined,
-      nama: 'Distraksi',
-      deskripsi: 'Alihkan dengan aktivitas',
-    ),
-    (
-      jenis: JenisIntervensiSos.urgeSurfing,
-      ikon: Icons.waves,
-      nama: 'Urge Surfing',
-      deskripsi: 'Tunggangi gelombang craving',
-    ),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    L.i('SosCravingScreen initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('SosCravingScreen dispose');
-    super.dispose();
-  }
-
-  void _pilihTeknik(JenisIntervensiSos jenis) {
-    L.i('teknik dipilih: ${jenis.name}');
-    setState(() {
-      _teknikTerpilih = jenis;
-    });
-  }
-
-  void _kembaliKeMenu() {
-    L.i('kembali ke menu teknik');
-    setState(() {
-      _teknikTerpilih = null;
-    });
-  }
-
-  /// Membangun kartu pengingat alasan berhenti terbaru (penguat motivasi).
-  Widget _buildKartuAlasanBerhenti() {
-    final alasanAsync = ref.watch(alasanBerhentiProvider);
-    final listAlasan = alasanAsync.asData?.value.listAlasan;
-    L.i('listAlasan.length=${listAlasan?.length}');
-    if (listAlasan == null || listAlasan.isEmpty) {
-      L.w('alasan kosong, tampilkan pesan + CTA');
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 12,
-                  children: [
-                    Icon(
-                      Icons.favorite_outline,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 4,
-                        children: [
-                          Text(
-                            'Belum ada alasan berhenti',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Catat alasan berhenti agar bisa menguatkanmu '
-                            'saat craving.',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                OutlinedButton(
-                  onPressed: () => unawaited(
-                    Nav.to(context, const AlasanBerhentiScreen()).catchError((
-                      Object e,
-                      StackTrace s,
-                    ) {
-                      L.e('Gagal navigasi ke Alasan Berhenti: $e $s');
-                      return null;
-                    }),
-                  ),
-                  child: const Text('Tambah alasan'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-    final terbaru = listAlasan.first;
-    L.i('terbaru=$terbaru');
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12,
-            children: [
-              Icon(
-                Icons.favorite,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4,
-                  children: [
-                    Text(
-                      'Ingat alasanmu',
-                      style: Theme.of(context).textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      terbaru.teks,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildKartuTeknik({
-    required IconData ikon,
-    required String nama,
-    required String deskripsi,
-    required VoidCallback onTap,
-  }) {
-    final textTheme = Theme.of(context).textTheme;
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 8,
-            children: [
-              Icon(
-                ikon,
-                size: 36,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              Text(
-                nama,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                deskripsi,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: textTheme.bodySmall,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuTeknik() {
-    final textTheme = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        _buildKartuAlasanBerhenti(),
-        const KartuRencanaDarurat(),
-        Expanded(
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            padding: const EdgeInsets.all(16),
-            childAspectRatio: 1.05,
-            children: [
-              for (final kartu in _kartuTeknik)
-                _buildKartuTeknik(
-                  ikon: kartu.ikon,
-                  nama: kartu.nama,
-                  deskripsi: kartu.deskripsi,
-                  onTap: () => _pilihTeknik(kartu.jenis),
-                ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: Text(
-            'Teknik ini bukan pengganti nasihat medis.',
-            textAlign: TextAlign.center,
-            style: textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDetailTeknik(JenisIntervensiSos jenis) {
-    switch (jenis) {
-      case JenisIntervensiSos.napas478:
-        return const Napas478View();
-      case JenisIntervensiSos.timerCraving:
-      case JenisIntervensiSos.timer3Menit:
-        return const TimerCravingView();
-      case JenisIntervensiSos.napasBox:
-        return const BoxBreathingView();
-      case JenisIntervensiSos.napas90Detik:
-        return const Napas90DetikView();
-      case JenisIntervensiSos.grounding54321:
-        return const Grounding54321View();
-      case JenisIntervensiSos.distraksi:
-        return const DistraksiView();
-      case JenisIntervensiSos.urgeSurfing:
-        return const UrgeSurfingView();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final teknik = _teknikTerpilih;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(teknik == null ? 'SOS Craving' : teknik.label),
-        leading: teknik == null
-            ? null
-            : IconButton(
-                tooltip: 'Kembali ke menu',
-                icon: const Icon(Icons.arrow_back),
-                onPressed: _kembaliKeMenu,
-              ),
-      ),
-      body: SafeArea(
-        child: teknik == null
-            ? _buildMenuTeknik()
-            : _buildDetailTeknik(teknik),
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/state/sos_intervensi_state.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'sos_intervensi_state.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$SosIntervensiState {
-
- List<SosIntervensiModel> get listIntervensi; int get jumlahIntervensi;
-/// Create a copy of SosIntervensiState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$SosIntervensiStateCopyWith<SosIntervensiState> get copyWith => _$SosIntervensiStateCopyWithImpl<SosIntervensiState>(this as SosIntervensiState, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as SosIntervensiState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SosIntervensiState&&const DeepCollectionEquality().equals(other.listIntervensi, _this.listIntervensi)&&(identical(other.jumlahIntervensi, _this.jumlahIntervensi) || other.jumlahIntervensi == _this.jumlahIntervensi));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as SosIntervensiState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listIntervensi),_this.jumlahIntervensi);
-}
-
-@override
-String toString() {
-  final _this = this as SosIntervensiState;
-  return 'SosIntervensiState(listIntervensi: ${_this.listIntervensi}, jumlahIntervensi: ${_this.jumlahIntervensi})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $SosIntervensiStateCopyWith<$Res>  {
-  factory $SosIntervensiStateCopyWith(SosIntervensiState value, $Res Function(SosIntervensiState) _then) = _$SosIntervensiStateCopyWithImpl;
-@useResult
-$Res call({
- List<SosIntervensiModel> listIntervensi, int jumlahIntervensi
-});
-
-
-
-
-}
-/// @nodoc
-class _$SosIntervensiStateCopyWithImpl<$Res>
-    implements $SosIntervensiStateCopyWith<$Res> {
-  _$SosIntervensiStateCopyWithImpl(this._self, this._then);
-
-  final SosIntervensiState _self;
-  final $Res Function(SosIntervensiState) _then;
-
-/// Create a copy of SosIntervensiState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? listIntervensi = null,Object? jumlahIntervensi = null,}) {
-  return _then(SosIntervensiState(
-listIntervensi: null == listIntervensi ? _self.listIntervensi : listIntervensi // ignore: cast_nullable_to_non_nullable
-as List<SosIntervensiModel>,jumlahIntervensi: null == jumlahIntervensi ? _self.jumlahIntervensi : jumlahIntervensi // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [SosIntervensiState].
-extension SosIntervensiStatePatterns on SosIntervensiState {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SosIntervensiState value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _SosIntervensiState() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SosIntervensiState value)  $default,){
-final _that = this;
-switch (_that) {
-case _SosIntervensiState():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SosIntervensiState value)?  $default,){
-final _that = this;
-switch (_that) {
-case _SosIntervensiState() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _SosIntervensiState() when $default != null:
-return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi)  $default,) {final _that = this;
-switch (_that) {
-case _SosIntervensiState():
-return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi)?  $default,) {final _that = this;
-switch (_that) {
-case _SosIntervensiState() when $default != null:
-return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _SosIntervensiState extends SosIntervensiState {
-  const _SosIntervensiState({ List<SosIntervensiModel> listIntervensi = const [], this.jumlahIntervensi = 0}): _listIntervensi = listIntervensi,super._();
-  
-
- final  List<SosIntervensiModel> _listIntervensi;
-@override@JsonKey() List<SosIntervensiModel> get listIntervensi {
-  if (_listIntervensi is EqualUnmodifiableListView) return _listIntervensi;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_listIntervensi);
-}
-
-@override@JsonKey() final  int jumlahIntervensi;
-
-/// Create a copy of SosIntervensiState
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$SosIntervensiStateCopyWith<_SosIntervensiState> get copyWith => __$SosIntervensiStateCopyWithImpl<_SosIntervensiState>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SosIntervensiState&&const DeepCollectionEquality().equals(other.listIntervensi, _listIntervensi)&&(identical(other.jumlahIntervensi, jumlahIntervensi) || other.jumlahIntervensi == jumlahIntervensi));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listIntervensi),jumlahIntervensi);
-}
-
-@override
-String toString() {
-    return 'SosIntervensiState(listIntervensi: $listIntervensi, jumlahIntervensi: $jumlahIntervensi)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$SosIntervensiStateCopyWith<$Res> implements $SosIntervensiStateCopyWith<$Res> {
-  factory _$SosIntervensiStateCopyWith(_SosIntervensiState value, $Res Function(_SosIntervensiState) _then) = __$SosIntervensiStateCopyWithImpl;
-@override @useResult
-$Res call({
- List<SosIntervensiModel> listIntervensi, int jumlahIntervensi
-});
-
-
-
-
-}
-/// @nodoc
-class __$SosIntervensiStateCopyWithImpl<$Res>
-    implements _$SosIntervensiStateCopyWith<$Res> {
-  __$SosIntervensiStateCopyWithImpl(this._self, this._then);
-
-  final _SosIntervensiState _self;
-  final $Res Function(_SosIntervensiState) _then;
-
-/// Create a copy of SosIntervensiState
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? listIntervensi = null,Object? jumlahIntervensi = null,}) {
-  return _then(_SosIntervensiState(
-listIntervensi: null == listIntervensi ? _self._listIntervensi : listIntervensi // ignore: cast_nullable_to_non_nullable
-as List<SosIntervensiModel>,jumlahIntervensi: null == jumlahIntervensi ? _self.jumlahIntervensi : jumlahIntervensi // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/state/sos_intervensi_state.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/sos_craving/model/sos_intervensi_model.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'sos_intervensi_state.freezed.dart';
-
-@freezed
-abstract class SosIntervensiState with _$SosIntervensiState {
-  const SosIntervensiState._();
-
-  const factory SosIntervensiState({
-    @Default([]) List<SosIntervensiModel> listIntervensi,
-    @Default(0) int jumlahIntervensi,
-  }) = _SosIntervensiState;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/notifier/sos_intervensi_notifier.g.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'sos_intervensi_notifier.dart';
-
-// **************************************************************************
-// RiverpodGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-
-@ProviderFor(SosIntervensiNotifier)
-final sosIntervensiProvider = SosIntervensiNotifierProvider._();
-
-final class SosIntervensiNotifierProvider
-    extends $AsyncNotifierProvider<SosIntervensiNotifier, SosIntervensiState> {
-  SosIntervensiNotifierProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'sosIntervensiProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$sosIntervensiNotifierHash();
-
-  @$internal
-  @override
-  SosIntervensiNotifier create() => SosIntervensiNotifier();
-}
-
-String _$sosIntervensiNotifierHash() =>
-    r'3fb68a24710f1800b0f7a562f18d3e4da3b12c20';
-
-abstract class _$SosIntervensiNotifier
-    extends $AsyncNotifier<SosIntervensiState> {
-  FutureOr<SosIntervensiState> build();
-  @$mustCallSuper
-  @override
-  WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<SosIntervensiState>, SosIntervensiState>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SosIntervensiState>, SosIntervensiState>,
-              AsyncValue<SosIntervensiState>,
-              Object?,
-              Object?
-            >;
-    return element.handleCreate(ref, build);
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/sos_craving/notifier/sos_intervensi_notifier.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/sos_craving/enum/hasil_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/model/sos_intervensi_model.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/state/sos_intervensi_state.dart';
-import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:share_global_saya/core_shared.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:uuid/uuid.dart';
-
-part 'sos_intervensi_notifier.g.dart';
-
-@Riverpod(keepAlive: true)
-class SosIntervensiNotifier extends _$SosIntervensiNotifier {
-  @override
-  Future<SosIntervensiState> build() async {
-    return await _ambilSemua();
-  }
-
-  Future<SosIntervensiState> _ambilSemua() async {
-    try {
-      final op = const SqfliteOp();
-      final rows = await op.ambilSemua(
-        NamaTabel.sosIntervensi,
-        orderBy: '${NamaKolom.dibuat} DESC',
-      );
-      final daftar = rows.map(SosIntervensiModel.fromSqflite).toList();
-      L.i('daftar.length=${daftar.length}');
-      return SosIntervensiState(
-        listIntervensi: daftar,
-        jumlahIntervensi: daftar.length,
-      );
-    } on Exception catch (e, s) {
-      L.e('Gagal mengambil riwayat intervensi SOS: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Menyimpan satu baris hasil intervensi SOS.
-  ///
-  /// [jenis] wajib valid enum. [detail] hanya untuk tab Distraksi.
-  /// [hasil] nullable bila pertanyaan dilewati. [diaryCravingId] nullable.
-  /// Mengembalikan model yang disimpan (termasuk [id] yang di-generate).
-  Future<SosIntervensiModel> simpan({
-    required JenisIntervensiSos jenis,
-    String? detail,
-    HasilIntervensiSos? hasil,
-    String? diaryCravingId,
-  }) async {
-    final id = const Uuid().v4();
-    final dibuat = DateTime.now().toUtc();
-    L.i('id=$id, jenis=${jenis.name}, detail=$detail, hasil=${hasil?.name}, diaryCravingId=$diaryCravingId, dibuat=$dibuat');
-    try {
-      final dataLama = await future;
-      final model = SosIntervensiModel(
-        id: id,
-        jenisIntervensi: jenis,
-        detail: detail,
-        hasilIntervensi: hasil,
-        diaryCravingId: diaryCravingId,
-        dibuat: dibuat,
-      );
-      final op = const SqfliteOp();
-      await op.tambah(
-        NamaTabel.sosIntervensi,
-        model.toSqflite(),
-        conflictAlgorithm: ConflictAlgorithm.abort,
-      );
-      state = AsyncValue.data(
-        SosIntervensiState(
-          listIntervensi: [model, ...dataLama.listIntervensi],
-          jumlahIntervensi: dataLama.jumlahIntervensi + 1,
-        ),
-      );
-      L.s('Riwayat intervensi SOS berhasil disimpan');
-      return model;
-    } on Exception catch (e, s) {
-      L.e('Gagal menyimpan riwayat intervensi SOS: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Memperbarui [diaryCravingId] pada baris [id] sos_intervensi.
-  Future<void> ubahDiaryCravingId({
-    required String id,
-    required String? diaryCravingId,
-  }) async {
-    L.i('id=$id, diaryCravingId=$diaryCravingId');
-    try {
-      final dataLama = await future;
-      final op = const SqfliteOp();
-      await op.ubah(
-        NamaTabel.sosIntervensi,
-        {NamaKolom.diaryCravingId: diaryCravingId},
-        where: '${NamaKolom.id} = ?',
-        whereArgs: [id],
-      );
-      final baru = dataLama.listIntervensi.map((e) {
-        if (e.id == id) {
-          return e.copyWith(diaryCravingId: diaryCravingId);
-        }
-        return e;
-      }).toList();
-      state = AsyncValue.data(
-        SosIntervensiState(
-          listIntervensi: baru,
-          jumlahIntervensi: baru.length,
-        ),
-      );
-      L.s('Diary craving ID berhasil diperbarui');
-    } on Exception catch (e, s) {
-      L.e('Gagal memperbarui diary craving ID: $e $s');
-      rethrow;
-    }
-  }
-}
-```
-
-
-
-// ============================================================
 // FILE: lib/fitur/dashboard/screens/dashboard_screen.dart
 // ============================================================
 ```dart
 import 'dart:async';
 
-import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
-import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/badge/screens/badge_screen.dart';
+
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
-import 'package:berhenti_merokok/fitur/impian/helper/impian_progres_helper.dart';
-import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
-import 'package:berhenti_merokok/fitur/impian/screens/impian_screen.dart';
-import 'package:berhenti_merokok/fitur/impian/state/impian_state.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
 import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/screens/sos_craving_screen.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
@@ -12706,44 +6237,64 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (biodata == null) {
       return _buildBiodataNull();
     }
-    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
-    final impianAsync = ref.watch(impianProvider);
     final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
     final nama = biodata.nama;
     L.i('tanggalBerhenti=$tanggalBerhenti, nama=$nama');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard'), scrolledUnderElevation: 2),
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        scrolledUnderElevation: 2,
+        actions: [
+          IconButton(
+            tooltip: 'SOS Craving',
+            icon: const Icon(Icons.sos),
+            onPressed: () => unawaited(
+              Nav.to(context, const SosCravingScreen()).catchError((
+                Object e,
+                StackTrace s,
+              ) {
+                L.e('Gagal navigasi ke SOS Craving: $e $s');
+                return null;
+              }),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: ListView(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
-                children: [
-                  _CounterSmokeFreeBesar(biodata: biodata),
-                  if (tanggalBerhenti != null)
-                    Text(
-                      'Sejak ${FormatTanggal.formatDasar(tanggalBerhenti)}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  if (nama.isNotEmpty)
-                    Text(
-                      'Halo, $nama',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                ],
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      Text(
+                        'Lama berhenti merokok',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      _DurasiBerhenti(tanggalBerhenti: tanggalBerhenti),
+                      if (tanggalBerhenti != null)
+                        Text(
+                          'Sejak ${FormatTanggal.formatDasar(tanggalBerhenti)}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      if (nama.isNotEmpty)
+                        Text(
+                          'Halo, $nama',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              _buildRingkasan(biodata),
-              _buildCaptionDariCatatan(biodata, konsumsiAsync),
-              _buildCardSosCraving(),
-              _buildCardKonsumsiHariIni(biodata, konsumsiAsync),
-              _buildCardTargetSmokeFree(biodata),
-              _buildCardRingkasanImpian(biodata, impianAsync),
-              _buildCardAlasanBerhenti(),
+              _buildCardProgres(biodata),
+              _buildCardMilestone(biodata),
               _buildCardBadge(),
               _buildInfoKerugian(biodata),
             ],
@@ -12753,22 +6304,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  /// Kartu motivasi progres target smoke-free "X dari N hari".
-  Widget _buildCardTargetSmokeFree(BiodataModel biodata) {
-    final target = biodata.targetSmokeFreeHari;
+  Widget _buildCardProgres(BiodataModel biodata) {
     final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    final jumlahRokokPerHari = biodata.jumlahRokokPerHari;
+    final hargaPerBungkus = biodata.hargaRokokPerBungkus;
+
     final hariBerhenti = biodata.hariBerhenti;
-
-    if (target == null) return const SizedBox.shrink();
-
-    String teksProgres;
-    if (tanggalBerhenti == null) {
-      teksProgres = 'Target: $target hari';
-    } else if (hariBerhenti >= target) {
-      teksProgres = '$target dari $target hari — Target tercapai';
-    } else {
-      teksProgres = '$hariBerhenti dari $target hari';
-    }
+    final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
+    final uangDihemat = biodata.uangDihemat;
+    L.i(
+      'tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat',
+    );
 
     return Card(
       child: Padding(
@@ -12778,12 +6324,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           spacing: 8,
           children: [
             Text(
-              'Target Smoke-Free',
+              'Uang dihemat',
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
-              teksProgres,
+              FormatUang.formatRupiah(uangDihemat),
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Rokok tidak dihisap',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '$rokokTidakDiHisap batang',
               style: Theme.of(context).textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -12793,49 +6351,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  /// Membangun kartu ringkasan impian (jumlah total dan tercapai) untuk dashboard.
-  Widget _buildCardRingkasanImpian(
-    BiodataModel biodata,
-    AsyncValue<ImpianState> impianAsync,
-  ) {
-    final uangDihemat = biodata.uangDihemat;
-    String subtitle;
-    if (impianAsync.isLoading) {
-      subtitle = 'Memuat data impian...';
-      L.i('ringkasan impian: loading, uangDihemat=$uangDihemat');
-    } else if (impianAsync.hasError) {
-      subtitle = 'Gagal memuat data impian';
-      L.w(
-        'ringkasan impian error=${impianAsync.error}, uangDihemat=$uangDihemat',
-      );
-    } else {
-      final impianState = impianAsync.requireValue;
-      final listImpian = impianState.listImpian;
-      final total = impianState.jumlahImpian;
-      final tercapai = listImpian
-          .where(
-            (item) => ImpianProgresHelper.tercapai(uangDihemat, item.jumlah),
-          )
-          .length;
-      L.i(
-        'ringkasan impian: total=$total, tercapai=$tercapai, uangDihemat=$uangDihemat',
-      );
-      if (total == 0) {
-        subtitle = 'Belum ada impian';
-      } else {
-        subtitle = '$tercapai dari $total impian tercapai';
-      }
-    }
+  Widget _buildCardMilestone(BiodataModel biodata) {
+    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return const SizedBox.shrink();
+
+    final durasi = DateTime.now().difference(tanggalBerhenti);
+    final aman = durasi.isNegative ? Duration.zero : durasi;
+    final berikutnya = milestoneBerikutnya(aman);
+    L.i('milestoneBerikutnya=${berikutnya?.judul}');
 
     return Card(
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
         onTap: () => unawaited(
-          Nav.to(context, const ImpianScreen()).catchError((
+          Nav.to(context, const PemulihanKesehatanScreen()).catchError((
             Object e,
             StackTrace s,
           ) {
-            L.e('Gagal navigasi ke Impian: $e $s');
+            L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
             return null;
           }),
         ),
@@ -12844,25 +6376,28 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: Row(
             spacing: 12,
             children: [
-              Icon(
-                CupertinoIcons.star_fill,
-                size: 32,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              const Icon(CupertinoIcons.heart, size: 32, color: Colors.green),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 4,
                   children: [
                     Text(
-                      'Impian',
+                      'Pemulihan Kesehatan',
                       style: Theme.of(context).textTheme.titleMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      subtitle,
+                      berikutnya == null
+                          ? 'Semua milestone tercapai'
+                          : 'Berikutnya: ${berikutnya.judul}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
+                    if (berikutnya != null)
+                      Text(
+                        'Tersisa ${_formatDurasiSingkat(berikutnya.target - aman)}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                   ],
                 ),
               ),
@@ -12871,299 +6406,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  /// Baris 3 kartu ringkasan seragam: uang dihemat (estimasi), rokok
-  /// tidak dihisap (estimasi), dan milestone kesehatan berikutnya (tap →
-  /// `PemulihanKesehatanScreen`). Bobot visual ketiganya seragam.
-  Widget _buildRingkasan(BiodataModel biodata) {
-    final rokokEstimasi = MetrikBerhentiHelper.hitungRokokTidakDiHisapEstimasi(
-      biodata,
-    );
-    final uangEstimasi = MetrikBerhentiHelper.hitungUangDihematEstimasi(
-      biodata,
-    );
-
-    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-    final durasi = tanggalBerhenti == null
-        ? Duration.zero
-        : DateTime.now().difference(tanggalBerhenti);
-    final aman = durasi.isNegative ? Duration.zero : durasi;
-    final berikutnya = milestoneBerikutnya(aman);
-    final sisa = berikutnya == null ? null : berikutnya.target - aman;
-    L.i(
-      'milestoneBerikutnya=${berikutnya?.judul}, rokokEstimasi=$rokokEstimasi, uangEstimasi=$uangEstimasi',
-    );
-
-    return IntrinsicHeight(
-      child: Row(
-        spacing: 8,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: _KartuRingkasan(
-              judul: 'Uang dihemat (estimasi)',
-              nilai: FormatUang.formatRupiah(uangEstimasi),
-            ),
-          ),
-          Expanded(
-            child: _KartuRingkasan(
-              judul: 'Rokok dihindari (estimasi)',
-              nilai: '$rokokEstimasi batang',
-            ),
-          ),
-          Expanded(
-            child: _KartuRingkasan(
-              judul: 'Milestone berikutnya',
-              nilai: berikutnya?.judul ?? 'Semua tercapai',
-              keterangan: sisa == null
-                  ? null
-                  : 'Tersisa ${_formatDurasiSingkat(sisa)}',
-              onTap: () => unawaited(
-                Nav.to(context, const PemulihanKesehatanScreen()).catchError((
-                  Object e,
-                  StackTrace s,
-                ) {
-                  L.e('Gagal navigasi ke Pemulihan Kesehatan: $e $s');
-                  return null;
-                }),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Caption satu baris "Dari catatan": aktual dari catatan konsumsi
-  /// ditampilkan ringkas (bukan blok besar). Loading/error/kosong ditangani
-  /// dengan pesan singkat ber-bodySmall.
-  ///
-  /// Dibungkus [Padding] vertikal agar caption punya jarak serasi terhadap
-  /// kartu ringkasan di atasnya dan kartu SOS Craving di bawahnya (Text
-  /// telanjang tidak punya margin seperti Card).
-  Widget _buildCaptionDariCatatan(
-    BiodataModel biodata,
-    AsyncValue<KonsumsiRokokState> konsumsiAsync,
-  ) {
-    final style = Theme.of(context).textTheme.bodySmall;
-
-    final Widget isi;
-    if (konsumsiAsync.isLoading) {
-      isi = Text('Menghitung dari catatan…', style: style);
-    } else if (konsumsiAsync.hasError) {
-      L.e(
-        'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
-      );
-      isi = Text(
-        'Catatan konsumsi gagal dimuat; menampilkan estimasi.',
-        style: style,
-      );
-    } else {
-      final konsumsiList = konsumsiAsync.asData?.value.listKonsumsi;
-      final adaCatatan = konsumsiList != null && konsumsiList.isNotEmpty;
-      if (!adaCatatan) {
-        isi = Text(
-          'Belum ada catatan konsumsi — aktual tersedia setelah Anda mencatat.',
-          style: style,
-        );
-      } else {
-        final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
-          konsumsiList,
-        );
-        final rokokAktual = MetrikBerhentiHelper.hitungRokokDihindariAktual(
-          biodata,
-          konsumsiList,
-        );
-        final uangAktual = MetrikBerhentiHelper.hitungUangDihematAktual(
-          biodata,
-          konsumsiList,
-        );
-        L.i(
-          'hariTercatat=$hariTercatat, rokokAktual=$rokokAktual, uangAktual=$uangAktual',
-        );
-
-        isi = Text(
-          'Dari catatan ($hariTercatat hari tercatat): '
-          '${FormatUang.formatRupiah(uangAktual)} · $rokokAktual batang',
-          style: style,
-        );
-      }
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: isi,
-    );
-  }
-
-  /// Kartu konsumsi rokok aktual hari ini dibandingkan target tapering.
-  ///
-  /// Jika sedang tapering: tampilkan "X / Y batang" dengan progress bar dan
-  /// warna kondisional (hijau jika dalam target, oranye jika melebihi).
-  /// Jika tidak tapering: tampilkan "Hari Ini: X batang".
-  Widget _buildCardKonsumsiHariIni(
-    BiodataModel biodata,
-    AsyncValue<KonsumsiRokokState> konsumsiAsync,
-  ) {
-    final konsumsiHariIni = konsumsiAsync.asData != null
-        ? KonsumsiHitungHelper.konsumsiHariIni(
-            konsumsiAsync.asData!.value.listKonsumsi,
-          )
-        : 0;
-    final sedangTapering = biodata.sedangTapering;
-    final targetHariIni = biodata.targetRokokHariIni;
-    final melebihiTarget = konsumsiHariIni > targetHariIni;
-    final warnaProgres = melebihiTarget
-        ? const Color(0xFFFF9800)
-        : const Color(0xFF4CAF50);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
-          children: [
-            Text(
-              'Konsumsi Hari Ini',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            if (sedangTapering) ...[
-              Text(
-                '$konsumsiHariIni / $targetHariIni batang',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: warnaProgres,
-                ),
-              ),
-              LinearProgressIndicator(
-                value: targetHariIni > 0
-                    ? (konsumsiHariIni / targetHariIni).clamp(0.0, 1.0)
-                    : 0,
-                color: warnaProgres,
-                backgroundColor: warnaProgres.withValues(alpha: 0.2),
-              ),
-            ] else ...[
-              Text(
-                'Hari Ini: $konsumsiHariIni batang',
-                style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCardSosCraving() {
-    return Card(
-      color: Theme.of(context).colorScheme.errorContainer,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => unawaited(
-          Nav.to(context, const SosCravingScreen()).catchError((
-            Object e,
-            StackTrace s,
-          ) {
-            L.e('Gagal navigasi ke SOS Craving: $e $s');
-            return null;
-          }),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            spacing: 12,
-            children: [
-              Icon(
-                Icons.sos,
-                size: 32,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4,
-                  children: [
-                    Text(
-                      'SOS Craving',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                    ),
-                    Text(
-                      'Butuh bantuan saat craving? Tekan untuk bantuan cepat.',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                CupertinoIcons.chevron_right,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Membangun kartu pintasan alasan berhenti dengan jumlah alasan tersimpan.
-  Widget _buildCardAlasanBerhenti() {
-    return Consumer(
-      builder: (context, ref, _) {
-        final alasanAsync = ref.watch(alasanBerhentiProvider);
-        final jumlah = alasanAsync.asData?.value.jumlahAlasan ?? 0;
-        L.i('jumlahAlasan=$jumlah');
-        return Card(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () => unawaited(
-              Nav.to(context, const AlasanBerhentiScreen()).catchError((
-                Object e,
-                StackTrace s,
-              ) {
-                L.e('Gagal navigasi ke Alasan Berhenti: $e $s');
-                return null;
-              }),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                spacing: 12,
-                children: [
-                  const Icon(CupertinoIcons.heart_fill, size: 32),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 4,
-                      children: [
-                        Text(
-                          'Alasan Berhenti',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          '$jumlah alasan tersimpan',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(CupertinoIcons.chevron_right),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -13252,17 +6494,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     int totalHariMerokok = 0;
     if (tanggalMulaiMerokok != null && tanggalBerhenti != null) {
-      final mulaiDate = DateTime(
-        tanggalMulaiMerokok.year,
-        tanggalMulaiMerokok.month,
-        tanggalMulaiMerokok.day,
-      );
-      final berhentiDate = DateTime(
-        tanggalBerhenti.year,
-        tanggalBerhenti.month,
-        tanggalBerhenti.day,
-      );
-      totalHariMerokok = berhentiDate.difference(mulaiDate).inDays;
+      totalHariMerokok = tanggalBerhenti.difference(tanggalMulaiMerokok).inDays;
       if (totalHariMerokok < 0) {
         totalHariMerokok = 0;
       }
@@ -13358,19 +6590,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-/// Widget terisolasi yang menampilkan counter smoke-free besar (hari + jam)
-/// di bagian atas Dashboard. Timer per detik hanya membangun ulang widget
-/// ini, bukan seluruh halaman.
-class _CounterSmokeFreeBesar extends StatefulWidget {
-  const _CounterSmokeFreeBesar({required this.biodata});
+/// Widget kecil yang menampilkan durasi berhenti merokok dan memperbarui tampilannya setiap detik tanpa memicu rebuild seluruh halaman.
+class _DurasiBerhenti extends StatefulWidget {
+  const _DurasiBerhenti({required this.tanggalBerhenti});
 
-  final BiodataModel biodata;
+  final DateTime? tanggalBerhenti;
 
   @override
-  State<_CounterSmokeFreeBesar> createState() => _CounterSmokeFreeBesarState();
+  State<_DurasiBerhenti> createState() => _DurasiBerhentiState();
 }
 
-class _CounterSmokeFreeBesarState extends State<_CounterSmokeFreeBesar> {
+class _DurasiBerhentiState extends State<_DurasiBerhenti> {
   Timer? _timer;
 
   @override
@@ -13391,103 +6621,42 @@ class _CounterSmokeFreeBesarState extends State<_CounterSmokeFreeBesar> {
 
   @override
   Widget build(BuildContext context) {
-    final teks = _formatCounterSmokeFreeBesar(widget.biodata);
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      alignment: Alignment.centerLeft,
-      child: Text(
-        teks,
-        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ),
-      ),
+    return Text(
+      _formatLamaBerhenti(widget.tanggalBerhenti),
+      style: Theme.of(context).textTheme.headlineMedium
+          ?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 }
 
-/// Menghitung teks counter smoke-free besar "X hari Y jam" dari [biodata].
-/// Menggunakan [BiodataModel.hariBerhenti] dari ekstensi perhitungan dan
-/// menghitung sisa jam dari selisih waktu dengan normalisasi dan klamping.
-String _formatCounterSmokeFreeBesar(BiodataModel biodata) {
-  final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-  final hariBerhenti = biodata.hariBerhenti;
-
-  int jamSisa = 0;
-  if (tanggalBerhenti != null) {
-    final selisih = DateTime.now().difference(tanggalBerhenti);
-    final totalJam = selisih.inHours;
-    jamSisa = totalJam < 0 ? 0 : totalJam % 24;
+/// Menghitung lama waktu (hari, jam, menit, detik) sejak [tanggalBerhenti] hingga saat ini.
+String _formatLamaBerhenti(DateTime? tanggalBerhenti) {
+  if (tanggalBerhenti == null) {
+    return 'Belum ditentukan';
+  }
+  final selisih = DateTime.now().difference(tanggalBerhenti);
+  L.i('tanggalBerhenti=$tanggalBerhenti, selisih=$selisih');
+  if (selisih.isNegative) {
+    return '0 detik';
   }
 
-  return '$hariBerhenti hari $jamSisa jam';
-}
+  final hari = selisih.inDays;
+  final jam = selisih.inHours % 24;
+  final menit = selisih.inMinutes % 60;
+  final detik = selisih.inSeconds % 60;
 
-/// Kartu ringkasan seragam untuk baris 3 metrik pendukung di Dashboard.
-/// StatelessWidget, pure, aman untuk tema; label "(estimasi)" ditulis di
-/// judul oleh pemanggil. Bila [onTap] diisi, kartu menjadi tappable.
-class _KartuRingkasan extends StatelessWidget {
-  const _KartuRingkasan({
-    required this.judul,
-    required this.nilai,
-    this.keterangan,
-    this.onTap,
-  });
-
-  final String judul;
-  final String nilai;
-  final String? keterangan;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final isi = Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        spacing: 4,
-        children: [
-          Text(
-            judul,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              nilai,
-              style: textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
-            ),
-          ),
-          if (keterangan != null)
-            Text(
-              keterangan!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.bodySmall,
-            ),
-        ],
-      ),
-    );
-
-    if (onTap == null) {
-      return Card(child: isi);
-    }
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: isi,
-      ),
-    );
+  final bagian = <String>[];
+  if (hari > 0) {
+    bagian.add('$hari hari');
   }
+  if (jam > 0) {
+    bagian.add('$jam jam');
+  }
+  if (menit > 0) {
+    bagian.add('$menit menit');
+  }
+  bagian.add('$detik detik');
+  return bagian.join(' ');
 }
 ```
 
@@ -13902,9 +7071,7 @@ import 'dart:async';
 
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
-import 'package:berhenti_merokok/fitur/pemulihan_kesehatan/helper/progres_milestone_helper.dart';
 import 'package:berhenti_merokok/shared/konstanta/milestone_kesehatan.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13999,26 +7166,10 @@ class _PemulihanKesehatanScreenState
                     final m = daftarMilestoneKesehatan[index];
                     final durasi = DateTime.now().difference(tanggalBerhenti);
                     final aman = durasi.isNegative ? Duration.zero : durasi;
-                    final tercapai = ProgresMilestoneHelper.tercapai(
-                      aman,
-                      m.target,
-                    );
-                    final rasio = ProgresMilestoneHelper.rasio(aman, m.target);
-                    final persen = ProgresMilestoneHelper.persentase(
-                      aman,
-                      m.target,
-                    );
-                    final sisa = ProgresMilestoneHelper.sisaWaktu(
-                      aman,
-                      m.target,
-                    );
-                    final labelProgres = tercapai
-                        ? 'Tercapai · 100%'
-                        : '$persen% · Tersisa ${_formatTarget(sisa)}';
+                    final tercapai = aman >= m.target;
                     return Card(
                       key: ValueKey(m.judul),
                       child: ListTile(
-                        isThreeLine: true,
                         leading: Icon(
                           tercapai
                               ? CupertinoIcons.check_mark_circled_solid
@@ -14042,22 +7193,6 @@ class _PemulihanKesehatanScreenState
                               'Target: ${_formatTarget(m.target)}',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
-                            LinearProgressIndicator(
-                              value: rasio,
-                              minHeight: 6,
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHighest,
-                              color: tercapai ? Colors.green : null,
-                            ),
-                            Text(
-                              labelProgres,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: tercapai ? Colors.green : null,
-                                  ),
-                            ),
                           ],
                         ),
                       ),
@@ -14077,14 +7212,25 @@ class _PemulihanKesehatanScreenState
   Widget _buildBiodataNull() {
     return Scaffold(
       appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
-      body: EmptyStateView(
-        ikon: CupertinoIcons.person,
-        judul: 'Belum ada data biodata',
-        deskripsi:
-            'Pemulihan kesehatan membutuhkan biodata untuk menghitung '
-            'milestone berdasarkan kebiasaan merokokmu.',
-        ctaLabel: 'Isi Biodata',
-        onCta: _bukaFormBiodata,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Text('Belum ada data biodata'),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -14092,27 +7238,36 @@ class _PemulihanKesehatanScreenState
   Widget _buildBelumBerhenti() {
     return Scaffold(
       appBar: AppBar(title: const Text('Pemulihan Kesehatan')),
-      body: EmptyStateView(
-        ikon: CupertinoIcons.heart,
-        judul: 'Belum ada tanggal mulai berhenti',
-        deskripsi:
-            'Isi tanggal mulai berhenti pada biodata untuk melihat '
-            'pemulihan kesehatan.',
-        ctaLabel: 'Isi Biodata',
-        onCta: _bukaFormBiodata,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                const Icon(CupertinoIcons.heart, size: 48),
+                const Text(
+                  'Belum ada tanggal mulai berhenti merokok.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  'Isi tanggal mulai berhenti pada biodata untuk melihat '
+                  'pemulihan kesehatan.',
+                  textAlign: TextAlign.center,
+                ),
+                OutlinedButton(
+                  onPressed: () => unawaited(
+                    Nav.to(context, const FormBiodata(buatPertama: false)),
+                  ),
+                  child: const Text('Isi Biodata'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-    );
-  }
-
-  void _bukaFormBiodata() {
-    unawaited(
-      Nav.to(context, const FormBiodata(buatPertama: false)).catchError((
-        Object e,
-        StackTrace s,
-      ) {
-        L.e('Gagal navigasi ke Form Biodata: $e $s');
-        return null;
-      }),
     );
   }
 
@@ -14255,54 +7410,6 @@ class _HeaderPemulihanState extends State<_HeaderPemulihan> {
     final detik = d.inSeconds % 60;
     if (menit > 0) return '$menit menit $detik detik';
     return '$detik detik';
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/pemulihan_kesehatan/helper/progres_milestone_helper.dart
-// ============================================================
-```dart
-/// Helper murni untuk perhitungan progres milestone pemulihan kesehatan.
-///
-/// Tidak bergantung pada [BuildContext] atau provider. Digunakan oleh layar
-/// Pemulihan Kesehatan untuk menampilkan progres per milestone.
-class ProgresMilestoneHelper {
-  const ProgresMilestoneHelper._();
-
-  /// Mengembalikan rasio progres durasi smoke-free terhadap [target] milestone.
-  ///
-  /// Nilai diklem ke rentang 0.0–1.0. Jika [target] bernilai nol detik atau
-  /// lebih kecil, mengembalikan 1.0 (milestone dianggap tercapai). Durasi
-  /// negatif diperlakukan sebagai nol.
-  static double rasio(Duration durasi, Duration target) {
-    if (target.inSeconds <= 0) return 1.0;
-    final detikDurasi = durasi.isNegative ? 0 : durasi.inSeconds;
-    final nilai = detikDurasi / target.inSeconds;
-    return nilai.clamp(0.0, 1.0);
-  }
-
-  /// Mengembalikan persentase progres (0–100) yang dibulatkan ke bilangan bulat.
-  static int persentase(Duration durasi, Duration target) {
-    return (rasio(durasi, target) * 100).round().clamp(0, 100);
-  }
-
-  /// Mengembalikan `true` jika [durasi] sudah mencapai atau melampaui [target].
-  static bool tercapai(Duration durasi, Duration target) {
-    if (target.inSeconds <= 0) return true;
-    final aman = durasi.isNegative ? Duration.zero : durasi;
-    return aman >= target;
-  }
-
-  /// Mengembalikan sisa durasi menuju [target].
-  ///
-  /// Jika sudah tercapai atau sisa negatif, mengembalikan [Duration.zero].
-  static Duration sisaWaktu(Duration durasi, Duration target) {
-    final aman = durasi.isNegative ? Duration.zero : durasi;
-    final sisa = target - aman;
-    return sisa.isNegative ? Duration.zero : sisa;
   }
 }
 ```
@@ -14656,7 +7763,6 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:berhenti_merokok/fitur/alasan_berhenti/model/alasan_berhenti_model.dart';
 import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
 import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/form_alasan_berhenti.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14681,18 +7787,6 @@ class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
   void dispose() {
     L.i('AlasanBerhentiScreen dispose');
     super.dispose();
-  }
-
-  void _navigasiKeForm() {
-    unawaited(
-      Nav.to(context, const FormAlasanBerhenti()).catchError((
-        Object e,
-        StackTrace s,
-      ) {
-        L.e('Gagal navigasi ke Form Alasan Berhenti: $e $s');
-        return null;
-      }),
-    );
   }
 
   Future<void> _hapus(AlasanBerhentiModel item) async {
@@ -14763,17 +7857,10 @@ class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
     if (list.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Alasan Berhenti')),
-        body: EmptyStateView(
-          ikon: CupertinoIcons.heart,
-          judul: 'Belum ada alasan berhenti',
-          deskripsi:
-              'Catat alasan kamu ingin berhenti agar mudah diingat saat '
-              'dorongan merokok muncul.',
-          ctaLabel: 'Tambah Alasan',
-          onCta: _navigasiKeForm,
-        ),
+        body: const _EmptyAlasanBerhenti(),
         floatingActionButton: FloatingActionButton(
-          onPressed: _navigasiKeForm,
+          onPressed: () =>
+              unawaited(Nav.to(context, const FormAlasanBerhenti())),
           child: const Icon(CupertinoIcons.add),
         ),
       );
@@ -14810,14 +7897,42 @@ class _AlasanBerhentiScreenState extends ConsumerState<AlasanBerhentiScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigasiKeForm,
+        onPressed: () => unawaited(Nav.to(context, const FormAlasanBerhenti())),
         child: const Icon(CupertinoIcons.add),
       ),
     );
   }
 }
 
+class _EmptyAlasanBerhenti extends StatelessWidget {
+  const _EmptyAlasanBerhenti();
 
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.heart, size: 48),
+              Text(
+                'Belum ada alasan berhenti',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Tekan tombol + untuk mencatat alasan berhenti pertama.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 ```
 
 
@@ -14835,18 +7950,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
-
-/// Daftar pilihan cepat alasan umum (snippet) yang dapat dipilih pengguna.
-const List<String> _snippetAlasan = [
-  'Menjaga kesehatan paru-paru dan jantung',
-  'Menghemat uang untuk kebutuhan keluarga',
-  'Memberi contoh baik bagi anak/keluarga',
-  'Menghindari bau rokok dan gigi kuning',
-  'Meningkatkan stamina dan kebugaran',
-  'Menepati janji pada diri sendiri',
-  'Mengurangi risiko penyakit serius',
-  'Hidup lebih lama dan berkualitas',
-];
 
 class FormAlasanBerhenti extends ConsumerStatefulWidget {
   final AlasanBerhentiModel? alasan;
@@ -14911,10 +8014,7 @@ class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
       EasyLoading.show(
         status: 'Menyimpan...',
         maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading: $e $s');
-        return null;
-      }),
+      ),
     );
     try {
       final teks = _teksController.text.trim();
@@ -14941,12 +8041,7 @@ class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
         AppToast.gagal(context, 'Gagal menyimpan alasan berhenti');
       }
     } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading: $e $s');
-          return null;
-        }),
-      );
+      unawaited(EasyLoading.dismiss());
       if (mounted) {
         setState(() => _isLoading = false);
         L.i('_isLoading=$_isLoading');
@@ -14969,29 +8064,6 @@ class _FormAlasanBerhentiState extends ConsumerState<FormAlasanBerhenti> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 12,
               children: [
-                Text(
-                  'Pilihan cepat (opsional)',
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _snippetAlasan.map((snippet) {
-                    final terpilih = _teksController.text.trim() == snippet;
-                    L.i('snippet=$snippet, terpilih=$terpilih');
-                    return FilterChip(
-                      label: Text(snippet),
-                      selected: terpilih,
-                      onSelected: (dipilih) {
-                        L.i('snippet dipilih=$snippet, dipilih=$dipilih');
-                        setState(() {
-                          _teksController.text = dipilih ? snippet : '';
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
                 InputTeks(
                   controller: _teksController,
                   label: 'Alasan berhenti',
@@ -15524,10 +8596,6 @@ class AlasanBerhentiNotifier extends _$AlasanBerhentiNotifier {
 ```dart
 import 'dart:async';
 
-import 'package:berhenti_merokok/fitur/cadangan/screens/cadangan_screen.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/helper/pola_craving_helper.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/model/diary_craving_model.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
 import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
@@ -15552,14 +8620,6 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
   bool _memuatNotifikasi = true;
   bool _sedangMemproses = false;
 
-  // Check-in pagi.
-  bool _checkinPagiAktif = false;
-  int _checkinPagiJam = 7;
-  int _checkinPagiMenit = 0;
-
-  // Pengingat pola craving.
-  bool _polaCravingAktif = false;
-
   @override
   void initState() {
     super.initState();
@@ -15577,24 +8637,14 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
       final aktif = await NotifikasiService.aktif();
       final jam = await NotifikasiService.jam();
       final menit = await NotifikasiService.menit();
-      final checkinPagiAktif = await NotifikasiService.aktifCheckinPagi();
-      final checkinPagiJam = await NotifikasiService.jamCheckinPagi();
-      final checkinPagiMenit = await NotifikasiService.menitCheckinPagi();
-      final polaCravingAktif = await NotifikasiService.aktifPolaCraving();
       if (!mounted) return;
       setState(() {
         _notifikasiAktif = aktif;
         _jam = jam;
         _menit = menit;
-        _checkinPagiAktif = checkinPagiAktif;
-        _checkinPagiJam = checkinPagiJam;
-        _checkinPagiMenit = checkinPagiMenit;
-        _polaCravingAktif = polaCravingAktif;
         _memuatNotifikasi = false;
       });
-      L.i(
-        'aktif=$aktif, jam=$jam, menit=$menit, checkinPagi=$checkinPagiAktif, polaCraving=$polaCravingAktif',
-      );
+      L.i('aktif=$aktif, jam=$jam, menit=$menit');
     } on Exception catch (e, s) {
       L.e('Gagal memuat preferensi notifikasi: $e $s');
       if (mounted) {
@@ -15782,263 +8832,6 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
     }
   }
 
-  Future<void> _ubahCheckinPagi(bool value) async {
-    if (_sedangMemproses) return;
-    L.i('checkinPagi value=$value');
-    setState(() {
-      _sedangMemproses = true;
-      _checkinPagiAktif = value;
-    });
-    unawaited(
-      EasyLoading.show(
-        status: 'Memproses...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading: $e $s');
-      }),
-    );
-    try {
-      if (value) {
-        final izin = await NotifikasiService.mintaIzin();
-        if (!mounted) return;
-        if (!izin) {
-          setState(() {
-            _checkinPagiAktif = false;
-          });
-          AppToast.gagal(context, 'Izin notifikasi tidak diberikan');
-          return;
-        }
-        await NotifikasiService.jadwalkanCheckinPagi(
-          jam: _checkinPagiJam,
-          menit: _checkinPagiMenit,
-        );
-        if (!mounted) return;
-        AppToast.sukses(context, 'Check-in pagi diaktifkan');
-      } else {
-        await NotifikasiService.batalkanCheckinPagi();
-        if (!mounted) return;
-        AppToast.info(context, 'Check-in pagi dinonaktifkan');
-      }
-    } on Exception catch (e, s) {
-      L.e('Gagal mengubah check-in pagi: $e $s');
-      if (mounted) {
-        final isIzin = e is IzinNotifikasiTidakDiberikanException;
-        try {
-          final aktifSekarang = await NotifikasiService.aktifCheckinPagi();
-          if (!mounted) return;
-          setState(() {
-            _checkinPagiAktif = aktifSekarang;
-          });
-        } on Exception catch (e2, s2) {
-          L.e('Gagal membaca status aktif check-in pagi: $e2 $s2');
-        }
-        if (isIzin) {
-          if (mounted) {
-            AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
-          }
-          try {
-            await _muatPreferensiNotifikasi();
-          } on Exception catch (e2, s2) {
-            L.e('Gagal memuat preferensi notifikasi: $e2 $s2');
-          }
-          if (!mounted) return;
-        } else if (mounted) {
-          AppToast.gagal(context, 'Gagal mengubah check-in pagi');
-        }
-      }
-    } on UnsupportedError catch (e, s) {
-      L.e('Platform tidak mendukung notifikasi: $e $s');
-      if (mounted) {
-        setState(() {
-          _checkinPagiAktif = false;
-        });
-        AppToast.gagal(context, 'Platform tidak mendukung check-in pagi');
-      }
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading: $e $s');
-        }),
-      );
-      if (mounted) {
-        setState(() {
-          _sedangMemproses = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _pilihWaktuCheckinPagi() async {
-    if (_sedangMemproses) return;
-    L.i('checkinPagi jam=$_checkinPagiJam, menit=$_checkinPagiMenit');
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay(hour: _checkinPagiJam, minute: _checkinPagiMenit),
-    );
-    if (!mounted) return;
-    if (picked == null) return;
-    L.i('picked=${picked.hour}:${picked.minute}');
-    final jamLama = _checkinPagiJam;
-    final menitLama = _checkinPagiMenit;
-    final jamBaru = picked.hour;
-    final menitBaru = picked.minute;
-    setState(() {
-      _sedangMemproses = true;
-    });
-    unawaited(
-      EasyLoading.show(
-        status: 'Memproses...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading: $e $s');
-      }),
-    );
-    try {
-      if (_checkinPagiAktif) {
-        await NotifikasiService.jadwalkanCheckinPagi(
-          jam: jamBaru,
-          menit: menitBaru,
-        );
-        if (!mounted) return;
-        setState(() {
-          _checkinPagiJam = jamBaru;
-          _checkinPagiMenit = menitBaru;
-        });
-        AppToast.sukses(context, 'Waktu check-in pagi diperbarui');
-      } else {
-        await NotifikasiService.setWaktuCheckinPagi(jamBaru, menitBaru);
-        if (!mounted) return;
-        setState(() {
-          _checkinPagiJam = jamBaru;
-          _checkinPagiMenit = menitBaru;
-        });
-      }
-    } on Exception catch (e, s) {
-      L.e('Gagal memperbarui waktu check-in pagi: $e $s');
-      if (mounted) {
-        setState(() {
-          _checkinPagiJam = jamLama;
-          _checkinPagiMenit = menitLama;
-        });
-        AppToast.gagal(context, 'Gagal memperbarui waktu check-in pagi');
-      }
-    } on UnsupportedError catch (e, s) {
-      L.e('Platform tidak mendukung notifikasi: $e $s');
-      if (mounted) {
-        setState(() {
-          _checkinPagiJam = jamLama;
-          _checkinPagiMenit = menitLama;
-        });
-        AppToast.gagal(context, 'Platform tidak mendukung check-in pagi');
-      }
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading: $e $s');
-        }),
-      );
-      if (mounted) {
-        setState(() {
-          _sedangMemproses = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _ubahPolaCraving(bool value) async {
-    if (_sedangMemproses) return;
-    L.i('polaCraving value=$value');
-    setState(() {
-      _sedangMemproses = true;
-      _polaCravingAktif = value;
-    });
-    unawaited(
-      EasyLoading.show(
-        status: 'Memproses...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading: $e $s');
-      }),
-    );
-    try {
-      if (value) {
-        final izin = await NotifikasiService.mintaIzin();
-        if (!mounted) return;
-        if (!izin) {
-          setState(() {
-            _polaCravingAktif = false;
-          });
-          AppToast.gagal(context, 'Izin notifikasi tidak diberikan');
-          return;
-        }
-        // Baca data diary craving untuk menghitung jam teratas.
-        final diaryAsync = ref.read(diaryCravingProvider);
-        final daftar = diaryAsync.asData?.value.listCraving ?? <DiaryCravingModel>[];
-        final jam = PolaCravingHelper.jamTeratas(daftar);
-        if (jam == null) {
-          // Data belum cukup, simpan preferensi aktif tanpa jadwal.
-          await NotifikasiService.setAktifPolaCraving(true);
-          if (!mounted) return;
-          AppToast.info(context, 'Pengingat pola craving aktif (data craving belum cukup)');
-        } else {
-          await NotifikasiService.jadwalkanPolaCraving(jam);
-          if (!mounted) return;
-          AppToast.sukses(context, 'Pengingat pola craving diaktifkan (jam $jam:00)');
-        }
-      } else {
-        await NotifikasiService.batalkanPolaCraving();
-        if (!mounted) return;
-        AppToast.info(context, 'Pengingat pola craving dinonaktifkan');
-      }
-    } on Exception catch (e, s) {
-      L.e('Gagal mengubah pola craving: $e $s');
-      if (mounted) {
-        final isIzin = e is IzinNotifikasiTidakDiberikanException;
-        try {
-          final aktifSekarang = await NotifikasiService.aktifPolaCraving();
-          if (!mounted) return;
-          setState(() {
-            _polaCravingAktif = aktifSekarang;
-          });
-        } on Exception catch (e2, s2) {
-          L.e('Gagal membaca status aktif pola craving: $e2 $s2');
-        }
-        if (isIzin) {
-          if (mounted) {
-            AppToast.gagal(context, 'Izin notifikasi tidak tersedia');
-          }
-          try {
-            await _muatPreferensiNotifikasi();
-          } on Exception catch (e2, s2) {
-            L.e('Gagal memuat preferensi notifikasi: $e2 $s2');
-          }
-          if (!mounted) return;
-        } else if (mounted) {
-          AppToast.gagal(context, 'Gagal mengubah pola craving');
-        }
-      }
-    } on UnsupportedError catch (e, s) {
-      L.e('Platform tidak mendukung notifikasi: $e $s');
-      if (mounted) {
-        setState(() {
-          _polaCravingAktif = false;
-        });
-        AppToast.gagal(context, 'Platform tidak mendukung pola craving');
-      }
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading: $e $s');
-        }),
-      );
-      if (mounted) {
-        setState(() {
-          _sedangMemproses = false;
-        });
-      }
-    }
-  }
-
   Future<void> _ujiNotifikasi() async {
     if (_sedangMemproses) return;
     L.i('uji notifikasi');
@@ -16084,7 +8877,7 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 16,
-          children: [_buildTema(), _buildNotifikasi(), _buildCadangan()],
+          children: [_buildTema(), _buildNotifikasi()],
         ),
       ),
     );
@@ -16192,91 +8985,7 @@ class _PengaturanScreenState extends ConsumerState<PengaturanScreen> {
                 },
           child: const Text('Uji coba notifikasi'),
         ),
-        const Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Check-in Pagi',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Switch(
-              value: _checkinPagiAktif,
-              onChanged: _sedangMemproses
-                  ? null
-                  : (value) {
-                      unawaited(_ubahCheckinPagi(value));
-                    },
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Waktu: ${_checkinPagiJam.toString().padLeft(2, '0')}:${_checkinPagiMenit.toString().padLeft(2, '0')}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            OutlinedButton(
-              onPressed: _sedangMemproses
-                  ? null
-                  : () {
-                      unawaited(_pilihWaktuCheckinPagi());
-                    },
-              child: const Text('Ubah waktu'),
-            ),
-          ],
-        ),
-        const Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Pengingat Pola Craving',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Switch(
-              value: _polaCravingAktif,
-              onChanged: _sedangMemproses
-                  ? null
-                  : (value) {
-                      unawaited(_ubahPolaCraving(value));
-                    },
-            ),
-          ],
-        ),
-        if (_polaCravingAktif)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              'Jadwal otomatis pada jam craving teratas (min. 3 entri diary).',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
       ],
-    );
-  }
-
-  Widget _buildCadangan() {
-    L.i('PengaturanScreen build cadangan');
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(
-        'Cadangan & Ekspor Data',
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () {
-        unawaited(
-          Nav.to(context, const CadanganScreen()).catchError((
-            Object e,
-            StackTrace s,
-          ) {
-            L.e('Gagal navigasi ke Cadangan: $e $s');
-            return null;
-          }),
-        );
-      },
     );
   }
 }
@@ -16305,7 +9014,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BiodataModel {
 
- String get id; String get nama; DateTime? get tanggalLahir; int get jumlahRokokPerHari; double get hargaRokokPerBungkus; double get batangPerBungkus; DateTime? get tanggalMulaiMerokok; DateTime? get tanggalMulaiBerhentiMerokok; ModeBerhenti get modeBerhenti; int get penurunanPerMinggu; DateTime? get tanggalMulaiTapering; int? get targetSmokeFreeHari;
+ String get id; String get nama; DateTime? get tanggalLahir; int get jumlahRokokPerHari; double get hargaRokokPerBungkus; double get batangPerBungkus; DateTime? get tanggalMulaiMerokok; DateTime? get tanggalMulaiBerhentiMerokok; ModeBerhenti get modeBerhenti; int get penurunanPerMinggu; DateTime? get tanggalMulaiTapering;
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -16317,20 +9026,20 @@ $BiodataModelCopyWith<BiodataModel> get copyWith => _$BiodataModelCopyWithImpl<B
 @override
 bool operator ==(Object other) {
   final _this = this as BiodataModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BiodataModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.nama, _this.nama) || other.nama == _this.nama)&&(identical(other.tanggalLahir, _this.tanggalLahir) || other.tanggalLahir == _this.tanggalLahir)&&(identical(other.jumlahRokokPerHari, _this.jumlahRokokPerHari) || other.jumlahRokokPerHari == _this.jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, _this.hargaRokokPerBungkus) || other.hargaRokokPerBungkus == _this.hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, _this.batangPerBungkus) || other.batangPerBungkus == _this.batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, _this.tanggalMulaiMerokok) || other.tanggalMulaiMerokok == _this.tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, _this.tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == _this.tanggalMulaiBerhentiMerokok)&&(identical(other.modeBerhenti, _this.modeBerhenti) || other.modeBerhenti == _this.modeBerhenti)&&(identical(other.penurunanPerMinggu, _this.penurunanPerMinggu) || other.penurunanPerMinggu == _this.penurunanPerMinggu)&&(identical(other.tanggalMulaiTapering, _this.tanggalMulaiTapering) || other.tanggalMulaiTapering == _this.tanggalMulaiTapering)&&(identical(other.targetSmokeFreeHari, _this.targetSmokeFreeHari) || other.targetSmokeFreeHari == _this.targetSmokeFreeHari));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BiodataModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.nama, _this.nama) || other.nama == _this.nama)&&(identical(other.tanggalLahir, _this.tanggalLahir) || other.tanggalLahir == _this.tanggalLahir)&&(identical(other.jumlahRokokPerHari, _this.jumlahRokokPerHari) || other.jumlahRokokPerHari == _this.jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, _this.hargaRokokPerBungkus) || other.hargaRokokPerBungkus == _this.hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, _this.batangPerBungkus) || other.batangPerBungkus == _this.batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, _this.tanggalMulaiMerokok) || other.tanggalMulaiMerokok == _this.tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, _this.tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == _this.tanggalMulaiBerhentiMerokok)&&(identical(other.modeBerhenti, _this.modeBerhenti) || other.modeBerhenti == _this.modeBerhenti)&&(identical(other.penurunanPerMinggu, _this.penurunanPerMinggu) || other.penurunanPerMinggu == _this.penurunanPerMinggu)&&(identical(other.tanggalMulaiTapering, _this.tanggalMulaiTapering) || other.tanggalMulaiTapering == _this.tanggalMulaiTapering));
 }
 
 
 @override
 int get hashCode {
   final _this = this as BiodataModel;
-  return Object.hash(runtimeType,_this.id,_this.nama,_this.tanggalLahir,_this.jumlahRokokPerHari,_this.hargaRokokPerBungkus,_this.batangPerBungkus,_this.tanggalMulaiMerokok,_this.tanggalMulaiBerhentiMerokok,_this.modeBerhenti,_this.penurunanPerMinggu,_this.tanggalMulaiTapering,_this.targetSmokeFreeHari);
+  return Object.hash(runtimeType,_this.id,_this.nama,_this.tanggalLahir,_this.jumlahRokokPerHari,_this.hargaRokokPerBungkus,_this.batangPerBungkus,_this.tanggalMulaiMerokok,_this.tanggalMulaiBerhentiMerokok,_this.modeBerhenti,_this.penurunanPerMinggu,_this.tanggalMulaiTapering);
 }
 
 @override
 String toString() {
   final _this = this as BiodataModel;
-  return 'BiodataModel(id: ${_this.id}, nama: ${_this.nama}, tanggalLahir: ${_this.tanggalLahir}, jumlahRokokPerHari: ${_this.jumlahRokokPerHari}, hargaRokokPerBungkus: ${_this.hargaRokokPerBungkus}, batangPerBungkus: ${_this.batangPerBungkus}, tanggalMulaiMerokok: ${_this.tanggalMulaiMerokok}, tanggalMulaiBerhentiMerokok: ${_this.tanggalMulaiBerhentiMerokok}, modeBerhenti: ${_this.modeBerhenti}, penurunanPerMinggu: ${_this.penurunanPerMinggu}, tanggalMulaiTapering: ${_this.tanggalMulaiTapering}, targetSmokeFreeHari: ${_this.targetSmokeFreeHari})';
+  return 'BiodataModel(id: ${_this.id}, nama: ${_this.nama}, tanggalLahir: ${_this.tanggalLahir}, jumlahRokokPerHari: ${_this.jumlahRokokPerHari}, hargaRokokPerBungkus: ${_this.hargaRokokPerBungkus}, batangPerBungkus: ${_this.batangPerBungkus}, tanggalMulaiMerokok: ${_this.tanggalMulaiMerokok}, tanggalMulaiBerhentiMerokok: ${_this.tanggalMulaiBerhentiMerokok}, modeBerhenti: ${_this.modeBerhenti}, penurunanPerMinggu: ${_this.penurunanPerMinggu}, tanggalMulaiTapering: ${_this.tanggalMulaiTapering})';
 }
 
 
@@ -16341,7 +9050,7 @@ abstract mixin class $BiodataModelCopyWith<$Res>  {
   factory $BiodataModelCopyWith(BiodataModel value, $Res Function(BiodataModel) _then) = _$BiodataModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok, ModeBerhenti modeBerhenti, int penurunanPerMinggu, DateTime? tanggalMulaiTapering, int? targetSmokeFreeHari
+ String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok, ModeBerhenti modeBerhenti, int penurunanPerMinggu, DateTime? tanggalMulaiTapering
 });
 
 
@@ -16358,7 +9067,7 @@ class _$BiodataModelCopyWithImpl<$Res>
 
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,Object? modeBerhenti = null,Object? penurunanPerMinggu = null,Object? tanggalMulaiTapering = freezed,Object? targetSmokeFreeHari = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,Object? modeBerhenti = null,Object? penurunanPerMinggu = null,Object? tanggalMulaiTapering = freezed,}) {
   return _then(BiodataModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
@@ -16371,8 +9080,7 @@ as DateTime?,tanggalMulaiBerhentiMerokok: freezed == tanggalMulaiBerhentiMerokok
 as DateTime?,modeBerhenti: null == modeBerhenti ? _self.modeBerhenti : modeBerhenti // ignore: cast_nullable_to_non_nullable
 as ModeBerhenti,penurunanPerMinggu: null == penurunanPerMinggu ? _self.penurunanPerMinggu : penurunanPerMinggu // ignore: cast_nullable_to_non_nullable
 as int,tanggalMulaiTapering: freezed == tanggalMulaiTapering ? _self.tanggalMulaiTapering : tanggalMulaiTapering // ignore: cast_nullable_to_non_nullable
-as DateTime?,targetSmokeFreeHari: freezed == targetSmokeFreeHari ? _self.targetSmokeFreeHari : targetSmokeFreeHari // ignore: cast_nullable_to_non_nullable
-as int?,
+as DateTime?,
   ));
 }
 
@@ -16457,10 +9165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering,  int? targetSmokeFreeHari)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BiodataModel() when $default != null:
-return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering,_that.targetSmokeFreeHari);case _:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering);case _:
   return orElse();
 
 }
@@ -16478,10 +9186,10 @@ return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering,  int? targetSmokeFreeHari)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering)  $default,) {final _that = this;
 switch (_that) {
 case _BiodataModel():
-return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering,_that.targetSmokeFreeHari);case _:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -16498,10 +9206,10 @@ return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering,  int? targetSmokeFreeHari)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String nama,  DateTime? tanggalLahir,  int jumlahRokokPerHari,  double hargaRokokPerBungkus,  double batangPerBungkus,  DateTime? tanggalMulaiMerokok,  DateTime? tanggalMulaiBerhentiMerokok,  ModeBerhenti modeBerhenti,  int penurunanPerMinggu,  DateTime? tanggalMulaiTapering)?  $default,) {final _that = this;
 switch (_that) {
 case _BiodataModel() when $default != null:
-return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering,_that.targetSmokeFreeHari);case _:
+return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,_that.hargaRokokPerBungkus,_that.batangPerBungkus,_that.tanggalMulaiMerokok,_that.tanggalMulaiBerhentiMerokok,_that.modeBerhenti,_that.penurunanPerMinggu,_that.tanggalMulaiTapering);case _:
   return null;
 
 }
@@ -16513,7 +9221,7 @@ return $default(_that.id,_that.nama,_that.tanggalLahir,_that.jumlahRokokPerHari,
 
 
 class _BiodataModel extends BiodataModel {
-  const _BiodataModel({required this.id, required this.nama, this.tanggalLahir, this.jumlahRokokPerHari = 10, this.hargaRokokPerBungkus = 0.0, this.batangPerBungkus = 20.0, this.tanggalMulaiMerokok, this.tanggalMulaiBerhentiMerokok, this.modeBerhenti = ModeBerhenti.seketika, this.penurunanPerMinggu = 0, this.tanggalMulaiTapering, this.targetSmokeFreeHari}): super._();
+  const _BiodataModel({required this.id, required this.nama, this.tanggalLahir, this.jumlahRokokPerHari = 10, this.hargaRokokPerBungkus = 0.0, this.batangPerBungkus = 20.0, this.tanggalMulaiMerokok, this.tanggalMulaiBerhentiMerokok, this.modeBerhenti = ModeBerhenti.seketika, this.penurunanPerMinggu = 0, this.tanggalMulaiTapering}): super._();
   
 
 @override final  String id;
@@ -16527,7 +9235,6 @@ class _BiodataModel extends BiodataModel {
 @override@JsonKey() final  ModeBerhenti modeBerhenti;
 @override@JsonKey() final  int penurunanPerMinggu;
 @override final  DateTime? tanggalMulaiTapering;
-@override final  int? targetSmokeFreeHari;
 
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
@@ -16539,18 +9246,18 @@ _$BiodataModelCopyWith<_BiodataModel> get copyWith => __$BiodataModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BiodataModel&&(identical(other.id, id) || other.id == id)&&(identical(other.nama, nama) || other.nama == nama)&&(identical(other.tanggalLahir, tanggalLahir) || other.tanggalLahir == tanggalLahir)&&(identical(other.jumlahRokokPerHari, jumlahRokokPerHari) || other.jumlahRokokPerHari == jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, hargaRokokPerBungkus) || other.hargaRokokPerBungkus == hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, batangPerBungkus) || other.batangPerBungkus == batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, tanggalMulaiMerokok) || other.tanggalMulaiMerokok == tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == tanggalMulaiBerhentiMerokok)&&(identical(other.modeBerhenti, modeBerhenti) || other.modeBerhenti == modeBerhenti)&&(identical(other.penurunanPerMinggu, penurunanPerMinggu) || other.penurunanPerMinggu == penurunanPerMinggu)&&(identical(other.tanggalMulaiTapering, tanggalMulaiTapering) || other.tanggalMulaiTapering == tanggalMulaiTapering)&&(identical(other.targetSmokeFreeHari, targetSmokeFreeHari) || other.targetSmokeFreeHari == targetSmokeFreeHari));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BiodataModel&&(identical(other.id, id) || other.id == id)&&(identical(other.nama, nama) || other.nama == nama)&&(identical(other.tanggalLahir, tanggalLahir) || other.tanggalLahir == tanggalLahir)&&(identical(other.jumlahRokokPerHari, jumlahRokokPerHari) || other.jumlahRokokPerHari == jumlahRokokPerHari)&&(identical(other.hargaRokokPerBungkus, hargaRokokPerBungkus) || other.hargaRokokPerBungkus == hargaRokokPerBungkus)&&(identical(other.batangPerBungkus, batangPerBungkus) || other.batangPerBungkus == batangPerBungkus)&&(identical(other.tanggalMulaiMerokok, tanggalMulaiMerokok) || other.tanggalMulaiMerokok == tanggalMulaiMerokok)&&(identical(other.tanggalMulaiBerhentiMerokok, tanggalMulaiBerhentiMerokok) || other.tanggalMulaiBerhentiMerokok == tanggalMulaiBerhentiMerokok)&&(identical(other.modeBerhenti, modeBerhenti) || other.modeBerhenti == modeBerhenti)&&(identical(other.penurunanPerMinggu, penurunanPerMinggu) || other.penurunanPerMinggu == penurunanPerMinggu)&&(identical(other.tanggalMulaiTapering, tanggalMulaiTapering) || other.tanggalMulaiTapering == tanggalMulaiTapering));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,nama,tanggalLahir,jumlahRokokPerHari,hargaRokokPerBungkus,batangPerBungkus,tanggalMulaiMerokok,tanggalMulaiBerhentiMerokok,modeBerhenti,penurunanPerMinggu,tanggalMulaiTapering,targetSmokeFreeHari);
+    return Object.hash(runtimeType,id,nama,tanggalLahir,jumlahRokokPerHari,hargaRokokPerBungkus,batangPerBungkus,tanggalMulaiMerokok,tanggalMulaiBerhentiMerokok,modeBerhenti,penurunanPerMinggu,tanggalMulaiTapering);
 }
 
 @override
 String toString() {
-    return 'BiodataModel(id: $id, nama: $nama, tanggalLahir: $tanggalLahir, jumlahRokokPerHari: $jumlahRokokPerHari, hargaRokokPerBungkus: $hargaRokokPerBungkus, batangPerBungkus: $batangPerBungkus, tanggalMulaiMerokok: $tanggalMulaiMerokok, tanggalMulaiBerhentiMerokok: $tanggalMulaiBerhentiMerokok, modeBerhenti: $modeBerhenti, penurunanPerMinggu: $penurunanPerMinggu, tanggalMulaiTapering: $tanggalMulaiTapering, targetSmokeFreeHari: $targetSmokeFreeHari)';
+    return 'BiodataModel(id: $id, nama: $nama, tanggalLahir: $tanggalLahir, jumlahRokokPerHari: $jumlahRokokPerHari, hargaRokokPerBungkus: $hargaRokokPerBungkus, batangPerBungkus: $batangPerBungkus, tanggalMulaiMerokok: $tanggalMulaiMerokok, tanggalMulaiBerhentiMerokok: $tanggalMulaiBerhentiMerokok, modeBerhenti: $modeBerhenti, penurunanPerMinggu: $penurunanPerMinggu, tanggalMulaiTapering: $tanggalMulaiTapering)';
 }
 
 
@@ -16561,7 +9268,7 @@ abstract mixin class _$BiodataModelCopyWith<$Res> implements $BiodataModelCopyWi
   factory _$BiodataModelCopyWith(_BiodataModel value, $Res Function(_BiodataModel) _then) = __$BiodataModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok, ModeBerhenti modeBerhenti, int penurunanPerMinggu, DateTime? tanggalMulaiTapering, int? targetSmokeFreeHari
+ String id, String nama, DateTime? tanggalLahir, int jumlahRokokPerHari, double hargaRokokPerBungkus, double batangPerBungkus, DateTime? tanggalMulaiMerokok, DateTime? tanggalMulaiBerhentiMerokok, ModeBerhenti modeBerhenti, int penurunanPerMinggu, DateTime? tanggalMulaiTapering
 });
 
 
@@ -16578,7 +9285,7 @@ class __$BiodataModelCopyWithImpl<$Res>
 
 /// Create a copy of BiodataModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,Object? modeBerhenti = null,Object? penurunanPerMinggu = null,Object? tanggalMulaiTapering = freezed,Object? targetSmokeFreeHari = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nama = null,Object? tanggalLahir = freezed,Object? jumlahRokokPerHari = null,Object? hargaRokokPerBungkus = null,Object? batangPerBungkus = null,Object? tanggalMulaiMerokok = freezed,Object? tanggalMulaiBerhentiMerokok = freezed,Object? modeBerhenti = null,Object? penurunanPerMinggu = null,Object? tanggalMulaiTapering = freezed,}) {
   return _then(_BiodataModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,nama: null == nama ? _self.nama : nama // ignore: cast_nullable_to_non_nullable
@@ -16591,8 +9298,7 @@ as DateTime?,tanggalMulaiBerhentiMerokok: freezed == tanggalMulaiBerhentiMerokok
 as DateTime?,modeBerhenti: null == modeBerhenti ? _self.modeBerhenti : modeBerhenti // ignore: cast_nullable_to_non_nullable
 as ModeBerhenti,penurunanPerMinggu: null == penurunanPerMinggu ? _self.penurunanPerMinggu : penurunanPerMinggu // ignore: cast_nullable_to_non_nullable
 as int,tanggalMulaiTapering: freezed == tanggalMulaiTapering ? _self.tanggalMulaiTapering : tanggalMulaiTapering // ignore: cast_nullable_to_non_nullable
-as DateTime?,targetSmokeFreeHari: freezed == targetSmokeFreeHari ? _self.targetSmokeFreeHari : targetSmokeFreeHari // ignore: cast_nullable_to_non_nullable
-as int?,
+as DateTime?,
   ));
 }
 
@@ -16631,7 +9337,6 @@ abstract class BiodataModel with _$BiodataModel {
     @Default(ModeBerhenti.seketika) ModeBerhenti modeBerhenti,
     @Default(0) int penurunanPerMinggu,
     DateTime? tanggalMulaiTapering,
-    int? targetSmokeFreeHari,
   }) = _BiodataModel;
 
   /// Membuat [BiodataModel] dari baris database SQLite.
@@ -16671,9 +9376,6 @@ abstract class BiodataModel with _$BiodataModel {
       tanggalMulaiTapering: ParserUtil.parseDateTime(
         row[NamaKolom.tanggalMulaiTapering],
       )?.toLocal(),
-      targetSmokeFreeHari: ParserUtil.parseIntOrNull(
-        row[NamaKolom.targetSmokeFreeHari],
-      ),
     );
   }
 
@@ -16697,26 +9399,13 @@ abstract class BiodataModel with _$BiodataModel {
       NamaKolom.tanggalMulaiTapering: tanggalMulaiTapering
           ?.toUtc()
           .toIso8601String(),
-      NamaKolom.targetSmokeFreeHari: targetSmokeFreeHari,
     };
   }
 }
 
-/// Ekstensi perhitungan turunan **baseline/estimasi** dari [BiodataModel].
-///
-/// Angka di sini murni dari biodata (`jumlahRokokPerHari × hariBerhenti` dan
-/// turunannya), **bukan** dari catatan konsumsi aktual. Angka ini wajib
-/// diberi label "estimasi" di UI dan bukan bukti bahwa pengguna tidak
-/// merokok. Untuk metrik aktual berbasis catatan, gunakan
-/// `MetrikBerhentiHelper` di `lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart`.
-///
-/// Perhitungan didelegasikan ke helper bersama melalui getter ini agar satu
-/// definisi per metrik tetap terjaga. Hari ini, `hariBerhenti` adalah sumber
-/// tunggal rumus hari smoke-free yang dipakai seluruh halaman (dashboard,
-/// impian, badge).
+/// Ekstensi perhitungan turunan dari [BiodataModel] agar logika `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` hanya ditulis sekali dan konsisten di seluruh halaman (dashboard, impian, badge).
 extension BiodataModelPerhitungan on BiodataModel {
-  /// Hari smoke-free (**baseline**), dinormalisasi agar tidak terpengaruh
-  /// komponen waktu. Bukan bukti dari catatan konsumsi.
+  /// Hari smoke-free, dinormalisasi agar tidak terpengaruh komponen waktu.
   int get hariBerhenti {
     final tanggalBerhenti = tanggalMulaiBerhentiMerokok;
     if (tanggalBerhenti == null) return 0;
@@ -16732,13 +9421,9 @@ extension BiodataModelPerhitungan on BiodataModel {
   }
 
   /// Jumlah rokok yang tidak dihisap selama periode smoke-free.
-  ///
-  /// **Estimasi baseline** dari biodata, bukan dari catatan konsumsi.
   int get rokokTidakDiHisap => jumlahRokokPerHari * hariBerhenti;
 
   /// Uang yang dihemat dari tidak merokok.
-  ///
-  /// **Estimasi baseline** dari biodata, bukan dari catatan konsumsi.
   double get uangDihemat {
     if (batangPerBungkus == 0) return 0;
     return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
@@ -16752,6 +9437,7 @@ extension BiodataModelPerhitungan on BiodataModel {
   /// Dihitung dari [jumlahRokokPerHari] dikurangi penurunan kumulatif
   /// berdasarkan minggu yang telah berlalu sejak [tanggalMulaiTapering].
   int get targetRokokHariIni {
+    L.i('sedangTapering=$sedangTapering');
     if (!sedangTapering) return jumlahRokokPerHari;
     final mulai = tanggalMulaiTapering ?? DateTime.now();
     final sekarang = DateTime.now();
@@ -16761,6 +9447,10 @@ extension BiodataModelPerhitungan on BiodataModel {
     final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
     final penurunan = penurunanPerMinggu * mingguBerlalu;
     final target = jumlahRokokPerHari - penurunan;
+    L.i(
+      'mulai=$mulai, hariBerlalu=$hariBerlalu, mingguBerlalu=$mingguBerlalu, '
+      'penurunan=$penurunan, target=$target',
+    );
     if (target < 0) return 0;
     if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
     return target;
@@ -16774,12 +9464,15 @@ extension BiodataModelPerhitungan on BiodataModel {
 // FILE: lib/fitur/biodata/enum/mode_berhenti.dart
 // ============================================================
 ```dart
+import 'package:share_global_saya/core_shared.dart';
+
 /// Mode berhenti merokok: seketika atau bertahap (tapering).
 enum ModeBerhenti { seketika, bertahap }
 
 /// Extension yang menyediakan label untuk [ModeBerhenti].
 extension ModeBerhentiExtension on ModeBerhenti {
   String get label {
+    L.i('mode=$this');
     switch (this) {
       case ModeBerhenti.seketika:
         return 'Seketika';
@@ -16814,6 +9507,7 @@ class BiodataScreen extends ConsumerStatefulWidget {
 }
 
 class _BiodataScreenState extends ConsumerState<BiodataScreen> {
+  
   @override
   void initState() {
     super.initState();
@@ -16868,8 +9562,11 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
     final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
     final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
     final tanggalMulaiTapering = biodata?.tanggalMulaiTapering;
-    final targetSmokeFreeHari = biodata?.targetSmokeFreeHari;
-    L.i('targetSmokeFreeHari=$targetSmokeFreeHari');
+    L.i(
+      'tanggalLahir=$tanggalLahir, tanggalMulaiMerokok=$tanggalMulaiMerokok, '
+      'tanggalMulaiBerhentiMerokok=$tanggalMulaiBerhentiMerokok, '
+      'tanggalMulaiTapering=$tanggalMulaiTapering',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Biodata')),
@@ -16951,8 +9648,6 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
                             ? 'Belum dipilih'
                             : FormatTanggal.formatDasar(tanggalMulaiTapering),
                       ),
-                      if (targetSmokeFreeHari != null)
-                        ..._buildProgresTarget(biodata, targetSmokeFreeHari),
                       const SizedBox(height: 8),
                       OutlinedButton(
                         onPressed: () => unawaited(
@@ -16992,29 +9687,6 @@ class _BiodataScreenState extends ConsumerState<BiodataScreen> {
       ],
     );
   }
-
-  /// Daftar widget tampilan progres target smoke-free "X dari N hari".
-  List<Widget> _buildProgresTarget(BiodataModel biodata, int target) {
-    final tanggalBerhenti = biodata.tanggalMulaiBerhentiMerokok;
-    if (tanggalBerhenti == null) {
-      return [
-        _buildItem('Target smoke-free', 'Target: $target hari'),
-        _buildItem(
-          'Progres',
-          'Belum dapat dihitung (tanggal berhenti belum dipilih)',
-        ),
-      ];
-    }
-    final hariBerhenti = biodata.hariBerhenti;
-    final n = target;
-    final teksProgres = hariBerhenti >= n
-        ? '$n dari $n hari — Target tercapai'
-        : '$hariBerhenti dari $n hari';
-    return [
-      _buildItem('Target smoke-free', '$target hari'),
-      _buildItem('Progres', teksProgres),
-    ];
-  }
 }
 ```
 
@@ -17051,14 +9723,12 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
   final _hargaRokokController = TextEditingController();
   final _batangPerBungkusController = TextEditingController();
   final _penurunanPerMingguController = TextEditingController();
-  final _targetSmokeFreeController = TextEditingController();
 
   final _namaFocusNode = FocusNode();
   final _jumlahRokokFocusNode = FocusNode();
   final _hargaRokokFocusNode = FocusNode();
   final _batangPerBungkusFocusNode = FocusNode();
   final _penurunanPerMingguFocusNode = FocusNode();
-  final _targetSmokeFreeFocusNode = FocusNode();
 
   DateTime? _tanggalLahir;
   DateTime? _tanggalMulaiMerokok;
@@ -17101,14 +9771,11 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _tanggalMulaiBerhentiMerokok = model.tanggalMulaiBerhentiMerokok;
     _modeBerhenti = model.modeBerhenti;
     _penurunanPerMingguController.text = model.penurunanPerMinggu.toString();
-    _targetSmokeFreeController.text = (model.targetSmokeFreeHari ?? '')
-        .toString();
     _tanggalMulaiTapering = model.tanggalMulaiTapering;
     L.i(
       'modeBerhenti=$_modeBerhenti, '
       'penurunanPerMinggu=${_penurunanPerMingguController.text}, '
-      'tanggalMulaiTapering=$_tanggalMulaiTapering, '
-      'targetSmokeFreeHari=${_targetSmokeFreeController.text}',
+      'tanggalMulaiTapering=$_tanggalMulaiTapering',
     );
   }
 
@@ -17125,7 +9792,6 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
     _hargaRokokFocusNode.dispose();
     _batangPerBungkusFocusNode.dispose();
     _penurunanPerMingguFocusNode.dispose();
-    _targetSmokeFreeFocusNode.dispose();
     super.dispose();
   }
 
@@ -17217,61 +9883,29 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
       }),
     );
     try {
-      final jumlahRokokPerHari = int.tryParse(
-        _jumlahRokokController.text.trim(),
-      );
-      if (jumlahRokokPerHari == null || jumlahRokokPerHari <= 0) {
-        AppToast.gagal(context, 'Jumlah rokok per hari tidak valid');
-        return;
-      }
-      final batangPerBungkus = double.tryParse(
-        _batangPerBungkusController.text.trim(),
-      );
-      if (batangPerBungkus == null || batangPerBungkus <= 0) {
-        AppToast.gagal(context, 'Batang per bungkus tidak valid');
-        return;
-      }
-      int penurunanPerMinggu = 0;
-      if (_modeBerhenti == ModeBerhenti.bertahap) {
-        final parsedPenurunan = int.tryParse(
-          _penurunanPerMingguController.text.trim(),
-        );
-        if (parsedPenurunan == null || parsedPenurunan <= 0) {
-          AppToast.gagal(context, 'Penurunan per minggu tidak valid');
-          return;
-        }
-        penurunanPerMinggu = parsedPenurunan;
-      }
-      int? targetSmokeFreeHari;
-      final targetText = _targetSmokeFreeController.text.trim();
-      if (targetText.isNotEmpty) {
-        final parsedTarget = int.tryParse(targetText);
-        if (parsedTarget == null || parsedTarget <= 0) {
-          AppToast.gagal(
-            context,
-            'Target smoke-free harus bilangan bulat lebih dari 0',
-          );
-          return;
-        }
-        targetSmokeFreeHari = parsedTarget;
-      }
       final model = BiodataModel(
         id: widget.biodataModel?.id ?? '',
         nama: _namaController.text.trim(),
         tanggalLahir: _tanggalLahir,
-        jumlahRokokPerHari: jumlahRokokPerHari,
+        jumlahRokokPerHari:
+            int.tryParse(_jumlahRokokController.text.trim()) ?? 0,
         hargaRokokPerBungkus: _hargaRokokController.text.trim().isEmpty
             ? 0.0
             : InputRupiah.parse(_hargaRokokController.text),
-        batangPerBungkus: batangPerBungkus,
+        batangPerBungkus:
+            double.tryParse(_batangPerBungkusController.text.trim()) ?? 20.0,
         tanggalMulaiMerokok: _tanggalMulaiMerokok,
         tanggalMulaiBerhentiMerokok: _tanggalMulaiBerhentiMerokok,
         modeBerhenti: _modeBerhenti,
-        penurunanPerMinggu: penurunanPerMinggu,
+        penurunanPerMinggu: int.parse(
+          _penurunanPerMingguController.text.trim().replaceAll(
+            RegExp(r'[^0-9]'),
+            '',
+          ),
+        ),
         tanggalMulaiTapering: _tanggalMulaiTapering,
-        targetSmokeFreeHari: targetSmokeFreeHari,
       );
-      L.i('model=$model, targetSmokeFreeHari=$targetSmokeFreeHari');
+      L.i('model=$model');
       await ref.read(biodataProvider.notifier).simpan(model);
       if (!mounted) return;
       if (widget.buatPertama) {
@@ -17363,17 +9997,6 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                   hintText: 'Masukkan jumlah rokok per hari',
                   focusNode: _jumlahRokokFocusNode,
                   nextFocusNode: _hargaRokokFocusNode,
-                  validator: (value) {
-                    final cleaned = (value ?? '').replaceAll(
-                      RegExp(r'[^0-9]'),
-                      '',
-                    );
-                    final n = int.tryParse(cleaned);
-                    if (n == null || n <= 0) {
-                      return 'Wajib bilangan bulat positif';
-                    }
-                    return null;
-                  },
                 ),
                 InputRupiah(
                   controller: _hargaRokokController,
@@ -17386,17 +10009,6 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                   label: 'Batang per bungkus',
                   hintText: 'Masukkan jumlah batang per bungkus',
                   focusNode: _batangPerBungkusFocusNode,
-                  validator: (value) {
-                    final cleaned = (value ?? '').replaceAll(
-                      RegExp(r'[^0-9.]'),
-                      '',
-                    );
-                    final n = double.tryParse(cleaned);
-                    if (n == null || n <= 0) {
-                      return 'Wajib bilangan positif';
-                    }
-                    return null;
-                  },
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -17495,21 +10107,6 @@ class _BiodataScreenState extends ConsumerState<FormBiodata> {
                   ),
                 ],
                 const SizedBox(height: 8),
-                InputAngka(
-                  controller: _targetSmokeFreeController,
-                  label: 'Target smoke-free (hari)',
-                  hintText: 'Masukkan target hari bebas rokok',
-                  focusNode: _targetSmokeFreeFocusNode,
-                  validator: (value) {
-                    final cleaned = (value ?? '').trim();
-                    if (cleaned.isEmpty) return null;
-                    final n = int.tryParse(cleaned);
-                    if (n == null || n <= 0) {
-                      return 'Wajib bilangan bulat lebih dari 0';
-                    }
-                    return null;
-                  },
-                ),
                 OutlinedButton(onPressed: _simpan, child: const Text('Simpan')),
               ],
             ),
@@ -17549,7 +10146,7 @@ final class BiodataNotifierProvider
         argument: null,
         retry: null,
         name: r'biodataProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -17562,7 +10159,7 @@ final class BiodataNotifierProvider
   BiodataNotifier create() => BiodataNotifier();
 }
 
-String _$biodataNotifierHash() => r'0821afc28680b0106506fa538c6c756698cc915b';
+String _$biodataNotifierHash() => r'0c65d0ffc5c031ac2b64c5d50fc938f5dc17ed0f';
 
 abstract class _$BiodataNotifier extends $AsyncNotifier<BiodataModel?> {
   FutureOr<BiodataModel?> build();
@@ -17599,14 +10196,14 @@ import 'package:uuid/uuid.dart';
 
 part 'biodata_notifier.g.dart';
 
-@Riverpod(keepAlive: true)
+@riverpod
 class BiodataNotifier extends _$BiodataNotifier {
   @override
   Future<BiodataModel?> build() async {
-    return await _ambilSemua();
+    return await _ambilData();
   }
 
-  Future<BiodataModel?> _ambilSemua() async {
+  Future<BiodataModel?> _ambilData() async {
     try {
       final op = const SqfliteOp();
       final row = await op.ambilSatu(NamaTabel.biodata);
@@ -17622,14 +10219,14 @@ class BiodataNotifier extends _$BiodataNotifier {
   }
 
   Future<void> simpan(BiodataModel biodata) async {
-    L.i('biodata=$biodata');
+    L.i('biodata.id=${biodata.id}, biodata.nama=${biodata.nama}');
     try {
       final existing = await future;
-      L.i('existing=$existing');
+      L.i('existing=${existing?.id}');
       final model = biodata.id.isEmpty
           ? biodata.copyWith(id: existing?.id ?? const Uuid().v4())
           : biodata;
-      L.i('model=$model');
+      L.i('model.id=${model.id}');
       final op = const SqfliteOp();
       await op.tambah(
         NamaTabel.biodata,
@@ -17786,3419 +10383,16 @@ class TemaNotifier extends _$TemaNotifier {
 
 
 // ============================================================
-// FILE: lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'konsumsi_rokok_model.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$KonsumsiRokokModel {
-
- String get id; DateTime get tanggal; int get jumlah; bool get isSlip; String? get catatan; DateTime get dibuat;
-/// Create a copy of KonsumsiRokokModel
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$KonsumsiRokokModelCopyWith<KonsumsiRokokModel> get copyWith => _$KonsumsiRokokModelCopyWithImpl<KonsumsiRokokModel>(this as KonsumsiRokokModel, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as KonsumsiRokokModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is KonsumsiRokokModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.jumlah, _this.jumlah) || other.jumlah == _this.jumlah)&&(identical(other.isSlip, _this.isSlip) || other.isSlip == _this.isSlip)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as KonsumsiRokokModel;
-  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.jumlah,_this.isSlip,_this.catatan,_this.dibuat);
-}
-
-@override
-String toString() {
-  final _this = this as KonsumsiRokokModel;
-  return 'KonsumsiRokokModel(id: ${_this.id}, tanggal: ${_this.tanggal}, jumlah: ${_this.jumlah}, isSlip: ${_this.isSlip}, catatan: ${_this.catatan}, dibuat: ${_this.dibuat})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $KonsumsiRokokModelCopyWith<$Res>  {
-  factory $KonsumsiRokokModelCopyWith(KonsumsiRokokModel value, $Res Function(KonsumsiRokokModel) _then) = _$KonsumsiRokokModelCopyWithImpl;
-@useResult
-$Res call({
- String id, DateTime tanggal, int jumlah, bool isSlip, String? catatan, DateTime dibuat
-});
-
-
-
-
-}
-/// @nodoc
-class _$KonsumsiRokokModelCopyWithImpl<$Res>
-    implements $KonsumsiRokokModelCopyWith<$Res> {
-  _$KonsumsiRokokModelCopyWithImpl(this._self, this._then);
-
-  final KonsumsiRokokModel _self;
-  final $Res Function(KonsumsiRokokModel) _then;
-
-/// Create a copy of KonsumsiRokokModel
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? jumlah = null,Object? isSlip = null,Object? catatan = freezed,Object? dibuat = null,}) {
-  return _then(KonsumsiRokokModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
-as DateTime,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
-as int,isSlip: null == isSlip ? _self.isSlip : isSlip // ignore: cast_nullable_to_non_nullable
-as bool,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
-as DateTime,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [KonsumsiRokokModel].
-extension KonsumsiRokokModelPatterns on KonsumsiRokokModel {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _KonsumsiRokokModel value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _KonsumsiRokokModel() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _KonsumsiRokokModel value)  $default,){
-final _that = this;
-switch (_that) {
-case _KonsumsiRokokModel():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _KonsumsiRokokModel value)?  $default,){
-final _that = this;
-switch (_that) {
-case _KonsumsiRokokModel() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _KonsumsiRokokModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.dibuat);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  DateTime dibuat)  $default,) {final _that = this;
-switch (_that) {
-case _KonsumsiRokokModel():
-return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.dibuat);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  DateTime dibuat)?  $default,) {final _that = this;
-switch (_that) {
-case _KonsumsiRokokModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.dibuat);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _KonsumsiRokokModel extends KonsumsiRokokModel {
-  const _KonsumsiRokokModel({required this.id, required this.tanggal, required this.jumlah, this.isSlip = false, this.catatan, required this.dibuat}): super._();
-  
-
-@override final  String id;
-@override final  DateTime tanggal;
-@override final  int jumlah;
-@override@JsonKey() final  bool isSlip;
-@override final  String? catatan;
-@override final  DateTime dibuat;
-
-/// Create a copy of KonsumsiRokokModel
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$KonsumsiRokokModelCopyWith<_KonsumsiRokokModel> get copyWith => __$KonsumsiRokokModelCopyWithImpl<_KonsumsiRokokModel>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _KonsumsiRokokModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.jumlah, jumlah) || other.jumlah == jumlah)&&(identical(other.isSlip, isSlip) || other.isSlip == isSlip)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,id,tanggal,jumlah,isSlip,catatan,dibuat);
-}
-
-@override
-String toString() {
-    return 'KonsumsiRokokModel(id: $id, tanggal: $tanggal, jumlah: $jumlah, isSlip: $isSlip, catatan: $catatan, dibuat: $dibuat)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$KonsumsiRokokModelCopyWith<$Res> implements $KonsumsiRokokModelCopyWith<$Res> {
-  factory _$KonsumsiRokokModelCopyWith(_KonsumsiRokokModel value, $Res Function(_KonsumsiRokokModel) _then) = __$KonsumsiRokokModelCopyWithImpl;
-@override @useResult
-$Res call({
- String id, DateTime tanggal, int jumlah, bool isSlip, String? catatan, DateTime dibuat
-});
-
-
-
-
-}
-/// @nodoc
-class __$KonsumsiRokokModelCopyWithImpl<$Res>
-    implements _$KonsumsiRokokModelCopyWith<$Res> {
-  __$KonsumsiRokokModelCopyWithImpl(this._self, this._then);
-
-  final _KonsumsiRokokModel _self;
-  final $Res Function(_KonsumsiRokokModel) _then;
-
-/// Create a copy of KonsumsiRokokModel
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? jumlah = null,Object? isSlip = null,Object? catatan = freezed,Object? dibuat = null,}) {
-  return _then(_KonsumsiRokokModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
-as DateTime,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
-as int,isSlip: null == isSlip ? _self.isSlip : isSlip // ignore: cast_nullable_to_non_nullable
-as bool,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
-as DateTime,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-part 'konsumsi_rokok_model.freezed.dart';
-
-@freezed
-abstract class KonsumsiRokokModel with _$KonsumsiRokokModel {
-  const KonsumsiRokokModel._();
-
-  const factory KonsumsiRokokModel({
-    required String id,
-    required DateTime tanggal,
-    required int jumlah,
-    @Default(false) bool isSlip,
-    String? catatan,
-    required DateTime dibuat,
-  }) = _KonsumsiRokokModel;
-
-  /// Membuat [KonsumsiRokokModel] dari baris database SQLite.
-  factory KonsumsiRokokModel.fromSqflite(Map<String, Object?> row) {
-    final tanggalValue = ParserUtil.parseDateTime(row[NamaKolom.tanggal]);
-    final dibuatValue = ParserUtil.parseDateTime(row[NamaKolom.dibuat]);
-    return KonsumsiRokokModel(
-      id: ParserUtil.parseString(row[NamaKolom.id]),
-      tanggal: (tanggalValue ?? DateTime.now()).toLocal(),
-      // jumlah non-nullable di Dart → pakai parseInt dengan defaultValue 1 saat DB null
-      jumlah: ParserUtil.parseInt(row[NamaKolom.jumlah], defaultValue: 1),
-      // isSlip non-nullable bool di Dart → pakai parseBool dengan defaultValue false saat DB null
-      isSlip: ParserUtil.parseBool(row[NamaKolom.isSlip], defaultValue: false),
-      catatan: ParserUtil.parseStringOrNull(row[NamaKolom.catatan]),
-      dibuat: (dibuatValue ?? DateTime.now()).toLocal(),
-    );
-  }
-
-  /// Mengonversi [KonsumsiRokokModel] menjadi Map untuk disimpan ke SQLite.
-  Map<String, Object?> toSqflite() {
-    return <String, Object?>{
-      NamaKolom.id: id,
-      NamaKolom.tanggal: tanggal.toUtc().toIso8601String(),
-      NamaKolom.jumlah: jumlah,
-      NamaKolom.isSlip: isSlip ? 1 : 0,
-      NamaKolom.catatan: catatan,
-      NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
-    };
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/screens/daftar_entri_konsumsi_sheet.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Bottom sheet daftar entri konsumsi untuk tanggal tertentu.
-/// Mendukung edit (ketuk entri) dan hapus dengan undo (U3, U4, U2).
-class DaftarEntriKonsumsiSheet extends ConsumerStatefulWidget {
-  const DaftarEntriKonsumsiSheet({
-    super.key,
-    required this.tanggal,
-    required this.entriHari,
-  });
-
-  final DateTime tanggal;
-  final List<KonsumsiRokokModel> entriHari;
-
-  @override
-  ConsumerState<DaftarEntriKonsumsiSheet> createState() =>
-      _DaftarEntriKonsumsiSheetState();
-}
-
-class _DaftarEntriKonsumsiSheetState
-    extends ConsumerState<DaftarEntriKonsumsiSheet> {
-  late List<KonsumsiRokokModel> _entri;
-
-  @override
-  void initState() {
-    super.initState();
-    _entri = List.from(widget.entriHari);
-    // Urutkan: terbaru di atas (berdasarkan dibuat desc)
-    _entri.sort((a, b) => b.dibuat.compareTo(a.dibuat));
-  }
-
-  String _formatJam(DateTime dt) {
-    final lokal = dt.toLocal();
-    return '${lokal.hour.toString().padLeft(2, '0')}:${lokal.minute.toString().padLeft(2, '0')}';
-  }
-
-  Future<void> _editEntri(KonsumsiRokokModel entri) async {
-    final result = await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => FormKonsumsiRokok(konsumsi: entri),
-    );
-    if (result == true && mounted) {
-      // Form mengembalikan true saat berhasil simpan
-      await _refreshDariDb();
-    }
-  }
-
-  Future<void> _hapusEntri(KonsumsiRokokModel entri) async {
-    final konfirmasi = await showOkCancelAlertDialog(
-      context: context,
-      title: 'Hapus Catatan',
-      message:
-          'Metrik uang dihemat, rokok tidak dihisap, dan target tapering akan ikut menyesuaikan. Lanjutkan hapus?',
-      okLabel: 'Hapus',
-      cancelLabel: 'Batal',
-      isDestructiveAction: true,
-    );
-    if (konfirmasi != OkCancelResult.ok) {
-      L.w('konfirmasi hapus bukan ok');
-      return;
-    }
-    if (!mounted) return;
-
-    // Simpan salinan untuk undo (U2)
-    final salinan = entri;
-    try {
-      await ref.read(konsumsiRokokProvider.notifier).hapus(salinan.id);
-      if (!mounted) return;
-      await _refreshDariDb();
-
-      // Tampilkan Snackbar undo (U2)
-      _tampilkanUndoHapus(salinan);
-    } on Exception catch (e, s) {
-      L.e('Gagal hapus entri: $e $s');
-      if (mounted) {
-        AppToast.gagal(context, 'Gagal menghapus catatan');
-      }
-    }
-  }
-
-  void _tampilkanUndoHapus(KonsumsiRokokModel entri) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Catatan dihapus'),
-        action: SnackBarAction(
-          label: 'Urungkan',
-          onPressed: () => unawaited(
-            ref
-                .read(konsumsiRokokProvider.notifier)
-                .tambah(entri)
-                .catchError((Object e, StackTrace s) {
-              L.e('Gagal undo hapus: $e $s');
-              if (context.mounted) {
-                AppToast.gagal(context, 'Gagal membatalkan hapus');
-              }
-            }),
-          ),
-        ),
-        duration: const Duration(seconds: 10),
-      ),
-    );
-  }
-
-  Future<void> _refreshDariDb() async {
-    try {
-      final state = await ref.read(konsumsiRokokProvider.future);
-      final entriBaru = state.listKonsumsi.where((e) {
-        final lokal = e.tanggal.toLocal();
-        final key =
-            '${lokal.year}-${lokal.month.toString().padLeft(2, '0')}-${lokal.day.toString().padLeft(2, '0')}';
-        final keyWidget =
-            '${widget.tanggal.year}-${widget.tanggal.month.toString().padLeft(2, '0')}-${widget.tanggal.day.toString().padLeft(2, '0')}';
-        return key == keyWidget;
-      }).toList();
-      if (mounted) {
-        setState(() {
-          _entri = entriBaru;
-          _entri.sort((a, b) => b.dibuat.compareTo(a.dibuat));
-        });
-      }
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh entri: $e $s');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final tanggalStr = FormatTanggal.formatDasar(widget.tanggal);
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 12,
-          children: [
-            Text(
-              'Catatan $tanggalStr',
-              style: Theme.of(context).textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            if (_entri.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    'Tidak ada catatan untuk tanggal ini',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ),
-              )
-            else
-              Flexible(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _entri.length,
-                  itemBuilder: (context, index) {
-                    final entri = _entri[index];
-                    return Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text(
-                            '${entri.jumlah}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ),
-                        title: Text(
-                          '${entri.jumlah} batang${entri.isSlip ? ' • SLIP' : ''}',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        subtitle: Text(
-                          '${_formatJam(entri.dibuat)}${entri.catatan != null ? ' — ${entri.catatan}' : ''}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                CupertinoIcons.pencil,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              onPressed: () => _editEntri(entri),
-                              tooltip: 'Edit',
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                CupertinoIcons.trash,
-                                color: Theme.of(context).colorScheme.error,
-                              ),
-                              onPressed: () => _hapusEntri(entri),
-                              tooltip: 'Hapus',
-                            ),
-                          ],
-                        ),
-                        onTap: () => _editEntri(entri),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            FilledButton(
-              onPressed: () => Nav.pop(context),
-              child: const Text('Tutup'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/daftar_entri_konsumsi_sheet.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Layar daftar riwayat konsumsi rokok harian dengan FAB quick log (+1).
-class KonsumsiRokokScreen extends ConsumerStatefulWidget {
-  const KonsumsiRokokScreen({super.key});
-
-  @override
-  ConsumerState<KonsumsiRokokScreen> createState() =>
-      _KonsumsiRokokScreenState();
-}
-
-class _KonsumsiRokokScreenState extends ConsumerState<KonsumsiRokokScreen> {
-  void _catatCepat() {
-    unawaited(
-      ref
-          .read(konsumsiRokokProvider.notifier)
-          .catatCepat()
-          .then((entri) {
-            if (!mounted) return;
-            // Tampilkan Snackbar dengan aksi "Urungkan" (U1)
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Rokok dicatat (+1)'),
-                action: SnackBarAction(
-                  label: 'Urungkan',
-                  onPressed: () => unawaited(
-                    ref
-                        .read(konsumsiRokokProvider.notifier)
-                        .hapus(entri.id)
-                        .catchError((Object e, StackTrace s) {
-                      L.e('Gagal undo quick log: $e $s');
-                      if (context.mounted) {
-                        AppToast.gagal(context, 'Gagal membatalkan catatan');
-                      }
-                    }),
-                  ),
-                ),
-                duration: const Duration(seconds: 10),
-              ),
-            );
-          })
-          .catchError((Object e, StackTrace s) {
-            L.e('Gagal catat cepat konsumsi: $e $s');
-            if (mounted) {
-              AppToast.gagal(context, 'Gagal mencatat rokok');
-            }
-          }),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Konsumsi Rokok')),
-      body: konsumsiAsync.when(
-        data: (state) {
-          if (state.listKonsumsi.isEmpty) {
-            return EmptyStateView(
-              ikon: CupertinoIcons.smoke,
-              judul: 'Belum ada catatan konsumsi',
-              deskripsi:
-                  'Catat setiap batang rokok agar metrik berhenti '
-                  'merokok akurat.',
-              ctaLabel: 'Catat Rokok (+1)',
-              onCta: _catatCepat,
-            );
-          }
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: _DaftarKonsumsi(state: state),
-            ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, s) {
-          L.e('KonsumsiRokokScreen error: $e $s');
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 8,
-                  children: [
-                    const Text('Gagal memuat data konsumsi'),
-                    OutlinedButton(
-                      onPressed: () {
-                        final _ = ref.refresh(konsumsiRokokProvider);
-                      },
-                      child: const Text('Coba lagi'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _catatCepat,
-        child: const Icon(CupertinoIcons.add),
-        tooltip: 'Catat Rokok (+1)',
-      ),
-    );
-  }
-}
-
-/// Widget terisolasi yang menampilkan daftar kartu konsumsi per tanggal.
-class _DaftarKonsumsi extends StatelessWidget {
-  const _DaftarKonsumsi({required this.state});
-
-  final KonsumsiRokokState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final ringkasan = state.ringkasanHarian;
-    final tanggalUrut = ringkasan.keys.toList()..sort((a, b) => b.compareTo(a));
-
-    return ListView.builder(
-      itemCount: tanggalUrut.length,
-      itemBuilder: (context, index) {
-        final tanggalKey = tanggalUrut[index];
-        final total = ringkasan[tanggalKey] ?? 0;
-        final entriHari = state.listKonsumsi.where((e) {
-          final lokal = e.tanggal.toLocal();
-          final key =
-              '${lokal.year}-${lokal.month.toString().padLeft(2, '0')}-${lokal.day.toString().padLeft(2, '0')}';
-          return key == tanggalKey;
-        }).toList();
-        final adaSlip = entriHari.any((e) => e.isSlip);
-        final tanggalContoh = entriHari.isNotEmpty
-            ? entriHari.first.tanggal
-            : null;
-
-        // Parse tanggalKey untuk dibawa ke bottom sheet
-        final parts = tanggalKey.split('-');
-        final tanggalWidget = DateTime(
-          int.parse(parts[0]),
-          int.parse(parts[1]),
-          int.parse(parts[2]),
-        );
-
-        return Card(
-          key: ValueKey(tanggalKey),
-          child: ListTile(
-            leading: CircleAvatar(
-              child: Text(
-                tanggalContoh != null ? '${tanggalContoh.day}' : '?',
-                style: const TextStyle(fontSize: 12),
-              ),
-            ),
-            title: Text(
-              tanggalContoh != null
-                  ? FormatTanggal.formatSingkat(tanggalContoh)
-                  : tanggalKey,
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              '$total batang${adaSlip ? '  •  SLIP' : ''}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: adaSlip
-                        ? const Color(0xFFEF5350)
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontWeight: adaSlip ? FontWeight.bold : FontWeight.normal,
-                  ),
-            ),
-            trailing: adaSlip
-                ? const Icon(
-                    Icons.warning_amber_rounded,
-                    color: Color(0xFFEF5350),
-                  )
-                : const Icon(CupertinoIcons.chevron_right),
-            onTap: () => unawaited(
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (_) => DaftarEntriKonsumsiSheet(
-                  tanggal: tanggalWidget,
-                  entriHari: entriHari,
-                ),
-              ).catchError((Object e, StackTrace s) {
-                L.e('Gagal membuka daftar entri konsumsi: $e $s');
-                return null;
-              }),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/screens/form_konsumsi_rokok.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-import 'package:uuid/uuid.dart';
-
-/// Bottom sheet form untuk koreksi atau pencatatan konsumsi rokok harian.
-class FormKonsumsiRokok extends ConsumerStatefulWidget {
-  final KonsumsiRokokModel? konsumsi;
-  const FormKonsumsiRokok({super.key, this.konsumsi});
-
-  @override
-  ConsumerState<FormKonsumsiRokok> createState() => _FormKonsumsiRokokState();
-}
-
-class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
-  final _formKey = GlobalKey<FormState>();
-  final _jumlahController = TextEditingController();
-  final _catatanController = TextEditingController();
-
-  DateTime _tanggal = DateTime.now();
-  bool _isSlip = false;
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    final konsumsi = widget.konsumsi;
-    L.i('konsumsi=$konsumsi');
-    if (konsumsi != null) {
-      _tanggal = konsumsi.tanggal;
-      _isSlip = konsumsi.isSlip;
-      _jumlahController.text = konsumsi.jumlah.toString();
-      _catatanController.text = konsumsi.catatan ?? '';
-    }
-  }
-
-  @override
-  void dispose() {
-    _jumlahController.dispose();
-    _catatanController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pilihTanggal() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _tanggal,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-    L.i('picked=$picked');
-    if (picked != null && mounted) {
-      setState(() {
-        _tanggal = DateTime(
-          picked.year,
-          picked.month,
-          picked.day,
-          _tanggal.hour,
-          _tanggal.minute,
-        );
-      });
-      L.i('_tanggal=$_tanggal');
-    }
-  }
-
-  int _jumlahDariController(String teks) {
-    final bersih = teks.replaceAll(RegExp(r'[^0-9\-]'), '');
-    return int.tryParse(bersih) ?? 0;
-  }
-
-  Future<void> _simpan() async {
-    if (_isLoading) {
-      L.w('Form konsumsi masih loading, simpan diabaikan');
-      return;
-    }
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      L.w('validasi form gagal');
-      return;
-    }
-
-    final jumlah = _jumlahDariController(_jumlahController.text);
-    if (jumlah < 0) {
-      L.w('jumlah negatif: $jumlah');
-      return;
-    }
-
-    // U5: Konfirmasi khusus saat jumlah berubah (edit entri existing)
-    if (widget.konsumsi != null && jumlah != widget.konsumsi!.jumlah) {
-      final konfirmasi = await showOkCancelAlertDialog(
-        context: context,
-        title: 'Ubah Jumlah',
-        message:
-            'Metrik uang dihemat, rokok tidak dihisap, dan target tapering akan ikut menyesuaikan. Lanjutkan simpan?',
-        okLabel: 'Simpan',
-        cancelLabel: 'Batal',
-      );
-      L.i('konfirmasi ubah jumlah=$konfirmasi');
-      if (konfirmasi != OkCancelResult.ok) {
-        L.w('konfirmasi ubah jumlah bukan ok');
-        return;
-      }
-      if (!mounted) return;
-    } else {
-      // Konfirmasi generik untuk entri baru atau perubahan non-jumlah
-      final konfirmasi = await showOkCancelAlertDialog(
-        context: context,
-        title: 'Simpan Konsumsi',
-        message: 'Apakah Anda yakin ingin menyimpan catatan konsumsi ini?',
-        okLabel: 'Simpan',
-        cancelLabel: 'Batal',
-      );
-      L.i('konfirmasi=$konfirmasi');
-      if (konfirmasi != OkCancelResult.ok) {
-        L.w('konfirmasi bukan ok');
-        return;
-      }
-      if (!mounted) return;
-    }
-
-    setState(() => _isLoading = true);
-    unawaited(
-      EasyLoading.show(
-        status: 'Menyimpan...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((e, s) => L.e('Gagal menampilkan loading: $e $s')),
-    );
-    try {
-      final model = KonsumsiRokokModel(
-        id: widget.konsumsi?.id ?? const Uuid().v4(),
-        tanggal: _tanggal,
-        jumlah: jumlah,
-        isSlip: _isSlip,
-        catatan: _catatanController.text.trim().isEmpty
-            ? null
-            : _catatanController.text.trim(),
-        dibuat: widget.konsumsi?.dibuat ?? DateTime.now(),
-      );
-      L.i('model=$model');
-      if (widget.konsumsi == null) {
-        await ref.read(konsumsiRokokProvider.notifier).tambah(model);
-      } else {
-        await ref.read(konsumsiRokokProvider.notifier).ubah(model);
-      }
-      if (!mounted) return;
-      if (Navigator.of(context).canPop()) {
-        Nav.pop(context, true); // Kembalikan true untuk menandakan sukses
-      }
-    } on Exception catch (e, s) {
-      L.e('Gagal menyimpan konsumsi: $e $s');
-      if (mounted) {
-        AppToast.gagal(context, 'Gagal menyimpan konsumsi');
-      }
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError(
-          (e, s) => L.e('Gagal menutup loading: $e $s'),
-        ),
-      );
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.konsumsi == null ? 'Catat Konsumsi' : 'Ubah Konsumsi',
-        ),
-      ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 12,
-              children: [
-                InputAngka(
-                  controller: _jumlahController,
-                  label: 'Jumlah Batang',
-                  hintText: 'Masukkan jumlah batang',
-                  wajib: true,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Jumlah wajib diisi';
-                    }
-                    final n = _jumlahDariController(value);
-                    if (n < 0) {
-                      return 'Jumlah tidak boleh negatif';
-                    }
-                    return null;
-                  },
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.event_outlined),
-                  title: const Text('Tanggal'),
-                  subtitle: Text(FormatWaktuLengkap.formatSingkat(_tanggal)),
-                  trailing: TextButton(
-                    onPressed: _pilihTanggal,
-                    child: const Text('Pilih'),
-                  ),
-                ),
-                SwitchListTile(
-                  title: const Text('Ini slip/relapse?'),
-                  subtitle: const Text(
-                    'Tandai jika ini adalah relapse (slip). Streak smoke-free akan direset dari tanggal slip.',
-                  ),
-                  value: _isSlip,
-                  onChanged: (value) {
-                    setState(() => _isSlip = value);
-                    L.i('_isSlip=$_isSlip');
-                  },
-                ),
-                InputTeks(
-                  controller: _catatanController,
-                  label: 'Catatan',
-                  hintText: 'Catatan tambahan (opsional)',
-                  wajib: false,
-                  minLines: 2,
-                  maxLines: 4,
-                ),
-                FilledButton(onPressed: _simpan, child: const Text('Simpan')),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/state/konsumsi_rokok_state.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'konsumsi_rokok_state.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$KonsumsiRokokState {
-
- List<KonsumsiRokokModel> get listKonsumsi; int get jumlahTotal; Map<String, int> get ringkasanHarian;
-/// Create a copy of KonsumsiRokokState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$KonsumsiRokokStateCopyWith<KonsumsiRokokState> get copyWith => _$KonsumsiRokokStateCopyWithImpl<KonsumsiRokokState>(this as KonsumsiRokokState, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as KonsumsiRokokState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is KonsumsiRokokState&&const DeepCollectionEquality().equals(other.listKonsumsi, _this.listKonsumsi)&&(identical(other.jumlahTotal, _this.jumlahTotal) || other.jumlahTotal == _this.jumlahTotal)&&const DeepCollectionEquality().equals(other.ringkasanHarian, _this.ringkasanHarian));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as KonsumsiRokokState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listKonsumsi),_this.jumlahTotal,const DeepCollectionEquality().hash(_this.ringkasanHarian));
-}
-
-@override
-String toString() {
-  final _this = this as KonsumsiRokokState;
-  return 'KonsumsiRokokState(listKonsumsi: ${_this.listKonsumsi}, jumlahTotal: ${_this.jumlahTotal}, ringkasanHarian: ${_this.ringkasanHarian})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $KonsumsiRokokStateCopyWith<$Res>  {
-  factory $KonsumsiRokokStateCopyWith(KonsumsiRokokState value, $Res Function(KonsumsiRokokState) _then) = _$KonsumsiRokokStateCopyWithImpl;
-@useResult
-$Res call({
- List<KonsumsiRokokModel> listKonsumsi, int jumlahTotal, Map<String, int> ringkasanHarian
-});
-
-
-
-
-}
-/// @nodoc
-class _$KonsumsiRokokStateCopyWithImpl<$Res>
-    implements $KonsumsiRokokStateCopyWith<$Res> {
-  _$KonsumsiRokokStateCopyWithImpl(this._self, this._then);
-
-  final KonsumsiRokokState _self;
-  final $Res Function(KonsumsiRokokState) _then;
-
-/// Create a copy of KonsumsiRokokState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? listKonsumsi = null,Object? jumlahTotal = null,Object? ringkasanHarian = null,}) {
-  return _then(KonsumsiRokokState(
-listKonsumsi: null == listKonsumsi ? _self.listKonsumsi : listKonsumsi // ignore: cast_nullable_to_non_nullable
-as List<KonsumsiRokokModel>,jumlahTotal: null == jumlahTotal ? _self.jumlahTotal : jumlahTotal // ignore: cast_nullable_to_non_nullable
-as int,ringkasanHarian: null == ringkasanHarian ? _self.ringkasanHarian : ringkasanHarian // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [KonsumsiRokokState].
-extension KonsumsiRokokStatePatterns on KonsumsiRokokState {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _KonsumsiRokokState value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _KonsumsiRokokState() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _KonsumsiRokokState value)  $default,){
-final _that = this;
-switch (_that) {
-case _KonsumsiRokokState():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _KonsumsiRokokState value)?  $default,){
-final _that = this;
-switch (_that) {
-case _KonsumsiRokokState() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<KonsumsiRokokModel> listKonsumsi,  int jumlahTotal,  Map<String, int> ringkasanHarian)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _KonsumsiRokokState() when $default != null:
-return $default(_that.listKonsumsi,_that.jumlahTotal,_that.ringkasanHarian);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<KonsumsiRokokModel> listKonsumsi,  int jumlahTotal,  Map<String, int> ringkasanHarian)  $default,) {final _that = this;
-switch (_that) {
-case _KonsumsiRokokState():
-return $default(_that.listKonsumsi,_that.jumlahTotal,_that.ringkasanHarian);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<KonsumsiRokokModel> listKonsumsi,  int jumlahTotal,  Map<String, int> ringkasanHarian)?  $default,) {final _that = this;
-switch (_that) {
-case _KonsumsiRokokState() when $default != null:
-return $default(_that.listKonsumsi,_that.jumlahTotal,_that.ringkasanHarian);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _KonsumsiRokokState extends KonsumsiRokokState {
-  const _KonsumsiRokokState({ List<KonsumsiRokokModel> listKonsumsi = const [], this.jumlahTotal = 0,  Map<String, int> ringkasanHarian = const {}}): _listKonsumsi = listKonsumsi,_ringkasanHarian = ringkasanHarian,super._();
-  
-
- final  List<KonsumsiRokokModel> _listKonsumsi;
-@override@JsonKey() List<KonsumsiRokokModel> get listKonsumsi {
-  if (_listKonsumsi is EqualUnmodifiableListView) return _listKonsumsi;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_listKonsumsi);
-}
-
-@override@JsonKey() final  int jumlahTotal;
- final  Map<String, int> _ringkasanHarian;
-@override@JsonKey() Map<String, int> get ringkasanHarian {
-  if (_ringkasanHarian is EqualUnmodifiableMapView) return _ringkasanHarian;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableMapView(_ringkasanHarian);
-}
-
-
-/// Create a copy of KonsumsiRokokState
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$KonsumsiRokokStateCopyWith<_KonsumsiRokokState> get copyWith => __$KonsumsiRokokStateCopyWithImpl<_KonsumsiRokokState>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _KonsumsiRokokState&&const DeepCollectionEquality().equals(other.listKonsumsi, _listKonsumsi)&&(identical(other.jumlahTotal, jumlahTotal) || other.jumlahTotal == jumlahTotal)&&const DeepCollectionEquality().equals(other.ringkasanHarian, _ringkasanHarian));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listKonsumsi),jumlahTotal,const DeepCollectionEquality().hash(_ringkasanHarian));
-}
-
-@override
-String toString() {
-    return 'KonsumsiRokokState(listKonsumsi: $listKonsumsi, jumlahTotal: $jumlahTotal, ringkasanHarian: $ringkasanHarian)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$KonsumsiRokokStateCopyWith<$Res> implements $KonsumsiRokokStateCopyWith<$Res> {
-  factory _$KonsumsiRokokStateCopyWith(_KonsumsiRokokState value, $Res Function(_KonsumsiRokokState) _then) = __$KonsumsiRokokStateCopyWithImpl;
-@override @useResult
-$Res call({
- List<KonsumsiRokokModel> listKonsumsi, int jumlahTotal, Map<String, int> ringkasanHarian
-});
-
-
-
-
-}
-/// @nodoc
-class __$KonsumsiRokokStateCopyWithImpl<$Res>
-    implements _$KonsumsiRokokStateCopyWith<$Res> {
-  __$KonsumsiRokokStateCopyWithImpl(this._self, this._then);
-
-  final _KonsumsiRokokState _self;
-  final $Res Function(_KonsumsiRokokState) _then;
-
-/// Create a copy of KonsumsiRokokState
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? listKonsumsi = null,Object? jumlahTotal = null,Object? ringkasanHarian = null,}) {
-  return _then(_KonsumsiRokokState(
-listKonsumsi: null == listKonsumsi ? _self._listKonsumsi : listKonsumsi // ignore: cast_nullable_to_non_nullable
-as List<KonsumsiRokokModel>,jumlahTotal: null == jumlahTotal ? _self.jumlahTotal : jumlahTotal // ignore: cast_nullable_to_non_nullable
-as int,ringkasanHarian: null == ringkasanHarian ? _self._ringkasanHarian : ringkasanHarian // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'konsumsi_rokok_state.freezed.dart';
-
-@freezed
-abstract class KonsumsiRokokState with _$KonsumsiRokokState {
-  const KonsumsiRokokState._();
-
-  const factory KonsumsiRokokState({
-    @Default([]) List<KonsumsiRokokModel> listKonsumsi,
-    @Default(0) int jumlahTotal,
-    @Default({}) Map<String, int> ringkasanHarian,
-  }) = _KonsumsiRokokState;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-
-/// Helper murni metrik berhenti: baseline (estimasi dari biodata) dan aktual
-/// (dari catatan konsumsi).
-///
-/// Tidak bergantung pada `BuildContext` atau provider. Semua perhitungan
-/// berbasis tanggal dinormalisasi ke komponen tanggal saja (tahun, bulan,
-/// hari) dengan clamp nilai negatif ke nol dan guard pembagian nol.
-///
-/// Aturan hari tanpa catatan: hari kalender tanpa catatan konsumsi
-/// **dikecualikan** dari perhitungan aktual; hari tersebut bukan bukti
-/// pengguna tidak merokok. Metrik aktual wajib diberi label
-/// "berdasarkan n hari tercatat" di UI.
-class MetrikBerhentiHelper {
-  const MetrikBerhentiHelper._();
-
-  /// Hari sejak [BiodataModel.tanggalMulaiBerhentiMerokok], dinormalisasi
-  /// ke komponen tanggal saja, clamp >= 0.
-  ///
-  /// Ini metrik **baseline** (kumulatif), bukan berbasis catatan konsumsi.
-  static int hitungHariBerhenti(BiodataModel biodata) => biodata.hariBerhenti;
-
-  /// Estimasi rokok yang tidak dihisap selama periode smoke-free.
-  ///
-  /// Baseline dari biodata (`jumlahRokokPerHari × hariBerhenti`), bukan dari
-  /// catatan konsumsi. Beri label "estimasi" di UI.
-  static int hitungRokokTidakDiHisapEstimasi(BiodataModel biodata) =>
-      biodata.rokokTidakDiHisap;
-
-  /// Estimasi uang yang tidak dibelanjakan selama periode smoke-free.
-  ///
-  /// Baseline dari biodata. Beri label "estimasi" di UI.
-  static double hitungUangDihematEstimasi(BiodataModel biodata) =>
-      biodata.uangDihemat;
-
-  /// Rokok yang dihindari secara aktual.
-  ///
-  /// `Σ max(0, targetRokokHariIni − konsumsi)` per hari yang **punya
-  /// catatan**, memakai target tapering (`targetRokokHariIni`) sebagai
-  /// pembanding. Hari tanpa catatan dikecualikan.
-  static int hitungRokokDihindariAktual(
-    BiodataModel biodata,
-    List<KonsumsiRokokModel> list,
-  ) {
-    if (list.isEmpty) return 0;
-    final target = biodata.targetRokokHariIni;
-    var total = 0;
-    for (final jumlah in KonsumsiHitungHelper.ringkasanHarian(list).values) {
-      final terhindar = target - jumlah;
-      if (terhindar > 0) total += terhindar;
-    }
-    return total;
-  }
-
-  /// Uang yang tidak dibelanjakan secara aktual (dari catatan konsumsi).
-  static double hitungUangDihematAktual(
-    BiodataModel biodata,
-    List<KonsumsiRokokModel> list,
-  ) {
-    if (biodata.batangPerBungkus == 0) return 0.0;
-    final dihindari = hitungRokokDihindariAktual(biodata, list);
-    return (dihindari / biodata.batangPerBungkus) *
-        biodata.hargaRokokPerBungkus;
-  }
-
-  /// Jumlah hari unik yang punya catatan konsumsi (seluruh riwayat).
-  static int hitungJumlahHariTercatat(List<KonsumsiRokokModel> list) =>
-      KonsumsiHitungHelper.ringkasanHarian(list).length;
-
-  /// Streak pencatatan: hari kalender berturut-turut yang punya catatan
-  /// konsumsi, dihitung mundur dari hari ini. Bila hari ini belum punya
-  /// catatan, perhitungan dimulai dari kemarin agar streak tidak putus hanya
-  /// karena pengguna belum sempat mencatat hari ini. Belum ada catatan → 0.
-  static int hitungStreakPencatatan(List<KonsumsiRokokModel> list) {
-    final ringkasan = KonsumsiHitungHelper.ringkasanHarian(list);
-    if (ringkasan.isEmpty) return 0;
-    final sekarang = DateTime.now();
-    var kursor = DateTime(sekarang.year, sekarang.month, sekarang.day);
-    if (!ringkasan.containsKey(KonsumsiHitungHelper.kunciTanggal(kursor))) {
-      kursor = kursor.subtract(const Duration(days: 1));
-    }
-    var streak = 0;
-    while (ringkasan.containsKey(KonsumsiHitungHelper.kunciTanggal(kursor))) {
-      streak += 1;
-      kursor = kursor.subtract(const Duration(days: 1));
-    }
-    return streak;
-  }
-
-  /// Streak: hari kalender berturut-turut tanpa catatan konsumsi/slip sampai
-  /// hari ini. Catatan konsumsi (termasuk slip) mereset streak; progres
-  /// kumulatif tidak direset. Belum ada catatan → 0 (bukan bukti bebas rokok).
-  static int hitungStreak(List<KonsumsiRokokModel> list) {
-    DateTime? terakhir;
-    for (final m in list) {
-      final t = m.tanggal.toLocal();
-      final d = DateTime(t.year, t.month, t.day);
-      if (terakhir == null || d.isAfter(terakhir)) terakhir = d;
-    }
-    if (terakhir == null) return 0;
-
-    final sekarang = DateTime.now();
-    final hariIni = DateTime(sekarang.year, sekarang.month, sekarang.day);
-    final selisih = hariIni.difference(terakhir).inDays;
-    return selisih < 0 ? 0 : selisih;
-  }
-
-  /// Minggu tapering berjalan untuk [biodata] (mode bertahap), 1-based dan
-  /// minimal 1. Bukan mode bertahap atau tanggal mulai kosong → 1.
-  ///
-  /// Tanggal dinormalisasi ke komponen tanggal saja agar selisih hari tidak
-  /// terpengaruh komponen waktu; hasil negatif klamp ke nol.
-  static int hitungMingguTaperingBerjalan(BiodataModel biodata) {
-    if (!biodata.sedangTapering) return 1;
-    final mulai = biodata.tanggalMulaiTapering ?? DateTime.now();
-    final sekarang = DateTime.now();
-    final mulaiDate = DateTime(mulai.year, mulai.month, mulai.day);
-    final sekarangDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
-    final hariBerlalu = sekarangDate.difference(mulaiDate).inDays;
-    final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
-    return mingguBerlalu + 1;
-  }
-
-  /// Target konsumsi rokok untuk minggu ke-[mingguKe] (1-based) mode tapering.
-  ///
-  /// Memakai formula yang sama dengan getter `targetRokokHariIni`
-  /// (`jumlahRokokPerHari - penurunanPerMinggu * (mingguKe - 1)`) dengan
-  /// clamp 0..jumlahRokokPerHari. Minggu sebelum tapering dimulai dianggap
-  /// minggu pertama.
-  static int hitungTargetTaperingMingguKe(BiodataModel biodata, int mingguKe) {
-    final penurunan = biodata.penurunanPerMinggu * (mingguKe - 1);
-    final target = biodata.jumlahRokokPerHari - penurunan;
-    if (target < 0) return 0;
-    if (target > biodata.jumlahRokokPerHari) return biodata.jumlahRokokPerHari;
-    return target;
-  }
-
-  /// Rata-rata konsumsi per hari atas [hari] hari kalender terakhir.
-  /// Hari tanpa catatan dihitung 0.
-  static double hitungRataRataKalender(
-    List<KonsumsiRokokModel> list, {
-    int hari = 7,
-  }) => KonsumsiHitungHelper.rataRataKalender(list, hari: hari);
-
-  /// Jumlah hari yang punya catatan dalam [hari] hari kalender terakhir.
-  static int hitungHariTercatatKalender(
-    List<KonsumsiRokokModel> list, {
-    int hari = 7,
-  }) => KonsumsiHitungHelper.jumlahHariTercatat(list, hari: hari);
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Helper murni untuk perhitungan turunan konsumsi rokok.
-///
-/// Tidak bergantung pada [BuildContext] atau provider. Semua method
-/// memegang guard pada list kosong dan mengembalikan nilai default.
-class KonsumsiHitungHelper {
-  const KonsumsiHitungHelper._();
-
-  /// Mengelompokkan konsumsi per hari (key `yyyy-MM-dd`, waktu lokal).
-  static Map<String, int> ringkasanHarian(List<KonsumsiRokokModel> list) {
-    L.i('list.length=${list.length}');
-    if (list.isEmpty) return const {};
-    final map = <String, int>{};
-    for (final m in list) {
-      final key = kunciTanggal(m.tanggal);
-      map[key] = (map[key] ?? 0) + m.jumlah;
-    }
-    return map;
-  }
-
-  /// Kunci tanggal `yyyy-MM-dd` dari [tanggal] (waktu lokal).
-  static String kunciTanggal(DateTime tanggal) {
-    final lokal = tanggal.toLocal();
-    return '${lokal.year}-${lokal.month.toString().padLeft(2, '0')}-${lokal.day.toString().padLeft(2, '0')}';
-  }
-
-  /// Total seluruh konsumsi batang rokok.
-  static int totalKonsumsi(List<KonsumsiRokokModel> list) {
-    if (list.isEmpty) return 0;
-    return list.fold(0, (sum, m) => sum + m.jumlah);
-  }
-
-  /// Rata-rata konsumsi per hari atas [hari] hari kalender terakhir.
-  ///
-  /// Hari tanpa catatan dihitung 0. Ini menggantikan perhitungan lama yang
-  /// hanya merata-ratakan hari yang punya catatan.
-  static double rataRataHarian(List<KonsumsiRokokModel> list, {int hari = 7}) =>
-      rataRataKalender(list, hari: hari);
-
-  /// Rata-rata konsumsi per hari atas [hari] hari kalender terakhir.
-  ///
-  /// Hari tanpa catatan dihitung 0. Mengembalikan 0.0 bila [hari] <= 0.
-  static double rataRataKalender(
-    List<KonsumsiRokokModel> list, {
-    int hari = 7,
-  }) {
-    if (hari <= 0) return 0.0;
-    final ringkasan = ringkasanHarian(list);
-    final now = DateTime.now();
-    final hariIni = DateTime(now.year, now.month, now.day);
-    var total = 0;
-    for (var i = 0; i < hari; i++) {
-      final d = hariIni.subtract(Duration(days: i));
-      total += ringkasan[kunciTanggal(d)] ?? 0;
-    }
-    return total / hari;
-  }
-
-  /// Jumlah hari yang punya catatan dalam [hari] hari kalender terakhir.
-  /// Mengembalikan 0 bila [hari] <= 0.
-  static int jumlahHariTercatat(List<KonsumsiRokokModel> list, {int hari = 7}) {
-    if (hari <= 0) return 0;
-    final ringkasan = ringkasanHarian(list);
-    final now = DateTime.now();
-    final hariIni = DateTime(now.year, now.month, now.day);
-    var jumlah = 0;
-    for (var i = 0; i < hari; i++) {
-      final d = hariIni.subtract(Duration(days: i));
-      if (ringkasan.containsKey(kunciTanggal(d))) jumlah += 1;
-    }
-    return jumlah;
-  }
-
-  /// Rentang UTC hari ini untuk query langsung ke database.
-  static Map<String, Object?> rangeHariIniUtc() {
-    final hariIni = DateTime.now();
-    final awalHari = DateTime(hariIni.year, hariIni.month, hariIni.day).toUtc();
-    final akhirHari = awalHari.add(const Duration(days: 1));
-    return {
-      'awal': awalHari.toIso8601String(),
-      'akhir': akhirHari.toIso8601String(),
-    };
-  }
-
-  /// Konsumsi hari ini berdasarkan waktu lokal perangkat.
-  static int konsumsiHariIni(List<KonsumsiRokokModel> list) =>
-      ringkasanHarian(list)[kunciTanggal(DateTime.now())] ?? 0;
-
-  /// Konsumsi pada [tanggal] tertentu berdasarkan waktu lokal.
-  static int konsumsiTanggal(List<KonsumsiRokokModel> list, DateTime tanggal) =>
-      ringkasanHarian(list)[kunciTanggal(tanggal)] ?? 0;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.g.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'konsumsi_rokok_notifier.dart';
-
-// **************************************************************************
-// RiverpodGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-
-@ProviderFor(KonsumsiRokokNotifier)
-final konsumsiRokokProvider = KonsumsiRokokNotifierProvider._();
-
-final class KonsumsiRokokNotifierProvider
-    extends $AsyncNotifierProvider<KonsumsiRokokNotifier, KonsumsiRokokState> {
-  KonsumsiRokokNotifierProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'konsumsiRokokProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$konsumsiRokokNotifierHash();
-
-  @$internal
-  @override
-  KonsumsiRokokNotifier create() => KonsumsiRokokNotifier();
-}
-
-String _$konsumsiRokokNotifierHash() =>
-    r'92f3aaa3127bc80c4d771da14b71c1ebc5bacfa7';
-
-abstract class _$KonsumsiRokokNotifier
-    extends $AsyncNotifier<KonsumsiRokokState> {
-  FutureOr<KonsumsiRokokState> build();
-  @$mustCallSuper
-  @override
-  WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<KonsumsiRokokState>, KonsumsiRokokState>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<KonsumsiRokokState>, KonsumsiRokokState>,
-              AsyncValue<KonsumsiRokokState>,
-              Object?,
-              Object?
-            >;
-    return element.handleCreate(ref, build);
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
-import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:share_global_saya/core_shared.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:uuid/uuid.dart';
-
-part 'konsumsi_rokok_notifier.g.dart';
-
-@Riverpod(keepAlive: true)
-class KonsumsiRokokNotifier extends _$KonsumsiRokokNotifier {
-  @override
-  Future<KonsumsiRokokState> build() async {
-    return await _ambilSemua();
-  }
-
-  Future<KonsumsiRokokState> _ambilSemua() async {
-    try {
-      final op = const SqfliteOp();
-      final rows = await op.ambilSemua(
-        NamaTabel.konsumsiRokok,
-        orderBy: '${NamaKolom.tanggal} DESC, ${NamaKolom.dibuat} DESC',
-      );
-      final daftar = rows.map(KonsumsiRokokModel.fromSqflite).toList();
-      final ringkasan = KonsumsiHitungHelper.ringkasanHarian(daftar);
-      final total = KonsumsiHitungHelper.totalKonsumsi(daftar);
-      L.i('daftar.length=${daftar.length}, total=$total');
-      return KonsumsiRokokState(
-        listKonsumsi: daftar,
-        jumlahTotal: total,
-        ringkasanHarian: ringkasan,
-      );
-    } on Exception catch (e, s) {
-      L.e('Gagal mengambil data konsumsi rokok: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Catat satu batang rokok pada hari ini (quick log, tanpa form).
-  /// Mengembalikan model entri yang baru dibuat untuk keperluan undo.
-  Future<KonsumsiRokokModel> catatCepat({bool isSlip = false, String? catatan}) async {
-    final sekarang = DateTime.now().toUtc();
-    final model = KonsumsiRokokModel(
-      id: const Uuid().v4(),
-      tanggal: sekarang,
-      jumlah: 1,
-      isSlip: isSlip,
-      catatan: catatan,
-      dibuat: DateTime.now().toUtc(),
-    );
-    L.i('catatCepat jumlah=1, isSlip=$isSlip');
-    try {
-      final dataLama = await future;
-      final op = const SqfliteOp();
-      await op.tambah(
-        NamaTabel.konsumsiRokok,
-        model.toSqflite(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-      final baru = [model, ...dataLama.listKonsumsi];
-      state = AsyncValue.data(
-        KonsumsiRokokState(
-          listKonsumsi: baru,
-          jumlahTotal: dataLama.jumlahTotal + 1,
-          ringkasanHarian: KonsumsiHitungHelper.ringkasanHarian(baru),
-        ),
-      );
-      L.s('Konsumsi cepat berhasil dicatat');
-      return model;
-    } on Exception catch (e, s) {
-      L.e('Gagal catat cepat konsumsi: $e $s');
-      rethrow;
-    }
-  }
-
-  Future<void> tambah(KonsumsiRokokModel konsumsi) async {
-    L.i('konsumsi=$konsumsi');
-    try {
-      final dataLama = await future;
-      final op = const SqfliteOp();
-      await op.tambah(
-        NamaTabel.konsumsiRokok,
-        konsumsi.toSqflite(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-      final baru = [konsumsi, ...dataLama.listKonsumsi];
-      state = AsyncValue.data(
-        KonsumsiRokokState(
-          listKonsumsi: baru,
-          jumlahTotal: dataLama.jumlahTotal + konsumsi.jumlah,
-          ringkasanHarian: KonsumsiHitungHelper.ringkasanHarian(baru),
-        ),
-      );
-      L.s('Konsumsi berhasil disimpan');
-    } on Exception catch (e, s) {
-      L.e('Gagal menyimpan konsumsi: $e $s');
-      rethrow;
-    }
-  }
-
-  Future<void> ubah(KonsumsiRokokModel konsumsi) async {
-    L.i('konsumsi=$konsumsi');
-    try {
-      final dataLama = await future;
-      final op = const SqfliteOp();
-      await op.ubah(
-        NamaTabel.konsumsiRokok,
-        konsumsi.toSqflite(),
-        where: '${NamaKolom.id} = ?',
-        whereArgs: [konsumsi.id],
-      );
-      final baru = dataLama.listKonsumsi
-          .map((e) => e.id == konsumsi.id ? konsumsi : e)
-          .toList();
-      state = AsyncValue.data(
-        KonsumsiRokokState(
-          listKonsumsi: baru,
-          jumlahTotal: KonsumsiHitungHelper.totalKonsumsi(baru),
-          ringkasanHarian: KonsumsiHitungHelper.ringkasanHarian(baru),
-        ),
-      );
-      L.s('Konsumsi berhasil diubah');
-    } on Exception catch (e, s) {
-      L.e('Gagal mengubah konsumsi: $e $s');
-      rethrow;
-    }
-  }
-
-  Future<void> hapus(String id) async {
-    L.i('id=$id');
-    try {
-      final dataLama = await future;
-      final op = const SqfliteOp();
-      await op.hapus(
-        NamaTabel.konsumsiRokok,
-        where: '${NamaKolom.id} = ?',
-        whereArgs: [id],
-      );
-      final baru = dataLama.listKonsumsi.where((e) => e.id != id).toList();
-      state = AsyncValue.data(
-        KonsumsiRokokState(
-          listKonsumsi: baru,
-          jumlahTotal: KonsumsiHitungHelper.totalKonsumsi(baru),
-          ringkasanHarian: KonsumsiHitungHelper.ringkasanHarian(baru),
-        ),
-      );
-      L.s('Konsumsi berhasil dihapus');
-    } on Exception catch (e, s) {
-      L.e('Gagal menghapus konsumsi: $e $s');
-      rethrow;
-    }
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/model/rencana_darurat_model.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-part 'rencana_darurat_model.freezed.dart';
-
-@freezed
-abstract class RencanaDaruratModel with _$RencanaDaruratModel {
-  const RencanaDaruratModel._();
-
-  const factory RencanaDaruratModel({
-    required String id,
-    required String jika,
-    required String maka,
-    required DateTime dibuat,
-  }) = _RencanaDaruratModel;
-
-  /// Membuat [RencanaDaruratModel] dari baris database SQLite.
-  factory RencanaDaruratModel.fromSqflite(Map<String, Object?> row) {
-    return RencanaDaruratModel(
-      id: ParserUtil.parseString(row[NamaKolom.id]),
-      jika: ParserUtil.parseString(row[NamaKolom.jika]),
-      maka: ParserUtil.parseString(row[NamaKolom.maka]),
-      dibuat:
-          ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
-          DateTime.now(),
-    );
-  }
-
-  /// Mengonversi [RencanaDaruratModel] menjadi Map untuk disimpan ke SQLite.
-  Map<String, Object?> toSqflite() {
-    return <String, Object?>{
-      NamaKolom.id: id,
-      NamaKolom.jika: jika,
-      NamaKolom.maka: maka,
-      NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
-    };
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/model/rencana_darurat_model.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'rencana_darurat_model.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$RencanaDaruratModel {
-
- String get id; String get jika; String get maka; DateTime get dibuat;
-/// Create a copy of RencanaDaruratModel
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$RencanaDaruratModelCopyWith<RencanaDaruratModel> get copyWith => _$RencanaDaruratModelCopyWithImpl<RencanaDaruratModel>(this as RencanaDaruratModel, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as RencanaDaruratModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RencanaDaruratModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.jika, _this.jika) || other.jika == _this.jika)&&(identical(other.maka, _this.maka) || other.maka == _this.maka)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as RencanaDaruratModel;
-  return Object.hash(runtimeType,_this.id,_this.jika,_this.maka,_this.dibuat);
-}
-
-@override
-String toString() {
-  final _this = this as RencanaDaruratModel;
-  return 'RencanaDaruratModel(id: ${_this.id}, jika: ${_this.jika}, maka: ${_this.maka}, dibuat: ${_this.dibuat})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $RencanaDaruratModelCopyWith<$Res>  {
-  factory $RencanaDaruratModelCopyWith(RencanaDaruratModel value, $Res Function(RencanaDaruratModel) _then) = _$RencanaDaruratModelCopyWithImpl;
-@useResult
-$Res call({
- String id, String jika, String maka, DateTime dibuat
-});
-
-
-
-
-}
-/// @nodoc
-class _$RencanaDaruratModelCopyWithImpl<$Res>
-    implements $RencanaDaruratModelCopyWith<$Res> {
-  _$RencanaDaruratModelCopyWithImpl(this._self, this._then);
-
-  final RencanaDaruratModel _self;
-  final $Res Function(RencanaDaruratModel) _then;
-
-/// Create a copy of RencanaDaruratModel
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jika = null,Object? maka = null,Object? dibuat = null,}) {
-  return _then(RencanaDaruratModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,jika: null == jika ? _self.jika : jika // ignore: cast_nullable_to_non_nullable
-as String,maka: null == maka ? _self.maka : maka // ignore: cast_nullable_to_non_nullable
-as String,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
-as DateTime,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [RencanaDaruratModel].
-extension RencanaDaruratModelPatterns on RencanaDaruratModel {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RencanaDaruratModel value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _RencanaDaruratModel() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RencanaDaruratModel value)  $default,){
-final _that = this;
-switch (_that) {
-case _RencanaDaruratModel():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RencanaDaruratModel value)?  $default,){
-final _that = this;
-switch (_that) {
-case _RencanaDaruratModel() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String jika,  String maka,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _RencanaDaruratModel() when $default != null:
-return $default(_that.id,_that.jika,_that.maka,_that.dibuat);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String jika,  String maka,  DateTime dibuat)  $default,) {final _that = this;
-switch (_that) {
-case _RencanaDaruratModel():
-return $default(_that.id,_that.jika,_that.maka,_that.dibuat);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String jika,  String maka,  DateTime dibuat)?  $default,) {final _that = this;
-switch (_that) {
-case _RencanaDaruratModel() when $default != null:
-return $default(_that.id,_that.jika,_that.maka,_that.dibuat);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _RencanaDaruratModel extends RencanaDaruratModel {
-  const _RencanaDaruratModel({required this.id, required this.jika, required this.maka, required this.dibuat}): super._();
-  
-
-@override final  String id;
-@override final  String jika;
-@override final  String maka;
-@override final  DateTime dibuat;
-
-/// Create a copy of RencanaDaruratModel
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$RencanaDaruratModelCopyWith<_RencanaDaruratModel> get copyWith => __$RencanaDaruratModelCopyWithImpl<_RencanaDaruratModel>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RencanaDaruratModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jika, jika) || other.jika == jika)&&(identical(other.maka, maka) || other.maka == maka)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,id,jika,maka,dibuat);
-}
-
-@override
-String toString() {
-    return 'RencanaDaruratModel(id: $id, jika: $jika, maka: $maka, dibuat: $dibuat)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$RencanaDaruratModelCopyWith<$Res> implements $RencanaDaruratModelCopyWith<$Res> {
-  factory _$RencanaDaruratModelCopyWith(_RencanaDaruratModel value, $Res Function(_RencanaDaruratModel) _then) = __$RencanaDaruratModelCopyWithImpl;
-@override @useResult
-$Res call({
- String id, String jika, String maka, DateTime dibuat
-});
-
-
-
-
-}
-/// @nodoc
-class __$RencanaDaruratModelCopyWithImpl<$Res>
-    implements _$RencanaDaruratModelCopyWith<$Res> {
-  __$RencanaDaruratModelCopyWithImpl(this._self, this._then);
-
-  final _RencanaDaruratModel _self;
-  final $Res Function(_RencanaDaruratModel) _then;
-
-/// Create a copy of RencanaDaruratModel
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jika = null,Object? maka = null,Object? dibuat = null,}) {
-  return _then(_RencanaDaruratModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,jika: null == jika ? _self.jika : jika // ignore: cast_nullable_to_non_nullable
-as String,maka: null == maka ? _self.maka : maka // ignore: cast_nullable_to_non_nullable
-as String,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
-as DateTime,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/widgets/kartu_rencana_darurat.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:berhenti_merokok/fitur/rencana_darurat/notifier/rencana_darurat_notifier.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/screens/rencana_darurat_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Kartu ringkas "Rencana Darurat Saya" untuk disematkan di SOS Craving.
-///
-/// Menampilkan daftar if-then plan tersimpan (maks 3 baris) atau empty
-/// state bila belum ada. Widget hanya menampilkan teks rencana dan aksi
-/// navigasi ke layar kelola; tidak memicu teknik SOS otomatis.
-class KartuRencanaDarurat extends ConsumerWidget {
-  const KartuRencanaDarurat({super.key});
-
-  void _navigasiKeKelola(BuildContext context) {
-    unawaited(
-      Nav.to(context, const RencanaDaruratScreen()).catchError((
-        Object e,
-        StackTrace s,
-      ) {
-        L.e('Gagal navigasi ke Rencana Darurat: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final rencanaAsync = ref.watch(rencanaDaruratProvider);
-    L.i(
-      'rencanaAsync.isLoading=${rencanaAsync.isLoading}, '
-      'hasError=${rencanaAsync.hasError}',
-    );
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    if (rencanaAsync.hasError) {
-      L.w('rencanaDaruratProvider error=${rencanaAsync.error}');
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
-              children: [
-                Text(
-                  'Gagal memuat rencana darurat',
-                  style: textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                OutlinedButton(
-                  onPressed: () {
-                    final _ = ref.refresh(rencanaDaruratProvider);
-                  },
-                  child: const Text('Coba lagi'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    final list = rencanaAsync.asData?.value.listRencana;
-    if (list == null) {
-      return const Padding(
-        padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-        child: Card(
-          child: Padding(
-            padding: EdgeInsets.all(12),
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        ),
-      );
-    }
-    L.i('list.length=${list.length}');
-
-    if (list.isEmpty) {
-      L.w('rencana darurat kosong, tampilkan empty state');
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 12,
-                  children: [
-                    Icon(
-                      Icons.event_note_outlined,
-                      color: colorScheme.primary,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 4,
-                        children: [
-                          Text(
-                            'Belum ada rencana darurat',
-                            style: textTheme.titleSmall
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Tulis rencana "Jika …, Maka …" di saat tenang '
-                            'agar siap saat craving menyerang.',
-                            style: textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                OutlinedButton(
-                  onPressed: () => _navigasiKeKelola(context),
-                  child: const Text('Buat rencana'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 8,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                spacing: 12,
-                children: [
-                  Icon(
-                    Icons.event_note,
-                    color: colorScheme.primary,
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Rencana Darurat Saya',
-                      style: textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => _navigasiKeKelola(context),
-                    child: const Text('Kelola'),
-                  ),
-                ],
-              ),
-              for (final item in list)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 8,
-                  children: [
-                    Text('•', style: textTheme.bodyMedium),
-                    Expanded(
-                      child: Text(
-                        'Jika ${item.jika} → Maka ${item.maka}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/screens/form_rencana_darurat.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/model/rencana_darurat_model.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/notifier/rencana_darurat_notifier.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Form tambah/ubah rencana darurat if-then.
-class FormRencanaDarurat extends ConsumerStatefulWidget {
-  const FormRencanaDarurat({super.key, this.rencana});
-
-  /// Rencana yang diubah; `null` untuk mode tambah.
-  final RencanaDaruratModel? rencana;
-
-  @override
-  ConsumerState<FormRencanaDarurat> createState() => _FormRencanaDaruratState();
-}
-
-class _FormRencanaDaruratState extends ConsumerState<FormRencanaDarurat> {
-  final _formKey = GlobalKey<FormState>();
-  final _jikaController = TextEditingController();
-  final _makaController = TextEditingController();
-  final _jikaFocusNode = FocusNode();
-  final _makaFocusNode = FocusNode();
-
-  bool _sedangMemproses = false;
-
-  @override
-  void initState() {
-    super.initState();
-    final rencana = widget.rencana;
-    L.i('rencana=$rencana');
-    if (rencana != null) {
-      _jikaController.text = rencana.jika;
-      _makaController.text = rencana.maka;
-    }
-  }
-
-  @override
-  void dispose() {
-    _jikaController.dispose();
-    _makaController.dispose();
-    _jikaFocusNode.dispose();
-    _makaFocusNode.dispose();
-    super.dispose();
-  }
-
-  String? _validasi(String? value) {
-    final teks = value?.trim() ?? '';
-    if (teks.isEmpty) {
-      return 'Wajib diisi';
-    }
-    if (teks.length > panjangMaksRencanaDarurat) {
-      return 'Maksimal $panjangMaksRencanaDarurat karakter';
-    }
-    return null;
-  }
-
-  Future<void> _simpan() async {
-    if (_sedangMemproses) {
-      L.w('Form rencana darurat masih memproses, simpan diabaikan');
-      return;
-    }
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      L.w('validasi form gagal');
-      return;
-    }
-
-    final konfirmasi = await showOkCancelAlertDialog(
-      context: context,
-      title: 'Simpan Rencana',
-      message: 'Apakah Anda yakin ingin menyimpan rencana darurat ini?',
-      okLabel: 'Simpan',
-      cancelLabel: 'Batal',
-    );
-    L.i('konfirmasi=$konfirmasi');
-    if (konfirmasi != OkCancelResult.ok) {
-      L.w('konfirmasi bukan ok');
-      return;
-    }
-    if (!mounted) return;
-
-    setState(() => _sedangMemproses = true);
-    unawaited(
-      EasyLoading.show(
-        status: 'Menyimpan...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading: $e $s');
-        return null;
-      }),
-    );
-    try {
-      final jika = _jikaController.text.trim();
-      final maka = _makaController.text.trim();
-      if (!rencanaDaruratValid(jika, maka)) {
-        L.w('rencana tidak valid setelah trim');
-        if (mounted) {
-          AppToast.gagal(context, 'Rencana tidak valid');
-        }
-        return;
-      }
-      final notifier = ref.read(rencanaDaruratProvider.notifier);
-      if (widget.rencana == null) {
-        await notifier.tambah(jika: jika, maka: maka);
-      } else {
-        final model = widget.rencana!.copyWith(jika: jika, maka: maka);
-        await notifier.ubah(model);
-      }
-      if (!mounted) return;
-      if (Navigator.of(context).canPop()) {
-        Nav.pop(context);
-      }
-    } on RencanaPenuhException catch (e, s) {
-      L.e('Gagal menyimpan rencana darurat (penuh): $e $s');
-      if (mounted) {
-        AppToast.gagal(
-          context,
-          'Maksimal $batasMaksRencanaDarurat rencana tersimpan',
-        );
-      }
-    } on RencanaDuplikatException catch (e, s) {
-      L.e('Gagal menyimpan rencana darurat (duplikat): $e $s');
-      if (mounted) {
-        AppToast.gagal(context, 'Rencana untuk situasi ini sudah ada');
-      }
-    } on Exception catch (e, s) {
-      L.e('Gagal menyimpan rencana darurat: $e $s');
-      if (mounted) {
-        AppToast.gagal(context, 'Gagal menyimpan rencana darurat');
-      }
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading: $e $s');
-          return null;
-        }),
-      );
-      if (mounted) {
-        setState(() => _sedangMemproses = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.rencana == null ? 'Tambah Rencana' : 'Ubah Rencana',
-        ),
-      ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 12,
-              children: [
-                Text(
-                  'Rencana "Jika …, Maka …" dipakai saat craving datang. '
-                  'Pilih tindakan yang bisa langsung dilakukan.',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                InputTeks(
-                  controller: _jikaController,
-                  label: 'Jika …',
-                  hintText: 'mis. habis makan',
-                  focusNode: _jikaFocusNode,
-                  nextFocusNode: _makaFocusNode,
-                  wajib: true,
-                  maxLength: panjangMaksRencanaDarurat,
-                  validator: _validasi,
-                ),
-                InputTeks(
-                  controller: _makaController,
-                  label: 'Maka …',
-                  hintText: 'mis. sikat gigi',
-                  helperText: 'Pilih tindakan yang bisa langsung dilakukan',
-                  focusNode: _makaFocusNode,
-                  textInputAction: TextInputAction.done,
-                  wajib: true,
-                  maxLength: panjangMaksRencanaDarurat,
-                  validator: _validasi,
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton(
-                  // Dialog konfirmasi dan setState berada di luar try di
-                  // _simpan; catchError mencegah error async tidak tertangani.
-                  onPressed: _sedangMemproses
-                      ? null
-                      : () => unawaited(
-                          _simpan().catchError((Object e, StackTrace s) {
-                            L.e('Gagal menyimpan rencana darurat: $e $s');
-                            return null;
-                          }),
-                        ),
-                  child: const Text('Simpan'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/screens/rencana_darurat_screen.dart
-// ============================================================
-```dart
-import 'dart:async';
-
-import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/model/rencana_darurat_model.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/notifier/rencana_darurat_notifier.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/screens/form_rencana_darurat.dart';
-import 'package:berhenti_merokok/shared/widget/empty_state_view.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Layar kelola rencana darurat if-then (daftar + tambah/ubah/hapus).
-class RencanaDaruratScreen extends ConsumerStatefulWidget {
-  const RencanaDaruratScreen({super.key});
-
-  @override
-  ConsumerState<RencanaDaruratScreen> createState() =>
-      _RencanaDaruratScreenState();
-}
-
-class _RencanaDaruratScreenState extends ConsumerState<RencanaDaruratScreen> {
-  @override
-  void initState() {
-    super.initState();
-    L.i('RencanaDaruratScreen initState');
-  }
-
-  @override
-  void dispose() {
-    L.i('RencanaDaruratScreen dispose');
-    super.dispose();
-  }
-
-  void _navigasiKeForm({RencanaDaruratModel? rencana}) {
-    unawaited(
-      Nav.to(context, FormRencanaDarurat(rencana: rencana)).catchError((
-        Object e,
-        StackTrace s,
-      ) {
-        L.e('Gagal navigasi ke Form Rencana Darurat: $e $s');
-        return null;
-      }),
-    );
-  }
-
-  Future<void> _hapus(RencanaDaruratModel item) async {
-    L.i('item.id=${item.id}');
-    final konfirmasi = await showOkCancelAlertDialog(
-      context: context,
-      title: 'Hapus rencana?',
-      message: 'Rencana "Jika ${item.jika}" akan dihapus permanen. Lanjutkan?',
-      okLabel: 'Hapus',
-      cancelLabel: 'Batal',
-      isDestructiveAction: true,
-    );
-    L.i('konfirmasi=$konfirmasi');
-    if (konfirmasi != OkCancelResult.ok) {
-      return;
-    }
-    if (!mounted) return;
-    try {
-      await ref.read(rencanaDaruratProvider.notifier).hapus(item.id);
-      if (mounted) {
-        AppToast.sukses(context, 'Rencana darurat berhasil dihapus');
-      }
-    } on Exception catch (e, s) {
-      L.e('Gagal menghapus rencana darurat: $e $s');
-      if (mounted) {
-        AppToast.gagal(context, 'Gagal menghapus rencana darurat');
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final rencanaAsync = ref.watch(rencanaDaruratProvider);
-    L.i(
-      'rencanaAsync.isLoading=${rencanaAsync.isLoading}, '
-      'hasError=${rencanaAsync.hasError}',
-    );
-
-    if (rencanaAsync.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    if (rencanaAsync.hasError) {
-      L.w('rencanaDaruratProvider error=${rencanaAsync.error}');
-      return Scaffold(
-        appBar: AppBar(title: const Text('Rencana Darurat')),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
-            children: [
-              const Text('Gagal memuat data rencana darurat'),
-              OutlinedButton(
-                onPressed: () {
-                  final _ = ref.refresh(rencanaDaruratProvider);
-                },
-                child: const Text('Coba lagi'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final state = rencanaAsync.requireValue;
-    final list = state.listRencana;
-    final penuh = list.length >= batasMaksRencanaDarurat;
-    L.i('list.length=${list.length}, penuh=$penuh');
-
-    final fab = Tooltip(
-      message: penuh
-          ? 'Maksimal $batasMaksRencanaDarurat rencana tersimpan'
-          : 'Tambah rencana',
-      child: FloatingActionButton(
-        onPressed: penuh ? null : () => _navigasiKeForm(),
-        child: const Icon(CupertinoIcons.add),
-      ),
-    );
-
-    if (list.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Rencana Darurat')),
-        body: EmptyStateView(
-          ikon: Icons.event_note_outlined,
-          judul: 'Belum ada rencana darurat',
-          deskripsi:
-              'Tulis rencana "Jika …, Maka …" agar kamu punya respons '
-              'otomatis saat craving muncul.',
-          ctaLabel: 'Tambah Rencana',
-          onCta: () => _navigasiKeForm(),
-        ),
-        floatingActionButton: fab,
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Rencana Darurat')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ListView.separated(
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              final item = list[index];
-              L.i('item.id=${item.id}');
-              return Card(
-                key: ValueKey(item.id),
-                child: ListTile(
-                  title: Text('Jika ${item.jika}'),
-                  subtitle: Text('Maka ${item.maka}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    tooltip: 'Hapus',
-                    // Dialog konfirmasi di luar try di _hapus dapat melempar
-                    // exception; catchError mencegah error async tidak tertangani.
-                    onPressed: () => unawaited(
-                      _hapus(item).catchError((Object e, StackTrace s) {
-                        L.e('Gagal menghapus rencana darurat: $e $s');
-                        return null;
-                      }),
-                    ),
-                  ),
-                  onTap: () => _navigasiKeForm(rencana: item),
-                ),
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
-          ),
-        ),
-      ),
-      floatingActionButton: fab,
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/state/rencana_darurat_state.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/rencana_darurat/model/rencana_darurat_model.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'rencana_darurat_state.freezed.dart';
-
-@freezed
-abstract class RencanaDaruratState with _$RencanaDaruratState {
-  const RencanaDaruratState._();
-
-  const factory RencanaDaruratState({
-    @Default([]) List<RencanaDaruratModel> listRencana,
-    @Default(0) int jumlahRencana,
-  }) = _RencanaDaruratState;
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/state/rencana_darurat_state.freezed.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
-
-part of 'rencana_darurat_state.dart';
-
-// **************************************************************************
-// FreezedGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
-T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$RencanaDaruratState {
-
- List<RencanaDaruratModel> get listRencana; int get jumlahRencana;
-/// Create a copy of RencanaDaruratState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$RencanaDaruratStateCopyWith<RencanaDaruratState> get copyWith => _$RencanaDaruratStateCopyWithImpl<RencanaDaruratState>(this as RencanaDaruratState, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as RencanaDaruratState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RencanaDaruratState&&const DeepCollectionEquality().equals(other.listRencana, _this.listRencana)&&(identical(other.jumlahRencana, _this.jumlahRencana) || other.jumlahRencana == _this.jumlahRencana));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as RencanaDaruratState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listRencana),_this.jumlahRencana);
-}
-
-@override
-String toString() {
-  final _this = this as RencanaDaruratState;
-  return 'RencanaDaruratState(listRencana: ${_this.listRencana}, jumlahRencana: ${_this.jumlahRencana})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $RencanaDaruratStateCopyWith<$Res>  {
-  factory $RencanaDaruratStateCopyWith(RencanaDaruratState value, $Res Function(RencanaDaruratState) _then) = _$RencanaDaruratStateCopyWithImpl;
-@useResult
-$Res call({
- List<RencanaDaruratModel> listRencana, int jumlahRencana
-});
-
-
-
-
-}
-/// @nodoc
-class _$RencanaDaruratStateCopyWithImpl<$Res>
-    implements $RencanaDaruratStateCopyWith<$Res> {
-  _$RencanaDaruratStateCopyWithImpl(this._self, this._then);
-
-  final RencanaDaruratState _self;
-  final $Res Function(RencanaDaruratState) _then;
-
-/// Create a copy of RencanaDaruratState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? listRencana = null,Object? jumlahRencana = null,}) {
-  return _then(RencanaDaruratState(
-listRencana: null == listRencana ? _self.listRencana : listRencana // ignore: cast_nullable_to_non_nullable
-as List<RencanaDaruratModel>,jumlahRencana: null == jumlahRencana ? _self.jumlahRencana : jumlahRencana // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [RencanaDaruratState].
-extension RencanaDaruratStatePatterns on RencanaDaruratState {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RencanaDaruratState value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _RencanaDaruratState() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RencanaDaruratState value)  $default,){
-final _that = this;
-switch (_that) {
-case _RencanaDaruratState():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RencanaDaruratState value)?  $default,){
-final _that = this;
-switch (_that) {
-case _RencanaDaruratState() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<RencanaDaruratModel> listRencana,  int jumlahRencana)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _RencanaDaruratState() when $default != null:
-return $default(_that.listRencana,_that.jumlahRencana);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<RencanaDaruratModel> listRencana,  int jumlahRencana)  $default,) {final _that = this;
-switch (_that) {
-case _RencanaDaruratState():
-return $default(_that.listRencana,_that.jumlahRencana);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<RencanaDaruratModel> listRencana,  int jumlahRencana)?  $default,) {final _that = this;
-switch (_that) {
-case _RencanaDaruratState() when $default != null:
-return $default(_that.listRencana,_that.jumlahRencana);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _RencanaDaruratState extends RencanaDaruratState {
-  const _RencanaDaruratState({ List<RencanaDaruratModel> listRencana = const [], this.jumlahRencana = 0}): _listRencana = listRencana,super._();
-  
-
- final  List<RencanaDaruratModel> _listRencana;
-@override@JsonKey() List<RencanaDaruratModel> get listRencana {
-  if (_listRencana is EqualUnmodifiableListView) return _listRencana;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_listRencana);
-}
-
-@override@JsonKey() final  int jumlahRencana;
-
-/// Create a copy of RencanaDaruratState
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$RencanaDaruratStateCopyWith<_RencanaDaruratState> get copyWith => __$RencanaDaruratStateCopyWithImpl<_RencanaDaruratState>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RencanaDaruratState&&const DeepCollectionEquality().equals(other.listRencana, _listRencana)&&(identical(other.jumlahRencana, jumlahRencana) || other.jumlahRencana == jumlahRencana));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listRencana),jumlahRencana);
-}
-
-@override
-String toString() {
-    return 'RencanaDaruratState(listRencana: $listRencana, jumlahRencana: $jumlahRencana)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$RencanaDaruratStateCopyWith<$Res> implements $RencanaDaruratStateCopyWith<$Res> {
-  factory _$RencanaDaruratStateCopyWith(_RencanaDaruratState value, $Res Function(_RencanaDaruratState) _then) = __$RencanaDaruratStateCopyWithImpl;
-@override @useResult
-$Res call({
- List<RencanaDaruratModel> listRencana, int jumlahRencana
-});
-
-
-
-
-}
-/// @nodoc
-class __$RencanaDaruratStateCopyWithImpl<$Res>
-    implements _$RencanaDaruratStateCopyWith<$Res> {
-  __$RencanaDaruratStateCopyWithImpl(this._self, this._then);
-
-  final _RencanaDaruratState _self;
-  final $Res Function(_RencanaDaruratState) _then;
-
-/// Create a copy of RencanaDaruratState
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? listRencana = null,Object? jumlahRencana = null,}) {
-  return _then(_RencanaDaruratState(
-listRencana: null == listRencana ? _self._listRencana : listRencana // ignore: cast_nullable_to_non_nullable
-as List<RencanaDaruratModel>,jumlahRencana: null == jumlahRencana ? _self.jumlahRencana : jumlahRencana // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-
-}
-
-// dart format on
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/notifier/rencana_darurat_notifier.dart
-// ============================================================
-```dart
-import 'package:berhenti_merokok/fitur/rencana_darurat/model/rencana_darurat_model.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/state/rencana_darurat_state.dart';
-import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:share_global_saya/core_shared.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:uuid/uuid.dart';
-
-part 'rencana_darurat_notifier.g.dart';
-
-/// Batas maksimal rencana darurat yang tersimpan.
-const int batasMaksRencanaDarurat = 3;
-
-/// Panjang maksimal masing-masing kolom `jika` dan `maka`.
-const int panjangMaksRencanaDarurat = 150;
-
-/// Exception ketika penyimpanan melebihi batas [batasMaksRencanaDarurat].
-class RencanaPenuhException implements Exception {
-  const RencanaPenuhException();
-
-  @override
-  String toString() => 'Rencana darurat sudah penuh (maks $batasMaksRencanaDarurat)';
-}
-
-/// Exception ketika `jika` duplikat (trim, case-insensitive).
-class RencanaDuplikatException implements Exception {
-  const RencanaDuplikatException();
-
-  @override
-  String toString() => 'Rencana untuk situasi ini sudah ada';
-}
-
-/// Validasi murni untuk kolom `jika` dan `maka` rencana darurat.
-bool rencanaDaruratValid(String jika, String maka) {
-  final j = jika.trim();
-  final m = maka.trim();
-  return j.isNotEmpty &&
-      m.isNotEmpty &&
-      j.length <= panjangMaksRencanaDarurat &&
-      m.length <= panjangMaksRencanaDarurat;
-}
-
-bool _jikaDuplikat(
-  List<RencanaDaruratModel> list,
-  String jika, {
-  String? kecualiId,
-}) {
-  final normal = jika.trim().toLowerCase();
-  return list.any(
-    (e) =>
-        e.id != kecualiId && e.jika.trim().toLowerCase() == normal,
-  );
-}
-
-@Riverpod(keepAlive: true)
-class RencanaDaruratNotifier extends _$RencanaDaruratNotifier {
-  @override
-  Future<RencanaDaruratState> build() async {
-    return await _ambilSemua();
-  }
-
-  Future<RencanaDaruratState> _ambilSemua() async {
-    try {
-      final op = const SqfliteOp();
-      final rows = await op.ambilSemua(
-        NamaTabel.rencanaDarurat,
-        orderBy: '${NamaKolom.dibuat} ASC',
-      );
-      final daftar = rows.map(RencanaDaruratModel.fromSqflite).toList();
-      L.i('daftar.length=${daftar.length}');
-      return RencanaDaruratState(
-        listRencana: daftar,
-        jumlahRencana: daftar.length,
-      );
-    } on Exception catch (e, s) {
-      L.e('Gagal mengambil data rencana darurat: $e $s');
-      rethrow;
-    }
-  }
-
-  Future<void> tambah({required String jika, required String maka}) async {
-    final jikaTrim = jika.trim();
-    final makaTrim = maka.trim();
-    L.i('jika.length=${jikaTrim.length}, maka.length=${makaTrim.length}');
-    try {
-      final dataLama = await future;
-      if (dataLama.listRencana.length >= batasMaksRencanaDarurat) {
-        L.w('rencana darurat penuh, tambah ditolak');
-        throw const RencanaPenuhException();
-      }
-      if (_jikaDuplikat(dataLama.listRencana, jikaTrim)) {
-        L.w('jika duplikat, tambah ditolak');
-        throw const RencanaDuplikatException();
-      }
-      final model = RencanaDaruratModel(
-        id: const Uuid().v4(),
-        jika: jikaTrim,
-        maka: makaTrim,
-        dibuat: DateTime.now(),
-      );
-      final op = const SqfliteOp();
-      await op.tambah(
-        NamaTabel.rencanaDarurat,
-        model.toSqflite(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-      final baru = [...dataLama.listRencana, model];
-      state = AsyncValue.data(
-        RencanaDaruratState(
-          listRencana: baru,
-          jumlahRencana: baru.length,
-        ),
-      );
-      L.s('Rencana darurat berhasil disimpan');
-    } on RencanaPenuhException {
-      rethrow;
-    } on RencanaDuplikatException {
-      rethrow;
-    } on Exception catch (e, s) {
-      L.e('Gagal menyimpan rencana darurat: $e $s');
-      rethrow;
-    }
-  }
-
-  Future<void> ubah(RencanaDaruratModel model) async {
-    final jikaTrim = model.jika.trim();
-    final makaTrim = model.maka.trim();
-    L.i('model.id=${model.id}');
-    try {
-      final dataLama = await future;
-      if (_jikaDuplikat(dataLama.listRencana, jikaTrim, kecualiId: model.id)) {
-        L.w('jika duplikat, ubah ditolak');
-        throw const RencanaDuplikatException();
-      }
-      final modelBaru = model.copyWith(jika: jikaTrim, maka: makaTrim);
-      final op = const SqfliteOp();
-      await op.ubah(
-        NamaTabel.rencanaDarurat,
-        modelBaru.toSqflite(),
-        where: '${NamaKolom.id} = ?',
-        whereArgs: [model.id],
-      );
-      final baru = dataLama.listRencana
-          .map((e) => e.id == model.id ? modelBaru : e)
-          .toList();
-      state = AsyncValue.data(
-        RencanaDaruratState(
-          listRencana: baru,
-          jumlahRencana: baru.length,
-        ),
-      );
-      L.s('Rencana darurat berhasil diubah');
-    } on RencanaDuplikatException {
-      rethrow;
-    } on Exception catch (e, s) {
-      L.e('Gagal mengubah rencana darurat: $e $s');
-      rethrow;
-    }
-  }
-
-  Future<void> hapus(String id) async {
-    L.i('id=$id');
-    try {
-      final dataLama = await future;
-      final op = const SqfliteOp();
-      await op.hapus(
-        NamaTabel.rencanaDarurat,
-        where: '${NamaKolom.id} = ?',
-        whereArgs: [id],
-      );
-      final baru = dataLama.listRencana.where((e) => e.id != id).toList();
-      state = AsyncValue.data(
-        RencanaDaruratState(
-          listRencana: baru,
-          jumlahRencana: baru.length,
-        ),
-      );
-      L.s('Rencana darurat berhasil dihapus');
-    } on Exception catch (e, s) {
-      L.e('Gagal menghapus rencana darurat: $e $s');
-      rethrow;
-    }
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/rencana_darurat/notifier/rencana_darurat_notifier.g.dart
-// ============================================================
-```dart
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'rencana_darurat_notifier.dart';
-
-// **************************************************************************
-// RiverpodGenerator
-// **************************************************************************
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-
-@ProviderFor(RencanaDaruratNotifier)
-final rencanaDaruratProvider = RencanaDaruratNotifierProvider._();
-
-final class RencanaDaruratNotifierProvider
-    extends
-        $AsyncNotifierProvider<RencanaDaruratNotifier, RencanaDaruratState> {
-  RencanaDaruratNotifierProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'rencanaDaruratProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$rencanaDaruratNotifierHash();
-
-  @$internal
-  @override
-  RencanaDaruratNotifier create() => RencanaDaruratNotifier();
-}
-
-String _$rencanaDaruratNotifierHash() =>
-    r'e331847553da1560c541b126c4d07380a00fceb4';
-
-abstract class _$RencanaDaruratNotifier
-    extends $AsyncNotifier<RencanaDaruratState> {
-  FutureOr<RencanaDaruratState> build();
-  @$mustCallSuper
-  @override
-  WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<RencanaDaruratState>, RencanaDaruratState>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<RencanaDaruratState>, RencanaDaruratState>,
-              AsyncValue<RencanaDaruratState>,
-              Object?,
-              Object?
-            >;
-    return element.handleCreate(ref, build);
-  }
-}
-```
-
-
-
-// ============================================================
 // FILE: lib/fitur/badge/screens/badge_screen.dart
 // ============================================================
 ```dart
-import 'dart:async';
-
 import 'package:berhenti_merokok/fitur/badge/helper/badge_helper.dart';
 import 'package:berhenti_merokok/fitur/biodata/model/biodata_model.dart';
 import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/konsumsi_hitung_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/metrik_berhenti_helper.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/konsumsi_rokok_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_global_saya/core_shared.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BadgeScreen extends ConsumerStatefulWidget {
   const BadgeScreen({super.key});
@@ -21208,24 +10402,10 @@ class BadgeScreen extends ConsumerStatefulWidget {
 }
 
 class _BadgeScreenState extends ConsumerState<BadgeScreen> {
-  /// Id badge yang pernah tercapai (disimpan di SharedPreferences).
-  /// Badge historis tidak pernah dicoret dari pencapaian pengguna karena slip.
-  Set<String> _badgeHistoris = <String>{};
-  bool _historisDimuat = false;
-
-  /// Flag dedup pendaftaran post-frame callback: mencegah callback terdaftar
-  /// berulang pada setiap rebuild sebelum callback berjalan.
-  bool _simpanTerjadwal = false;
-
   @override
   void initState() {
     super.initState();
     L.i('BadgeScreen initState');
-    unawaited(
-      _muatBadgeHistoris().catchError((Object e, StackTrace s) {
-        L.e('Gagal memuat badge historis: $e $s');
-      }),
-    );
   }
 
   @override
@@ -21234,46 +10414,13 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
     super.dispose();
   }
 
-  Future<void> _muatBadgeHistoris() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final daftar =
-          prefs.getStringList(keyBadgeTercapaiHistoris) ?? <String>[];
-      if (mounted) {
-        setState(() {
-          _badgeHistoris = daftar.toSet();
-          _historisDimuat = true;
-        });
-      }
-    } catch (e, s) {
-      L.e('Gagal memuat SharedPreferences $keyBadgeTercapaiHistoris: $e $s');
-      if (mounted) {
-        setState(() => _historisDimuat = true);
-      }
-    }
-  }
-
-  Future<void> _simpanBadgeHistoris(Set<String> baru) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(keyBadgeTercapaiHistoris, baru.toList());
-      if (mounted) {
-        setState(() => _badgeHistoris = baru);
-      }
-    } catch (e, s) {
-      L.e('Gagal menyimpan badge historis: $e $s');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final biodataAsync = ref.watch(biodataProvider);
     final impianAsync = ref.watch(impianProvider);
-    final konsumsiAsync = ref.watch(konsumsiRokokProvider);
+    L.i('biodataAsync=$biodataAsync, impianAsync=$impianAsync');
 
-    if (biodataAsync.isLoading ||
-        impianAsync.isLoading ||
-        konsumsiAsync.isLoading) {
+    if (biodataAsync.isLoading || impianAsync.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (biodataAsync.hasError) {
@@ -21330,38 +10477,10 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
         ),
       );
     }
-    if (konsumsiAsync.hasError) {
-      L.e(
-        'konsumsiAsync error: ${konsumsiAsync.error} ${konsumsiAsync.stackTrace}',
-      );
-      return Scaffold(
-        appBar: AppBar(title: const Text('Pencapaian')),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 8,
-                children: [
-                  const Text('Gagal memuat data konsumsi'),
-                  OutlinedButton(
-                    onPressed: () {
-                      final _ = ref.refresh(konsumsiRokokProvider);
-                    },
-                    child: const Text('Coba lagi'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
 
     final biodata = biodataAsync.requireValue;
     final impianState = impianAsync.requireValue;
-    final konsumsiList = konsumsiAsync.requireValue.listKonsumsi;
+    L.i('biodata=$biodata');
 
     if (biodata == null) {
       return Scaffold(
@@ -21381,108 +10500,29 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
     }
 
     // Hitung progres smoke-free.
-    // Badge berbasis hari tetap baseline; badge berbasis rokok/uang memakai
-    // aktual bila ada catatan konsumsi, fallback ke baseline bila belum ada.
-    final hariSmokeFree = MetrikBerhentiHelper.hitungHariBerhenti(biodata);
-    final hariTercatat = MetrikBerhentiHelper.hitungJumlahHariTercatat(
-      konsumsiList,
-    );
-    final pakaiAktual = hariTercatat > 0;
-    final rokokDihindariAktual =
-        MetrikBerhentiHelper.hitungRokokDihindariAktual(biodata, konsumsiList);
-    final rokokTidakDiHisapEstimasi =
-        MetrikBerhentiHelper.hitungRokokTidakDiHisapEstimasi(biodata);
-    final uangDihematAktual = MetrikBerhentiHelper.hitungUangDihematAktual(
-      biodata,
-      konsumsiList,
-    );
-    final uangDihematEstimasi = MetrikBerhentiHelper.hitungUangDihematEstimasi(
-      biodata,
-    );
-    final streakHariIni = MetrikBerhentiHelper.hitungStreak(konsumsiList);
-    final streakPencatatan = MetrikBerhentiHelper.hitungStreakPencatatan(
-      konsumsiList,
-    );
-    final sedangTapering = biodata.sedangTapering;
-    final mingguTaperingBerjalan =
-        MetrikBerhentiHelper.hitungMingguTaperingBerjalan(biodata);
-    final konsumsiHariIni = KonsumsiHitungHelper.konsumsiHariIni(konsumsiList);
-    final taperingTercapai = sedangTapering
-        ? List<bool>.generate(4, (index) {
-            final mingguKe = index + 1;
-            return mingguTaperingBerjalan >= mingguKe &&
-                konsumsiHariIni <=
-                    MetrikBerhentiHelper.hitungTargetTaperingMingguKe(
-                      biodata,
-                      mingguKe,
-                    );
-          })
-        : const <bool>[false, false, false, false];
-    L.i(
-      'hariSmokeFree=$hariSmokeFree, hariTercatat=$hariTercatat, '
-      'rokokDihindariAktual=$rokokDihindariAktual, '
-      'rokokTidakDiHisapEstimasi=$rokokTidakDiHisapEstimasi, '
-      'uangDihematAktual=$uangDihematAktual, '
-      'uangDihematEstimasi=$uangDihematEstimasi, '
-      'streakHariIni=$streakHariIni, streakPencatatan=$streakPencatatan, '
-      'sedangTapering=$sedangTapering, '
-      'mingguTaperingBerjalan=$mingguTaperingBerjalan, '
-      'konsumsiHariIni=$konsumsiHariIni, taperingTercapai=$taperingTercapai',
-    );
+    final hariSmokeFree = biodata.hariBerhenti;
+    final rokokTidakDiHisap = biodata.rokokTidakDiHisap;
+    final uangDihemat = biodata.uangDihemat;
 
-    // Saldo untuk menghitung impian tercapai: aktual bila ada catatan,
-    // fallback estimasi bila belum ada catatan sama sekali.
-    final saldoUntukImpian = pakaiAktual
-        ? uangDihematAktual
-        : uangDihematEstimasi;
+    // Hitung impian tercapai.
     int impianTercapai = 0;
     for (final impian in impianState.listImpian) {
-      if (saldoUntukImpian >= impian.jumlah) {
+      if (uangDihemat >= impian.jumlah) {
         impianTercapai++;
       }
     }
+    L.i(
+      'hariSmokeFree=$hariSmokeFree, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat, impianTercapai=$impianTercapai',
+    );
 
     final daftarBadge = hitungBadge(
       hariSmokeFree: hariSmokeFree,
-      rokokDihindariAktual: rokokDihindariAktual,
-      rokokTidakDiHisapEstimasi: rokokTidakDiHisapEstimasi,
-      uangDihematAktual: uangDihematAktual,
-      uangDihematEstimasi: uangDihematEstimasi,
+      rokokTidakDiHisap: rokokTidakDiHisap,
+      uangDihemat: uangDihemat,
       impianTercapai: impianTercapai,
-      streakHariIni: streakHariIni,
-      streakPencatatan: streakPencatatan,
-      hariTercatat: hariTercatat,
-      sedangTapering: sedangTapering,
-      taperingTercapai: taperingTercapai,
-      badgeTercapaiHistoris: _badgeHistoris,
     );
     final jumlahTercapai = daftarBadge.where((b) => b.tercapai).length;
-
-    // Simpan badge yang baru tercapai ke SharedPreferences agar tidak hilang
-    // dari tampilan pencapaian bila metrik aktual turun karena slip berikutnya.
-    // Post-frame callback didaftarkan hanya bila ada badge baru yang kurang
-    // dan belum ada callback terjadwal, agar tidak terdaftar berulang per rebuild.
-    final kurang = daftarBadge
-        .where((b) => b.tercapai)
-        .map((b) => b.id)
-        .toSet()
-        .difference(_badgeHistoris);
-    if (kurang.isNotEmpty && !_simpanTerjadwal) {
-      _simpanTerjadwal = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Reset flag lebih dulu agar perubahan berikutnya bisa dijadwalkan lagi.
-        _simpanTerjadwal = false;
-        if (!mounted || !_historisDimuat) return;
-        unawaited(
-          _simpanBadgeHistoris({..._badgeHistoris, ...kurang}).catchError((
-            Object e,
-            StackTrace s,
-          ) {
-            L.e('Gagal menyimpan badge historis: $e $s');
-          }),
-        );
-      });
-    }
+    L.i('jumlahTercapai=$jumlahTercapai/${daftarBadge.length}');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pencapaian')),
@@ -21498,39 +10538,6 @@ class _BadgeScreenState extends ConsumerState<BadgeScreen> {
                 style: Theme.of(context).textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
-              if (!pakaiAktual) ...[
-                Text(
-                  'Belum ada catatan konsumsi. Badge rokok/uang memakai '
-                  'estimasi dari biodata. Badge yang pernah tercapai tetap '
-                  'tersimpan meskipun Anda slip.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    onPressed: () => unawaited(
-                      Nav.to(
-                        context,
-                        const KonsumsiRokokScreen(),
-                      ).catchError((Object e, StackTrace s) {
-                        L.e('Gagal navigasi ke Konsumsi Rokok: $e $s');
-                        return null;
-                      }),
-                    ),
-                    child: const Text('Catat Konsumsi'),
-                  ),
-                ),
-              ] else
-                Text(
-                  'Badge rokok/uang dihitung dari $hariTercatat hari '
-                  'tercatat; badge lainnya dari baseline biodata. Badge yang '
-                  'pernah tercapai tetap tersimpan meskipun Anda slip.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -21617,6 +10624,7 @@ class _BadgeCard extends StatelessWidget {
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:share_global_saya/core_shared.dart';
 
 /// Representasi satu badge/pencapaian pengguna.
 class BadgePencapaian {
@@ -21635,1069 +10643,136 @@ class BadgePencapaian {
   final bool tercapai;
 }
 
-/// Nama key SharedPreferences untuk badge yang pernah tercapai.
-///
-/// Badge yang pernah tercapai **tidak pernah dicoret** dari pencapaian
-/// pengguna hanya karena slip berikutnya; nilainya digabungkan kembali saat
-/// daftar badge dihitung.
-const String keyBadgeTercapaiHistoris = 'badge_tercapai_historis';
-
 /// Menghitung daftar badge berdasarkan progres smoke-free pengguna.
-///
-/// Metrik **durasi** ([hariSmokeFree]) memakai baseline kumulatif dan tidak
-/// direset slip. Metrik **rokok/uang** memakai aktual dari catatan konsumsi
-/// ([rokokDihindariAktual]/[uangDihematAktual]) bila ada hari tercatat
-/// ([hariTercatat] > 0), fallback ke baseline
-/// ([rokokTidakDiHisapEstimasi]/[uangDihematEstimasi]) bila belum ada;
-/// labelnya tercermin pada deskripsi badge ("dari catatan" / "estimasi").
-///
-/// Badge yang pernah tercapai tidak hilang dari daftar pencapaian, meskipun
-/// metrik aktual turun karena slip berikutnya: [badgeTercapaiHistoris]
-/// berisi id badge yang pernah tercapai (disimpan di SharedPreferences) dan
-/// digabungkan ke status `tercapai` badge yang bersangkutan.
-///
-/// Badge baru bersifat **additif dan non-pemalukan**: streak bebas rokok
-/// ([streakHariIni]), konsistensi pencatatan ([streakPencatatan]), dan
-/// target tapering per minggu ([taperingTercapai]). Tidak ada badge
-/// "gagal", "slip", atau "kembali ke nol".
-///
-/// [taperingTercapai] berisi 4 bool; elemen ke-`i` menyatakan tercapainya
-/// target tapering minggu ke-`i + 1` (sudah melewati/berjalan di minggu
-/// tersebut dan konsumsi hari ini ≤ target minggu tersebut).
 List<BadgePencapaian> hitungBadge({
   required int hariSmokeFree,
-  required int rokokDihindariAktual,
-  required int rokokTidakDiHisapEstimasi,
-  required double uangDihematAktual,
-  required double uangDihematEstimasi,
+  required int rokokTidakDiHisap,
+  required double uangDihemat,
   required int impianTercapai,
-  required int streakHariIni,
-  required int streakPencatatan,
-  required int hariTercatat,
-  required bool sedangTapering,
-  required List<bool> taperingTercapai,
-  Set<String> badgeTercapaiHistoris = const <String>{},
 }) {
-  final pakaiAktual = hariTercatat > 0;
-  final rokokUntukBadge = pakaiAktual
-      ? rokokDihindariAktual
-      : rokokTidakDiHisapEstimasi;
-  final uangUntukBadge = pakaiAktual ? uangDihematAktual : uangDihematEstimasi;
-  final labelRokok = pakaiAktual ? 'dari catatan' : 'estimasi';
-  final labelUang = pakaiAktual ? 'dari catatan' : 'estimasi';
-
-  BadgePencapaian badge({
-    required String id,
-    required String nama,
-    required String deskripsi,
-    required IconData icon,
-    required bool tercapai,
-  }) {
-    return BadgePencapaian(
-      id: id,
-      nama: nama,
-      deskripsi: deskripsi,
-      icon: icon,
-      tercapai: tercapai || badgeTercapaiHistoris.contains(id),
-    );
-  }
-
+  L.i(
+    'hariSmokeFree=$hariSmokeFree, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat, impianTercapai=$impianTercapai',
+  );
   final List<BadgePencapaian> daftar = <BadgePencapaian>[
-    // Badge berbasis durasi smoke-free (baseline kumulatif, tidak direset slip).
-    badge(
+    // Badge berbasis durasi smoke-free.
+    BadgePencapaian(
       id: 'smoke_1',
       nama: 'Langkah Pertama',
       deskripsi: 'Berhasil berhenti merokok selama 1 hari.',
       icon: CupertinoIcons.flame,
       tercapai: hariSmokeFree >= 1,
     ),
-    badge(
+    BadgePencapaian(
       id: 'smoke_3',
       nama: '3 Hari Kuat',
       deskripsi: 'Berhasil berhenti merokok selama 3 hari.',
       icon: CupertinoIcons.flame_fill,
       tercapai: hariSmokeFree >= 3,
     ),
-    badge(
+    BadgePencapaian(
       id: 'smoke_7',
       nama: 'Satu Minggu',
       deskripsi: 'Berhasil berhenti merokok selama 7 hari.',
       icon: CupertinoIcons.star,
       tercapai: hariSmokeFree >= 7,
     ),
-    badge(
+    BadgePencapaian(
       id: 'smoke_14',
       nama: 'Dua Minggu',
       deskripsi: 'Berhasil berhenti merokok selama 14 hari.',
       icon: CupertinoIcons.star_fill,
       tercapai: hariSmokeFree >= 14,
     ),
-    badge(
+    BadgePencapaian(
       id: 'smoke_30',
       nama: 'Satu Bulan',
       deskripsi: 'Berhasil berhenti merokok selama 30 hari.',
       icon: Icons.workspace_premium,
       tercapai: hariSmokeFree >= 30,
     ),
-    badge(
+    BadgePencapaian(
       id: 'smoke_90',
       nama: 'Tiga Bulan',
       deskripsi: 'Berhasil berhenti merokok selama 90 hari.',
       icon: CupertinoIcons.rosette,
       tercapai: hariSmokeFree >= 90,
     ),
-    badge(
+    BadgePencapaian(
       id: 'smoke_180',
       nama: 'Enam Bulan',
       deskripsi: 'Berhasil berhenti merokok selama 180 hari.',
       icon: CupertinoIcons.rosette,
       tercapai: hariSmokeFree >= 180,
     ),
-    badge(
+    BadgePencapaian(
       id: 'smoke_365',
       nama: 'Satu Tahun',
       deskripsi: 'Berhasil berhenti merokok selama 1 tahun.',
       icon: Icons.emoji_events,
       tercapai: hariSmokeFree >= 365,
     ),
-    // Badge berbasis rokok terhindar (aktual bila ada catatan, fallback estimasi).
-    badge(
+    // Badge berbasis rokok tidak dihisap.
+    BadgePencapaian(
       id: 'rokok_100',
       nama: '100 Batang Terhindar',
-      deskripsi: 'Berhasil menghindari 100 batang rokok ($labelRokok).',
+      deskripsi: 'Berhasil menghindari 100 batang rokok.',
       icon: CupertinoIcons.nosign,
-      tercapai: rokokUntukBadge >= 100,
+      tercapai: rokokTidakDiHisap >= 100,
     ),
-    badge(
+    BadgePencapaian(
       id: 'rokok_500',
       nama: '500 Batang Terhindar',
-      deskripsi: 'Berhasil menghindari 500 batang rokok ($labelRokok).',
+      deskripsi: 'Berhasil menghindari 500 batang rokok.',
       icon: CupertinoIcons.nosign,
-      tercapai: rokokUntukBadge >= 500,
+      tercapai: rokokTidakDiHisap >= 500,
     ),
-    badge(
+    BadgePencapaian(
       id: 'rokok_1000',
       nama: '1000 Batang Terhindar',
-      deskripsi: 'Berhasil menghindari 1000 batang rokok ($labelRokok).',
+      deskripsi: 'Berhasil menghindari 1000 batang rokok.',
       icon: CupertinoIcons.shield,
-      tercapai: rokokUntukBadge >= 1000,
+      tercapai: rokokTidakDiHisap >= 1000,
     ),
-    // Badge berbasis uang dihemat (aktual bila ada catatan, fallback estimasi).
-    badge(
+    // Badge berbasis uang dihemat.
+    BadgePencapaian(
       id: 'uang_100k',
       nama: 'Tabungan 100 Ribu',
-      deskripsi: 'Berhasil menghemat Rp100.000 ($labelUang).',
+      deskripsi: 'Berhasil menghemat Rp100.000 dari tidak merokok.',
       icon: CupertinoIcons.money_dollar,
-      tercapai: uangUntukBadge >= 100000,
+      tercapai: uangDihemat >= 100000,
     ),
-    badge(
+    BadgePencapaian(
       id: 'uang_500k',
       nama: 'Tabungan 500 Ribu',
-      deskripsi: 'Berhasil menghemat Rp500.000 ($labelUang).',
+      deskripsi: 'Berhasil menghemat Rp500.000 dari tidak merokok.',
       icon: CupertinoIcons.money_dollar,
-      tercapai: uangUntukBadge >= 500000,
+      tercapai: uangDihemat >= 500000,
     ),
-    badge(
+    BadgePencapaian(
       id: 'uang_1jt',
       nama: 'Tabungan 1 Juta',
-      deskripsi: 'Berhasil menghemat Rp1.000.000 ($labelUang).',
+      deskripsi: 'Berhasil menghemat Rp1.000.000 dari tidak merokok.',
       icon: CupertinoIcons.money_dollar_circle,
-      tercapai: uangUntukBadge >= 1000000,
+      tercapai: uangDihemat >= 1000000,
     ),
     // Badge berbasis impian tercapai.
-    badge(
+    BadgePencapaian(
       id: 'impian_1',
       nama: 'Impian Pertama Tercapai',
       deskripsi: 'Berhasil mencapai 1 impian.',
       icon: CupertinoIcons.heart,
       tercapai: impianTercapai >= 1,
     ),
-    badge(
+    BadgePencapaian(
       id: 'impian_3',
       nama: '3 Impian Tercapai',
       deskripsi: 'Berhasil mencapai 3 impian.',
       icon: CupertinoIcons.heart_fill,
       tercapai: impianTercapai >= 3,
     ),
-    // BARU: Badge streak bebas rokok (dari catatan, reset saat slip).
-    badge(
-      id: 'streak_7',
-      nama: 'Streak 7 Hari',
-      deskripsi: '7 hari berturut-turut tanpa rokok (dari catatan).',
-      icon: CupertinoIcons.flame_fill,
-      tercapai: streakHariIni >= 7,
-    ),
-    badge(
-      id: 'streak_30',
-      nama: 'Streak 30 Hari',
-      deskripsi: '30 hari berturut-turut tanpa rokok (dari catatan).',
-      icon: CupertinoIcons.star_fill,
-      tercapai: streakHariIni >= 30,
-    ),
-    badge(
-      id: 'streak_90',
-      nama: 'Streak 90 Hari',
-      deskripsi: '90 hari berturut-turut tanpa rokok (dari catatan).',
-      icon: CupertinoIcons.rosette,
-      tercapai: streakHariIni >= 90,
-    ),
-    // BARU: Badge konsistensi pencatatan (menghargai kebiasaan mencatat).
-    badge(
-      id: 'catat_7',
-      nama: 'Pencatat 7 Hari',
-      deskripsi: 'Mencatat konsumsi 7 hari berturut-turut.',
-      icon: CupertinoIcons.doc_on_clipboard,
-      tercapai: streakPencatatan >= 7,
-    ),
-    badge(
-      id: 'catat_30',
-      nama: 'Pencatat 30 Hari',
-      deskripsi: 'Mencatat konsumsi 30 hari berturut-turut.',
-      icon: CupertinoIcons.doc_on_clipboard,
-      tercapai: streakPencatatan >= 30,
-    ),
-    badge(
-      id: 'catat_90',
-      nama: 'Pencatat 90 Hari',
-      deskripsi: 'Mencatat konsumsi 90 hari berturut-turut.',
-      icon: CupertinoIcons.doc_on_clipboard_fill,
-      tercapai: streakPencatatan >= 90,
-    ),
-    // BARU: Badge target tapering tercapai (additif, hanya mode bertahap;
-    // tetap ditampilkan bila pernah tercapai agar historis tidak hilang).
-    if (sedangTapering ||
-        _adaBadgeTaperingHistoris(badgeTercapaiHistoris)) ...<BadgePencapaian>[
-      badge(
-        id: 'tapering_1',
-        nama: 'Target Minggu 1 Tercapai',
-        deskripsi: 'Konsumsi hari ini ≤ target tapering minggu pertama.',
-        icon: CupertinoIcons.arrow_down_circle,
-        tercapai: _taperingTercapaiKe(taperingTercapai, 0),
-      ),
-      badge(
-        id: 'tapering_2',
-        nama: 'Target Minggu 2 Tercapai',
-        deskripsi: 'Konsumsi hari ini ≤ target tapering minggu kedua.',
-        icon: CupertinoIcons.arrow_down_circle,
-        tercapai: _taperingTercapaiKe(taperingTercapai, 1),
-      ),
-      badge(
-        id: 'tapering_3',
-        nama: 'Target Minggu 3 Tercapai',
-        deskripsi: 'Konsumsi hari ini ≤ target tapering minggu ketiga.',
-        icon: CupertinoIcons.arrow_down_circle,
-        tercapai: _taperingTercapaiKe(taperingTercapai, 2),
-      ),
-      badge(
-        id: 'tapering_4',
-        nama: 'Target Minggu 4 Tercapai',
-        deskripsi: 'Konsumsi hari ini ≤ target tapering minggu keempat.',
-        icon: CupertinoIcons.arrow_down_circle_fill,
-        tercapai: _taperingTercapaiKe(taperingTercapai, 3),
-      ),
-    ],
   ];
+  L.i('daftar.length=${daftar.length}');
   return daftar;
-}
-
-/// Mengambil status tercapai target tapering minggu ke-[index] (0-based)
-/// dari [taperingTercapai]. Indeks di luar daftar → false.
-bool _taperingTercapaiKe(List<bool> taperingTercapai, int index) =>
-    index >= 0 && index < taperingTercapai.length && taperingTercapai[index];
-
-/// Apakah ada badge tapering ('tapering_1'..'tapering_4') yang pernah
-/// tercapai dan tersimpan di [badgeTercapaiHistoris].
-bool _adaBadgeTaperingHistoris(Set<String> badgeTercapaiHistoris) =>
-    badgeTercapaiHistoris.any((id) => id.startsWith('tapering_'));
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/cadangan/screens/cadangan_screen.dart
-// ============================================================
-```dart
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:adaptive_dialog/adaptive_dialog.dart';
-import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_notifier.dart';
-import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
-import 'package:berhenti_merokok/fitur/cadangan/helper/cadangan_helper.dart';
-import 'package:berhenti_merokok/fitur/diary_craving/notifier/diary_craving_notifier.dart';
-import 'package:berhenti_merokok/fitur/impian/notifier/impian_notifier.dart';
-// Provider refresh tambahan: tabel konsumsi_rokok, sos_intervensi, dan
-// rencana_darurat ikut dipulihkan CadanganHelper, jadi providernya juga
-// harus disegarkan agar UI tidak menampilkan data lama.
-import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
-import 'package:berhenti_merokok/fitur/rencana_darurat/notifier/rencana_darurat_notifier.dart';
-import 'package:berhenti_merokok/fitur/sos_craving/notifier/sos_intervensi_notifier.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Layar khusus cadangan dan ekspor data lokal.
-class CadanganScreen extends ConsumerStatefulWidget {
-  /// Membuat layar cadangan.
-  const CadanganScreen({super.key});
-
-  @override
-  ConsumerState<CadanganScreen> createState() => _CadanganScreenState();
-}
-
-class _CadanganScreenState extends ConsumerState<CadanganScreen> {
-  bool _sedangMemproses = false;
-
-  bool get _platformDidukung {
-    if (kIsWeb) return false;
-    return defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.macOS ||
-        defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.windows;
-  }
-
-  Future<void> _eksporData() async {
-    if (_sedangMemproses) return;
-    L.i('CadanganScreen eksporData');
-    if (!_platformDidukung) {
-      L.w('Platform tidak mendukung cadangan berkas');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Platform tidak mendukung ekspor berkas');
-      return;
-    }
-
-    final konfirmasi = await showOkCancelAlertDialog(
-      context: context,
-      title: 'Ekspor Data',
-      message:
-          'Cadangan akan memuat biodata, impian, diary craving, dan alasan '
-          'berhenti. Lanjutkan ekspor?',
-      okLabel: 'Ekspor',
-      cancelLabel: 'Batal',
-    );
-    if (!mounted) return;
-    if (konfirmasi != OkCancelResult.ok) {
-      L.w('Ekspor dibatalkan pengguna');
-      return;
-    }
-
-    setState(() {
-      _sedangMemproses = true;
-    });
-    unawaited(
-      EasyLoading.show(
-        status: 'Mengekspor data...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading ekspor: $e $s');
-      }),
-    );
-    try {
-      final json = await CadanganHelper.buatCadanganJson();
-      final namaBerkas =
-          'berhenti_merokok_cadangan_${DateTime.now().millisecondsSinceEpoch}.json';
-      final bytes = Uint8List.fromList(utf8.encode(json));
-      final mime = 'application/json';
-
-      String? pathSimpan;
-      if (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS) {
-        final direktori = await getApplicationDocumentsDirectory();
-        pathSimpan = '${direktori.path}/$namaBerkas';
-        await CadanganHelper.tulisCadanganKeBerkas(pathSimpan, json);
-      } else {
-        final uri = await FilePicker.saveFile(
-          dialogTitle: 'Simpan cadangan',
-          fileName: namaBerkas,
-          bytes: bytes,
-          mimeType: mime,
-          initialDirectory: (await getApplicationDocumentsDirectory()).path,
-        );
-        if (uri == null) {
-          L.w('Pengguna membatalkan pemilihan lokasi simpan');
-          if (!mounted) return;
-          AppToast.info(context, 'Ekspor dibatalkan');
-          return;
-        }
-        pathSimpan = uri.toFilePath();
-        // saveFile menulis bytes pada sebagian platform; pastikan isi sama.
-        try {
-          await CadanganHelper.tulisCadanganKeBerkas(pathSimpan, json);
-        } on Exception catch (e, s) {
-          L.w('Tulis ulang cadangan ke path terpilih gagal: $e $s');
-        }
-      }
-      L.i('pathSimpan=$pathSimpan');
-      if (!mounted) return;
-      AppToast.sukses(context, 'Cadangan berhasil disimpan');
-    } on Exception catch (e, s) {
-      L.e('Gagal mengekspor data: $e $s');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Gagal mengekspor data');
-    } on UnsupportedError catch (e, s) {
-      L.e('Ekspor tidak didukung: $e $s');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Platform tidak mendukung ekspor');
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading ekspor: $e $s');
-        }),
-      );
-      if (mounted) {
-        setState(() {
-          _sedangMemproses = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _eksporCsv() async {
-    if (_sedangMemproses) return;
-    L.i('CadanganScreen eksporCsv');
-    if (!_platformDidukung) {
-      L.w('Platform tidak mendukung cadangan berkas');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Platform tidak mendukung ekspor berkas');
-      return;
-    }
-
-    final konfirmasi = await showOkCancelAlertDialog(
-      context: context,
-      title: 'Ekspor CSV',
-      message:
-          'Ekspor ${tabelCadangan.length} berkas CSV (satu berkas per tabel). '
-          'Lokasi penyimpanan dipilih satu per berkas. Lanjutkan ekspor?',
-      okLabel: 'Ekspor',
-      cancelLabel: 'Batal',
-    );
-    if (!mounted) return;
-    if (konfirmasi != OkCancelResult.ok) {
-      L.w('Ekspor CSV dibatalkan pengguna');
-      return;
-    }
-
-    setState(() {
-      _sedangMemproses = true;
-    });
-    unawaited(
-      EasyLoading.show(
-        status: 'Mengekspor CSV...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading ekspor CSV: $e $s');
-      }),
-    );
-    try {
-      var jumlahBerkas = 0;
-      for (final tabel in tabelCadangan) {
-        final csv = await CadanganHelper.buatCsvTabel(tabel);
-        final namaBerkas = CadanganHelper.namaBerkasCsv(tabel);
-        final bytes = Uint8List.fromList(utf8.encode(csv));
-
-        final uri = await FilePicker.saveFile(
-          dialogTitle: 'Simpan CSV $tabel',
-          fileName: namaBerkas,
-          bytes: bytes,
-          mimeType: 'text/csv',
-          initialDirectory: (await getApplicationDocumentsDirectory()).path,
-        );
-        if (uri == null) {
-          L.w('Pengguna membatalkan penyimpanan CSV tabel $tabel');
-          if (!mounted) return;
-          AppToast.info(context, 'Ekspor CSV dibatalkan');
-          return;
-        }
-        // saveFile sudah menulis bytes ke lokasi terpilih; tidak perlu
-        // tulis ulang (mencegah berkas terhapus saat tulis ulang gagal).
-        jumlahBerkas++;
-        L.i('CSV tabel $tabel disimpan ke $uri');
-      }
-      if (!mounted) return;
-      AppToast.sukses(context, 'Ekspor CSV berhasil ($jumlahBerkas berkas)');
-    } on UnsupportedError catch (e, s) {
-      L.e('Ekspor CSV tidak didukung: $e $s');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Platform tidak mendukung ekspor CSV');
-    } on Exception catch (e, s) {
-      L.e('Gagal mengekspor CSV: $e $s');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Gagal mengekspor CSV');
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading ekspor CSV: $e $s');
-        }),
-      );
-      if (mounted) {
-        setState(() {
-          _sedangMemproses = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _pulihkanData() async {
-    if (_sedangMemproses) return;
-    L.i('CadanganScreen pulihkanData');
-    if (!_platformDidukung) {
-      L.w('Platform tidak mendukung cadangan berkas');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Platform tidak mendukung pemulihan berkas');
-      return;
-    }
-
-    final konfirmasiPilih = await showOkCancelAlertDialog(
-      context: context,
-      title: 'Pulihkan Data',
-      message:
-          'Pilih berkas cadangan JSON. Data saat ini akan diganti dengan data '
-          'dari cadangan.',
-      okLabel: 'Pilih berkas',
-      cancelLabel: 'Batal',
-      isDestructiveAction: true,
-    );
-    if (!mounted) return;
-    if (konfirmasiPilih != OkCancelResult.ok) {
-      L.w('Pemulihan dibatalkan pengguna');
-      return;
-    }
-
-    setState(() {
-      _sedangMemproses = true;
-    });
-    unawaited(
-      EasyLoading.show(
-        status: 'Memulihkan data...',
-        maskType: EasyLoadingMaskType.black,
-      ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan loading pulihkan: $e $s');
-      }),
-    );
-    try {
-      final files = await FilePicker.pickFiles(
-        dialogTitle: 'Pilih cadangan',
-        type: FileType.custom,
-        allowedExtensions: const <String>['json'],
-      );
-      if (!mounted) return;
-      if (files.isEmpty) {
-        L.w('Pengguna tidak memilih berkas cadangan');
-        AppToast.info(context, 'Pemulihan dibatalkan');
-        return;
-      }
-      final picked = files.single;
-      final path = picked.path;
-      L.i('pathCadangan=$path, nama=${picked.name}');
-      Map<String, dynamic> payload;
-      if (path != null && path.isNotEmpty) {
-        payload = await CadanganHelper.bacaDanValidasiBerkas(path);
-      } else {
-        final bytes = await picked.readAsBytes();
-        payload = CadanganHelper.validasiPayload(utf8.decode(bytes));
-      }
-      if (!mounted) return;
-
-      final konfirmasiRestore = await showOkCancelAlertDialog(
-        context: context,
-        title: 'Konfirmasi Pemulihan',
-        message:
-            'Data lama akan diganti. Tindakan ini tidak dapat dibatalkan. '
-            'Lanjutkan pemulihan?',
-        okLabel: 'Pulihkan',
-        cancelLabel: 'Batal',
-        isDestructiveAction: true,
-      );
-      if (!mounted) return;
-      if (konfirmasiRestore != OkCancelResult.ok) {
-        L.w('Konfirmasi pemulihan dibatalkan');
-        AppToast.info(context, 'Pemulihan dibatalkan');
-        return;
-      }
-
-      await CadanganHelper.pulihkanDariPayload(payload);
-      _refreshProviderSetelahRestore();
-      if (!mounted) return;
-      AppToast.sukses(context, 'Data berhasil dipulihkan');
-    } on BerkasCadanganTidakValidException catch (e, s) {
-      L.e('Berkas cadangan tidak valid: $e $s');
-      if (!mounted) return;
-      AppToast.gagal(context, e.pesan);
-    } on Exception catch (e, s) {
-      L.e('Gagal memulihkan data: $e $s');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Gagal memulihkan data');
-    } on UnsupportedError catch (e, s) {
-      L.e('Pemulihan tidak didukung: $e $s');
-      if (!mounted) return;
-      AppToast.gagal(context, 'Platform tidak mendukung pemulihan');
-    } finally {
-      unawaited(
-        EasyLoading.dismiss().catchError((Object e, StackTrace s) {
-          L.e('Gagal menutup loading pulihkan: $e $s');
-        }),
-      );
-      if (mounted) {
-        setState(() {
-          _sedangMemproses = false;
-        });
-      }
-    }
-  }
-
-  void _refreshProviderSetelahRestore() {
-    L.i('Refresh provider setelah restore');
-    try {
-      final _ = ref.refresh(biodataProvider);
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh biodataProvider: $e $s');
-    }
-    try {
-      final _ = ref.refresh(impianProvider);
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh impianProvider: $e $s');
-    }
-    try {
-      final _ = ref.refresh(diaryCravingProvider);
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh diaryCravingProvider: $e $s');
-    }
-    try {
-      final _ = ref.refresh(alasanBerhentiProvider);
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh alasanBerhentiProvider: $e $s');
-    }
-    // Tabel-tabel ini juga ikut dipulihkan dari cadangan, tetapi sebelumnya
-    // providernya tidak disegarkan sehingga layar menampilkan data usang.
-    try {
-      final _ = ref.refresh(konsumsiRokokProvider);
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh konsumsiRokokProvider: $e $s');
-    }
-    try {
-      final _ = ref.refresh(sosIntervensiProvider);
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh sosIntervensiProvider: $e $s');
-    }
-    try {
-      final _ = ref.refresh(rencanaDaruratProvider);
-    } on Exception catch (e, s) {
-      L.e('Gagal refresh rencanaDaruratProvider: $e $s');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    L.i('CadanganScreen build _sedangMemproses=$_sedangMemproses');
-    final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cadangan & Ekspor Data')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: !_platformDidukung
-              ? Center(
-                  child: Text(
-                    'Cadangan berkas tidak didukung pada platform ini.',
-                    style: textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: 16,
-                  children: [
-                    Text(
-                      'Lindungi data biodata, impian, diary craving, dan alasan '
-                      'berhenti dengan cadangan lokal.',
-                      style: textTheme.bodyMedium,
-                    ),
-                    FilledButton(
-                      onPressed: _sedangMemproses
-                          ? null
-                          : () {
-                              unawaited(_eksporData());
-                            },
-                      child: const Text('Ekspor data'),
-                    ),
-                    FilledButton(
-                      onPressed: _sedangMemproses
-                          ? null
-                          : () {
-                              unawaited(_eksporCsv());
-                            },
-                      child: const Text('Ekspor CSV'),
-                    ),
-                    OutlinedButton(
-                      onPressed: _sedangMemproses
-                          ? null
-                          : () {
-                              unawaited(_pulihkanData());
-                            },
-                      child: const Text('Pulihkan data'),
-                    ),
-                    Text(
-                      'Pemulihan akan mengganti data saat ini dengan data dari '
-                      'berkas cadangan.',
-                      style: textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-        ),
-      ),
-    );
-  }
-}
-```
-
-
-
-// ============================================================
-// FILE: lib/fitur/cadangan/helper/cadangan_helper.dart
-// ============================================================
-```dart
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
-import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
-import 'package:csv/csv.dart';
-import 'package:share_global_saya/core_shared.dart';
-
-/// Versi format berkas cadangan JSON.
-const int versiCadangan = 1;
-
-/// Kunci tabel pada payload cadangan.
-const List<String> tabelCadangan = <String>[
-  NamaTabel.biodata,
-  NamaTabel.impian,
-  NamaTabel.diaryCraving,
-  NamaTabel.alasanBerhenti,
-  NamaTabel.konsumsiRokok,
-  NamaTabel.sosIntervensi,
-  NamaTabel.rencanaDarurat,
-];
-
-/// Exception ketika berkas cadangan tidak valid.
-class BerkasCadanganTidakValidException implements Exception {
-  /// Membuat exception dengan [pesan].
-  const BerkasCadanganTidakValidException(this.pesan);
-
-  /// Pesan kesalahan.
-  final String pesan;
-
-  @override
-  String toString() => 'Berkas cadangan tidak valid: $pesan';
-}
-
-/// Logika ekspor dan pemulihan data cadangan lokal.
-class CadanganHelper {
-  CadanganHelper._();
-
-  /// Mengumpulkan seluruh data tabel menjadi payload JSON.
-  static Future<String> buatCadanganJson() async {
-    L.i('buatCadanganJson mulai');
-    try {
-      final op = const SqfliteOp();
-      final biodata = await op.ambilSemua(NamaTabel.biodata);
-      final impian = await op.ambilSemua(NamaTabel.impian);
-      final diary = await op.ambilSemua(NamaTabel.diaryCraving);
-      final alasan = await op.ambilSemua(NamaTabel.alasanBerhenti);
-      final konsumsi = await op.ambilSemua(NamaTabel.konsumsiRokok);
-      final sosIntervensi = await op.ambilSemua(NamaTabel.sosIntervensi);
-      final rencanaDarurat = await op.ambilSemua(NamaTabel.rencanaDarurat);
-      L.i(
-        'biodata=${biodata.length}, impian=${impian.length}, '
-        'diary=${diary.length}, alasan=${alasan.length}, '
-        'konsumsi=${konsumsi.length}, sosIntervensi=${sosIntervensi.length}, '
-        'rencanaDarurat=${rencanaDarurat.length}',
-      );
-
-      final payload = <String, Object?>{
-        'versi': versiCadangan,
-        'dibuatPada': DateTime.now().toUtc().toIso8601String(),
-        NamaTabel.biodata: biodata,
-        NamaTabel.impian: impian,
-        NamaTabel.diaryCraving: diary,
-        NamaTabel.alasanBerhenti: alasan,
-        NamaTabel.konsumsiRokok: konsumsi,
-        NamaTabel.sosIntervensi: sosIntervensi,
-        NamaTabel.rencanaDarurat: rencanaDarurat,
-      };
-      final json = jsonEncode(payload);
-      L.s('Cadangan JSON berhasil dibuat');
-      return json;
-    } on Exception catch (e, s) {
-      L.e('Gagal membuat cadangan JSON: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Menulis [isi] ke [path] sebagai UTF-8. Menghapus berkas parsial saat
-  /// gagal.
-  static Future<void> _tulisBerkas(String path, String isi, String jenis) async {
-    L.i('tulis berkas $jenis path=$path');
-    final file = File(path);
-    try {
-      await file.writeAsString(isi, flush: true);
-      L.s('Berkas $jenis berhasil ditulis');
-    } on Exception catch (e, s) {
-      L.e('Gagal menulis berkas $jenis: $e $s');
-      try {
-        if (await file.exists()) {
-          await file.delete();
-          L.w('Berkas $jenis parsial dihapus');
-        }
-      } on Exception catch (e2, s2) {
-        L.e('Gagal menghapus berkas $jenis parsial: $e2 $s2');
-      }
-      rethrow;
-    }
-  }
-
-  /// Menulis cadangan ke [path]. Menghapus berkas parsial saat gagal.
-  static Future<void> tulisCadanganKeBerkas(String path, String json) {
-    return _tulisBerkas(path, json, 'cadangan');
-  }
-
-  /// Membaca dan memvalidasi berkas cadangan dari [path].
-  static Future<Map<String, dynamic>> bacaDanValidasiBerkas(String path) async {
-    L.i('bacaDanValidasiBerkas path=$path');
-    try {
-      final file = File(path);
-      if (!await file.exists()) {
-        throw const BerkasCadanganTidakValidException('Berkas tidak ditemukan');
-      }
-      final json = await file.readAsString();
-      return validasiPayload(json);
-    } on BerkasCadanganTidakValidException catch (e, s) {
-      L.e('Berkas cadangan tidak valid: $e $s');
-      rethrow;
-    } on Exception catch (e, s) {
-      L.e('Gagal membaca berkas cadangan: $e $s');
-      throw BerkasCadanganTidakValidException('Gagal membaca berkas: $e');
-    }
-  }
-
-  /// Memvalidasi [json] cadangan dan mengembalikan payload.
-  static Map<String, dynamic> validasiPayload(String json) {
-    L.i('validasiPayload mulai');
-    Object? decoded;
-    try {
-      decoded = jsonDecode(json);
-    } on FormatException catch (e, s) {
-      L.e('Format JSON cadangan tidak valid: $e $s');
-      throw const BerkasCadanganTidakValidException('Format JSON tidak valid');
-    }
-    if (decoded is! Map<String, dynamic>) {
-      L.w('Payload cadangan bukan objek');
-      throw const BerkasCadanganTidakValidException(
-        'Payload harus berupa objek JSON',
-      );
-    }
-    final versi = decoded['versi'];
-    if (versi is! int || versi < 1 || versi > versiCadangan) {
-      L.w('Versi cadangan tidak didukung: $versi');
-      throw BerkasCadanganTidakValidException(
-        'Versi cadangan tidak didukung: $versi',
-      );
-    }
-    for (final tabel in tabelCadangan) {
-      final nilai = decoded[tabel];
-      if (nilai == null) {
-        L.w('Tabel $tabel tidak ada pada cadangan, dianggap kosong');
-        continue;
-      }
-      if (nilai is! List) {
-        L.w('Data tabel $tabel bukan list');
-        throw BerkasCadanganTidakValidException(
-          'Data tabel $tabel tidak valid',
-        );
-      }
-      for (final row in nilai) {
-        if (row is! Map) {
-          L.w('Baris tabel $tabel bukan objek');
-          throw BerkasCadanganTidakValidException(
-            'Baris tabel $tabel tidak valid',
-          );
-        }
-      }
-    }
-    L.s('Payload cadangan valid');
-    return decoded;
-  }
-
-  /// Mengambil daftar nama kolom [tabel] dari skema database, sesuai urutan
-  /// definisi tabel.
-  static Future<List<String>> kolomTabel(String tabel) async {
-    L.i('kolomTabel tabel=$tabel');
-    if (!tabelCadangan.contains(tabel)) {
-      L.w('Tabel tidak dikenal: $tabel');
-      throw ArgumentError.value(tabel, 'tabel', 'Tabel tidak terdaftar di tabelCadangan');
-    }
-    try {
-      final rows = await const SqfliteOp().queryRaw('PRAGMA table_info($tabel)');
-      final kolom = rows
-          .map((baris) => baris['name'] as String)
-          .toList(growable: false);
-      L.i('kolomTabel tabel=$tabel jumlahKolom=${kolom.length}');
-      return kolom;
-    } on Exception catch (e, s) {
-      L.e('Gagal mengambil kolom tabel $tabel: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Mengonversi [rows] menjadi string CSV dengan [header] memakai paket
-  /// `csv` (`ListToCsvConverter`). Nilai null ditulis sebagai string kosong.
-  static String buatCsvDariBaris(
-    List<String> header,
-    List<Map<String, Object?>> rows,
-  ) {
-    L.i('buatCsvDariBaris header=${header.length} baris=${rows.length}');
-    final data = <List<dynamic>>[
-      header,
-      for (final baris in rows)
-        header
-            .map((kolom) => baris[kolom]?.toString() ?? '')
-            .toList(growable: false),
-    ];
-    return const ListToCsvConverter().convert(data);
-  }
-
-  /// Membuat string CSV untuk [tabel]: header nama kolom + seluruh baris.
-  static Future<String> buatCsvTabel(String tabel) async {
-    L.i('buatCsvTabel tabel=$tabel');
-    try {
-      final header = await kolomTabel(tabel);
-      final rows = await const SqfliteOp().ambilSemua(tabel);
-      L.i('buatCsvTabel tabel=$tabel baris=${rows.length}');
-      return buatCsvDariBaris(header, rows);
-    } on Exception catch (e, s) {
-      L.e('Gagal membuat CSV tabel $tabel: $e $s');
-      rethrow;
-    }
-  }
-
-  /// Nama berkas CSV untuk [tabel] dengan pola `<nama_tabel>_<timestamp>.csv`.
-  static String namaBerkasCsv(String tabel, {int? timestamp}) {
-    final ts = timestamp ?? DateTime.now().millisecondsSinceEpoch;
-    return '${tabel}_$ts.csv';
-  }
-
-  /// Memvalidasi [header] CSV terhadap kolom yang diizinkan untuk tabel
-  /// target. Mengembalikan `true` jika semua kolom dikenal dan header tidak
-  /// kosong.
-  static bool validasiHeaderCsv(
-    List<String> header,
-    List<String> kolomDiizinkan,
-  ) {
-    if (header.isEmpty) {
-      L.w('Header CSV kosong');
-      return false;
-    }
-    final valid = header.every(kolomDiizinkan.contains);
-    if (!valid) {
-      L.w('Header CSV memuat kolom tidak dikenal: $header');
-    }
-    return valid;
-  }
-
-  /// Memvalidasi setiap baris CSV memiliki jumlah kolom yang sama dengan
-  /// [header]. Mengembalikan `true` jika semua baris valid.
-  static bool validasiBarisCsv(
-    List<String> header,
-    List<List<dynamic>> baris,
-  ) {
-    if (header.isEmpty) {
-      L.w('Header CSV kosong, baris tidak dapat divalidasi');
-      return false;
-    }
-    final valid = baris.every((b) => b.length == header.length);
-    if (!valid) {
-      L.w('Ada baris CSV dengan jumlah kolom tidak sama dengan header');
-    }
-    return valid;
-  }
-
-  /// Memvalidasi teks CSV untuk [tabel] terhadap [kolomDiizinkan] dan
-  /// mengembalikan daftar baris data (tanpa header) yang sudah tervalidasi.
-  ///
-  /// Melempar [BerkasCadanganTidakValidException] jika berkas kosong, format
-  /// tidak valid, header tidak cocok, atau ada baris dengan jumlah kolom
-  /// yang tidak sama dengan header.
-  static List<List<dynamic>> validasiTeksCsv({
-    required String tabel,
-    required String teks,
-    required List<String> kolomDiizinkan,
-  }) {
-    L.i('validasiTeksCsv tabel=$tabel panjang=${teks.length}');
-    if (teks.trim().isEmpty) {
-      L.w('Berkas CSV tabel $tabel kosong');
-      throw const BerkasCadanganTidakValidException('Berkas CSV kosong');
-    }
-    final dinormalisasi = teks.replaceAll('\r\n', '\n');
-    final List<List<dynamic>> rows;
-    try {
-      rows = const CsvToListConverter(
-        eol: '\n',
-        shouldParseNumbers: false,
-      ).convert(dinormalisasi);
-    } on Exception catch (e, s) {
-      L.e('Gagal mem-parse CSV tabel $tabel: $e $s');
-      throw const BerkasCadanganTidakValidException('Format CSV tidak valid');
-    }
-    if (rows.isEmpty) {
-      L.w('Berkas CSV tabel $tabel tidak memiliki baris');
-      throw const BerkasCadanganTidakValidException('Berkas CSV kosong');
-    }
-    final header = rows.first.map((e) => e.toString()).toList();
-    if (!validasiHeaderCsv(header, kolomDiizinkan)) {
-      throw BerkasCadanganTidakValidException(
-        'Header CSV tabel $tabel tidak valid',
-      );
-    }
-    final baris = rows.skip(1).toList(growable: false);
-    if (!validasiBarisCsv(header, baris)) {
-      throw BerkasCadanganTidakValidException(
-        'Baris CSV tabel $tabel tidak valid',
-      );
-    }
-    L.s('CSV tabel $tabel valid (${baris.length} baris)');
-    return baris;
-  }
-
-  /// Memulihkan data dari [payload] yang sudah divalidasi secara atomik.
-  static Future<void> pulihkanDariPayload(Map<String, dynamic> payload) async {
-    L.i('pulihkanDariPayload mulai');
-    try {
-      final op = const SqfliteOp();
-      await op.transaksi((txn) async {
-        for (final tabel in tabelCadangan) {
-          await txn.delete(tabel);
-          L.i('Hapus data lama tabel $tabel');
-        }
-        for (final tabel in tabelCadangan) {
-          final rows = payload[tabel];
-          if (rows is! List) continue;
-          for (final row in rows) {
-            if (row is! Map) continue;
-            await txn.insert(tabel, Map<String, Object?>.from(row));
-          }
-          L.i('Pulihkan ${rows.length} baris tabel $tabel');
-        }
-      });
-      L.s('Pemulihan data cadangan berhasil');
-    } on Exception catch (e, s) {
-      L.e('Gagal memulihkan data cadangan: $e $s');
-      rethrow;
-    }
-  }
 }
 ```
 
@@ -22709,11 +10784,11 @@ class CadanganHelper {
 ```dart
 import 'dart:async';
 
-import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
 import 'package:berhenti_merokok/fitur/tema/enum/tema_enum.dart';
 import 'package:berhenti_merokok/fitur/tema/notifier/tema_notifier.dart';
 import 'package:berhenti_merokok/home.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
 import 'package:berhenti_merokok/shared/notifikasi/notifikasi_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -22878,9 +10953,7 @@ environment:
 dependencies:
   adaptive_dialog: ^3.0.1
   collection: ^1.19.1
-  csv: ^6.0.0
   cupertino_icons: ^2.0.0
-  file_picker: ^13.3.2
   flutter:
     sdk: flutter
   flutter_easyloading: ^4.0.2
@@ -22888,17 +10961,13 @@ dependencies:
   flutter_riverpod: ^3.5.0
   flutter_timezone: ^5.1.1
   freezed_annotation: ^3.1.0
-  path_provider: ^2.1.6
-  restart_app: ^1.10.2
   riverpod_annotation: ^4.0.8
   share_global_saya:
     path: ../share_global_saya
-  share_plus: ^13.3.1
   shared_preferences: ^2.5.6
   sqflite: ^2.4.5
   sqflite_common_ffi_web: ^1.2.0
   timezone: ^0.11.2
-  uuid: ^4.6.0
 
 dev_dependencies:
   build_runner: ^2.17.1
@@ -22919,502 +10988,3755 @@ flutter:
 // FILE: AGENTS.md
 // ============================================================
 // ============================================================
-// FILE: .agents/rules/global/aturan_skill.md
+// FILE: .agents/rules/global/aturan_bersama.md
 // ============================================================
 
-# Aturan Pembuatan dan Pembaruan SKILL.md
-## 1. Cakupan
-Aturan ini berlaku saat AI **membuat** atau **memperbarui** file `SKILL.md`.
-Semua skill yang dibuat sebisa mungkin harus dapat digunakan oleh berbagai proyek Flutter milik pengguna (portabel lintas-proyek).
-## 2. Lokasi dan Struktur
-- Path skill: `.agents/skills/<kategori>/<nama-skill>/SKILL.md`
-- Wajib menggunakan folder `skills` (jamak), bukan `skill`
-- Kategori default: `custom`
-- Struktur wajib:
+## Penambahan Log Debug pada Variabel dan Parameter
+Gunakan sistem logging yang sudah tersedia di proyek (mis. `L.i()`, `L.w()`, `L.e()`) untuk mencatat nilai variabel dan parameter, alih-alih membuat sistem logging baru.
+**Aturan:**
+1. Tambahkan log pada setiap variabel dan parameter yang relevan, setelah variabel mendapatkan nilainya.
+2. Format log wajib singkat: nama variabel dan nilainya menggunakan interpolasi, mis. `logger.i('kopi=$kopi, susu=$susu')`.
+3. Untuk objek model (Freezed, API, database, repository), cukup tampilkan objek langsung: `logger.i('model=$model')`; jangan uraikan properti satu per satu.
+4. Gabungkan variabel yang berkaitan dalam satu pemanggilan log apabila berada pada titik eksekusi yang sama.
+5. Jangan mencatat variabel sensitif (password, token, OTP, secret key, kredensial).
+6. Jangan mengubah logika bisnis, nilai variabel, tipe data, kondisi percabangan, atau menambah fitur saat menambahkan log.
+7. Jangan menambahkan log sebelum variabel mendapatkan nilai.
+8. Jangan menambahkan log yang tidak memberikan informasi nilai aktual.
+9. Jangan menggunakan `print()` sebagai pengganti logger yang tersedia.
+10. Pada `catch`, catat error dengan konteks proses yang gagal dan sertakan stack trace apabila tersedia.
+11. Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali. Log pada `build()` dihindari apabila memungkinkan karena `build()` dapat dipanggil berulang dan menambah noise; prioritaskan log pada titik yang tidak berfrekuensi tinggi (initState, dispose, method helper, perhitungan).
+**Larangan:**
+- Jangan membuat sistem logging baru.
+- Jangan mencetak properti model satu per satu (gunakan `$model`).
+- Jangan mencetak data sensitif.
+- Jangan mengubah logika program saat menambahkan log.
+**Alasan:**
+Format log yang singkat dan konsisten (nama variabel + nilai) memudahkan pelacakan alur eksekusi tanpa menambah noise. Menampilkan objek model langsung menghindari log yang terlalu panjang dan tetap informatif. Larangan mencetak data sensitif menjaga keamanan. Prinsip ini dapat diterapkan pada seluruh proyek Flutter yang memiliki sistem logging. Enam commit terakhir (`f2859a0`, `6bae210`, `f55410a`, `c05f446`, `7b9e8d0`, `be04199`) memperkuat pola ini secara konsisten, termasuk penggabungan variabel terkait dalam satu log (commit `7b9e8d0` memperluas log form impian dengan menggabungkan `_namaController.text`, `_jumlahController.text`, dan `_targetTanggal`; commit `be04199` menggabungkan seluruh variabel perhitungan pada dashboard), penggunaan `L.w` untuk kondisi peringatan (`konfirmasi bukan ok`, `jumlah <= 0`, `biodataAsync loading`), penggunaan `L.e` pada blok catch/error dengan stack trace (termasuk `${biodataAsync.error} ${biodataAsync.stackTrace}`), pola logging siklus hidup widget (`L.i('DashboardScreen initState')`, `L.i('DashboardScreen dispose')`), dan logging pada method helper yang menerima parameter (`L.i('icon=$icon, title=$title, subtitle=$subtitle')`). Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali; log pada `build()` dihindari apabila memungkinkan karena dapat dipanggil berulang dan menambah noise. Commit `c05f446` juga merangkum ulang aturan proyek dan global agar tetap fokus dan tidak verbose.
+**Sumber evaluasi:**
+- Commit: `f2859a0f7b8f6ebeb0befefffa8047a9c3173c04`, `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`, `c05f4460a316c3bf33aaad30fc1d8a32f66b9c5b`, `7b9e8d054624b8941c1f44b11551fe9ea57a54a1`, `be04199e5b44537ee1052a3815f5af8518308148`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `.kilo/commands/tambah_log.md`
+**Contoh benar:**
+```dart
+logger.i('dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}');
+logger.i('row=$row');
+logger.i('biodata=$biodata');
+logger.i('impian=$impian');
+logger.i('konfirmasi=$konfirmasi');
+logger.i('_namaController.text=${_namaController.text}, _jumlahController.text=${_jumlahController.text}, _targetTanggal=$_targetTanggal');
+logger.i('listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}');
+logger.i('DashboardScreen initState');
+logger.i('DashboardScreen dispose');
+logger.i('biodataAsync=$biodataAsync');
+logger.w('konfirmasi bukan ok');
+logger.w('jumlah <= 0');
+logger.w('biodataAsync loading');
+logger.e('Gagal memasukkan data dummy: $e $s');
+logger.e('biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}');
+logger.i('tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat');
+logger.i('icon=$icon, title=$title, subtitle=$subtitle');
 ```
-.agents/skills/<kategori>/<nama-skill>/
-└── SKILL.md
+**Contoh salah:**
+```dart
+logger.i('tes'); // tidak memberikan informasi nilai variabel
+logger.i('nama=${model.nama}, umur=${model.umur}'); // menguraikan properti model
+print('data=$data'); // menggunakan print() alih-alih logger
 ```
-## 3. Topik Wajib (Referensi Format)
-Setiap skill harus mengikuti standar format dan penulisan dari skill referensi yang sudah ada. Skill referensi ini digunakan sebagai acuan tata letak section, gaya bahasa, dan penggunaan backtick, bukan harus meniru isi secara harfiah.
-### 3.1 Referensi Skill Topik UI
-Berikut adalah daftar skill referensi UI yang formatnya harus diikuti sebagai acuan:
-- `pola-ux/SKILL.md`
-- `pola-ui/SKILL.md`
-- `gaya/SKILL.md`
-- `tipografi/SKILL.md`
-- `spacing/SKILL.md`
-- `widget-custom/SKILL.md`
-### 3.2 Referensi Skill Topik Non-UI
-- `bug-runtime/SKILL.md`
-## 4. Nama Folder Skill
-Nama folder skill wajib memenuhi semua ketentuan berikut:
-1. Wajib **bahasa Indonesia**.
-2. Wajib **deskriptif** (menunjukkan isi skill, bukan nama generik).
-3. Wajib **kebab-case** (pemisah strip `-`).
-4. Dilarang menggunakan garis bawah (`_`).
-5. Dilarang menggunakan spasi.
-6. Dilarang huruf besar.
-7. Dilarang angka di awal nama.
-8. Dilarang karakter selain `a-z`, `0-9`, dan strip `-`.
-Contoh nama yang benar: `menambahkan-integration-test-flutter`, `material-app-tema-lokalisasi`, `flutter-local-notifikasi-push`.
-Contoh nama yang salah: `integration_test`, `Integration Test`, `01-test`, `my-skill`, `skill_test`.
-## 5. Sumber Isi (Berdasarkan Riwayat Commit)
-Semua isi `SKILL.md` wajib **mengikuti riwayat commit code** pengguna.
-### 5.1 Pengambilan Sumber
-AI hanya boleh membaca dari commit yang sudah ada menggunakan perintah git seperti:
-- `git log`
-- `git show <commit>`
-- `git diff <commit>`
-### 5.2 Dilarang Mengambil Dari
-- File yang belum di-commit (working directory / working tree)
-- Perubahan yang masih di staging (`git diff --cached`)
-- File untracked
-### 5.3 Commit yang Berkaitan
-"Commit yang berkaitan" berarti commit yang menyentuh file atau folder yang berhubungan dengan topik skill.
-- Jika ada commit yang berkaitan: isi `SKILL.md` disusun dari commit tersebut.
-- Jika ada beberapa commit yang berkaitan dan polanya berbeda: AI memilih pola dari **commit terbaru yang relevan**, kecuali pengguna menentukan lain.
-- Jika **tidak ada** commit yang berkaitan: AI **dilarang mengarang** pola, gaya, atau contoh. AI wajib berhenti dan menanyakan kepada pengguna bagaimana ingin melanjutkan (contoh: memberikan contoh dari SDK resmi, atau menunda pembuatan skill sampai ada commit yang relevan).
-### 5.4 Referensi Commit
-`SKILL.md` boleh mencantumkan hash commit sebagai rujukan (opsional).
-## 6. Pelanggaran Aturan
-- Jika menemukan skill lama yang melanggar aturan ini, AI wajib **melaporkan kepada pengguna dan mengusulkan perbaikan** melalui komentar/pesan sebelum melakukan rename atau restructure.
-- AI dilarang membiarkan pelanggaran tetap tanpa ditindaklanjuti. Jika pelanggaran ditemukan, AI harus memberitahu pengguna dan menunggu arahan sebelum melanjutkan perubahan apapun pada skill tersebut.
-## 7. Front Matter (YAML)
-Setiap `SKILL.md` wajib memiliki frontmatter di paling atas file, dibungkus dengan `---` pada baris pertama dan `---` setelah field terakhir.
-### 7.1 Field Wajib
-| Field                      | Keterangan                                                    |
-| -------------------------- | ------------------------------------------------------------- |
-| `name`                     | Sama dengan nama folder skill (kebab-case, bahasa Indonesia)  |
-| `description`              | Deskripsi yang sangat detail                                  |
-| `metadata.kategori`        | Sesuai folder kategori (default `"custom"`)                   |
-| `metadata.versi`           | Format semver, contoh `"1.0.0"`                               |
-| `metadata.diperbarui`      | Waktu pembaruan terakhir isi skill (format `TZ=Asia/Jakarta date`), wajib diisi dan diperbarui setiap kali isi skill berubah (frontmatter maupun body) |
-| `metadata.sumber-terakhir` | Sumber terakhir perubahan (hash commit atau perintah/hasil eksplisit pengguna), menggantikan `metadata.commit-terakhir` |
-### 7.2 Field Opsional
-| Field            | Keterangan                                                                                                                 |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `metadata.model` | Jika dicantumkan, wajib diisi dengan model AI yang sedang mengedit skill saat itu, dan diperbarui setiap kali skill diedit |
-### 7.3 Contoh Front Matter
-```yaml
----
-name: menambahkan-integration-test-flutter
-description: Panduan menambahkan integration test Flutter, mengeksplorasi UI via MCP, dan mengotomasi alur pengguna dengan integration_test.
-metadata:
-  kategori: "custom"
-  versi: "1.0.0"
-  diperbarui: "Wed Nov 11 2026 23:30:00 WIB"
-  sumber-terakhir: "perintah pengguna: perbarui skill index"
-  model: "models/gemini-3.1-pro-preview"
----
+## Type Promotion untuk Null Safety (Field Objek)
+**Aturan:**
+1. Field nullable dari objek model wajib disalin terlebih dahulu ke variabel lokal sebelum digunakan dalam kondisi null-check, agar type promotion berlaku.
+2. Setelah penyalinan, gunakan variabel lokal tersebut dalam percabangan `== null` dan pemanggilan fungsi, bukan akses properti objek dengan operator `!`.
+3. Jangan menggunakan operator `!` untuk memaksakan nilai nullable menjadi non-null apabila nilai tersebut dapat dipromosikan melalui variabel lokal.
+4. Prinsip ini melengkapi aturan penanganan null yang sudah ada, dengan fokus pada field objek (bukan hanya parameter constructor atau variabel privat).
+**Alasan:**
+Type promotion memungkinkan compiler Dart mempromosikan tipe nullable ke non-nullable setelah pemeriksaan null, sehingga operator `!` tidak diperlukan. Penggunaan operator `!` berisiko menimbulkan runtime error jika nilai ternyata null. Commit `1e7b71e` menunjukkan refactoring pada `biodata_screen.dart` untuk menghindari operator `!` dengan menyalin field nullable ke variabel lokal.
+**Contoh benar:**
+```dart
+final tanggalLahir = biodata?.tanggalLahir;
+final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+_buildItem(
+  'Tanggal lahir',
+  tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(tanggalLahir),
+);
 ```
-## 8. Aturan Penulisan Deskripsi Skill
-Deskripsi skill (bagian `description` dan paragasan pengantar) wajib mencakup poin-poin berikut:
-1. **Kapan digunakan (trigger/use case)** — jelaskan skenario spesifik yang memerlukan skill ini.
-2. **Apa yang di-cover** — cakupan fungsi, class, package, atau versi yang relevan (contoh: `flutter_local_notifications` v22.3.3).
-3. **Apa yang harus dihindari** — jangan digunakan untuk UI web, jangan diedit manual file generated, dll.
-4. **Langkah kerja (workflow)** — urutan tindakan yang wajib diikuti, misal `pub get` → `build_runner` → verifikasi `dart analyze`.
-5. **Referensi ke file terkait** — path file atau folder yang relevan dengan topik skill dan digunakan sebagai acuan saat menerapkan skill tersebut.
-## 9. Format Lengkap `SKILL.md`
-Setiap section di bawah ini **wajib ada** dalam setiap `SKILL.md`. Tidak perlu folder `examples` terpisah — contoh kode langsung di dalam `SKILL.md`. Gunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi. Gunakan backtick `` ` `` untuk nama class, properti, method, dan package.
-### 9.1 YAML Frontmatter (awal file)
-```yaml
----
-name: material-app-tema-lokalisasi
-description: Panduan konfigurasi MaterialApp dan WidgetsApp - tema (theme, darkTheme, themeMode), lokalisasi (locale, supportedLocales, localizationsDelegates), serta ScrollBehavior.
-metadata:
-  kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "<hash-commit>"
-  model: "kilo-auto/free"
----
+**Contoh salah:**
+```dart
+_buildItem(
+  'Tanggal lahir',
+  biodata.tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(biodata.tanggalLahir!),
+);
 ```
-### 9.2 Judul dan Intro
-```markdown
-# Konfigurasi MaterialApp, Tema, dan Lokalisasi
-Mengatur `MaterialApp` / `WidgetsApp` dengan tema gelap/terang, locale, supportedLocales, dan localizationsDelegates untuk aplikasi multi-bahasa.
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+## Import Ordering (Urutan Import)
+**Aturan:**
+1. Import wajib diurutkan secara alfabetis berdasarkan path package.
+2. Import dari package proyek (`package:berhenti_merokok/...`) wajib diurutkan berdasarkan path lengkap.
+3. Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
+4. Prinsip ini berlaku untuk seluruh file Dart dalam proyek.
+**Alasan:**
+Urutan import yang konsisten memudahkan pembacaan kode dan pengelolaan dependensi. Commit `1e7b71e` menunjukkan perubahan urutan import pada `biodata_screen.dart` agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+**Contoh benar:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 ```
-- H1 = judul skill
-- Paragraf berikutnya = penjelasan singkat tujuan skill
-### 9.3 `## Cakupan yang Di-Cover`
-Daftar bullet dengan kategori: Package, Class, Enum, Properti, Method.
-```markdown
-## Cakupan yang Di-Cover
-- Package: `package:flutter` (file `lib/src/widgets/material/app.dart`, `lib/src/widgets/app.dart`)
-- Class: `MaterialApp`, `WidgetsApp`, `ThemeMode`, `ThemeData`, ...
-- Enum: `ThemeMode.system`, `ThemeMode.light`, `ThemeMode.dark`
-- Properti: `theme`, `darkTheme`, ...
-- Method: `basicLocaleListResolution`, `Theme.of`, ...
+**Contoh salah:**
+```dart
+import 'package:berhenti_merokok/fitur/biodata/screens/form_biodata.dart';
+import 'package:berhenti_merokok/fitur/biodata/notifier/biodata_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 ```
-### 9.4 `## Aturan`
-Daftar berurutan (numbered list) yang harus diikuti saat menerapkan skill ini.
-```markdown
-## Aturan
-1. `MaterialApp` membungkus `WidgetsApp` ...
-2. Salah satu dari `home`, `routes`, `onGenerateRoute`, atau `builder` harus non-null.
-   ...
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+## Migrasi Skema Database SQLite
+**Aturan:**
+1. Setiap perubahan skema wajib menaikkan versi database (increment satu per migrasi).
+2. Metode `onCreate` wajib membuat seluruh tabel yang dibutuhkan aplikasi, termasuk tabel baru.
+3. Metode `onUpgrade` wajib menangani setiap versi lama secara kondisional (`if (oldVersion < N)`).
+4. Tabel baru pada versi tertentu wajib dibuat baik di `onCreate` maupun di `onUpgrade`.
+5. Nama tabel dan kolom wajib didefinisikan sebagai konstanta terpusat, bukan string literal.
+6. Perubahan kolom pada tabel lama wajib menggunakan `ALTER TABLE ... ADD COLUMN` di `onUpgrade` dengan kondisi versi yang sesuai.
+**Alasan:**
+Migrasi skema yang konsisten memastikan pengguna baru maupun lama memiliki skema database yang sama tanpa kehilangan data. Commit `3b67d309` menunjukkan pola migrasi v4 ke v5 yang membuat tabel baru di `onCreate` dan `onUpgrade`.
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 5;
+// onCreate: buat semua tabel.
+// onUpgrade:
+if (oldVersion < 5) {
+  await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.baru}(...)');
+}
 ```
-### 9.5 `## Steps` (Opsional)
-Daftar langkah-langkah berurutan yang menjelaskan urutan kerja (workflow) dalam menerapkan skill ini. Section ini **hanya ada jika aksi membutuhkan urutan kerja** yang jelas dan tidak dapat dijelaskan sekadar dalam section Aturan. Jika urutan kerja sudah cukup dijelaskan dalam section Aturan, section Steps tidak perlu ditambahkan.
-```markdown
-## Steps
-1. Langkah pertama yang harus dilakukan.
-2. Langkah kedua yang harus dilakukan.
-3. Langkah ketiga yang harus dilakukan.
+**Contoh salah:**
+```dart
+// Hanya membuat tabel di onCreate, lupa onUpgrade.
 ```
-- Gunakan numbered list untuk mempertahankan urutan.
-- Setiap langkah harus spesifik, dapat diikuti, dan tidak ambigu.
-- Jangan memasukkan langkah yang tidak relevan atau redundan dengan aturan.
-### 9.6 `## Larangan`
-Daftar bullet yang dimulai dengan `DILARANG` atau menjelaskan hal yang tidak boleh dilakukan.
-```markdown
-## Larangan
-- `darkTheme` dengan brightness bukan `Brightness.dark`.
-- `MaterialApp` tanpa `home`, `routes`, `onGenerateRoute`, atau `builder`.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/shared/db/sqflite/sqflite.dart`
+## Pola Notifier CRUD pada Database
+**Aturan:**
+1. Notifier database wajib menggunakan `@Riverpod(keepAlive: true)`.
+2. Method `build()` wajib memanggil `_ambilSemua()` yang mengambil seluruh data dan memetakan ke model.
+3. Setiap method CRUD (`tambah`, `ubah`, `hapus`) wajib:
+   a. Mengambil state lama melalui `await future`.
+   b. Menjalankan operasi database terlebih dahulu.
+   c. Memperbarui `state` dengan `AsyncValue.data(...)` setelah operasi database berhasil.
+   d. Menangkap `Exception`, mencatat dengan logger, lalu `rethrow`.
+4. Gunakan lapisan akses database (`SqfliteOp` atau setara); jangan memanggil `openDatabase` langsung di notifier.
+5. Operasi batch (banyak data) wajib menggunakan `batch(...)` agar atomik dan efisien.
+**Alasan:**
+State hanya diperbarui setelah operasi database berhasil, mencegah UI tidak sinkron dengan database ketika operasi gagal. Pola ini konsisten pada `ImpianNotifier` dan `DiaryCravingNotifier`.
+**Contoh benar:**
+```dart
+Future<void> tambah(Model model) async {
+  try {
+    final dataLama = await future;
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.tabel, model.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    state = AsyncValue.data(StateBaru(list: [model, ...dataLama.list]));
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Memperbarui state sebelum operasi database selesai.
+state = AsyncValue.data(StateBaru(list: [model, ...list]));
+await op.tambah(NamaTabel.tabel, model.toMap());
+```
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+## Penggunaan `withValues` untuk Opacity Warna
+**Aturan:**
+1. Gunakan `withValues(alpha: ...)` alih-alih `withOpacity(...)` untuk mengatur opacity warna, sesuai API Flutter terpasang.
+2. Pertahankan konsistensi penggunaan pada seluruh widget.
+**Alasan:**
+Flutter versi terpasang (3.47+) menyediakan `withValues` sebagai pengganti `withOpacity` yang deprecated. Commit `3b67d309` menggunakan `warna.withValues(alpha: 0.2)`.
+**Contoh benar:**
+```dart
+warna.withValues(alpha: 0.2)
+```
+**Contoh salah:**
+```dart
+warna.withOpacity(0.2)
+```
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/sos_craving/screens/sos_craving_screen.dart`
+## Isolasi Widget yang Diperbarui Berkala (Timer/Animasi)
+**Aturan:**
+1. Widget yang diperbarui secara berkala (mis. `Timer.periodic` per detik) wajib diisolasi ke widget terpisah (`StatefulWidget`) agar hanya widget tersebut yang melakukan rebuild, bukan seluruh halaman.
+2. Timer wajib dibatalkan (`cancel()`) di `dispose()` widget yang memilikinya.
+3. Di dalam callback timer, periksa `mounted` sebelum memanggil `setState`.
+4. Jangan menjalankan `Timer.periodic` pada widget yang mencakup seluruh halaman apabila hanya sebagian tampilan yang perlu diperbarui.
+5. Jangan membiarkan timer tetap aktif setelah widget tidak lagi terpasang.
+**Alasan:**
+Timer yang diletakkan pada widget tingkat halaman menyebabkan seluruh halaman rebuild setiap detik, yang tidak efisien dan dapat mengganggu interaksi pengguna. Isolasi ke widget kecil (mis. `_HeaderPemulihan`, `_TimerCravingView`) membatasi rebuild hanya pada bagian yang membutuhkan pembaruan berkala. Pemeriksaan `mounted` mencegah pembaruan state pada widget yang sudah tidak terpasang. Pola ini terlihat konsisten pada `SosCravingScreen` (`_TimerCravingView`) dan `PemulihanKesehatanScreen` (`_HeaderPemulihan`), yang masing-masing menjalankan `Timer.periodic` sendiri dan membatalkannya di `dispose()`.
+**Contoh benar:**
+```dart
+class _HeaderPemulihan extends StatefulWidget {
+  const _HeaderPemulihan({required this.tanggalBerhenti});
+  final DateTime tanggalBerhenti;
+  @override
+  State<_HeaderPemulihan> createState() => _HeaderPemulihanState();
+}
+class _HeaderPemulihanState extends State<_HeaderPemulihan> {
+  Timer? _timer;
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    // hanya widget ini yang rebuild tiap detik
+    return ...;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Timer.periodic dijalankan di widget tingkat halaman, menyebabkan
+// seluruh halaman rebuild setiap detik.
+class _HalamanState extends State<Halaman> {
+  Timer? _timer;
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {}); // rebuild seluruh halaman
+    });
+  }
+}
+```
+**Sumber evaluasi:**
+- Commit: `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`, `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/sos_craving/screens/sos_craving_screen.dart`
+## Normalisasi Tanggal untuk Perbandingan dan Perhitungan Berbasis Hari
+**Aturan:**
+1. Sebelum membandingkan atau menghitung selisih hari antara dua tanggal, normalisasi nilai `DateTime` ke komponen tanggal saja (tahun, bulan, hari) dengan membuang komponen waktu.
+2. Gunakan `DateTime(tanggal.year, tanggal.month, tanggal.day)` untuk memperoleh representasi tanggal tanpa waktu.
+3. Saat menghitung selisih hari dengan `difference(...).inDays`, pastikan kedua operand sudah dinormalisasi agar hasil tidak terpengaruh oleh jam/menit/detik.
+4. Hasil perhitungan durasi atau jumlah hari yang dapat bernilai negatif wajib diklem (clamp) ke nol apabila nilai negatif tidak bermakna dalam konteks (mis. "hari smoke-free" tidak boleh negatif).
+5. Gunakan `isBefore`/`isAfter` pada nilai yang sudah dinormalisasi untuk menentukan rentang tanggal, agar batas hari konsisten.
+**Alasan:**
+`DateTime.now()` menyertakan komponen waktu (jam, menit, detik). Jika dibandingkan langsung dengan tanggal yang dinormalisasi (mis. tengah malam), hasil perhitungan hari dapat salah satu hari. Normalisasi memastikan perbandingan dan perhitungan berbasis hari akurat. Pengklaman nilai negatif ke nol mencegah tampilan atau logika yang tidak bermakna (mis. jumlah hari smoke-free negatif sebelum tanggal berhenti). Pola ini terlihat pada `KalenderSmokeFreeScreen` (`_SelHari`, `_GridKalender`) dan dashboard (`_buildCardMilestone`).
+**Contoh benar:**
+```dart
+final hariIniDate = DateTime(hariIni.year, hariIni.month, hariIni.day);
+final tanggalBerhentiDate = DateTime(
+  tanggalBerhenti.year,
+  tanggalBerhenti.month,
+  tanggalBerhenti.day,
+);
+final totalHari = hariIniDate.difference(tanggalBerhentiDate).inDays + 1;
+final totalAman = totalHari < 0 ? 0 : totalHari;
+// Klamping durasi negatif ke nol.
+final durasi = DateTime.now().difference(tanggalBerhenti);
+final aman = durasi.isNegative ? Duration.zero : durasi;
+```
+**Contoh salah:**
+```dart
+// Membandingkan DateTime.now() (dengan waktu) langsung dengan tanggal berhenti.
+final totalHari = DateTime.now().difference(tanggalBerhenti).inDays + 1;
+// Bisa salah satu hari karena komponen waktu.
+```
+**Sumber evaluasi:**
+- Commit: `6fd979fd9e8296bc7d9c40e9037870faef9c846a`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- File: `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+## Ekstraksi Logika Perhitungan Turunan yang Diduplikasi
+**Aturan:**
+1. Apabila perhitungan turunan yang sama digunakan di lebih dari satu layar, ekstrak ke satu lokasi bersama (ekstensi pada model, helper murni, atau utilitas) agar logika hanya ditulis sekali.
+2. Konsumen (layar/widget) wajib menggunakan hasil dari lokasi bersama, bukan menghitung ulang secara inline.
+3. Helper murni wajib menerima parameter primitif dan tidak bergantung pada `BuildContext` atau provider.
+4. Guard pembagian dengan nol wajib diterapkan pada perhitungan yang melakukan pembagian.
+**Alasan:**
+Duplikasi perhitungan turunan (mis. `hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) di beberapa layar berisiko tidak konsisten jika salah satu diubah. Commit `19f43e5` mengekstrak perhitungan ke ekstensi `BiodataModelPerhitungan` dan helper `hitungBadge`, sehingga logika hanya ditulis sekali dan konsisten di dashboard, impian, dan badge. Prinsip ini berlaku pada seluruh proyek Flutter yang memiliki perhitungan turunan yang digunakan bersama.
+**Contoh benar:**
+```dart
+extension BiodataModelPerhitungan on BiodataModel {
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+// Konsumsi di layar.
+final uangDihemat = biodata?.uangDihemat ?? 0;
+```
+**Contoh salah:**
+```dart
+// Duplikasi perhitungan inline di layar.
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
   ...
+}
 ```
-### 9.7 `## Contoh Benar`
-Satu blok kode Dart dengan implementasi yang benar.
-````markdown
-## Contoh Benar
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
+## Validasi Dukungan Platform dan Izin Runtime
+**Aturan:**
+1. Sebelum menggunakan API package, periksa dukungan platform berdasarkan versi package yang terpasang. Jangan mengasumsikan API yang sama tersedia di semua platform.
+2. Jangan menampilkan kontrol fitur yang tidak didukung platform (misalnya pengingat terjadwal pada Web/Linux).
+3. Permintaan izin harus mengikuti kebijakan sistem operasi dan dilakukan pada konteks yang tepat (setelah interaksi pengguna, bukan saat aplikasi pertama dibuka).
+4. Periksa hasil izin sebelum menyatakan fitur berhasil diaktifkan. Jangan menyimpan status aktif jika izin sistem belum tersedia.
+5. Pisahkan inisialisasi layanan dari permintaan izin pengguna. Inisialisasi boleh dilakukan saat startup, tetapi izin diminta sesuai kebutuhan fitur.
+6. Tangani error platform yang tidak didukung (mis. `UnsupportedError`) secara eksplisit, bukan hanya `Exception`.
+**Alasan:**
+Commit notifikasi (`774431d`) dan saran (`0cb0e52`) menunjukkan kebutuhan membedakan kemampuan berdasarkan platform, meminta izin sesuai kebijakan OS, dan memeriksa hasil izin sebelum mengaktifkan fitur. Permintaan izin otomatis saat startup (termasuk iOS Darwin default) dapat ditolak atau diblokir.
+**Contoh benar:**
 ```dart
-MaterialApp(
-  ...
-);
+if (kIsWeb) {
+  // jangan tampilkan pengingat terjadwal
+} else if (defaultTargetPlatform == TargetPlatform.android) {
+  final izin = await mintaIzinAndroid();
+  if (!izin) return;
+}
 ```
-````
-````
-### 9.8 `## Contoh Salah`
-Satu atau lebih blok kode Dart dengan komentar `// DILARANG` atau `// salah: ...` yang menjelaskan mengapa salah.
-```markdown
-## Contoh Salah
+**Contoh salah:**
 ```dart
-// darkTheme tanpa brightness dark
-darkTheme: ThemeData(primaryColor: Colors.blue), // salah: brightness default light
-````
+// Meminta izin saat aplikasi pertama dibuka tanpa konteks fitur.
+await plugin.requestNotificationsPermission();
+// Menyimpan status aktif tanpa memeriksa hasil izin.
+await setAktif(true);
+```
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `saran.md`
+## Penggunaan Tipe Exception Khusus untuk Deteksi Error
+**Aturan:**
+1. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception` atau `Error`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`.
+2. Pemanggil wajib mendeteksi error melalui `is` (type check), bukan pencocokan string.
+3. Tipe exception khusus wajib dideklarasikan sebagai class terpisah dengan dokumentasi singkat, agar mudah diidentifikasi dan diuji.
+4. Jangan bergantung pada teks pesan exception untuk menentukan alur program, karena teks dapat berubah dan menyebabkan deteksi gagal.
+**Alasan:**
+Pencocokan string pada pesan exception (mis. `e.toString().contains('Izin notifikasi tidak diberikan')`) bergantung pada teks yang sama persis. Jika pesan berubah, deteksi gagal dan alur program salah. Commit `07fc8df` mengganti pola ini dengan `IzinNotifikasiTidakDiberikanException` yang diimplementasikan sebagai class khusus, sehingga deteksi dilakukan melalui `e is IzinNotifikasiTidakDiberikanException`. Pola ini dapat diterapkan pada proyek Flutter lain yang membutuhkan deteksi error berdasarkan jenis, bukan teks.
+**Contoh benar:**
 ```dart
-// supportedLocales kosong
-supportedLocales: [], // assert error
+class IzinNotifikasiTidakDiberikanException implements Exception {
+  const IzinNotifikasiTidakDiberikanException();
+  @override
+  String toString() => 'Izin notifikasi tidak diberikan';
+}
+// Melempar.
+throw const IzinNotifikasiTidakDiberikanException();
+// Mendeteksi.
+} on Exception catch (e, s) {
+  if (e is IzinNotifikasiTidakDiberikanException) {
+    // tangani kegagalan izin
+  }
+}
 ```
-````
-### 9.9 `## Sumber Evaluasi`
-Daftar file sumber dan class terkait untuk verifikasi.
-```markdown
-## Sumber Evaluasi
-- File: `lib/path/to/file.dart`
-- Class terkait: `NamaClass1`, `NamaClass2`
-- Commit rujukan: `<hash-commit>`
-```
-## 10. Contoh Lengkap `SKILL.md` (Template Siap Salin)
-Berikut adalah contoh lengkap yang dapat langsung disalin sebagai template untuk skill baru:
-````markdown
----
-name: nama-skill-bahasa-indonesia
-description: Deskripsi sangat detail tentang kapan skill ini digunakan, apa yang di-cover, apa yang dihindari, langkah kerja, dan referensi file terkait.
-metadata:
-  kategori: "custom"
-  versi: "1.0.0"
-  commit-terakhir: "<hash-commit>"
-  model: "nama-model-ai"
----
-# Judul Skill dalam Bahasa Indonesia
-Penjelasan singkat tujuan skill dalam satu atau dua paragraf.
-## Cakupan yang Di-Cover
-- Package: `package:nama_package`
-- Class: `NamaClass1`, `NamaClass2`
-- Enum: `EnumNilai1`, `EnumNilai2`
-- Properti: `propertiSatu`, `propertiDua`
-- Method: `namaMethodSatu`, `namaMethodDua`
-## Aturan
-1. Aturan pertama yang harus diikuti.
-2. Aturan kedua yang harus diikuti.
-3. Aturan ketiga yang harus diikuti.
-## Steps
-1. Langkah pertama yang harus dilakukan (hanya jika aksi membutuhkan urutan kerja).
-2. Langkah kedua yang harus dilakukan.
-3. Langkah ketiga yang harus dilakukan.
-## Larangan
-- DILARANG melakukan sesuatu yang melanggar pola.
-- DILARANG menggunakan properti tanpa validasi yang sesuai.
-## Contoh Benar
+**Contoh salah:**
 ```dart
-// Implementasi yang benar sesuai aturan skill
-NamaClass(
-  propertiSatu: nilai,
-);
+throw Exception('Izin notifikasi tidak diberikan');
+// Mendeteksi melalui pencocokan string (rentan).
+final isIzin = e.toString().contains('Izin notifikasi tidak diberikan');
 ```
-## Contoh Salah
+**Sumber evaluasi:**
+- Commit: `07fc8df6cf5ea28fe7133b1aee5dae7b05b96590`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`
+## Prinsip Umum Penanganan Beberapa `AsyncValue` pada Satu Layar
+**Aturan:**
+1. Ketika satu layar menggunakan beberapa provider asynchronous, tangani status loading secara gabungan apabila salah satu data yang dibutuhkan masih loading.
+2. Tangani status error untuk setiap provider secara terpisah, dengan pesan error dan tombol retry yang memanggil `ref.refresh(provider)` yang sesuai.
+3. Panggil `requireValue` pada masing-masing provider hanya setelah status loading dan error-nya ditangani.
+4. Kondisi data tidak lengkap tetap ditangani sebagai tampilan tersendiri dengan informasi dan call-to-action.
+**Alasan:**
+Aturan khusus sudah mencakup penerapan konkret pada `BadgeScreen` (memuat `biodataProvider` dan `impianProvider`). Prinsip ini dapat diterapkan pada proyek Flutter lain yang menggunakan Riverpod dengan beberapa provider asynchronous pada satu layar, agar loading dan error tetap jelas serta `requireValue` tidak dipanggil pada data yang belum tersedia.
+**Contoh benar:**
 ```dart
-// DILARANG: implementasi yang tidak sesuai
-NamaClass(
-  propertiSatu: null, // salah: properti wajib diisi
-);
+final aAsync = ref.watch(providerA);
+final bAsync = ref.watch(providerB);
+if (aAsync.isLoading || bAsync.isLoading) {
+  return const Center(child: CircularProgressIndicator());
+}
+if (aAsync.hasError) {
+  return _ErrorRetry(onRetry: () => ref.refresh(providerA));
+}
+if (bAsync.hasError) {
+  return _ErrorRetry(onRetry: () => ref.refresh(providerB));
+}
+final a = aAsync.requireValue;
+final b = bAsync.requireValue;
 ```
-## Sumber Evaluasi
-- File: `path/to/file.dart`
-- Class terkait: `NamaClass1`, `NamaClass2`
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final a = aAsync.requireValue;
+final b = bAsync.requireValue;
 ```
-## 11. Checklist Sebelum Menyelesaikan SKILL.md
-Sebelum mengakhiri pembuatan atau pembaruan `SKILL.md`, verifikasi semua poin berikut:
-- [ ] File berada di `.agents/skills/<kategori>/<nama-skill>/SKILL.md`
-- [ ] Nama folder menggunakan kebab-case, bahasa Indonesia, deskriptif
-- [ ] Tidak ada underscore, spasi, huruf besar, angka di awal, atau karakter selain `a-z0-9-`
-- [ ] Front matter YAML lengkap dengan field wajib (`name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.commit-terakhir`)
-- [ ] Semua section wajib ada (Judul/Intro, Cakupan, Aturan, Steps [jika diperlukan], Larangan, Contoh Benar, Contoh Salah, Sumber Evaluasi)
-- [ ] Isi mengikuti riwayat commit yang relevan (tidak diarang dari working directory/staging/untracked)
-- [ ] Deskripsi mencakup trigger, cakupan, larangan, workflow, dan referensi file
-- [ ] Bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi
-- [ ] Backtick digunakan untuk class, properti, method, package
-- [ ] Jika menemukan pelanggaran pada skill lama, telah melaporkan dan mengusulkan perbaikan
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/badge/screens/badge_screen.dart`
+## Validasi Form Sebelum Penyimpanan
+**Cakupan:**
+- Seluruh layar/form yang menggunakan `TextFormField` atau widget yang menyediakan `validator`.
+- Proses penyimpanan ke database atau repository yang bergantung pada validasi input.
+**Aturan wajib:**
+1. Apabila field menggunakan `TextFormField` atau widget yang menyediakan `validator`, pastikan mekanisme validasinya benar-benar dijalankan sebelum penyimpanan.
+2. Jika menggunakan mekanisme `Form`, bungkus field terkait dengan `Form` dan sediakan `GlobalKey<FormState>` atau mekanisme akses form yang sesuai.
+3. Panggil `validate()` sebelum menjalankan penyimpanan ke database atau repository.
+4. Apabila validasi gagal, hentikan proses penyimpanan.
+5. Validasi format angka tidak sama dengan validasi aturan bisnis.
+6. Validasi harus mencakup batas nilai sesuai kebutuhan, misalnya nilai wajib lebih besar dari nol.
+7. Jangan menganggap `TextInputType.number` atau input formatter sudah menjamin nilai memenuhi aturan bisnis.
+8. Jangan menggunakan nilai pengganti `0` ketika parsing gagal apabila hal tersebut menyembunyikan input yang tidak valid.
+9. Jangan mewajibkan penggunaan `Form` apabila proyek menggunakan mekanisme validasi lain yang memang dapat memastikan seluruh aturan validasi dijalankan sebelum penyimpanan.
+**Larangan:**
+- Jangan menyimpan data sebelum memastikan validasi dijalankan dan lulus.
+- Jangan mengganti input yang tidak valid dengan nilai default (`0`) tanpa memberi tahu pengguna.
+- Jangan mengandalkan tipe keyboard (`TextInputType.number`) sebagai satu-satunya validasi.
+- Jangan memaksa struktur `Form` tertentu apabila mekanisme validasi lain sudah dapat menjamin validasi berjalan sebelum penyimpanan.
+**Alasan:**
+Commit `ceacc6a` menambahkan input penurunan mingguan pada form biodata (`_penurunanPerMingguController`) tanpa `Form` yang membungkus field, tanpa pemanggilan `validate()`, dan dengan parsing `int.tryParse(...) ?? 0` yang mengganti input tidak valid dengan `0`. Akibatnya, mode tapering dapat tersimpan tanpa benar-benar melakukan penurunan rokok. Validasi format angka (parsing) tidak menjamin nilai memenuhi aturan bisnis (mis. nilai positif). Prinsip ini berlaku pada proyek Flutter lain yang menggunakan `TextFormField` atau widget dengan `validator`.
+**Contoh benar:**
+```dart
+final _formKey = GlobalKey<FormState>();
+Form(
+  key: _formKey,
+  child: TextFormField(
+    controller: _penurunanController,
+    keyboardType: TextInputType.number,
+    validator: (value) {
+      final n = int.tryParse(value ?? '');
+      if (n == null || n <= 0) return 'Wajib bilangan bulat positif';
+      return null;
+    },
+  ),
+)
+Future<void> _simpan() async {
+  if (!(_formKey.currentState?.validate() ?? false)) return;
+  // lanjutkan penyimpanan
+}
 ```
+**Contoh salah:**
+```dart
+// Tidak ada Form/validate; parsing gagal diganti 0.
+penurunanPerMinggu:
+    int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+// Menyimpan langsung tanpa validasi.
+await ref.read(biodataProvider.notifier).simpan(model);
+```
+**Sumber evaluasi:**
+- Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
+- File: `lib/fitur/biodata/screens/form_biodata.dart`.
 
 
 // ============================================================
-// FILE: .agents/rules/global/format_hasil_diskusi.md
+// FILE: .agents/rules/global/aturan_build.md
 // ============================================================
 
-# Format Berkas Hasil Diskusi
-## 1. Tujuan
-Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan berkas hasil diskusi (`diskusi_N.md`) agar setiap orang dan AI yang membuat atau memperbarui berkas tersebut menghasilkan isi yang konsisten.
-## 2. Cakupan
-- **Berkas yang diatur**: berkas hasil diskusi `diskusi_N.md` pada folder `hasil_diskusi/` di root proyek.
-- **Mode terkait**: `.kilo/commands/mode/mode_diskusi.md` (aturan pelaksanaan mode diskusi) dan `.kilo/commands/kerjakan_hasil_diskusi.md` (tindak lanjut hasil diskusi).
-- **Dokumen lain**: `MEMORI.md` (bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`).
-## 3. Perbedaan dengan Format PRD
-1. Berkas hasil diskusi **BUKAN** dokumen PRD. Sifatnya catatan proses: latar belakang, poin diskusi, keputusan, rekomendasi, dan tindak lanjut.
-2. `.agents/rules/global/format_PRD.md` hanya berlaku untuk dokumen PRD dan **tidak** menjadi acuan struktur berkas hasil diskusi.
-3. Perbedaan utama:
-| Aspek | PRD (`format_PRD.md`) | Hasil Diskusi (aturan ini) |
-| ----- | --------------------- | -------------------------- |
-| Sifat | Spesifikasi produk | Catatan proses/keputusan |
-| Pembuka | H1 PRD, metadata status, pemisah `---` | H1 topik + metadata ringkas pada `## Status` |
-| Bagian | 6 bagian PRD (Informasi Produk, Tujuan PRD, Daftar Fitur, Alur Pengguna, Steps, File-File Terdampak) | Latar Belakang, Poin Diskusi, Keputusan, Rekomendasi, Tindak Lanjut, File Terdampak, Pertanyaan Terbuka, Riwayat Perubahan |
-| Pengulangan aturan | Tiap bagian memuat "Konteks penggunaan" dan "Aturan pengisian" | Tidak ada pengulangan; langsung isi |
-| Kata kunci wajib | — | `## Status`, `## Keputusan`, `## Tindak Lanjut` (dipakai `kerjakan_hasil_diskusi.md`) |
-## 4. Aturan Lokasi dan Penamaan
-1. Seluruh berkas hasil diskusi **WAJIB** disimpan di folder `hasil_diskusi/` pada root proyek.
-2. Nama berkas **WAJIB** berformat `diskusi_N.md` dengan `N` berupa bilangan bulat positif tanpa awalan nol (contoh: `diskusi_1.md`, `diskusi_12.md`).
-3. Penentuan nomor:
-   - Jika folder `hasil_diskusi/` kosong, gunakan nomor `1`.
-   - Jika sudah ada berkas, gunakan **nomor tertinggi + 1**.
-   - Nomor yang terlewat (gap) **tidak diisi**; tetap gunakan `tertinggi + 1`.
-4. **DILARANG** menyimpan berkas hasil diskusi di lokasi lain (mis. `prd/`, `docs/`, atau root tanpa folder).
-5. **DILARANG** menimpa berkas hasil diskusi yang sudah ada. Diskusi baru selalu membuat berkas baru dengan nomor berikutnya.
-## 5. Aturan Struktur Isi
-1. Berkas **WAJIB** memuat bagian berikut **berurutan**, dengan teks judul **persis** seperti tertulis (tanpa penomoran):
-   1. `# Hasil Diskusi <N> — <judul topik>`
-   2. `## Status`
-   3. `## Latar Belakang`
-   4. `## Poin Diskusi`
-   5. `## Keputusan`
-   6. `## Rekomendasi`
-   7. `## Tindak Lanjut`
-   8. `## File Terdampak`
-   9. `## Pertanyaan Terbuka`
-   10. `## Riwayat Perubahan`
-2. Isi tiap bagian:
-   - `## Status` — memuat metadata: `Dokumen`, `Implementasi`, `Tanggal`, dan `Topik`.
-   - `## Latar Belakang` — masalah, pemicu, atau konteks yang memunculkan diskusi.
-   - `## Poin Diskusi` — poin-poin yang dibahas; setiap poin memuat pertanyaan dan kesimpulan singkat.
-   - `## Keputusan` — daftar keputusan final, diberi kode `K-1`, `K-2`, dan seterusnya.
-   - `## Rekomendasi` — daftar saran/tindakan yang dianjurkan, diberi kode `R-1`, `R-2`, dan seterusnya.
-   - `## Tindak Lanjut` — tabel dengan kolom `No`, `Tindakan`, `File Terdampak`, `Status`.
-   - `## File Terdampak` — tabel dengan kolom `Lokasi File`, `Status Perubahan`, `Deskripsi`.
-   - `## Pertanyaan Terbuka` — hal yang masih menunggu jawaban/keputusan; tulis `Belum ada` bila tidak ada.
-   - `## Riwayat Perubahan` — tabel dengan kolom `Tanggal`, `Perubahan`.
-3. **Jumlah dan judul bagian DILARANG diubah** tanpa pembaruan aturan ini. Bila format perlu diperluas, ubah aturan ini terlebih dahulu.
-4. Seluruh isi **WAJIB** menggunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi.
-5. Seluruh isi **WAJIB** didasarkan pada hasil diskusi dan informasi proyek yang diketahui. **DILARANG mengarang informasi.**
-6. Teks judul `## Status`, `## Keputusan`, dan `## Tindak Lanjut` **WAJIB** dipertahankan apa adanya karena menjadi titik baca `.kilo/commands/kerjakan_hasil_diskusi.md`.
-7. **Pengecualian arsip.** Berkas hasil diskusi yang dibuat sebelum aturan ini berlaku (mis. `diskusi_1.md` sampai `diskusi_4.md`) dikecualikan dari kewajiban struktur di atas dan dipertahankan apa adanya sebagai arsip. **DILARANG** mengubah arsip tersebut tanpa persetujuan pengguna.
-## 6. Aturan Status
-1. `Dokumen` pada `## Status` **WAJIB** diisi salah satu dari:
-   - `Draft` — masih dibahas atau belum disepakati.
-   - `Final` — hasil diskusi sudah disepakati.
-   - `Batal` — diskusi dibatalkan.
-2. `Implementasi` pada `## Status` **WAJIB** diisi sesuai kondisi aktual, mis. `Belum Diimplementasikan`, `Sedang Diimplementasikan`, atau `Sudah Diimplementasikan`. Jika belum diketahui atau belum relevan, tulis secara eksplisit (mis. `Belum diketahui`) dan **DILARANG** mengarang.
-3. Perubahan status **WAJIB** disertai penyesuaian isi bagian yang relevan agar dokumen tetap konsisten.
-## 7. Aturan Bagian yang Belum Dibahas
-1. Bagian yang belum dibahas, belum diputuskan, atau belum tersedia datanya **WAJIB** diisi keterangan eksplisit, mis. `Belum dibahas` atau `Belum diketahui`.
-2. **DILARANG** menebak, mengisi contoh fiktif, atau mengosongkan bagian tanpa keterangan.
-## 8. Aturan Pencatatan di `MEMORI.md`
-1. Setelah berkas hasil diskusi dibuat, diperbarui, atau dihapus, **WAJIB** perbarui `MEMORI.md` pada bagian yang relevan, sekurang-kurangnya:
-   - `Lokasi Hasil Diskusi` — lokasi folder, daftar berkas, dan nomor tertinggi.
-   - `Riwayat Diskusi` — topik, status PRD, dan tindak lanjut.
-   - `Riwayat Perubahan` — ringkasan perubahan berkas.
-2. **DILARANG** membiarkan `MEMORI.md` memuat nomor tertinggi atau daftar berkas yang sudah usang.
-## 9. Larangan
-- **DILARANG** membuat berkas hasil diskusi di luar `hasil_diskusi/`.
-- **DILARANG** mengisi gap penomoran atau menimpa berkas yang sudah ada.
-- **DILARANG** mengubah berkas hasil diskusi berstatus `Final` tanpa alasan yang disepakati pengguna.
-- **DILARANG** mengubah kode sumber implementasi (`.dart` atau kode lain) sebagai bagian dari pembuatan berkas hasil diskusi; mode diskusi hanya menghasilkan dokumen.
-- **DILARANG** memakai struktur PRD (bagian "Konteks penggunaan", "Aturan pengisian", atau 6 bagian PRD) untuk berkas hasil diskusi.
-- **DILARANG** mengubah teks judul `## Status`, `## Keputusan`, atau `## Tindak Lanjut`.
-- **DILARANG** menggunakan bahasa selain Indonesia, kecuali mengutip istilah teknis atau konten asing yang relevan.
-## 10. Kerangka Berkas
-```markdown
-# Hasil Diskusi <N> — <judul topik>
-## Status
-- Dokumen: Draft | Final | Batal
-- Implementasi: Belum Diimplementasikan | Sedang Diimplementasikan | Sudah Diimplementasikan
-- Tanggal: YYYY-MM-DD
-- Topik: <ringkasan topik>
-## Latar Belakang
-<masalah, pemicu, atau konteks diskusi>
-## Poin Diskusi
-### 1. <poin>
-- Tanya: <pertanyaan>
-- Kesimpulan: <kesimpulan singkat>
-## Keputusan
-- K-1: <keputusan>
+# Aturan Build dan Pengelolaan APK
+**Path file:** `.agents/rules/global/aturan_build.md`
+## 1. Larangan Menjalankan Build
+AI DILARANG menjalankan proses build dalam bentuk apa pun dan untuk platform apa pun.
+Larangan ini berlaku untuk seluruh target platform, termasuk tetapi tidak terbatas pada:
+- Android.
+- iOS.
+- Web.
+- Linux.
+- Windows.
+- macOS.
+- Platform lainnya.
+Ketentuan pelaksanaan:
+1. Jangan menjalankan perintah build melalui terminal, Cloud Shell, IDE, task runner, maupun alat lainnya.
+2. Jangan menjalankan script atau perintah yang secara langsung maupun tidak langsung memicu proses build.
+3. Jangan menjalankan build dengan alasan pengujian, validasi, debugging, pemeriksaan hasil perubahan, atau keperluan lainnya.
+4. Jangan mencoba mencari cara alternatif untuk menjalankan build ketika proses build dilarang.
+5. Larangan ini berlaku meskipun proses build diperlukan untuk memeriksa apakah perubahan kode berhasil dikompilasi.
+## 2. Larangan Mengubah File Workflow Build APK
+File berikut merupakan file yang dilindungi dan tidak boleh diubah oleh AI dalam kondisi apa pun:
+`.github/workflows/build-apk.yml`
+Ketentuan:
+1. Jangan mengubah isi file tersebut.
+2. Jangan menambahkan, menghapus, atau mengubah baris kode maupun konfigurasi di dalamnya.
+3. Jangan melakukan pemformatan ulang atau perubahan otomatis terhadap file tersebut.
+4. Jangan menulis ulang seluruh atau sebagian isi file tersebut.
+5. Jangan mengubah file tersebut melalui script, perintah terminal, maupun alat pengeditan lainnya.
+6. Jika suatu pekerjaan membutuhkan perubahan pada konfigurasi workflow tersebut, jangan melakukan perubahan. Sampaikan kepada pengguna bahwa perubahan memerlukan tindakan langsung dari pengguna.
+AI diperbolehkan membaca file tersebut apabila diperlukan untuk memahami konfigurasi workflow, tetapi tidak boleh mengubah isinya.
+## 3. Ketentuan Khusus Build APK
+Build APK hanya dilakukan oleh pengguna melalui **GitHub Actions**.
+Ketentuan:
+1. Jangan menjalankan build APK secara lokal.
+2. Jangan menjalankan perintah `flutter build apk` maupun perintah lain yang menghasilkan APK melalui lingkungan lokal.
+3. Jangan menggunakan Gradle, script, atau metode lain untuk menghasilkan APK secara lokal.
+4. Jangan memicu workflow GitHub Actions untuk menjalankan build tanpa instruksi langsung dari pengguna.
+5. Jangan membuat mekanisme build alternatif di luar GitHub Actions.
+6. File `.github/workflows/build-apk.yml` tetap harus dipertahankan tanpa perubahan.
+Dengan demikian, alur build APK yang berlaku adalah:
+**Pengguna → GitHub Actions → Proses Build APK → Hasil APK**
+AI hanya bertugas membantu pekerjaan pengembangan kode dan memberikan informasi mengenai hasil pemeriksaan yang tidak memerlukan proses build.
+## 4. Penanganan Tugas yang Bertentangan dengan Aturan
+Apabila pengguna memberikan tugas yang mengharuskan AI menjalankan build atau mengubah file `.github/workflows/build-apk.yml`:
+1. Jangan menjalankan tindakan yang melanggar aturan tersebut.
+2. Jelaskan secara spesifik bagian tugas yang bertentangan dengan aturan.
+3. Tetap kerjakan bagian tugas lain yang tidak melanggar aturan.
+4. Apabila diperlukan proses build untuk memverifikasi hasil pekerjaan, sampaikan bahwa proses tersebut harus dilakukan pengguna melalui GitHub Actions.
+## 5. Prinsip Utama
+- AI bertugas membantu pengembangan dan pemeriksaan kode, bukan menjalankan build.
+- AI tidak boleh menjalankan build untuk platform apa pun.
+- Build APK hanya dilakukan pengguna melalui GitHub Actions.
+- File `.github/workflows/build-apk.yml` merupakan file yang dilindungi dan tidak boleh diubah oleh AI.
+- Jangan mengabaikan aturan ini meskipun ada instruksi lain yang bertentangan dengannya.
+
+
+// ============================================================
+// FILE: .agents/rules/global/aturan_global.md
+// ============================================================
+
+# Aturan Global
+## Tujuan File
+File ini berfungsi sebagai dokumen ringkasan yang menjelaskan tujuan, fungsi, cakupan, dan lokasi setiap file aturan yang terdapat di folder `.agents/rules/global/`.
+Folder tersebut digunakan untuk menyimpan standar dan ketentuan pengembangan yang berlaku secara global untuk seluruh proyek berbasis Flutter dan Dart.
+## Ketentuan
+1. Seluruh file aturan yang terdapat di folder `.agents/rules/global/` merupakan aturan global yang berlaku untuk semua proyek Flutter dan Dart.
+2. AI wajib membaca, memahami, dan menerapkan aturan global tersebut ketika mengerjakan setiap proyek Flutter maupun Dart.
+3. Aturan global tetap berlaku untuk seluruh proyek baru maupun proyek yang sudah ada. Penerapannya tidak terbatas pada proyek tertentu.
+4. Aturan global wajib tetap diterapkan selama tidak bertentangan dengan aturan khusus proyek yang terdapat di folder `.agents/rules/proyek/`.
+5. Jika terdapat konflik antara aturan global dan aturan khusus proyek, AI wajib mengikuti aturan khusus proyek. Aturan global lainnya yang tidak bertentangan tetap wajib diterapkan.
+6. AI tidak boleh mengabaikan aturan global yang relevan hanya karena sedang mengerjakan proyek yang berbeda.
+7. Setiap file aturan yang dicantumkan dalam dokumen ini wajib disertai path lengkap yang sesuai dengan lokasi sebenarnya agar mudah ditemukan.
+8. AI tidak boleh mengarang atau memperkirakan nama maupun lokasi file yang belum diverifikasi.
+## Prinsip Penggunaan
+- `.agents/rules/global/`: Menyimpan standar pengembangan yang berlaku untuk seluruh proyek Flutter dan Dart.
+- `.agents/rules/proyek/`: Menyimpan ketentuan khusus yang hanya berlaku untuk proyek tertentu.
+## Format Ringkasan File
+Gunakan format berikut untuk menjelaskan setiap file aturan:
+### Nama File
+- **Path:** `.agents/rules/global/nama_file.md`
+- **Fungsi:** Penjelasan mengenai tujuan dan fungsi file.
+- **Cakupan:** Penjelasan mengenai aspek pengembangan yang diatur oleh file tersebut.
 ## Rekomendasi
-- R-1: <rekomendasi>
-## Tindak Lanjut
-| No | Tindakan | File Terdampak | Status |
-|----|----------|----------------|--------|
-| 1  | <tindakan> | <file> | belum |
-## File Terdampak
-| Lokasi File | Status Perubahan | Deskripsi |
-|-------------|------------------|-----------|
-| <file> | Dibuat / Diubah / Dihapus | <deskripsi> |
-## Pertanyaan Terbuka
-- <pertanyaan> / Belum ada
-## Riwayat Perubahan
-| Tanggal | Perubahan |
-|---------|-----------|
-| YYYY-MM-DD | <perubahan> |
+- Kelompokkan file berdasarkan fungsi agar mudah dibaca dan dipelihara.
+- Perbarui ringkasan apabila terdapat penambahan, penghapusan, perubahan nama, atau pemindahan file aturan.
+
+
+// ============================================================
+// FILE: .agents/rules/global/aturan_lainnya.md
+// ============================================================
+
+Aturan Umum Pengembangan Flutter dan Dart
+Path file proyek: prompt/aturan/aturan_lainnya.md
+Dokumen ini berisi aturan umum yang wajib diterapkan AI saat membaca, menganalisis, memperbaiki, atau mengembangkan kode Flutter dan Dart dalam proyek.
+Ketentuan Umum
+Terapkan setiap aturan yang relevan dengan pekerjaan. Jangan mengabaikan aturan secara diam-diam.
+Sebelum melakukan perubahan, periksa kode, konfigurasi, dokumentasi, dan aturan proyek yang berkaitan.
+Jangan membuat asumsi tentang struktur proyek, API, versi SDK, paket, atau maksud pengguna jika hal tersebut dapat diperiksa atau perlu dikonfirmasi.
+Jika suatu aturan tidak dapat diterapkan, alat yang diperlukan tidak tersedia, atau terdapat konflik yang belum dapat diselesaikan, jelaskan kendalanya kepada pengguna. Jangan berpura-pura telah mematuhi aturan tersebut.
+Contoh benar dan salah pada setiap aturan merupakan ilustrasi perilaku. Nama API dalam contoh kode tetap harus dicocokkan dengan implementasi yang benar-benar tersedia di proyek.
+1. Referensi Desain Antarmuka
+   Sebelum mengubah, membuat, atau menganalisis tampilan antarmuka pengguna (UI), baca file optimasi_ui.md terlebih dahulu. File tersebut merupakan referensi desain proyek dan menjadi acuan untuk ukuran, jarak, tata letak, tipografi, warna, padding, dan margin.
+Ikuti nilai dan pola desain yang sudah ditentukan dalam optimasi_ui.md.
+Jangan membuat nilai desain baru langsung di widget jika nilai tersebut seharusnya menjadi bagian dari referensi desain terpusat.
+Jika kebutuhan desain belum diatur, periksa pola yang sudah digunakan dalam proyek sebelum mengusulkan nilai baru.
+Jika ada ketidaksesuaian antara kebutuhan tugas dan referensi desain, jelaskan ketidaksesuaian tersebut sebelum mengambil keputusan yang mengubah standar desain.
+Contoh benar: Membaca optimasi_ui.md, lalu menggunakan token ukuran dan warna yang telah ditetapkan.
+Contoh salah: Langsung menentukan padding, ukuran teks, atau warna baru di widget tanpa memeriksa optimasi_ui.md.
+2. Verifikasi Versi dan Lokasi SDK
+   Sebelum menggunakan API Flutter atau Dart, pastikan versi SDK yang benar-benar digunakan proyek. Jangan mengandalkan ingatan model atau dokumentasi untuk versi yang berbeda.
+Periksa versi dengan flutter --version dan dart --version.
+Temukan lokasi Flutter SDK yang benar-benar digunakan melalui command -v flutter, konfigurasi proyek, atau cara lain yang dapat diverifikasi.
+Gunakan lokasi SDK aktual tersebut sebagai dasar pencarian sumber. Jangan menganggap SDK selalu berada di /flutter.
+Bedakan lokasi sumber berikut:
+Sumber framework Flutter umumnya berada di <FLUTTER_ROOT>/packages/flutter/lib/.
+Sumber pustaka Dart berada di <FLUTTER_ROOT>/bin/cache/dart-sdk/lib/.
+Paket SDK Flutter dapat berada di <FLUTTER_ROOT>/packages/<nama_paket>/ atau <FLUTTER_ROOT>/bin/cache/pkg/<nama_paket>/.
+Folder <FLUTTER_ROOT>/bin/cache/ berisi berbagai artefak dan cache SDK. Jangan menganggap seluruh folder tersebut sebagai lokasi sumber kode framework Flutter.
+Untuk paket pihak ketiga, periksa lokasi cache yang benar. Pada Linux, lokasi default biasanya ~/.pub-cache/hosted/pub.dev/, tetapi dapat berubah jika variabel PUB_CACHE digunakan.
+Gunakan pubspec.lock untuk mengetahui versi paket yang benar-benar terselesaikan. Jika lokasi paket belum jelas, periksa .dart_tool/package_config.json dan konfigurasi dependensi proyek.
+Baca hanya file sumber SDK atau paket yang relevan dengan API yang sedang digunakan. Jangan membaca seluruh cache secara rekursif tanpa tujuan.
+Contoh benar: Memastikan versi Flutter, membaca pubspec.lock, menemukan versi paket yang digunakan, lalu memeriksa sumber API pada lokasi SDK atau cache paket yang sesuai.
+Contoh salah: Mengasumsikan Flutter selalu berada di /flutter/bin/cache/, membaca cache secara acak, atau memakai API berdasarkan pengetahuan model tanpa memeriksa versi proyek.
+3. Pemeriksaan Sumber dan Dokumentasi API
+   Setiap kali pekerjaan membutuhkan API Flutter, Dart, atau paket pihak ketiga, periksa implementasi dan dokumentasi yang sesuai dengan versi terpasang sebelum menulis kode.
+Urutan pemeriksaan:
+Baca kode proyek yang memanggil atau akan memanggil API tersebut.
+Baca versi dependensi pada pubspec.lock.
+Periksa sumber API pada Flutter SDK, Dart SDK, atau direktori paket yang benar.
+Periksa dokumentasi resmi, README, CHANGELOG, dan dokumentasi API paket jika tersedia.
+Periksa contoh implementasi pada folder example/ paket jika tersedia.
+Periksa tes atau contoh internal paket jika perilaku API belum jelas.
+Pastikan API, konstruktor, parameter, nilai kembalian, serta pola penanganan error yang dipilih memang tersedia pada versi terpasang dan tidak deprecated.
+Jika sumber lokal tidak cukup menjelaskan perilaku API, cari dokumentasi resmi yang sesuai dengan versi paket. Jangan menjadikan artikel tidak resmi sebagai sumber utama jika dokumentasi resmi tersedia.
+Contoh benar: Memeriksa definisi konstruktor dan parameter pada sumber paket versi terpasang, lalu mencocokkannya dengan dokumentasi resmi.
+Contoh salah: Menyalin contoh dari internet untuk versi terbaru padahal proyek menggunakan versi lama, tanpa memeriksa apakah API tersebut tersedia.
+4. Kedalaman Pemeriksaan File
+   Untuk analisis bug, perubahan fitur, atau pekerjaan yang berpotensi berdampak lintas file, periksa sekurang-kurangnya 10 file yang benar-benar relevan apabila file sebanyak itu tersedia. Pemeriksaan dapat mencakup widget, halaman, provider/notifier, model, repository, database, helper, konfigurasi, tes, serta sumber dependensi.
+Jangan hanya membaca file yang disebut pengguna. Telusuri pemanggil, pemanggilan lanjutan, alur data, dan dependensi yang dapat memengaruhi masalah.
+Jika pekerjaan sederhana dan hanya memiliki sedikit file yang relevan, baca seluruh file relevan yang tersedia. Jangan membaca file yang tidak berhubungan hanya untuk memenuhi jumlah 10 file.
+Jika jumlah file relevan kurang dari 10, sebutkan jumlah file yang diperiksa dan alasannya dalam laporan akhir.
+Jangan menyimpulkan bahwa suatu masalah hanya berada pada satu file sebelum memeriksa alur yang berkaitan.
+Contoh benar: Saat memperbaiki data yang tidak tampil, memeriksa halaman, provider, model, repository, query database, helper pemetaan, konfigurasi, serta tes yang berkaitan.
+Contoh salah: Mengubah satu widget berdasarkan dugaan tanpa memeriksa provider, sumber data, atau file lain yang memasok data ke widget tersebut.
+5. Manajemen Dependensi dan Paket
+   Jangan menambah atau menghapus dependensi secara manual dengan mengubah bagian dependencies atau dev_dependencies di pubspec.yaml.
+Tambahkan dependensi menggunakan flutter pub add nama_paket.
+Tambahkan dependensi pengembangan menggunakan flutter pub add --dev nama_paket.
+Untuk dependensi Flutter SDK, gunakan opsi SDK yang sesuai, misalnya flutter pub add flutter_localizations --sdk flutter.
+Hapus dependensi menggunakan flutter pub remove nama_paket.
+Setelah perubahan dependensi, periksa hasil perubahan pada pubspec.yaml dan pubspec.lock.
+Jangan menambahkan paket yang sudah tersedia atau mengganti paket tanpa memeriksa dependensi dan pola proyek terlebih dahulu.
+Aturan ini hanya mengatur entri dependensi. Pengaturan aset dan font di bagian flutter: pada pubspec.yaml tetap boleh diperbarui sesuai Aturan 14.
+Contoh benar: Menambahkan paket dengan flutter pub add uuid.
+Contoh salah: Menambahkan baris uuid: ^... secara manual ke bagian dependencies di pubspec.yaml.
+6. Baca Kode Sebelum Menganalisis atau Mengubah
+   Baca implementasi yang sudah ada sebelum membuat kesimpulan atau mengubah kode. Pengetahuan model dan cache konteks AI dapat tidak sesuai dengan versi proyek saat ini.
+Dahulukan bukti dari kode proyek dan sumber SDK/paket yang benar-benar terpasang.
+Jangan mengarang nama fungsi, parameter, provider, class, path, atau struktur data.
+Jangan menganggap cache jawaban AI selalu terbaru atau benar.
+Cocokkan setiap asumsi teknis dengan implementasi yang dapat dibaca.
+Contoh benar: Memeriksa definisi fungsi dan seluruh pemanggilnya sebelum mengubah parameter fungsi tersebut.
+Contoh salah: Menganggap sebuah fungsi menerima parameter tertentu hanya karena pernah melihat pola serupa pada proyek lain.
+7. Batasi Ruang Lingkup Perubahan
+   Fokus hanya pada kode dan file yang diperlukan untuk menyelesaikan topik atau tugas pengguna.
+Gunakan tool edit atau mekanisme perubahan parsial untuk mengubah bagian kode yang diperlukan.
+Jangan menulis ulang seluruh file jika perubahan hanya membutuhkan beberapa baris.
+Jangan melakukan refactor, penggantian nama, pemindahan file, perubahan arsitektur, atau perapian di luar ruang lingkup tanpa kebutuhan yang terbukti dan persetujuan pengguna.
+Perubahan lintas file hanya diperbolehkan jika memang diperlukan oleh alur fungsi, dependensi, atau perbaikan bug.
+Jika perubahan besar tidak dapat dihindari, jelaskan alasan dan dampaknya sebelum melakukannya.
+Contoh benar: Mengubah satu fungsi dengan tool edit tanpa mengubah bagian file lainnya.
+Contoh salah: Menulis ulang seluruh file atau merapikan modul lain yang tidak berkaitan dengan permintaan.
+8. File Hasil Generator
+   Jangan mengedit file hasil generator secara langsung, termasuk file dengan akhiran .g.dart dan .freezed.dart.
+Jika perubahan pada file hasil generator diperlukan, cari file sumber atau anotasi yang menjadi asalnya.
+Ubah file sumber, lalu jalankan generator yang memang digunakan proyek.
+Periksa konfigurasi dan perintah generator sebelum menjalankannya.
+Jangan menghapus, menimpa, atau mengubah hasil generator secara manual.
+Contoh benar: Mengubah model Freezed, kemudian menjalankan perintah generator yang sesuai dengan konfigurasi proyek.
+Contoh salah: Mengubah isi file pengguna.freezed.dart secara langsung agar error hilang.
+9. Konsistensi Implementasi
+   Pertahankan konsistensi dengan struktur, pola, penamaan, dan arsitektur yang sudah digunakan proyek.
+Cari implementasi serupa pada file lain sebelum membuat pola baru.
+Ikuti cara proyek menangani state, error, logging, navigasi, database, serta pemisahan tanggung jawab.
+Jangan membuat abstraksi atau helper baru jika pola yang tersedia sudah dapat digunakan.
+Jangan menyalin pola dari file lain secara membabi buta; pastikan pola tersebut masih sesuai dengan kebutuhan dan versi dependensi.
+Contoh benar: Mengikuti pola repository dan provider yang sudah dipakai oleh fitur sejenis setelah memeriksa implementasinya.
+Contoh salah: Membuat mekanisme pengelolaan state baru padahal proyek sudah memiliki pola standar yang sesuai.
+10. Logging dan Larangan print
+    Dilarang menggunakan print() atau debugPrint() untuk logging aplikasi.
+Untuk log ke console, gunakan class atau helper p yang memang tersedia di proyek.
+Untuk log debug yang ditujukan agar dapat dilihat dari aplikasi/APK, gunakan logger yang disediakan melalui file l.dart.
+Sebelum memanggil logger, baca file implementasinya dan gunakan nama metode serta parameter yang benar-benar tersedia. Jangan menebak API logger.
+Jangan meninggalkan log sementara yang tidak diperlukan setelah debugging selesai.
+Contoh benar: Menggunakan metode logging dari p atau logger di l.dart setelah memeriksa definisi API-nya.
+Contoh salah: Menulis print(data); atau debugPrint(data.toString()); untuk mencetak log aplikasi.
+11. Konvensi Penamaan
+    Gunakan bahasa Indonesia untuk nama yang dibuat sendiri pada kode aplikasi, dengan tetap mengikuti konvensi penamaan Dart.
+Class, enum, dan type menggunakan PascalCase.
+Variabel, fungsi, method, getter, dan nama provider mengikuti konvensi proyek, umumnya camelCase.
+Nama file wajib menggunakan snake_case.
+Pilih nama singkat, jelas, dan cukup spesifik sehingga maksudnya dapat dipahami tanpa menebak.
+Jangan mengubah nama API Flutter, Dart, paket pihak ketiga, atau simbol hasil generator.
+Pertahankan nama yang diwajibkan oleh kontrak eksternal, format data, atau kompatibilitas API.
+Contoh benar: DaftarPenggunaPage, ambilDataPengguna, dan daftar_pengguna_page.dart.
+Contoh salah: Membuat file DaftarPenggunaPage.dart, memakai nama ambigu seperti x1, atau menerjemahkan nama API resmi Flutter.
+12. Dokumentasi dan Komentar Kode
+    Tambahkan dokumentasi singkat menggunakan doc comment /// pada API publik dan logika kompleks yang tidak mudah dipahami dari kode saja.
+Setiap doc comment wajib satu baris dan menjelaskan fungsi atau tujuan secara langsung.
+Gunakan komentar biasa hanya jika diperlukan untuk menjelaskan alasan, batasan, atau perilaku yang tidak jelas dari kode.
+Hapus komentar yang sudah tidak relevan, salah, duplikat, atau hanya mengulang isi kode.
+Jangan menghapus komentar yang masih menjelaskan alasan teknis penting, batasan, atau keputusan yang tidak dapat diketahui hanya dari kode.
+Contoh benar:
+/// Mengambil daftar pengguna yang masih aktif.
+Future<List<Pengguna>> ambilPenggunaAktif() async { ... }
+Contoh salah:
+/// Fungsi ini digunakan untuk mengambil daftar pengguna yang masih aktif
+/// berdasarkan kondisi tertentu dan kemudian mengembalikannya kepada pemanggil.
+Future<List<Pengguna>> ambilPenggunaAktif() async { ... } 13. Batasan Penggunaan Git
+Perintah Git hanya boleh digunakan untuk membaca informasi. Sebelum menjalankan perintah yang dapat mengubah repository, index, branch, riwayat, atau remote, wajib meminta persetujuan pengguna melalui tool question.
+Perintah baca yang diperbolehkan antara lain git status, git diff, git log, git show, git branch --list, dan git ls-files.
+Perintah yang mengubah keadaan Git, misalnya git add, git commit, git checkout, git switch, git reset, git restore, git clean, git stash, git merge, git rebase, git cherry-pick, git tag, git push, dan git pull, wajib meminta persetujuan terlebih dahulu.
+Jika ragu apakah sebuah perintah mengubah repository atau remote, jangan jalankan sebelum bertanya.
+Contoh benar: Menjalankan git diff untuk membaca perubahan.
+Contoh salah: Menjalankan git add . atau git commit tanpa persetujuan pengguna.
+14. Manajemen Aset dan Font di pubspec.yaml
+    Setiap aset gambar, font, ikon, atau berkas lokal yang digunakan aplikasi harus didaftarkan pada bagian yang sesuai di pubspec.yaml dan dimuat melalui path yang konsisten.
+Periksa struktur folder aset dan konfigurasi yang sudah ada sebelum menambahkan path.
+Jangan mendaftarkan path yang tidak ada.
+Jangan membuat beberapa path berbeda untuk merujuk aset yang sama tanpa alasan.
+Pendaftaran aset/font pada bagian flutter: diperbolehkan diperbarui secara langsung; larangan edit manual pada Aturan 5 hanya berlaku untuk bagian dependensi.
+Contoh benar: Menambahkan folder aset yang benar-benar ada ke bagian flutter/assets, lalu memuat gambar menggunakan path yang sama.
+Contoh salah: Memakai assets/gambar/logo.png di kode tanpa memastikan file tersebut ada dan terdaftar di pubspec.yaml.
+15. Format Kode dan Analisis Statis
+    Setelah mengubah kode Dart:
+Jalankan dart format hanya pada file Dart yang dibuat atau diubah.
+Jalankan flutter analyze untuk memeriksa proyek.
+Jika analisis menemukan masalah yang disebabkan oleh perubahan, perbaiki lalu jalankan kembali format dan analisis.
+Jalankan tes yang relevan apabila perubahan memengaruhi logika yang memiliki tes atau membutuhkan verifikasi perilaku.
+Laporkan error yang sudah ada sebelum perubahan jika dapat dibedakan dari error akibat pekerjaan saat ini.
+Urutan ini memastikan format akhir ikut diperiksa oleh analisis statis. Jangan mengklaim analisis berhasil jika perintah tidak dijalankan atau hasilnya belum diperiksa.
+Contoh benar: Menjalankan dart format lib/fitur/pengguna/daftar_pengguna.dart, kemudian flutter analyze.
+Contoh salah: Mengubah file Dart, tidak menjalankan formatter maupun analyzer, lalu menyatakan pekerjaan bebas error.
+16. Penggunaan Google Fonts
+    Gunakan Google Fonts dengan mekanisme cache agar font tidak dimuat berulang kali dari jaringan.
+Periksa apakah paket google_fonts sudah tersedia dan bagaimana konfigurasi versi terpasangnya.
+Ikuti pola pemakaian font yang telah ditentukan proyek.
+Hindari pemuatan jaringan berulang pada setiap pembangunan widget atau setiap perpindahan halaman.
+Jika aplikasi harus dapat menampilkan font secara konsisten tanpa koneksi internet, periksa opsi penyertaan font sebagai aset lokal dan daftarkan font tersebut pada pubspec.yaml.
+Contoh benar: Menggunakan font sesuai konfigurasi cache proyek dan memastikan font yang wajib tersedia secara offline telah dibundel.
+Contoh salah: Memicu pengunduhan font dari jaringan berulang kali saat widget dibangun.
+17. Splash Screen
+    Gunakan flutter_native_splash untuk membuat splash screen native. Jangan membuat splash screen awal secara manual menggunakan widget Flutter jika kebutuhan tersebut merupakan splash screen saat aplikasi diluncurkan.
+Periksa konfigurasi dan versi flutter_native_splash yang digunakan proyek.
+Ikuti konfigurasi warna, gambar, dan platform yang sudah ditetapkan.
+Jalankan generator splash screen sesuai dokumentasi versi paket setelah mengubah konfigurasinya.
+Contoh benar: Mengatur splash screen melalui konfigurasi flutter_native_splash dan menjalankan generatornya.
+Contoh salah: Membuat halaman widget buatan sendiri sebagai pengganti splash screen native saat proses awal aplikasi.
+18. Toast dan Feedback Singkat
+    Gunakan fluttertoast untuk feedback singkat yang memang sesuai ditampilkan sebagai toast.
+Periksa helper atau pola toast yang sudah tersedia sebelum memanggil paket secara langsung.
+Hindari menampilkan toast berulang untuk satu kejadian.
+Jangan gunakan toast sebagai pengganti konfirmasi tindakan berisiko, informasi proses yang berlangsung lama, formulir, atau pesan error panjang.
+Pastikan pesan singkat, jelas, dan sesuai bahasa pengguna.
+Contoh benar: Menampilkan satu toast singkat setelah penyimpanan berhasil.
+Contoh salah: Menampilkan toast berulang kali selama proses pemuatan atau menggunakan toast sebagai satu-satunya konfirmasi sebelum menghapus data.
+19. Pembuatan ID Unik
+    Gunakan paket uuid untuk membuat ID unik apabila data membutuhkan identifier baru.
+Periksa apakah paket uuid sudah tersedia dan ikuti pola pemakaiannya di proyek.
+Jangan menggunakan timestamp sebagai pengganti ID unik.
+Jangan membuat ID sendiri dari gabungan waktu atau angka acak sederhana tanpa dasar yang dapat dipertanggungjawabkan.
+Jangan membuat ulang ID untuk data yang sudah memiliki ID tetap.
+Contoh benar: Membuat ID baru menggunakan generator UUID dari paket uuid.
+Contoh salah: Menggunakan DateTime.now().millisecondsSinceEpoch sebagai ID utama sebuah data.
+20. Shared Preferences
+    Gunakan shared_preferences hanya untuk pengaturan sederhana yang sesuai disimpan sebagai preferensi lokal.
+Cocok untuk nilai kecil seperti tema, bahasa pilihan, atau preferensi tampilan.
+Jangan menyimpan data sensitif, kredensial, data berukuran besar, atau kumpulan data utama aplikasi.
+Gunakan database atau mekanisme penyimpanan yang sesuai untuk data terstruktur dan data utama aplikasi.
+Ikuti pola akses preferences yang sudah digunakan proyek.
+Contoh benar: Menyimpan pilihan tema gelap pengguna.
+Contoh salah: Menyimpan seluruh riwayat transaksi atau kata sandi pengguna ke shared_preferences.
+21. Daftar dengan Banyak Item
+    Untuk daftar yang berpotensi menampilkan lebih dari 20 item, gunakan widget yang membangun item secara bertahap, seperti ListView.builder atau SliverList.
+Jangan membangun seluruh item sekaligus dengan ListView(children: ...) jika jumlah item dapat melebihi 20.
+Pilih widget berdasarkan struktur layar yang sudah digunakan proyek.
+Pastikan setiap item memiliki identitas dan key yang tepat jika diperlukan.
+Contoh benar: Menggunakan ListView.builder untuk menampilkan daftar ratusan transaksi.
+Contoh salah: Membuat seluruh ratusan widget daftar sekaligus di dalam Column atau ListView(children: ...).
+22. Skills
+    Sebelum mengerjakan tugas, periksa skills yang tersedia dan muat skill yang relevan dengan bahasa, framework, paket, atau jenis pekerjaan tersebut.
+Baca isi skill yang relevan sebelum menulis atau mengubah kode.
+Ikuti instruksi dan referensi yang disediakan skill.
+Jangan memuat atau mengikuti skill yang tidak berhubungan dengan tugas.
+Jika tidak ada skill yang relevan atau tool skill tidak tersedia, lanjutkan berdasarkan dokumentasi resmi dan kode proyek, lalu laporkan keterbatasannya bila berpengaruh.
+Contoh benar: Memuat skill Flutter/Riverpod yang relevan sebelum mengubah provider.
+Contoh salah: Mengabaikan skill yang tersedia dan langsung menulis implementasi berdasarkan asumsi.
+23. Contoh Implementasi Paket
+    Saat menggunakan atau memperbaiki implementasi paket pihak ketiga, periksa folder example/ dari versi paket yang benar-benar terpasang jika folder tersebut tersedia.
+Bandingkan pola penggunaan paket dalam proyek dengan contoh resmi paket.
+Periksa apakah contoh menggunakan API yang sama dengan versi terpasang.
+Jangan menyalin contoh mentah tanpa memahami kebutuhan, batasan, dan struktur proyek.
+Jika folder example/ tidak tersedia, periksa dokumentasi resmi, README, tes paket, atau sumber implementasinya.
+Contoh benar: Membandingkan konfigurasi paket yang digunakan proyek dengan contoh pada versi paket yang terpasang.
+Contoh salah: Menyatakan implementasi proyek sudah benar tanpa memeriksa contoh atau dokumentasi paket yang relevan.
+24. Klarifikasi kepada Pengguna
+    Jangan menebak keputusan yang dapat mengubah hasil, perilaku, arsitektur, data, atau ruang lingkup pekerjaan. Jika informasi penting belum tersedia atau terdapat beberapa pilihan yang sama-sama mungkin, gunakan tool question untuk meminta kepastian.
+Ajukan pertanyaan yang spesifik dan sertakan pilihan jika pilihan tersebut dapat dirumuskan dengan jelas.
+Jangan menanyakan hal yang jawabannya sudah tersedia di percakapan, kode, konfigurasi, atau dokumentasi proyek.
+Jangan meminta konfirmasi untuk detail teknis rutin yang sudah ditentukan oleh aturan dan pola proyek.
+Jika pertanyaan belum dijawab, jangan menjalankan perubahan yang bergantung pada jawaban tersebut.
+Jika tool question tidak tersedia, ajukan pertanyaan secara langsung di percakapan. Jangan berpura-pura telah menggunakan tool.
+Contoh benar: Bertanya apakah data yang dihapus harus dihapus permanen atau dipindahkan ke arsip ketika kode dan permintaan pengguna belum menjelaskan hal tersebut.
+Contoh salah: Memilih salah satu perilaku penghapusan berdasarkan dugaan, padahal pilihan tersebut berdampak pada data pengguna.
+25. Peta Jalan Pekerjaan dengan todowrite
+    Untuk pekerjaan yang terdiri atas beberapa tahap, melibatkan banyak file, atau membutuhkan analisis dan verifikasi, gunakan tool todowrite sebelum mulai bekerja agar pengguna dapat melihat peta jalan pekerjaan.
+Susun langkah yang konkret, berurutan, dan sesuai ruang lingkup tugas.
+Perbarui status daftar tugas ketika pekerjaan dimulai, selesai, atau ketika ditemukan langkah tambahan yang memang diperlukan.
+Jangan memasukkan pekerjaan di luar permintaan.
+Untuk permintaan sangat sederhana yang hanya membutuhkan satu tindakan kecil, daftar tugas tidak wajib jika tidak menambah manfaat.
+Jika tool todowrite tidak tersedia, sampaikan rencana singkat melalui percakapan. Jangan mengaku telah memperbarui daftar tugas.
+Contoh benar: Membuat daftar tahap untuk menelusuri bug, memperbaiki beberapa file, menjalankan tes, dan memeriksa hasil analisis.
+Contoh salah: Memulai perubahan lintas file tanpa peta jalan, atau membuat daftar tugas yang tidak berkaitan dengan permintaan.
+26. Tool untuk Mengubah File
+    Untuk mengubah kode atau file proyek, gunakan tool edit atau write.
+Utamakan edit untuk perubahan sebagian pada file yang sudah ada.
+Gunakan write untuk membuat file baru atau menulis ulang seluruh isi file hanya jika memang diperlukan dan sesuai permintaan.
+Jangan mengubah kode menggunakan perintah terminal, skrip shell, atau teknik penggantian teks melalui terminal.
+Terminal boleh digunakan untuk membaca informasi, mencari file/teks, menjalankan formatter, analyzer, generator, tes, dan perintah verifikasi lain yang tidak mengubah kode sumber secara manual.
+Jangan menggunakan sed -i, perl -pi, tee, pengalihan > atau >>, atau skrip sejenis untuk mengedit file.
+Contoh benar: Mengubah beberapa baris Dart menggunakan tool edit.
+Contoh salah: Menjalankan sed -i atau cat > file.dart untuk mengubah kode proyek.
+27. Tool dan Perintah Pencarian
+    Gunakan tool yang paling sesuai dengan jenis pencarian.
+Gunakan glob untuk mencari file berdasarkan nama atau pola path.
+Gunakan ls untuk melihat isi satu folder.
+Gunakan rg untuk mencari teks di dalam file.
+Gunakan grep -rn hanya sebagai alternatif ketika rg benar-benar gagal atau tidak tersedia.
+Jika rg dilaporkan belum terpasang, periksa lokasinya menggunakan which rg melalui perintah shell sebelum memilih alternatif.
+Kode keluar rg yang menunjukkan tidak ada hasil pencarian bukan berarti tool gagal. Jangan langsung beralih ke grep hanya karena tidak ada hasil.
+Jangan menggunakan pencarian luas tanpa membatasi folder atau pola ketika ruang lingkup sudah diketahui.
+Contoh benar: Mencari pemanggilan fungsi dengan rg "namaFungsi" lib/ dan mencari file dengan glob.
+Contoh salah: Langsung menjalankan grep -rn meskipun rg tersedia dan berfungsi.
+28. Urutan Kerja Analisis hingga Implementasi
+    Untuk tugas yang membutuhkan analisis dan perubahan kode, gunakan alur berikut:
+Pahami tujuan dan batasan permintaan pengguna.
+Baca aturan proyek yang berlaku, termasuk AGENTS.md dan rules lain yang telah didaftarkan.
+Baca optimasi_ui.md jika pekerjaan menyentuh UI.
+Periksa skills yang relevan.
+Periksa struktur dan kode proyek yang berkaitan. Untuk pekerjaan kompleks atau lintas file, terapkan ketentuan pemeriksaan pada Aturan 4.
+Telusuri alur dari UI ke state/provider, repository, database, atau layanan yang terkait.
+Periksa versi dependensi dan sumber SDK/paket mengikuti Aturan 2 dan 3.
+Periksa dokumentasi resmi serta folder example/ paket jika relevan.
+Jika terdapat keputusan penting yang belum jelas, gunakan tool question dan tunggu jawaban.
+Susun peta jalan menggunakan todowrite jika pekerjaan terdiri atas beberapa tahap.
+Lakukan perubahan sekecil mungkin menggunakan tool edit file.
+Jalankan formatter, analyzer, dan tes relevan.
+Tinjau kembali diff agar tidak ada perubahan di luar ruang lingkup.
+Laporkan file yang diubah, alasan perubahan, pemeriksaan yang dijalankan, hasilnya, dan kendala yang belum terselesaikan.
+Contoh benar: Menelusuri seluruh alur data dan API paket sebelum memperbaiki bug pada tampilan.
+Contoh salah: Langsung menulis kode dari dugaan tanpa membaca aturan, kode sumber, versi paket, atau alur dependensi.
+29. Inisialisasi Database sqflite FFI
+    Jika aplikasi menggunakan sqflite pada platform desktop atau web, atur database factory yang sesuai sebelum membuka database.
+Untuk desktop yang menggunakan FFI, panggil sqfliteFfiInit() dan atur databaseFactory ke databaseFactoryFfi sebelum pemanggilan pembukaan database.
+Untuk web, atur databaseFactory ke databaseFactoryFfiWeb sebelum pemanggilan pembukaan database.
+Untuk Android dan iOS, ikuti factory bawaan yang sesuai dengan paket sqflite; jangan memaksakan factory FFI desktop.
+Periksa versi dan dokumentasi paket FFI yang terpasang, termasuk import dan API yang benar.
+Pastikan inisialisasi hanya dilakukan pada tempat yang tepat dan tidak terlambat setelah database dibuka.
+Contoh benar: Memilih factory berdasarkan platform, menyelesaikan inisialisasi terlebih dahulu, lalu memanggil openDatabase.
+Contoh salah: Membuka database desktop sebelum sqfliteFfiInit() dan pengaturan databaseFactoryFfi, atau menggunakan factory FFI desktop tanpa memeriksa platform.
+30. Navigasi Antarhalaman
+    Semua navigasi antarhalaman wajib menggunakan helper Nav yang tersedia di core_shared.
+Baca definisi helper Nav terlebih dahulu untuk mengetahui method, parameter, dan nilai kembaliannya.
+Gunakan helper tersebut untuk navigasi maju, kembali, atau bentuk navigasi lain yang didukung proyek.
+Jangan memanggil API navigasi Flutter secara langsung jika helper proyek sudah menyediakan fungsi yang sesuai.
+Pengecualian yang diperbolehkan: pengecekan guard seperti `Navigator.of(context).canPop()` untuk memastikan navigasi dapat dilakukan, serta `SystemNavigator.pop()` untuk keluar dari aplikasi. Pemanggilan `Navigator.push`, `pushReplacement`, dan `pop` secara langsung tetap dilarang meskipun untuk menutup dialog atau bottom sheet, karena `Nav.pop(context, result)` sudah mendukung pengembalian nilai.
+Gunakan unawaited hanya jika Future memang sengaja tidak perlu ditunggu dan pola tersebut sesuai dengan implementasi helper.
+Contoh benar:
+unawaited(Nav.to(context, const StatistikBahanBakar()));
+Contoh salah:
+Navigator.push(
+context,
+MaterialPageRoute(builder: (\_) => const StatistikBahanBakar()),
+); 31. Aturan Import
+Gunakan package: import untuk mengimpor file proyek. Jangan menggunakan relative import.
+Contoh benar:
+import 'package:myapp/fitur/pengguna/halaman/daftar_pengguna.dart';
+Contoh salah:
+import '../../pengguna/halaman/daftar_pengguna.dart'; 32. Penyimpanan Tanggal dan Waktu
+Simpan tanggal dan waktu ke database dalam format UTC. Saat menampilkan tanggal dan waktu kepada pengguna, konversikan ke waktu lokal perangkat.
+Konversikan nilai ke UTC sebelum disimpan.
+Konversikan nilai UTC ke waktu lokal ketika akan ditampilkan kepada pengguna.
+Ikuti format penyimpanan yang sudah digunakan proyek dan pastikan proses parsing tidak menghilangkan informasi zona waktu.
+Jangan menyimpan waktu lokal seolah-olah merupakan UTC.
+Contoh benar: Menggunakan waktu.toUtc() sebelum menyimpan dan waktuUtc.toLocal() sebelum menampilkan.
+Contoh salah: Menyimpan waktu lokal tanpa konversi UTC, lalu menganggap nilai tersebut sudah UTC.
+33. Lokalisasi Aplikasi
+    Aplikasi Flutter wajib mengatur lokalisasi secara eksplisit pada MaterialApp.
+Deklarasikan supportedLocales.
+Jika aplikasi menargetkan pengguna Indonesia, sertakan const Locale('id', 'ID').
+Gunakan flutter_localizations dari Flutter SDK untuk menyediakan data lokalisasi.
+Pastikan localizationsDelegates mencakup setidaknya:
+GlobalMaterialLocalizations.delegate
+GlobalWidgetsLocalizations.delegate
+GlobalCupertinoLocalizations.delegate
+Jangan hanya mengandalkan delegate paket pihak ketiga jika paket tersebut tidak menyediakan data untuk locale yang dibutuhkan.
+Pastikan teks sistem yang tampil kepada pengguna, seperti toolbar pemilihan teks, dialog, date picker, dan komponen Material/Cupertino, mengikuti locale yang didukung.
+Setiap perubahan lokalisasi wajib diverifikasi secara visual pada layar yang terdampak.
+Pastikan dependensi dan import lokalisasi sesuai dengan versi Flutter SDK yang digunakan.
+Contoh benar: Mendeklarasikan supportedLocales, delegate global Flutter, dan memeriksa date picker dalam locale Indonesia.
+Contoh salah: Hanya mengatur teks buatan aplikasi ke bahasa Indonesia, tetapi membiarkan komponen sistem memakai locale yang tidak sesuai.
+34. Pendaftaran dan Pemuatan Rules Kilo Code
+    Keberadaan file rules di folder proyek tidak otomatis membuktikan bahwa Kilo Code memuat rules tersebut.
+Daftarkan file rules proyek secara eksplisit pada array instructions di kilo.jsonc.
+Untuk file ini, pastikan path prompt/aturan/aturan_lainnya.md tercantum dalam instructions.
+Sebelum mengubah konfigurasi, baca isi kilo.jsonc yang sudah ada. Pertahankan seluruh konfigurasi lain dan jangan menimpa isi file secara keseluruhan.
+Jika path belum terdaftar, tambahkan hanya entri yang diperlukan menggunakan tool edit file.
+Jika rules terlalu besar atau mencampur banyak topik, pecah menjadi beberapa file berdasarkan tanggung jawab. Pastikan setiap file hasil pemecahan juga didaftarkan secara eksplisit.
+Jangan menganggap rules aktif hanya karena file ada, namanya benar, atau foldernya sudah dibuat.
+Setelah perubahan konfigurasi rules, pastikan sintaks JSONC valid dan ikuti kebutuhan pemuatan ulang sesi Kilo Code agar konfigurasi terbaru diterapkan.
+Rules berbentuk instruksi teks tidak menjamin semua tindakan dapat dicegah secara teknis. Untuk larangan yang sangat kritis, gunakan juga permission Kilo Code yang sesuai dan pemeriksaan otomatis seperti analyzer, tes, atau validasi konfigurasi.
+Contoh benar: Memeriksa kilo.jsonc, memastikan path prompt/aturan/aturan_lainnya.md berada di dalam instructions, lalu memeriksa ulang konfigurasi.
+Contoh salah: Menganggap rules otomatis aktif hanya karena file prompt/aturan/aturan_lainnya.md tersedia di proyek.
+35. Pemeriksaan Kepatuhan Sebelum Menyelesaikan Tugas
+    Sebelum menyatakan pekerjaan selesai, lakukan pemeriksaan berikut:
+Apakah semua aturan yang relevan telah diterapkan?
+Apakah file dan alur dependensi yang berkaitan sudah diperiksa?
+Apakah perubahan tetap berada dalam ruang lingkup permintaan?
+Apakah tidak ada file .g.dart atau .freezed.dart yang diedit langsung?
+Apakah tidak ada print() atau debugPrint() yang ditambahkan?
+Apakah import, penamaan, navigasi, logging, dan pola proyek sudah konsisten?
+Apakah dart format dan flutter analyze sudah dijalankan setelah perubahan kode Dart?
+Apakah tes atau verifikasi visual yang relevan sudah dilakukan?
+Apakah diff sudah diperiksa untuk menemukan perubahan yang tidak diminta?
+Apakah semua kendala, pemeriksaan yang gagal, atau aturan yang tidak dapat diterapkan sudah dilaporkan secara jujur?
+Apakah larangan yang sangat kritis juga dilindungi dengan permission atau pemeriksaan otomatis jika memungkinkan?
+Jangan menyatakan tugas selesai atau bebas error apabila pemeriksaan yang diwajibkan belum dilakukan. Jangan menganggap pendaftaran rules sebagai jaminan teknis bahwa semua tindakan akan selalu dicegah; rules Kilo Code merupakan instruksi bagi agen dan perlu didukung oleh permission serta pemeriksaan otomatis untuk kebutuhan yang kritis.
+Contoh benar: Melaporkan bahwa formatter dan analyzer berhasil, menyebutkan file yang berubah, serta menjelaskan tes yang dijalankan.
+Contoh salah: Mengatakan "semua sudah aman" tanpa memeriksa hasil formatter, analyzer, tes, atau diff.
+
+
+// ============================================================
+// FILE: .agents/rules/global/aturan_notifikasi.md
+// ============================================================
+
+# Aturan Notifikasi
+**Path:** `.agents/rules/global/aturan_notifikasi.md`
+## Aturan Wajib Baca
+Sebelum mengimplementasikan atau mengubah kode yang berkaitan dengan notifikasi lokal, AI wajib membaca dokumentasi berikut:
+- [flutter_local_notifications versi 22.3.3](https://pub.dev/packages/flutter_local_notifications/versions/22.3.3)
+Ketentuan:
+1. Gunakan dokumentasi tersebut sebagai referensi utama implementasi.
+2. Versi `22.3.3` merupakan versi yang telah dipasang pada proyek. Jangan mencari, mengganti, atau mempertanyakan versi lain.
+3. Pastikan penggunaan API, konfigurasi, dan implementasi sesuai dengan dokumentasi versi tersebut.
+## Aturan Implementasi
+### 1. Paket dan Inisialisasi
+1. Gunakan `flutter_local_notifications` untuk menangani notifikasi lokal.
+2. Lakukan inisialisasi notifikasi di dalam fungsi `main()`.
+3. Gunakan paket `timezone` dengan alias `tz` untuk mengatur jadwal notifikasi.
+#### Contoh benar
+```dart
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+Future<void> main() async {
+  tz.initializeTimeZones();
+  final plugin = FlutterLocalNotificationsPlugin();
+  await plugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('ic_notifikasi'),
+    ),
+  );
+  runApp(const App());
+}
 ```
-## 11. Checklist Sebelum Menyelesaikan Berkas
-- [ ] Berkas berada di `hasil_diskusi/diskusi_N.md` dengan nomor `tertinggi + 1`.
-- [ ] Seluruh bagian pada §5 tersedia dan berurutan, dengan judul persis.
-- [ ] `Dokumen` dan `Implementasi` pada `## Status` terisi dan konsisten dengan isi.
-- [ ] Keputusan diberi kode `K-N` dan rekomendasi diberi kode `R-N`.
-- [ ] Bagian yang belum dibahas diberi keterangan eksplisit.
-- [ ] Tidak memakai struktur PRD.
-- [ ] Bahasa Indonesia dan tidak ada informasi yang dikarang.
-- [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`.
+**Alasan:** Inisialisasi dilakukan sebelum `runApp`, plugin berasal dari paket yang dipasang, dan `timezone` diimpor dengan alias `tz`.
+#### Contoh salah
+```dart
+void main() {
+  runApp(const App()); // plugin belum diinisialisasi
+}
+final jadwal = DateTime.now().add(const Duration(hours: 1));
+```
+**Kesalahan:** Notifikasi tidak diinisialisasi di `main()` dan jadwal tidak menggunakan `tz.TZDateTime` dari paket `timezone`.
+**Rujukan teknis:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `inisialisasi()`.
+- `pubspec.yaml` — `flutter_local_notifications: ^22.3.3`, `timezone: ^0.11.2`.
+### 2. Ikon Notifikasi
+1. Wajib menggunakan ikon aplikasi sebagai ikon notifikasi.
+2. Pastikan ikon dikonfigurasi sesuai dengan ketentuan dan format yang didukung oleh platform.
+3. Ikuti dokumentasi `flutter_local_notifications` versi `22.3.3` untuk menentukan konfigurasi ikon yang benar.
+#### Contoh benar
+```dart
+const android = AndroidNotificationDetails(
+  'jadwal_service',
+  'Jadwal Service',
+  icon: 'ic_notifikasi',
+);
+```
+**Alasan:** Ikon menggunakan aset aplikasi `ic_notifikasi` yang juga dipakai proyek.
+#### Contoh salah
+```dart
+const android = AndroidNotificationDetails(
+  'jadwal_service',
+  'Jadwal Service',
+  icon: 'https://example.com/icon.png',
+);
+```
+**Kesalahan:** Ikon dimuat dari jaringan, bukan ikon aplikasi yang terpasang.
+**Rujukan teknis:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `AndroidNotificationDetails(icon: 'ic_notifikasi')`.
+### 3. Payload Notifikasi
+1. Setiap notifikasi wajib memiliki payload yang memuat:
+   - `kategori`: jenis atau kategori data yang menjadi sumber notifikasi.
+   - `id`: identitas data yang terkait dengan notifikasi.
+2. Kedua informasi tersebut digunakan untuk menentukan tujuan navigasi ketika pengguna membuka notifikasi.
+#### Contoh benar
+```dart
+await plugin.show(
+  1,
+  'Jadwal service',
+  'Segera lakukan service',
+  notificationDetails,
+  payload: 'kategori=jadwal_service&id=$idJadwal',
+);
+```
+**Alasan:** Payload memuat `kategori` dan `id` yang dapat dipakai untuk navigasi.
+#### Contoh salah
+```dart
+await plugin.show(1, 'Jadwal service', 'Segera lakukan service', notificationDetails);
+```
+**Kesalahan:** Notifikasi ditampilkan tanpa payload, sehingga tujuan navigasi tidak dapat ditentukan.
+**Rujukan teknis:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `_navigasiKeHalaman(payload)`.
+### 4. Penanganan Izin
+1. Tangani permintaan izin notifikasi sesuai dengan ketentuan masing-masing platform.
+2. Sesuaikan mekanisme permintaan dan pemeriksaan izin dengan platform yang digunakan.
+#### Contoh benar
+```dart
+if (kIsWeb) {
+  await plugin
+      .resolvePlatformSpecificImplementation<WebFlutterLocalNotificationsPlugin>()
+      ?.requestNotificationsPermission();
+} else if (defaultTargetPlatform == TargetPlatform.android) {
+  await plugin
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+      ?.requestNotificationsPermission();
+}
+```
+**Alasan:** Mekanisme izin disesuaikan dengan platform web dan Android.
+#### Contoh salah
+```dart
+await plugin.requestNotificationsPermission(); // API generik tanpa platform
+```
+**Kesalahan:** Memanggil API izin tanpa mempertimbangkan platform yang didukung.
+**Rujukan teknis:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `inisialisasi()` dan `mintaIzin()`.
+### 5. ID Notifikasi
+1. Gunakan ID yang unik untuk setiap notifikasi agar tidak terjadi benturan ID.
+2. ID dapat menggunakan UUID versi 4 (`uuid.v4`) atau ID dari item terkait apabila nilainya sudah unik.
+3. Jangan menggunakan tanggal sebagai ID notifikasi.
+#### Contoh benar
+```dart
+final notifId = int.tryParse(idJadwal)?.abs() ?? idJadwal.hashCode.abs();
+await plugin.cancel(id: notifId);
+```
+**Alasan:** ID numerik konsisten dibuat dari ID item, bukan tanggal.
+#### Contoh salah
+```dart
+final notifId = DateTime.now().millisecondsSinceEpoch;
+await plugin.show(notifId, judul, isi, details);
+```
+**Kesalahan:** Menggunakan tanggal sebagai ID notifikasi, sehingga ID berubah setiap waktu dan benturan ID tidak terkontrol.
+**Rujukan teknis:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `_notifId(String id)`.
+- `pubspec.yaml` — `uuid: ^4.6.0`.
+
 
 // ============================================================
-// FILE: .agents/rules/global/format_PRD.md
+// FILE: .agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md
 // ============================================================
 
-# PRODUCT REQUIREMENTS DOCUMENT (PRD)
-**Status Dokumen:** Draft / Final
-**Status Implementasi:** Belum Diimplementasikan / Sedang Diimplementasikan / Sudah Diimplementasikan
----
-## 1. Informasi Produk
-**Konteks penggunaan:**
-Digunakan untuk mengidentifikasi produk dan memberikan gambaran umum proyek. Informasi ini menjadi identitas utama PRD.
-**Aturan pengisian:**
-- Isi informasi berdasarkan kondisi dan identitas proyek yang sebenarnya.
-- Gunakan nama yang konsisten dengan proyek.
-- Tuliskan platform dan versi yang menjadi target pengembangan.
-- Bedakan status dokumen dengan status implementasi.
-- Jangan mengarang informasi yang belum diketahui.
-**Informasi:**
-- Nama aplikasi:
-- Deskripsi produk:
-- Platform:
-- Versi:
-- Status pengembangan:
-## 2. Tujuan PRD
-**Konteks penggunaan:**
-Digunakan untuk menentukan hasil yang ingin dicapai dari dokumen PRD ini. Tujuan harus berhubungan langsung dengan kebutuhan dokumen.
-**Aturan pengisian:**
-- Tuliskan hasil yang diharapkan dari PRD.
-- Pastikan setiap tujuan memiliki hubungan dengan kebutuhan dokumen PRD.
-- Gunakan tujuan yang jelas dan dapat dievaluasi.
-- Jangan memasukkan tujuan yang berada di luar ruang lingkup PRD.
-**Isi:**
-Jelaskan hasil dan manfaat yang ingin dicapai melalui dokumen PRD ini.
-## 3. Daftar Fitur
-**Konteks penggunaan:**
-Digunakan untuk melihat keseluruhan fitur produk dan menentukan tingkat kepentingannya.
-**Aturan pengisian:**
-- Setiap fitur harus memiliki nama dan deskripsi yang jelas.
-- Satu baris mewakili satu fitur yang dapat diidentifikasi secara terpisah.
-- Hindari menggabungkan beberapa fitur berbeda dalam satu baris.
-- Pastikan fitur mendukung tujuan produk dan masuk dalam ruang lingkup.
-- Gunakan prioritas berdasarkan kepentingan kebutuhan produk.
-| Fitur | Deskripsi | Prioritas   |
-| ----- | --------- | ----------- |
-|       |           | Must Have   |
-|       |           | Should Have |
-|       |           | Could Have  |
-## 4. Alur Pengguna
-**Konteks penggunaan:**
-Digunakan untuk menjelaskan urutan interaksi pengguna dengan aplikasi dari awal hingga tujuan tercapai.
-**Aturan pengisian:**
-- Mulai dari kondisi awal pengguna.
-- Jelaskan setiap langkah secara berurutan.
-- Sebutkan tindakan pengguna dan respons aplikasi.
-- Sertakan percabangan atau kondisi alternatif jika tersedia.
-- Jelaskan kondisi akhir yang diharapkan.
-- Pastikan alur sesuai dengan persyaratan fitur.
-- Jangan memasukkan proses yang tidak didukung oleh kebutuhan produk.
-**Isi:**
-Jelaskan langkah-langkah pengguna dalam menjalankan setiap proses utama aplikasi.
-## 5. Steps
-**Konteks penggunaan:**
-Digunakan untuk menjelaskan urutan langkah-langkah kerja yang harus diikuti dalam mengisi atau menerapkan PRD.
-**Aturan pengisian:**
-- Buat langkah-langkah yang spesifik dan dapat diikuti.
-- Gunakan numbered list untuk mempertahankan urutan.
-- Setiap langkah harus tidak ambigu dan dapat dikerjakan.
-- Jangan memasukkan langkah yang tidak relevan atau redundan.
-**Isi:**
-1. Langkah pertama yang harus dilakukan.
-2. Langkah kedua yang harus dilakukan.
-3. Langkah ketiga yang harus dilakukan.
-## 6. File-File Terdampak
-**Konteks penggunaan:**
-Digunakan untuk mengidentifikasi file proyek yang berkaitan dengan implementasi kebutuhan produk. Bagian ini menjadi gambaran awal cakupan perubahan kode.
-**Aturan pengisian:**
-- Periksa struktur proyek sebelum menentukan file terdampak.
-- Cantumkan lokasi file secara spesifik berdasarkan struktur proyek sebenarnya.
-- Tandai apakah file perlu dibuat, diubah, atau dihapus.
-- Jelaskan alasan dan tujuan perubahan setiap file.
-- Cantumkan hanya file yang memiliki hubungan dengan kebutuhan fitur.
-- Jangan mengarang lokasi, nama, atau keberadaan file.
-- Jika file belum dapat ditentukan, tandai sebagai belum diketahui dan jangan menebak.
-- Perbarui daftar setelah analisis teknis atau implementasi apabila ditemukan file terdampak tambahan.
-| Lokasi File | Status Perubahan          | Deskripsi Perubahan |
-| ----------- | ------------------------- | ------------------- |
-|             | Dibuat / Diubah / Dihapus |                     |
-|             | Dibuat / Diubah / Dihapus |                     |
+# Aturan Pemanfaatan SDK dan Paket Flutter
+## 1. Tujuan
+Memastikan pemanfaatan SDK, paket, dan fitur yang tersedia dalam proyek Flutter dilakukan secara tepat, konsisten, dan sesuai dengan mekanisme resmi yang telah disediakan.
+Implementasi wajib mengutamakan pemanfaatan fitur dan API yang sudah tersedia daripada membuat mekanisme sendiri yang memiliki fungsi serupa.
+## 2. Skills
+1. **Wajib membaca Skills sebelum implementasi.**
+   - Sebelum menulis atau mengubah kode, periksa dan baca Skills yang tersedia di folder `.agents/skills`.
+   - Identifikasi Skills yang relevan dengan paket, SDK, atau fitur yang akan digunakan.
+   - Load dan ikuti panduan dari Skills terkait sebelum memulai implementasi.
+2. **Utamakan mekanisme yang sudah tersedia.**
+   - Gunakan API, utilitas, pola implementasi, dan mekanisme yang telah dijelaskan dalam Skills.
+   - Jangan membuat ulang mekanisme yang sebenarnya sudah tersedia dan dapat digunakan.
+   - Jangan mengabaikan panduan Skills tanpa alasan teknis yang jelas.
+## 3. Aturan Pemanfaatan Paket dan API
+### 3.1. Pengaturan Jarak pada Row dan Column
+- Gunakan properti `spacing` pada `Row` dan `Column` untuk mengatur jarak antar-anak secara konsisten.
+- Jangan menggunakan beberapa `SizedBox` hanya untuk mengatur jarak antar-anak yang memiliki jarak seragam.
+- Gunakan `SizedBox` apabila terdapat kebutuhan jarak khusus pada anak tertentu yang tidak dapat dipenuhi secara tepat menggunakan `spacing`.
+### 3.2. Pengurutan Data Koleksi
+- Gunakan fungsi `sorted` dari paket `collection` untuk mengurutkan data dalam koleksi.
+- Jangan membuat mekanisme pengurutan sendiri apabila fungsi tersebut sudah memenuhi kebutuhan.
+#### Contoh benar
+```dart
+import 'package:collection/collection.dart';
+final terurut = daftarBahanBakar.sorted((a, b) => a.tanggal.compareTo(b.tanggal));
+```
+**Alasan:** Pengurutan menggunakan `sorted` dari paket `collection`.
+#### Contoh salah
+```dart
+final terurut = [...daftarBahanBakar]..sort((a, b) => a.tanggal.compareTo(b.tanggal));
+```
+**Kesalahan:** Membuat mekanisme pengurutan manual padahal `sorted` sudah tersedia.
+**Rujukan teknis:**
+- `pubspec.yaml` — `collection: ^1.19.1`.
+- `pub-cache/.../collection-*/lib/collection.dart`.
+### 3.3. Pencarian Satu Item dalam Koleksi
+- Gunakan fungsi `firstWhereOrNull` dari paket `collection` untuk mencari satu item berdasarkan kondisi tertentu.
+- Fungsi ini digunakan ketika hasil pencarian mungkin tidak ditemukan dan nilai `null` perlu dikembalikan tanpa menimbulkan exception.
+#### Contoh benar
+```dart
+import 'package:collection/collection.dart';
+final item = daftar.firstWhereOrNull((e) => e.id == idDicari);
+```
+**Alasan:** Pencarian mengembalikan `null` tanpa exception ketika item tidak ditemukan.
+#### Contoh salah
+```dart
+final item = daftar.firstWhere((e) => e.id == idDicari);
+```
+**Kesalahan:** `firstWhere` melempar exception ketika item tidak ditemukan.
+**Rujukan teknis:**
+- `pubspec.yaml` — `collection: ^1.19.1`.
+### 3.4. Pengambilan Item Berdasarkan Nilai Maksimum
+- Gunakan fungsi `maxBy` dari paket `collection` untuk mengambil satu item yang memiliki nilai maksimum berdasarkan properti atau kriteria tertentu.
+- Jangan menggunakan `firstWhereOrNull` untuk kebutuhan ini karena keduanya memiliki tujuan yang berbeda.
+#### Contoh benar
+```dart
+import 'package:collection/collection.dart';
+final terbaru = daftar.maxBy((e) => e.tanggal);
+```
+**Alasan:** `maxBy` mengambil item dengan nilai maksimum berdasarkan kriteria.
+#### Contoh salah
+```dart
+final terbaru = daftar.firstWhereOrNull((e) => e.tanggal == daftar.map((x) => x.tanggal).reduce((a, b) => a.isAfter(b) ? a : b));
+```
+**Kesalahan:** Menggunakan `firstWhereOrNull` untuk kebutuhan nilai maksimum, padahal `maxBy` lebih tepat.
+**Rujukan teknis:**
+- `pubspec.yaml` — `collection: ^1.19.1`.
+### 3.5. Menampilkan Gambar dari Jaringan
+- Gunakan `CachedNetworkImage` dari paket `cached_network_image` untuk menampilkan gambar yang bersumber dari jaringan.
+- Jangan menggunakan `Image.network` untuk kebutuhan tersebut.
+- Implementasi wajib menyediakan:
+  - `placeholder` untuk menampilkan kondisi ketika gambar sedang dimuat.
+  - `errorWidget` untuk menangani dan menampilkan kondisi ketika gambar gagal dimuat.
+- Ikuti pola implementasi resmi pada folder `example` paket `cached_network_image`, dengan mengacu pada `example.md` apabila tersedia.
+#### Contoh benar
+```dart
+import 'package:cached_network_image/cached_network_image.dart';
+CachedNetworkImage(
+  imageUrl: urlGambar,
+  placeholder: (context, url) => const CircularProgressIndicator(),
+  errorWidget: (context, url, error) => const Icon(Icons.error),
+);
+```
+**Alasan:** Gambar jaringan ditampilkan dengan cache, placeholder, dan error widget.
+#### Contoh salah
+```dart
+Image.network(urlGambar);
+```
+**Kesalahan:** Tidak menggunakan cache dan tidak menyediakan placeholder/error widget.
+**Rujukan teknis:**
+- `pubspec.yaml` — `cached_network_image: ^4.0.6`.
+## 4. Aturan Berdasarkan Paket
+### 4.1. UUID
+**Tujuan:** Menghasilkan ID unik dengan mekanisme yang telah disediakan oleh paket `uuid`.
+Ketentuan:
+1. Gunakan `uuid.v4()` dari paket `uuid` untuk menghasilkan ID unik.
+2. Dilarang membuat ID secara manual.
+3. Dilarang menggunakan tanggal, waktu, timestamp, atau kombinasi nilai lainnya sebagai pengganti UUID.
+#### Contoh benar
+```dart
+import 'package:uuid/uuid.dart';
+final id = const Uuid().v4();
+```
+**Alasan:** ID dihasilkan oleh generator UUID versi 4.
+#### Contoh salah
+```dart
+final id = DateTime.now().millisecondsSinceEpoch.toString();
+```
+**Kesalahan:** Menggunakan timestamp sebagai ID, bertentangan dengan aturan pembuatan ID unik.
+**Rujukan teknis:**
+- `pubspec.yaml` — `uuid: ^4.6.0`.
+### 4.2. URL Launcher
+**Tujuan:** Memastikan pembukaan URL, tautan, email, dan berkas menggunakan mekanisme resmi paket `url_launcher` dengan penanganan kegagalan yang tepat.
+#### A. Membuka URL
+1. Gunakan `launchUrl` untuk membuka URL.
+2. Buat objek `Uri` menggunakan metode yang sesuai:
+   - `Uri.parse`
+   - `Uri.tryParse`
+   - `Uri(...)`
+   - `Uri.file`
+3. Periksa nilai balik `bool` dari `launchUrl`.
+4. Jika hasilnya `false`, lempar `Exception` agar kegagalan tidak diabaikan.
+5. Bungkus operasi pembukaan URL dengan `try`/`catch` untuk menangani exception yang mungkin terjadi.
+#### B. Menentukan Mode Peluncuran
+Pilih `LaunchMode` berdasarkan kebutuhan dan konteks penggunaan:
+- `externalApplication`
+- `inAppBrowserView`
+- `inAppWebView`
+- `externalNonBrowserApplication`
+Untuk universal link:
+1. Coba buka menggunakan `externalNonBrowserApplication` terlebih dahulu.
+2. Jika gagal, lakukan fallback menggunakan `inAppBrowserView`.
+Jangan menggunakan mode peluncuran secara sembarangan tanpa mempertimbangkan jenis URL dan pengalaman pengguna yang diharapkan.
+#### C. Konfigurasi Browser dan WebView
+Gunakan konfigurasi sesuai kebutuhan:
+- `BrowserConfiguration`, misalnya `showTitle`.
+- `WebViewConfiguration`, misalnya `headers`, `enableJavaScript`, dan `enableDomStorage`.
+- `webOnlyWindowName` untuk menentukan target jendela pada platform web.
+Jangan menambahkan konfigurasi yang tidak diperlukan.
+#### D. Memeriksa Dukungan Fitur
+- Gunakan `canLaunchUrl` untuk memeriksa ketersediaan atau dukungan URL tertentu sebelum menampilkan aksi kepada pengguna.
+- Terapkan terutama pada URL yang bergantung pada aplikasi eksternal, seperti panggilan telepon.
+- Jangan menampilkan aksi yang tidak dapat dijalankan apabila ketersediaannya dapat diperiksa terlebih dahulu.
+#### E. Membuka Email
+- Gunakan `Uri` dengan konfigurasi:
+  - `scheme: 'mailto'`
+  - `path` berisi alamat email tujuan.
+  - `query` berisi hasil fungsi `encodeQueryParameters`.
+- Implementasikan `encodeQueryParameters` menggunakan `Uri.encodeComponent` untuk mengamankan parameter query.
+#### F. Membuka Berkas
+- Gunakan `Uri.file` untuk membentuk URI dari lokasi berkas.
+- Pastikan berkas benar-benar tersedia sebelum memanggil `launchUrl`.
+- Tangani kondisi ketika berkas tidak ditemukan atau gagal dibuka.
+#### G. Tautan Deklaratif
+- Gunakan widget `Link` dengan properti `uri` dan `target` untuk kebutuhan tautan deklaratif.
+- Jangan mengganti mekanisme ini dengan implementasi manual apabila widget tersebut sudah memenuhi kebutuhan.
+#### H. Menutup WebView
+- Gunakan `closeInAppWebView()` apabila WebView yang dibuka melalui aplikasi perlu ditutup secara programatik.
+#### I. Referensi Implementasi
+- Ikuti contoh resmi pada folder `example` paket `url_launcher`.
+- Gunakan `example.md` sebagai referensi apabila tersedia.
+- Jangan mengasumsikan API atau konfigurasi berdasarkan ingatan apabila dokumentasi paket sudah tersedia.
+### 4.3. Timezone
+**Tujuan:** Memastikan pengolahan waktu dan zona waktu dilakukan menggunakan database zona waktu yang benar serta sesuai dengan platform.
+#### A. Inisialisasi Database Zona Waktu
+1. Inisialisasi database zona waktu sebelum menggunakan fitur yang bergantung padanya.
+2. Gunakan `tz.initializeTimeZones()` untuk menginisialisasi database.
+3. Gunakan `tz.getLocation('...')` atau `tz.timeZoneDatabase` untuk menentukan lokasi zona waktu.
+4. Gunakan `tz.TZDateTime` untuk melakukan pengolahan dan konversi waktu berdasarkan zona waktu yang ditentukan.
+5. Contoh konversi: `tz.TZDateTime.from(waktu, tz.local)`.
+Jangan memanggil `tz.getLocation` atau menggunakan `tz.TZDateTime` sebelum database zona waktu selesai diinisialisasi.
+#### Contoh benar
+```dart
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+tz.initializeTimeZones();
+final lokasi = tz.getLocation('Asia/Jakarta');
+final waktuLokal = tz.TZDateTime.from(waktuUtc, lokasi);
+```
+**Alasan:** Database zona waktu diinisialisasi sebelum `tz.getLocation` dan `tz.TZDateTime` digunakan.
+#### Contoh salah
+```dart
+final lokasi = tz.getLocation('Asia/Jakarta'); // database belum diinisialisasi
+```
+**Kesalahan:** Memanggil `tz.getLocation` sebelum inisialisasi database zona waktu.
+**Rujukan teknis:**
+- `pubspec.yaml` — `timezone: ^0.11.2`.
+#### B. Inisialisasi Berdasarkan Platform
+Gunakan mekanisme inisialisasi yang sesuai dengan platform:
+- **Web:** Gunakan `initializeTimeZone()` dari `package:timezone/browser.dart`.
+- **VM/Standalone:** Gunakan `tz.initializeTimeZones()` dari `package:timezone/data/latest.dart`.
+Pastikan hanya mekanisme inisialisasi yang sesuai dengan platform target yang digunakan.
+#### C. Penanganan Kesalahan
+1. Bungkus proses inisialisasi dengan `try`/`catch`.
+2. Catat kegagalan inisialisasi agar penyebabnya dapat ditelusuri.
+3. Pada platform web, tangani `TimeZoneInitException` apabila exception tersebut terjadi.
+4. Jangan melanjutkan proses yang membutuhkan database zona waktu apabila inisialisasi gagal.
+### 4.4. Sqflite
+**Tujuan:** Memastikan inisialisasi database SQLite menggunakan factory yang sesuai dengan platform target.
+Ketentuan:
+1. Panggil `sqfliteFfiInit()` sebelum menggunakan database melalui implementasi FFI.
+2. Atur `databaseFactory` sesuai platform:
+   - Desktop: gunakan `databaseFactoryFfi`.
+   - Web: gunakan `databaseFactoryFfiWeb`.
+3. Pastikan inisialisasi dan pengaturan `databaseFactory` selesai sebelum database dibuka.
+4. Jangan membuka database sebelum mekanisme inisialisasi platform selesai dilakukan.
+5. Ikuti contoh implementasi pada folder `example` dari paket terkait:
+   - `sqflite`
+   - `sqflite_common_ffi`
+   - `sqflite_common_ffi_web`
+Gunakan implementasi yang sesuai dengan platform dan paket yang benar-benar digunakan dalam proyek.
+#### Contoh benar (desktop)
+```dart
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+sqfliteFfiInit();
+databaseFactory = databaseFactoryFfi;
+```
+**Alasan:** Factory FFI diinisialisasi sebelum database dibuka.
+#### Contoh salah
+```dart
+final db = await openDatabase('app.db'); // factory belum diatur
+```
+**Kesalahan:** Database dibuka sebelum inisialisasi factory platform.
+**Rujukan teknis:**
+- `lib/main.dart` — pengaturan factory berdasarkan platform.
+- `pubspec.yaml` — `sqflite`, `sqflite_common_ffi`, `sqflite_common_ffi_web`.
+### 4.5. adaptive_dialog
+**Tujuan:** Menyeragamkan mekanisme dialog konfirmasi agar konsisten dan mendukung tampilan adaptif sesuai platform.
+Ketentuan:
+1. Wajib menggunakan paket `adaptive_dialog` untuk dialog konfirmasi.
+2. Gunakan `showOkCancelAlertDialog` untuk konfirmasi dengan pilihan OK dan Cancel.
+3. Sesuaikan parameter dialog dengan konteks tindakan yang dikonfirmasi:
+   - `context`: BuildContext yang aktif.
+   - `title`: Judul konfirmasi.
+   - `message`: Penjelasan tindakan.
+   - `okLabel`: Label tombol persetujuan.
+   - `cancelLabel`: Label tombol pembatalan.
+   - `isDestructiveAction`: Gunakan `true` untuk tindakan destruktif, seperti menghapus data.
+4. Jangan membuat dialog konfirmasi manual apabila mekanisme dari `adaptive_dialog` sudah memenuhi kebutuhan.
+**Contoh implementasi:**
+```dart
+showOkCancelAlertDialog(
+  context: context,
+  title: 'Hapus Data?',
+  message: 'Data yang dihapus tidak dapat dikembalikan.',
+  okLabel: 'Hapus',
+  cancelLabel: 'Batal',
+  isDestructiveAction: true,
+);
+```
+
+
+// ============================================================
+// FILE: .agents/rules/global/aturan_riverpod.md
+// ============================================================
+
+# Aturan Riverpod
+## 1. Penggunaan riverpod_generator
+Setiap provider dan notifier wajib dibuat menggunakan `riverpod_generator`.
+#### Contoh benar
+```dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'pengguna_provider.g.dart';
+@riverpod
+Future<List<Pengguna>> daftarPengguna(Ref ref) async {
+  return ref.watch(repositoryProvider).ambilSemua();
+}
+```
+**Alasan:** Provider dibuat dengan anotasi `@riverpod` dan file `.g.dart` dihasilkan oleh generator.
+#### Contoh salah
+```dart
+final daftarPenggunaProvider = FutureProvider<List<Pengguna>>((ref) async {
+  return ref.watch(repositoryProvider).ambilSemua();
+});
+```
+**Kesalahan:** Provider dibuat manual dengan `FutureProvider`, bukan melalui `riverpod_generator`.
+**Rujukan teknis:**
+- `pubspec.yaml` — `flutter_riverpod`, `riverpod_annotation`, `riverpod_generator`.
+- `lib/fitur/*/provider/*.dart` dan `*.g.dart`.
+## 2. Pengaturan siklus hidup state
+- Gunakan `@Riverpod(keepAlive: true)` untuk state yang perlu dipertahankan dan tidak boleh otomatis dihapus ketika tidak lagi digunakan.
+- Gunakan `@riverpod` untuk state yang tidak perlu dipertahankan sehingga provider menggunakan mekanisme auto-dispose.
+## 3. Penggunaan `ref.watch`
+`ref.watch` hanya boleh digunakan di dalam `build`, notifier, dan provider.
+- **Di dalam `build`:** tangani status `AsyncValue` dengan urutan pemeriksaan berikut:
+  1. Periksa `.isLoading` terlebih dahulu.
+  2. Setelah itu, periksa `.hasError`.
+  3. Jika kedua kondisi tersebut tidak terpenuhi, ambil data menggunakan `.requireValue`.
+- **Di dalam notifier dan provider:** jika sumber data bersifat asynchronous, gunakan `ref.watch(provider.future)`.
+- **Larangan:** saat menggunakan `ref.watch`, jangan mengambil nilai menggunakan `.value` atau `.valueOrNull`.
+## 4. Penggunaan `ref.read`
+- Jika provider yang dibaca menghasilkan data asynchronous dan nilai datanya diperlukan, gunakan `.future` serta `await`.
+  Contoh:
+  ```dart
+  final state = await ref.read(provider.future);
+  ```
+- Jika fungsi notifier mengembalikan `Future`, panggil fungsi tersebut menggunakan `await`.
+  Contoh:
+  ```dart
+  await ref.read(provider).hapus();
+  ```
+- Untuk mengambil hasil provider asynchronous di luar `build`, gunakan `.future`. Jangan menangani status `.isLoading` dan `.hasError` secara manual.
+  Contoh:
+  ```dart
+  final data = await ref.read(provider.future);
+  ```
+## 5. Penggunaan `ref.listen`
+`ref.listen` hanya boleh digunakan di dalam `build`.
+- Gunakan `.value` untuk mengambil nilai dari `previous` dan `next`.
+- Untuk nilai `previous`, gunakan `previous.value` atau `previous?.value`, sesuai dengan nullability variabelnya.
+- Untuk nilai `next`, periksa `.isLoading` dan `.hasError` sebelum mengakses atau memproses `.value`.
+## 6. Penggunaan `ref.listenManual`
+Gunakan `ref.listenManual` hanya di luar `build`. Sebelum menggunakannya, periksa cara penggunaan dan ketentuannya pada source code SDK Riverpod.
+## 7. Pemasangan ProviderScope
+Setiap proyek yang menggunakan Riverpod wajib memasang scope Riverpod di `main.dart`.
+- Gunakan `ProviderScope` untuk penggunaan normal.
+- Gunakan `UncontrolledProviderScope` apabila proyek mengelola `ProviderContainer` secara manual.
+## 8. Penggunaan `ref.refresh`
+Gunakan `ref.refresh(provider)` untuk langsung mengevaluasi ulang provider dan memperoleh hasil evaluasi terbarunya.
+- Ketika UI sedang menampilkan error dan provider perlu dicoba kembali, gunakan `ref.refresh`, bukan `ref.invalidate`.
+- Gunakan pola berikut:
+  ```dart
+  final _ = ref.refresh(provider);
+  ```
+## 9. Optimistic update pada notifier
+Setiap optimistic update di dalam notifier wajib mengikuti urutan berikut:
+1. Perbarui state terlebih dahulu.
+2. Jalankan operasi ke database.
+3. Jika operasi database menghasilkan `Exception`, kembalikan state ke data sebelumnya (_rollback_), kemudian teruskan kembali exception menggunakan `rethrow`.
+Contoh:
+```dart
+state = AsyncValue.data(listBaru);
+try {
+  await ref.read(baseOpSqfliteProvider).tambah(...);
+} on Exception {
+  state = AsyncValue.data(dataLama);
+  rethrow;
+}
+```
+## 10. Pembersihan resource dengan `ref.onDispose`
+Gunakan `ref.onDispose(() { ... })` di dalam provider untuk membersihkan resource yang dibuat oleh provider tersebut, seperti controller, subscription, dan timer.
+## 11. Membatasi rebuild dengan `select`
+Untuk membatasi rebuild UI, gunakan `ref.watch(provider.select((state) => state.field))` ketika UI hanya membutuhkan sebagian state. Dengan demikian, UI hanya bergantung pada field yang dipilih.
+
+
+// ============================================================
+// FILE: .agents/rules/global/aturan_testing.md
+// ============================================================
+
+# Aturan Testing
+## 1. Cakupan Pengujian
+- Setiap method `public` yang terdapat di dalam file `state` wajib memiliki pengujian.
+- Pastikan seluruh method `public` pada file tersebut tercakup dalam file test yang sesuai.
+## 2. Paket Testing dan Mocking
+- Gunakan paket `mockito` untuk kebutuhan testing dan mocking.
+- Jangan menggunakan paket mocking lain sebagai pengganti `mockito`.
+#### Contoh benar
+```dart
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+@GenerateMocks([BaseOpSqflite])
+void main() {}
+```
+**Alasan:** Mocking menggunakan paket `mockito` sesuai standar proyek.
+#### Contoh salah
+```dart
+import 'package:mocktail/mocktail.dart';
+class MockDb extends Mock implements BaseOpSqflite {}
+```
+**Kesalahan:** Menggunakan paket mocking lain padahal proyek mewajibkan `mockito`.
+**Rujukan teknis:**
+- `pubspec.yaml` — dependensi pengembangan testing.
+- `test/*_state_test.dart` — pola pengujian state proyek.
+## 3. Struktur File Test
+Struktur dan penamaan file test wajib konsisten dengan konvensi proyek.
+Pada proyek ini, file test ditempatkan secara datar di folder `test/` dengan penamaan `<nama_fitur>_state_test.dart`, bukan dengan menyalin struktur folder `lib/fitur/...`.
+**Contoh:**
+Jika file sumber berada di:
+```text
+lib/fitur/bahan_bakar/state/bahan_bakar_state.dart
+```
+Maka file test wajib berada di:
+```text
+test/bahan_bakar_state_test.dart
+```
+Pastikan penamaan file test menggunakan akhiran `_state_test.dart` dan sesuai dengan nama fitur yang diuji. Jangan membuat struktur folder `test/fitur/...` yang tidak sesuai dengan konvensi proyek.
+## 4. Penggunaan Dummy Data
+- Setiap pengujian `state` wajib menggunakan dummy data yang tersedia di folder `dummy`.
+- Jangan membuat data pengujian secara manual apabila dummy data yang sesuai sudah tersedia.
+- Gunakan dummy data sebagai sumber data ketika membuat instance state dalam pengujian.
+**Contoh:**
+```dart
+final state = BahanBakarState(
+  listBahanBakar: dummyBahanBakar,
+);
+```
 
 
 // ============================================================
 // FILE: .agents/rules/global/format_task.md
 // ============================================================
 
-saya ingin agar yang menambahkan atau memperbarui isi file `task.md` di root harus menaati semua aturan gaya penulisan format ini.
-jadi agar setiap orang dan AI yang mengedit file task.md ini isi nya akan selalu konsisten.
-saya ingin setiap task itu dikelompokkan berdasarkan file file yang terdampak, misalnya `task A` mengedit file `A,B,dan C` lalu `task B` hanya mengerjakan file `A` saja, maka dikelompokkan dalam satu kelompok.
-lihat contoh di bawah untuk format nya.
+# ATURAN FORMAT PENULISAN task.md
+**Lokasi file aturan:** `.agents/rules/global/format_task.md`  
+**File yang diatur:** `task.md` di root repositori  
+**Cakupan:** Semua orang dan AI yang membuat, menambahkan, memperbarui, menghapus, atau menyusun ulang isi `task.md`.
+## 1. Tujuan dan ketentuan utama
+Aturan ini bertujuan menjaga agar seluruh isi `task.md` selalu memiliki format penulisan, struktur, pengelompokan, dan informasi yang konsisten.
+Ketentuan wajib:
+1. Setiap orang dan AI yang akan mengubah `task.md` wajib membaca dan memahami seluruh isi file aturan ini terlebih dahulu.
+2. Setiap penambahan atau pembaruan task wajib mengikuti struktur dan format yang ditetapkan dalam aturan ini.
+3. Jangan membuat format penulisan sendiri atau mengubah struktur yang sudah ditetapkan.
+4. Jangan menghilangkan informasi atau field yang sudah menjadi bagian dari format task.
+5. Jangan mengubah isi field `Prompt` karena field tersebut hanya boleh diisi dan diperbarui oleh pemilik repositori.
+6. Jangan membuat informasi, nama file, lokasi file, nomor baris, atau pelanggaran aturan berdasarkan perkiraan. Periksa kondisi repositori terlebih dahulu.
+7. Jika menemukan ketidakjelasan atau informasi yang belum dapat diverifikasi, tuliskan secara eksplisit bahwa informasi tersebut belum diketahui atau belum diverifikasi.
+## 2. Pengelompokan task berdasarkan file terdampak
+**Ketentuan utama: task harus dikelompokkan berdasarkan hubungan file yang terdampak, bukan berdasarkan kemiripan masalah atau jenis pekerjaan.**
+### 2.1. Ketentuan pembentukan kelompok
+1. Setiap task harus mencantumkan seluruh file yang perlu diubah atau diperbaiki untuk menyelesaikan task tersebut.
+2. Dua atau lebih task wajib berada dalam kelompok yang sama apabila memiliki setidaknya satu file terdampak yang sama.
+3. Pengelompokan berlaku secara berantai (transitif). Apabila Task A dan Task B memiliki file yang sama, kemudian Task B dan Task C juga memiliki file yang sama, ketiganya harus berada dalam satu kelompok.
+4. Task yang tidak memiliki hubungan file terdampak dengan task lainnya harus ditempatkan dalam kelompok yang berbeda.
+5. Satu task hanya boleh dicantumkan satu kali. Jangan menggandakan task hanya untuk memasukkannya ke beberapa kelompok.
+6. Setiap kelompok wajib memiliki daftar `File terdampak` yang berisi gabungan seluruh file terdampak dari semua task di kelompok tersebut.
+7. File yang sama hanya boleh dicantumkan satu kali dalam daftar `File terdampak` kelompok.
+8. Urutkan daftar file berdasarkan path secara alfabetis agar konsisten.
+9. Nomor kelompok dimulai dari `Kelompok 1` dan dilanjutkan secara berurutan.
+10. Jika file yang terdampak belum dapat diketahui, jangan menebak. Tempatkan task tersebut dalam kelompok tersendiri dengan keterangan `Belum teridentifikasi` sampai file terdampaknya diketahui.
+### 2.2. Contoh pengelompokan
+Misalnya ditemukan task berikut:
+- Task A memperbaiki file A, B, dan C.
+- Task B memperbaiki file A saja.
+- Task C memperbaiki file C dan D.
+- Task D memperbaiki file E saja.
+Hasil pengelompokan yang benar:
+**Kelompok 1:**
+- Task A: file A, B, dan C.
+- Task B: file A.
+- Task C: file C dan D.
+- File terdampak kelompok: A, B, C, dan D.
+Task A, B, dan C berada dalam satu kelompok karena memiliki hubungan file terdampak, baik secara langsung maupun berantai.
+**Kelompok 2:**
+- Task D: file E.
+- File terdampak kelompok: E.
+Task D berada dalam kelompok berbeda karena tidak memiliki file terdampak yang sama dengan task lainnya.
+## 3. Struktur kelompok dan prioritas
+Setiap kelompok wajib menggunakan struktur berikut:
+1. Judul kelompok menggunakan format `# Kelompok N`.
+2. Daftar file menggunakan heading `## File terdampak`.
+3. Task dikelompokkan berdasarkan prioritas.
+4. Urutan prioritas mengikuti urutan dari yang paling tinggi ke yang lebih rendah.
+5. Gunakan heading `## Tinggi` dan `## Rendah` sebagaimana format utama yang ditetapkan dalam contoh.
+6. Apabila repositori telah menetapkan kategori prioritas lain, seperti `Sedang`, pertahankan kategori tersebut di antara `Tinggi` dan `Rendah`. Jangan membuat atau menghapus kategori prioritas tanpa persetujuan pemilik repositori.
+7. Penomoran task dimulai kembali dari `Task 1` pada setiap bagian prioritas dalam setiap kelompok.
+8. Setiap task wajib memiliki field yang sama dan mengikuti urutan field yang ditentukan pada bagian 4.
+## 4. Format wajib setiap task
+Setiap task wajib menggunakan urutan field berikut:
+### 4.1. Status
+Menunjukkan kondisi pengerjaan task.
+Gunakan hanya nilai berikut:
+- `Belum dikerjakan`: pekerjaan belum dimulai.
+- `Sedang dikerjakan`: pekerjaan sudah dimulai, tetapi belum selesai.
+- `Selesai`: seluruh pekerjaan sudah diselesaikan dan hasilnya telah diverifikasi.
+Ketentuan:
+- Jangan menggunakan istilah yang tidak konsisten seperti `setengah`, `proses`, atau `kerjakan`.
+- Istilah `kerjakan` merupakan instruksi untuk melakukan pekerjaan, bukan status pengerjaan.
+- Jangan menetapkan status `Selesai` hanya berdasarkan asumsi. Harus ada bukti bahwa pekerjaan benar-benar selesai.
+### 4.2. Masalah
+Berisi penjelasan masalah yang ditemukan pada task tersebut.
+Ketentuan:
+1. Jelaskan masalah secara spesifik dan mudah dipahami.
+2. Jelaskan kondisi aktual yang menyebabkan task diperlukan.
+3. Gunakan informasi berdasarkan hasil pemeriksaan kode, file, dokumentasi, atau aturan yang relevan.
+4. Jangan menuliskan dugaan sebagai fakta.
+5. Apabila informasi belum cukup, jelaskan bagian yang belum diketahui.
+### 4.3. Solusi
+Berisi rekomendasi penyelesaian masalah.
+Ketentuan:
+1. Jelaskan solusi yang direkomendasikan secara spesifik.
+2. Jelaskan bagian atau perilaku yang perlu diperbaiki.
+3. Berikan contoh penerapan apabila contoh dapat membantu memperjelas solusi.
+4. Pastikan solusi berhubungan langsung dengan masalah yang dijelaskan.
+5. Jangan menambahkan pekerjaan lain yang tidak diperlukan untuk menyelesaikan masalah tersebut.
+6. Solusi merupakan rekomendasi teknis, bukan klaim bahwa perubahan sudah diterapkan.
+### 4.4. Aturan dilanggar
+Berisi seluruh aturan repositori yang terbukti dilanggar oleh masalah tersebut.
+Ketentuan:
+1. Periksa aturan repositori yang relevan sebelum mencantumkan pelanggaran.
+2. Cantumkan seluruh aturan yang benar-benar dilanggar, bukan hanya satu aturan yang paling terlihat.
+3. Setiap aturan wajib memiliki tautan menuju file aturan yang tepat.
+4. Sertakan nomor baris apabila lokasi pelanggaran aturan dapat diketahui.
+5. Jangan mencantumkan aturan yang tidak relevan atau belum terbukti dilanggar.
+6. Apabila tidak ditemukan pelanggaran, tuliskan `Tidak ada`.
+7. Apabila pemeriksaan belum dilakukan, tuliskan `Belum diverifikasi`. Jangan menyamakan kondisi ini dengan `Tidak ada`.
+### 4.5. File bermasalah
+Berisi seluruh file yang perlu diperbaiki atau diubah untuk menyelesaikan task tersebut.
+Ketentuan:
+1. Cantumkan semua file yang benar-benar perlu diperbaiki.
+2. Setiap file wajib menggunakan path yang benar dan dapat ditemukan di repositori.
+3. Sertakan nomor baris apabila bagian yang bermasalah dapat diketahui.
+4. Jangan mencantumkan file yang hanya dibaca atau diperiksa apabila file tersebut tidak perlu diubah.
+5. Jangan mengarang path atau lokasi kode.
+6. Apabila file belum dapat diidentifikasi, tuliskan `Belum teridentifikasi`.
+7. Daftar file pada bagian ini harus sesuai dengan file yang menjadi dasar pengelompokan task.
+### 4.6. Prompt
+Field `Prompt` hanya boleh diisi, diubah, atau dihapus oleh pemilik repositori.
+Ketentuan:
+1. AI dan pihak lain dilarang mengisi field ini.
+2. AI dan pihak lain dilarang mengubah, memperbaiki redaksi, meringkas, menerjemahkan, atau menghapus isi yang sudah ditulis pemilik repositori.
+3. Apabila field masih kosong, biarkan tetap kosong.
+4. Field ini wajib tetap tersedia pada setiap task, termasuk task prioritas rendah.
+5. Jangan menggantinya dengan rekomendasi atau instruksi buatan AI.
+## 5. Ketentuan tautan dan referensi file
+Gunakan sintaks tautan Markdown standar agar nama file dan aturan dapat dibuka melalui tautan.
+### 5.1. Tautan file
+Gunakan format:
+`[Nama file](path/relatif/menuju/file)`
 Contoh:
+`[File A](lib/fitur/file_a.dart)`
+### 5.2. Tautan aturan beserta nomor baris
+Gunakan format:
+`[Nama aturan](path/relatif/menuju/aturan.md#L32)`
+Contoh:
+`[aturan_boilprate.md](.agents/rules/aturan_boilprate.md#L32)`
+Jika perlu menunjukkan rentang baris, gunakan format:
+`[aturan_boilprate.md](.agents/rules/aturan_boilprate.md#L32-L36)`
+### 5.3. Ketentuan penggunaan tautan
+1. Semua path harus relatif terhadap root repositori karena file `task.md` berada di root.
+2. Gunakan path file yang benar-benar ada di repositori.
+3. Nomor baris harus berdasarkan isi file yang diperiksa saat itu.
+4. Jangan menggunakan nomor baris perkiraan.
+5. Jika nomor baris tidak diketahui, tautkan ke file tanpa menambahkan nomor baris.
+6. Jangan menggunakan format tautan terbalik seperti `(Nama file)[path/file]`. Gunakan format Markdown standar seperti `[Nama file](path/file)`.
+## 6. Ketentuan ketika menambahkan atau memperbarui task
+Setiap kali mengubah `task.md`, lakukan hal berikut:
+1. Baca seluruh aturan dalam file `.agents/rules/global/format_task.md`.
+2. Periksa struktur dan isi `task.md` yang sudah ada sebelum melakukan perubahan.
+3. Periksa file yang berhubungan dengan task agar daftar file terdampak akurat.
+4. Periksa aturan repositori yang relevan untuk mengidentifikasi pelanggaran.
+5. Tentukan seluruh file yang perlu diubah untuk setiap task.
+6. Kelompokkan task berdasarkan hubungan file terdampak sesuai bagian 2.
+7. Masukkan task ke kelompok dan prioritas yang sesuai.
+8. Gunakan seluruh field dan urutan penulisan yang diwajibkan.
+9. Pastikan daftar file terdampak kelompok merupakan gabungan seluruh file dari task di dalam kelompok tersebut.
+10. Pastikan tidak ada task ganda, kelompok yang salah, tautan yang rusak, atau informasi yang tidak terverifikasi.
+11. Pertahankan isi `Prompt` yang sudah ditulis pemilik repositori tanpa perubahan.
+12. Setelah perubahan, periksa kembali seluruh struktur `task.md` untuk memastikan konsistensinya.
+Jika perubahan pada sebuah task menyebabkan daftar file terdampaknya berubah, lakukan pengelompokan ulang berdasarkan daftar file terbaru. Jangan mempertahankan pengelompokan lama apabila sudah tidak sesuai dengan ketentuan.
+## 7. Template baku task.md
+Template berikut menjadi acuan format penulisan. Gunakan struktur ini ketika membuat atau menyusun ulang kelompok dan task.
+```markdown
 # Kelompok 1
-## file terdampak
-- (file A)[../FileA.md]
+## File terdampak
+- [path/menuju/file_a.dart](path/menuju/file_a.dart)
+- [path/menuju/file_b.dart](path/menuju/file_b.dart)
 ## Tinggi
 #### Task 1
-- Status : isi misalnya [selesai, belum, setengah, kerjakan]
-- Masalah : isi dengan masalah apa yang di ketahui nya.
-- Solusi : isi dengan solusi apa yang di rekomendasikan dan berikan contoh nya.
-- aturan dilanggar : sisipkan nama semua aturan yang dilanggarnya misalnya : (aturan_boilprate)[aturan_boilprate:32]
-- file bermasalah : sisipkan semua file yang harus di perbaiki tersebut misalnya (aturan_boilprate)[aturan_boilprate:32].
-- prompt : hanya diisi oleh saya
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: [Nama aturan](.agents/rules/nama_aturan.md#L32)
+- File bermasalah: [file_a.dart](path/menuju/file_a.dart#L15)
+- Prompt:
 #### Task 2
-- Status : isi misalnya [selesai, belum, setengah, kerjakan]
-- Masalah : isi dengan masalah apa yang di ketahui nya.
-- Solusi : isi dengan solusi apa yang di rekomendasikan dan berikan contoh nya.
-- aturan dilanggar : sisipkan nama semua aturan yang dilanggarnya misalnya : (aturan_boilprate)[aturan_boilprate:32]
-- file bermasalah : sisipkan semua file yang harus di perbaiki tersebut misalnya (aturan_boilprate)[aturan_boilprate:32]
-- prompt : hanya diisi oleh saya
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: Tidak ada
+- File bermasalah: [file_b.dart](path/menuju/file_b.dart)
+- Prompt:
 ## Rendah
 #### Task 1
-- Status : isi misalnya [selesai, belum, setengah, kerjakan]
-- Masalah : isi dengan masalah apa yang diketahui nya.
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: Tidak ada
+- File bermasalah: [file_a.dart](path/menuju/file_a.dart)
+- Prompt:
+# Kelompok 2
+## File terdampak
+- [path/menuju/file_c.dart](path/menuju/file_c.dart)
+## Tinggi
+#### Task 1
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: [Nama aturan](.agents/rules/nama_aturan.md#L32)
+- File bermasalah: [file_c.dart](path/menuju/file_c.dart#L20)
+- Prompt:
+## Rendah
+#### Task 1
+- Status: Belum dikerjakan
+- Masalah: Jelaskan masalah yang ditemukan secara spesifik.
+- Solusi: Jelaskan solusi yang direkomendasikan dan berikan contoh jika diperlukan.
+- Aturan dilanggar: Tidak ada
+- File bermasalah: [file_c.dart](path/menuju/file_c.dart)
+- Prompt:
+```
+## 8. Larangan
+Semua pihak yang mengubah `task.md` dilarang:
+1. Menggunakan format penulisan task yang berbeda dari template.
+2. Mengelompokkan task hanya berdasarkan kemiripan masalah tanpa memperhatikan file terdampak.
+3. Memisahkan task yang seharusnya berada dalam satu kelompok karena memiliki hubungan file terdampak.
+4. Menggabungkan task yang tidak memiliki hubungan file terdampak.
+5. Menghilangkan daftar `File terdampak` pada kelompok.
+6. Menghilangkan salah satu field wajib dari task.
+7. Mengubah urutan field yang telah ditetapkan.
+8. Mengisi atau mengubah field `Prompt`.
+9. Membuat tautan file atau aturan yang tidak sesuai dengan path sebenarnya.
+10. Mengarang nomor baris, pelanggaran aturan, masalah, atau solusi.
+11. Menandai task selesai tanpa bukti penyelesaian.
+12. Mengubah struktur format ini tanpa persetujuan pemilik repositori.
+**Ketentuan akhir:** Konsistensi struktur dan isi `task.md` wajib dipertahankan setiap kali file dibuat, ditambahkan, diperbarui, maupun disusun ulang. Apabila terdapat konflik antara kebiasaan penulisan sebelumnya dengan aturan ini, gunakan aturan dalam `.agents/rules/global/format_task.md` sebagai acuan format `task.md`.
+
+
+// ============================================================
+// FILE: .agents/rules/global/model_agent.md
+// ============================================================
+
+# model_agent.md
+## OpenRouter
+Karena pada gambar tidak dicantumkan skor benchmark (seperti MMLU atau Elo), peringkat di bawah ini diestimasikan berdasarkan konvensi penamaan model AI, yaitu ukuran parameter dalam Billion (B) serta label tingkatan seperti Ultra, Super, Lightning, dan Nano/Small.
+### Tingkat Tertinggi (Flagship / Parameter Terbesar)
+Model pada tingkat ini memiliki kapabilitas penalaran paling kuat, ukuran paling besar, atau merupakan model unggulan.
+Tidak ada model yang tercantum pada tingkat ini di teks asli.
+### Tingkat Menengah Atas (Large / Dioptimalkan)
+Model berukuran besar (MoE — Mixture of Experts) atau model yang dioptimalkan untuk kecepatan tinggi.
+1. Xing4.0 29B A4B — model 29 miliar parameter dengan 4B active parameters.
+### Tingkat Menengah (Spesialis / Omni)
+2. Inkling — model basis standar.
+3. North Mini Code — model khusus untuk coding dengan ukuran mini.
+### Tingkat Terendah / Ringan (Small / Tiny)
+Model pada tingkat ini sangat cepat dan ringan, tetapi kapasitas penalaran kompleksnya lebih rendah.
+4. Inkling Small — versi kompak dari Inkling.
+5. Flint — model basis/ringan.
+6. LFM2.5-2.6B — hanya memiliki 2,6 miliar parameter; paling kecil dalam daftar ini.
+## KIlo Code
+
+
+// ============================================================
+// FILE: .agents/rules/global/optimasi_boilerplate.md
+// ============================================================
+
+# Aturan Optimasi Boilerplate
+## 1. State dan Model
+- Wajib menggunakan `Freezed` untuk seluruh pembuatan state dan model.
+#### Contoh benar
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'bahan_bakar_state.freezed.dart';
+@freezed
+class BahanBakarState with _$BahanBakarState {
+  const factory BahanBakarState({
+    required List<BahanBakar> listBahanBakar,
+  }) = _BahanBakarState;
+}
+```
+**Alasan:** State dibuat dengan `@freezed` dan menghasilkan file `.freezed.dart`.
+#### Contoh salah
+```dart
+class BahanBakarState {
+  final List<BahanBakar> listBahanBakar;
+  BahanBakarState({required this.listBahanBakar});
+}
+```
+**Kesalahan:** State dibuat manual tanpa `Freezed`.
+**Rujukan teknis:**
+- `pubspec.yaml` — `freezed`, `freezed_annotation`.
+- `lib/fitur/*/state/*.dart` dan `*.freezed.dart`.
+## 2. Pemanfaatan Paket
+- Cari paket yang tersedia di [pub.dev](https://pub.dev/) menggunakan tool `websearch`.
+- Cari paket yang memiliki tujuan atau fungsi serupa dengan kode yang digunakan dalam proyek.
+- Gunakan kata kunci pencarian yang umum dan tidak terlalu spesifik, misalnya:
+  - Paket loading.
+  - Paket stream.
+  - Paket notifikasi.
+  - Paket untuk kebutuhan lainnya yang relevan.
+- Lakukan pencarian secara menyeluruh terhadap paket-paket yang relevan.
+- Kembalikan hasil pencarian kepada pengguna dalam bentuk daftar tautan paket pub.dev.
+## 3. Penggunaan Kembali Fungsi
+- Jika terdapat kode dengan fungsi atau tujuan yang sama di beberapa tempat, pertimbangkan untuk memindahkannya ke satu file khusus.
+- File-file yang membutuhkan fungsi tersebut cukup memanggil implementasi dari file khusus tersebut.
+- Hindari menulis ulang kode yang sebenarnya dapat digunakan bersama.
+## 4. Penerapan Abstraksi
+- Jangan membuat abstraksi hanya untuk mengurangi jumlah kode yang ditulis.
+- Setiap abstraksi harus memberikan manfaat yang jelas, seperti:
+  - Memungkinkan penggunaan ulang kode.
+  - Memisahkan tanggung jawab.
+  - Mempermudah pengujian.
+## 5. Pemanfaatan Fitur Bawaan
+- Sebelum membuat implementasi secara manual, periksa terlebih dahulu apakah Flutter, Dart, atau paket yang sudah digunakan menyediakan fitur atau fungsi yang dibutuhkan.
+- Gunakan fitur bawaan yang sudah tersedia dan memadai.
+- Jangan membuat ulang mekanisme yang sebenarnya sudah disediakan oleh SDK atau paket yang digunakan.
+## 6. Efisiensi Jumlah Kode
+- Usahakan menggunakan jumlah kode yang efisien tanpa mengurangi keterbacaan, kejelasan, dan kemudahan pemeliharaan.
+- Pertahankan tujuan dan perilaku kode yang sudah ada.
+- Jangan mengubah fungsi maupun hasil yang diharapkan dari kode tersebut.
+## 7. Pemanfaatan SDK
+- Sebelum membuat kode secara manual, cari terlebih dahulu apakah implementasi atau fungsi yang dibutuhkan sudah tersedia di SDK.
+- Lakukan pencarian pada SDK atau sumber lokal yang tersedia terlebih dahulu.
+- Jika tidak ditemukan secara lokal, cari implementasi atau fungsi serupa di [pub.dev](https://pub.dev/).
+## 8. Struktur Folder
+Gunakan folder `notifier` dan `provider` sesuai tanggung jawab masing-masing:
+- **Folder `notifier`**: khusus menyimpan file yang berisi class Notifier, termasuk Notifier yang menyediakan fungsi `read`.
+- **Folder `provider`**: khusus menyimpan file provider yang tidak memiliki fungsi `read`.
+## 9. Enum yang Ditampilkan kepada Pengguna
+- Setiap Enum yang nilainya ditampilkan kepada pengguna wajib memiliki getter `label` melalui extension.
+- Tambahkan getter `icon` apabila diperlukan.
+- Gunakan extension khusus untuk setiap Enum agar representasi nilai dapat dikelola secara terpusat.
+Contoh:
+```dart
+extension SortBahanBakarExtension on SortBahanBakarEnum {
+  String get label {
+    switch (this) {
+      // Sesuaikan label dengan setiap nilai Enum.
+    }
+  }
+}
+```
+
+
+// ============================================================
+// FILE: .agents/rules/global/optimasi_bug_runtime.md
+// ============================================================
+
+# Aturan Optimasi Bug Runtime
+**Path file:** `prompt/aturan/optimasi_bug_runtime.md`
+## Tujuan
+Aturan ini digunakan untuk mencegah kesalahan runtime, kesalahan pengelolaan data, kebocoran sumber daya, kesalahan proses asynchronous, serta masalah lain yang dapat menyebabkan aplikasi Flutter tidak berjalan sebagaimana mestinya.
+AI wajib mengikuti aturan ini ketika membaca, membuat, mengubah, atau memperbaiki kode Dart dan Flutter di dalam proyek.
+## Aturan
+### 1. Penanganan Nilai Null
+Selalu tangani kemungkinan nilai `null` sesuai dengan kebutuhan dan logika program.
+Ketentuan:
+- Hindari penggunaan operator `!` untuk memaksakan nilai nullable agar dianggap tidak null.
+- Hindari penggunaan casting `as` untuk memaksakan nilai nullable menjadi tipe non-null tanpa validasi.
+- Gunakan operator `??` untuk memberikan nilai pengganti ketika nilai di sebelah kirinya `null`, selama nilai pengganti tersebut sesuai dengan kebutuhan dan logika program.
+- Utamakan `??` untuk penanganan null sederhana daripada membuat percabangan `if` yang menghasilkan perilaku sama.
+- Gunakan `??=` untuk mengisi variabel hanya ketika nilainya `null`, sesuai rekomendasi linter `prefer_conditional_assignment`.
+- Jangan memberikan nilai pengganti secara sembarangan hanya untuk menghilangkan kemungkinan `null`.
+- Jangan menyembunyikan kesalahan atau kondisi data tidak valid dengan memberikan nilai default yang tidak sesuai.
+- Jika nilai `null` menunjukkan bahwa data tidak valid atau tidak tersedia, tangani kondisi tersebut secara eksplisit. Jangan mengubahnya menjadi nilai lain yang dapat menyebabkan kesalahan logika.
+Contoh penggunaan yang direkomendasikan:
+```dart
+return val ?? true;
+```
+Bentuk berikut juga benar, tetapi tidak perlu digunakan apabila hanya menghasilkan perilaku yang sama tanpa menambahkan logika:
+```dart
+if (val == null) {
+  return true;
+}
+return val;
+```
+### 2. Parsing dan Konversi Tipe Data
+Hindari penggunaan `dynamic` dan parsing yang berisiko menimbulkan kesalahan runtime.
+Ketentuan:
+- Gunakan `tryParse` daripada `parse` ketika mengonversi String menjadi tipe data seperti `int`, `double`, dan tipe lain yang menyediakan metode `tryParse`.
+- Hindari menggunakan `dynamic` sebagai tipe variabel apabila tipe datanya dapat ditentukan secara jelas.
+- Jangan melakukan konversi tipe secara paksa tanpa memastikan tipe data sumber.
+- Tangani hasil parsing yang gagal atau menghasilkan `null` sesuai kebutuhan program.
+- Jangan memberikan nilai default secara sembarangan ketika parsing gagal.
+- Jika nilai berasal dari data eksternal, pastikan format dan tipe datanya divalidasi sebelum digunakan.
+Contoh:
+```dart
+final nilai = int.tryParse(dataString);
+```
+Jangan menggunakan:
+```dart
+final nilai = int.parse(dataString);
+```
+**Penanganan parameter constructor dan variabel privat yang nullable:**
+- Jika nilai nullable berasal dari parameter constructor atau variabel privat, salin terlebih dahulu nilainya ke variabel lokal sebelum melakukan pemeriksaan null, terutama ketika nilai tersebut akan digunakan lebih lanjut setelah pemeriksaan.
+- Lakukan pemeriksaan null terhadap variabel lokal tersebut.
+- Gunakan variabel lokal yang sudah dipastikan tidak null untuk proses berikutnya.
+- Jangan menggunakan `!` atau `as` hanya untuk mengatasi kesulitan promosi tipe data.
+Contoh:
+```dart
+final nilai = _nilai;
+if (nilai == null) {
+  return;
+}
+// Gunakan nilai setelah dipastikan tidak null.
+```
+### 3. Model dan Struktur Data Database
+Setiap struktur baris (row) database harus memiliki representasi model data yang jelas.
+Ketentuan:
+- Buat model untuk merepresentasikan struktur data dari setiap tabel database yang digunakan.
+- Nama tabel dan nama kolom harus didefinisikan secara jelas.
+- Gunakan model untuk membaca, mengolah, dan menyimpan data database.
+- Hindari penggunaan Map database secara langsung dan berulang di berbagai bagian aplikasi apabila pemetaan tersebut dapat ditangani melalui model atau lapisan repository.
+- Pastikan pemetaan antara nama kolom database dan properti model sesuai dengan struktur tabel sebenarnya.
+- Jangan menggunakan nama tabel atau kolom yang tidak sesuai dengan skema database.
+### 4. Pengecekan `mounted`
+Setiap operasi asynchronous yang berhubungan dengan UI harus memperhatikan status `mounted`.
+Ketentuan:
+- Setelah `await` di dalam `State`, periksa `mounted` sebelum melanjutkan operasi yang menggunakan `setState`, `context`, atau sumber daya milik State.
+- Jika widget sudah tidak terpasang, hentikan proses lanjutan yang membutuhkan widget tersebut.
+- Untuk penggunaan `BuildContext` di luar State, gunakan `context.mounted` sebelum mengakses context setelah operasi asynchronous.
+- Jangan memanggil `setState` setelah widget tidak lagi terpasang.
+- Jangan menggunakan `BuildContext` yang sudah tidak valid.
+Contoh:
+```dart
+await prosesData();
+if (!mounted) return;
+setState(() {
+  // Perbarui UI.
+});
+```
+Pengecekan `mounted` tidak perlu dipaksakan apabila kode setelah `await` hanya menjalankan proses yang tidak bergantung pada State, UI, atau BuildContext.
+### 5. Future di Dalam `build()`
+Jangan membuat atau menjalankan Future baru secara langsung di dalam metode `build()`.
+Ketentuan:
+- Jangan memanggil fungsi asynchronous secara langsung di dalam `build()` untuk menghasilkan Future baru pada setiap rebuild.
+- Jangan menempatkan proses pengambilan data asynchronous yang menyebabkan Future terus dibuat ulang ketika widget melakukan rebuild.
+- Siapkan Future pada tempat yang sesuai, misalnya melalui `initState`, provider, atau mekanisme pengelolaan state yang sudah digunakan proyek.
+- Pastikan Future yang digunakan oleh `FutureBuilder` memiliki referensi yang stabil dan tidak dibuat ulang tanpa kebutuhan.
+Tujuannya adalah mencegah proses asynchronous berjalan berulang akibat rebuild yang tidak diperlukan.
+### 6. Try/Catch dan Penanganan Error
+Operasi yang berpotensi menghasilkan error runtime wajib memiliki penanganan error yang sesuai.
+Prioritaskan operasi yang berhubungan dengan:
+- Database.
+- Jaringan atau API.
+- File dan penyimpanan.
+- Platform channel.
+- Parsing dan pemrosesan data eksternal.
+- Operasi asynchronous yang berpotensi gagal.
+Ketentuan:
+- Gunakan `try/catch` untuk menangani error pada operasi tersebut.
+- Setiap blok `catch` wajib menggunakan logger `L.e`.
+- Setelah mencatat error, teruskan kembali error menggunakan `rethrow` agar lapisan pemanggil, termasuk UI, dapat menangani kegagalan tersebut.
+- Jangan menangkap error lalu mengabaikannya tanpa penanganan yang jelas.
+- Jangan mengubah error menjadi nilai default yang dapat menyembunyikan kegagalan operasi.
+- Tempatkan penanganan error pada lapisan yang tepat.
+- Hindari menangkap dan mencatat error yang sama berulang kali pada banyak lapisan apabila tidak memberikan informasi tambahan.
+Pengecualian untuk Future yang dijalankan tanpa `await`:
+- Future yang berjalan menggunakan `unawaited` tetap wajib memiliki penanganan error.
+- Jika proses tersebut merupakan inisialisasi UI, tangani kegagalan pada batas inisialisasi dan tampilkan kondisi error melalui state UI.
+- Jangan melakukan `rethrow` ke Future yang tidak memiliki pemanggil atau mekanisme penanganan error.
+### 7. Dispose dan Pengelolaan Sumber Daya
+Pastikan seluruh sumber daya yang membutuhkan pelepasan dikelola dengan benar.
+Ketentuan:
+- Tutup seluruh controller yang sudah tidak digunakan melalui `dispose()`.
+- Hentikan `StreamSubscription` melalui `cancel()`.
+- Hentikan `Timer` melalui `cancel()`.
+- Lepaskan listener yang sudah didaftarkan.
+- Hentikan atau lepaskan observer yang sudah didaftarkan.
+- Pastikan sumber daya tidak dibiarkan aktif setelah widget atau objek pemiliknya tidak digunakan.
+- Jangan memanggil `setState` setelah widget tidak lagi terpasang.
+- Pastikan proses pembersihan sumber daya tidak dilakukan berulang kali secara tidak aman.
+Contoh sumber daya yang perlu diperhatikan:
+- `TextEditingController`.
+- `ScrollController`.
+- `FocusNode`.
+- `AnimationController`.
+- `StreamSubscription`.
+- `Timer`.
+- Listener dan observer.
+### 8. Transaksi Database dan Rollback
+Operasi perubahan data database wajib memperhatikan konsistensi dan integritas data.
+Ketentuan:
+- Gunakan transaksi untuk operasi `insert`, `update`, dan `delete` yang menjadi bagian dari suatu proses bisnis.
+- Pastikan seluruh perubahan data yang saling berkaitan berada dalam satu transaksi.
+- Lakukan commit hanya ketika seluruh operasi dalam transaksi berhasil.
+- Jika salah satu operasi gagal, lakukan rollback agar perubahan yang belum berhasil tidak meninggalkan data dalam kondisi tidak konsisten.
+- Setelah kegagalan, teruskan error menggunakan `rethrow`.
+- Jangan mengabaikan kegagalan transaksi.
+- Ikuti mekanisme transaksi yang disediakan oleh library database yang digunakan.
+- Jika menggunakan API seperti `transaction()` pada Sqflite, manfaatkan mekanisme commit dan rollback otomatis yang disediakan API tersebut.
+- Jangan mencampurkan transaksi otomatis dari library dengan pemanggilan `begin`, `commit`, atau `rollback` manual yang tidak diperlukan.
+Tujuannya adalah memastikan data tetap konsisten meskipun salah satu langkah operasi database mengalami kegagalan.
+### 9. String Literal dan Konstanta
+Hindari penggunaan string literal yang berulang atau berfungsi sebagai identifier tetap di berbagai bagian kode.
+Ketentuan:
+- Gunakan konstanta atau enum untuk nilai string yang memiliki fungsi tetap dalam logika aplikasi.
+- Gunakan `enum` untuk kumpulan nilai yang pilihannya sudah ditentukan dan terbatas.
+- Gunakan `const` atau konstanta terpusat untuk nama tabel, nama kolom, key penyimpanan, route, status, kategori, dan identifier lainnya.
+- Jangan menyebarkan string yang sama ke banyak file apabila dapat menggunakan satu definisi terpusat.
+- Pastikan penggunaan konstanta tidak mengubah makna atau perilaku program.
+Tidak perlu mengubah setiap string literal menjadi enum. Pemilihan konstanta atau enum harus disesuaikan dengan fungsi dan karakteristik nilainya.
+### 10. Penggunaan `await` dan `unawaited`
+Gunakan `await` dan `unawaited` sesuai kebutuhan proses asynchronous.
+Ketentuan:
+- Gunakan `await` apabila hasil Future diperlukan, proses harus menunggu penyelesaiannya, atau urutan operasi harus dipastikan.
+- Gunakan `unawaited()` apabila Future memang tidak perlu ditunggu oleh pemanggil.
+- Pastikan operasi yang dijalankan menggunakan `unawaited()` tetap memiliki penanganan error yang sesuai.
+- Jangan menggunakan `unawaited()` hanya untuk menghilangkan peringatan analyzer.
+- Jangan menggunakan `await` apabila penyelesaian Future tidak diperlukan dan tidak memengaruhi urutan proses.
+- Untuk navigasi, gunakan `await` jika hasil navigasi diperlukan atau ada proses lanjutan yang harus menunggu halaman ditutup. Gunakan `unawaited()` jika hasilnya memang tidak diperlukan.
+Import yang digunakan apabila `unawaited()` diperlukan:
+```dart
+import 'dart:async';
+```
+Contoh:
+```dart
+unawaited(prosesAsynchronous());
+```
+### 11. Penggunaan Logger
+Gunakan logger dari class `L` yang sudah tersedia di proyek.
+Jangan menggunakan `print()`, `debugPrint()`, atau logger lain untuk menggantikan logger proyek.
+Ketentuan penggunaan:
+| Logger | Kegunaan                                                                                                   |
+| ------ | ---------------------------------------------------------------------------------------------------------- |
+| `L.i`  | Mencatat alur proses normal, seperti proses dimulai atau selesai.                                          |
+| `L.s`  | Mencatat keberhasilan operasi, seperti penyimpanan, penghapusan, dan penambahan data ke database.          |
+| `L.w`  | Mencatat kondisi tidak normal yang tidak menyebabkan operasi gagal, seperti data kosong atau izin ditolak. |
+| `L.e`  | Mencatat error runtime yang ditangani melalui blok `catch`.                                                |
+Ketentuan tambahan:
+- Setiap blok `catch` wajib mencatat error menggunakan `L.e`.
+- Gunakan `L.i` untuk informasi yang memang memberikan manfaat dalam pemantauan alur aplikasi.
+- Jangan menggunakan `L.i` secara berlebihan.
+- Jangan menempatkan logging di dalam loop yang berjalan berulang atau berfrekuensi tinggi.
+- Hindari penggunaan logger di dalam metode `build()` karena metode tersebut dapat dipanggil berulang kali.
+- Pastikan informasi yang dicatat membantu proses debugging dan tidak membocorkan data sensitif.
+### 12. Flutter Analyzer
+Kode wajib bersih dari seluruh temuan analyzer pada folder `lib/` dan `test/`.
+Ketentuan:
+- Jalankan `flutter analyze` setelah melakukan perubahan kode.
+- Perbaiki seluruh `error`, `warning`, dan `info` yang ditemukan pada folder `lib/` dan `test/`.
+- Jangan membiarkan temuan analyzer yang belum diselesaikan.
+- Jangan menggunakan komentar `ignore` hanya untuk menyembunyikan temuan analyzer.
+- Jika suatu temuan memang tidak dapat dihindari, pastikan terdapat alasan teknis yang jelas sebelum menentukan penanganannya.
+- Periksa kembali hasil analyzer setelah perbaikan.
+### 13. Restart Aplikasi
+Ketika fitur restart aplikasi menggunakan API `Restart.restartApp()`, ikuti ketentuan berikut:
+- Panggil `Restart.restartApp()` menggunakan `await`.
+- Tangani hasil pengembalian bertipe `RestartResult`.
+- Periksa properti `success` untuk mengetahui apakah permintaan restart berhasil diterima oleh platform.
+- Jika `success` bernilai `false`, tangani informasi `code` dan `message` sesuai kebutuhan.
+- Perhatikan bahwa `code` dan `message` dapat bernilai `null`.
+- Jangan menganggap restart berhasil hanya karena pemanggilan Future selesai.
+- Gunakan `try/catch` untuk menangani error saat proses restart.
+- Setiap blok `catch` wajib mencatat error menggunakan `L.e`.
+- Sebelum melakukan `setState` atau mengakses `context` setelah `await`, periksa `mounted`.
+- Jika proses restart gagal, berikan informasi kegagalan kepada UI sesuai kebutuhan.
+### 14. ParserUtil untuk Data Dynamic dari Map
+Seluruh parsing nilai `dynamic` yang berasal dari Map database maupun jaringan wajib menggunakan `ParserUtil` yang sudah tersedia di proyek.
+Ketentuan:
+- Gunakan `ParserUtil` sebagai tempat penanganan dan konversi tipe data dari Map database atau jaringan.
+- Jangan melakukan parsing `dynamic` secara langsung dan berulang di berbagai bagian aplikasi.
+- Periksa implementasi `ParserUtil` terlebih dahulu sebelum menggunakannya.
+- Gunakan metode parsing yang sudah tersedia dan sesuai dengan tipe data yang dibutuhkan.
+- Jika metode yang diperlukan belum tersedia, sesuaikan implementasi `ParserUtil` tanpa membuat fungsi parsing duplikat di berbagai file.
+- Pastikan penanganan nilai null dan kegagalan parsing tetap mengikuti aturan pada bagian penanganan null dan parsing.
+- Jika perlu menambahkan metode parsing, gunakan pendekatan yang aman terhadap data yang tidak valid.
+**Prioritas penerapan:**
+`ParserUtil` merupakan jalur utama untuk memproses nilai `dynamic` dari Map database dan jaringan. Penggunaan `tryParse` diterapkan di dalam implementasi parsing apabila diperlukan, bukan sebagai pengganti `ParserUtil` di seluruh bagian aplikasi.
+### 15. Inisialisasi Asynchronous di initState
+Jangan menjadikan metode `initState()` sebagai metode asynchronous.
+Apabila inisialisasi membutuhkan proses asynchronous, gunakan kombinasi `Future.microtask`, `unawaited`, dan pengecekan `mounted`.
+Ketentuan:
+- Jalankan proses inisialisasi asynchronous melalui `Future.microtask`.
+- Gunakan `unawaited` untuk menjalankan Future tersebut dari `initState()`.
+- Pastikan proses inisialisasi memiliki penanganan error.
+- Periksa `mounted` sebelum mengakses UI setelah proses asynchronous.
+- Jangan melakukan pembaruan UI apabila widget sudah tidak terpasang.
+- Pastikan error dari Future yang tidak ditunggu tidak dibiarkan menjadi unhandled error.
+- Gunakan state error atau mekanisme penanganan UI yang sesuai apabila proses inisialisasi gagal.
+### 16. Pengamanan Aksi dan Double Submit
+Gunakan flag seperti `_sedangMemuat` atau `_isLoading` untuk mencegah satu aksi dijalankan berulang kali sebelum proses sebelumnya selesai.
+Ketentuan:
+- Periksa flag sebelum memulai operasi.
+- Jika operasi masih berjalan, hentikan pemanggilan berikutnya.
+- Aktifkan flag sebelum memulai proses asynchronous.
+- Pastikan flag dikembalikan ke kondisi semula setelah operasi selesai, termasuk ketika terjadi error.
+- Gunakan `try/finally` apabila diperlukan agar proses pengembalian flag tetap dijalankan.
+- Jika flag digunakan untuk memperbarui UI, periksa `mounted` sebelum memanggil `setState`.
+- Selama operasi berlangsung, cegah pengguna menjalankan aksi yang sama berulang kali.
+Contoh:
+```dart
+if (_isLoading) return;
+```
+### 17. Post Frame Callback dan WidgetsBindingObserver
+Gunakan `addPostFrameCallback` dan `WidgetsBindingObserver` sesuai kebutuhan siklus hidup widget dan aplikasi.
+**A. addPostFrameCallback**
+Gunakan `WidgetsBinding.instance.addPostFrameCallback` untuk operasi yang membutuhkan widget sudah selesai dirender.
+Contoh penggunaan:
+- Mengatur posisi scroll setelah widget selesai ditampilkan.
+- Mengatur fokus pada suatu input setelah widget dirender.
+- Menampilkan dialog yang membutuhkan widget sudah tersedia.
+- Melakukan operasi lain yang bergantung pada hasil rendering frame.
+Ketentuan:
+- Jangan menggunakan `addPostFrameCallback` untuk pekerjaan yang tidak membutuhkan widget selesai dirender.
+- Pastikan widget masih terpasang sebelum mengakses UI dari callback.
+- Jika callback menjalankan operasi asynchronous, terapkan pengecekan `mounted` setelah `await` sebelum mengakses UI.
+**B. WidgetsBindingObserver**
+Gunakan `WidgetsBindingObserver` apabila widget atau objek perlu mengetahui perubahan siklus hidup aplikasi.
+Ketentuan:
+- Daftarkan observer melalui `WidgetsBinding.instance.addObserver(this)` di dalam `initState()`.
+- Lepaskan observer melalui `WidgetsBinding.instance.removeObserver(this)` di dalam `dispose()`.
+- Gunakan `didChangeAppLifecycleState` untuk menangani perubahan siklus hidup aplikasi.
+- Sesuaikan tindakan dengan status aplikasi, seperti ketika aplikasi berpindah ke background atau kembali ke foreground.
+- Pastikan observer tidak didaftarkan berulang kali tanpa kebutuhan.
+- Pastikan observer selalu dilepaskan ketika objek pemiliknya sudah tidak digunakan.
+Contoh penggunaan:
+- Mengunci aplikasi ketika berpindah ke background.
+- Memperbarui data ketika aplikasi kembali ke foreground.
+- Menghentikan proses tertentu ketika aplikasi tidak aktif.
+Referensi:
+https://api.flutter.dev/flutter/widgets/WidgetsBindingObserver-class.html
+---
+## Prioritas Penyelesaian Ketika Menemukan Pelanggaran
+Ketika AI menemukan kode yang tidak sesuai dengan aturan ini:
+1. Periksa terlebih dahulu konteks kode dan tujuan operasi yang sedang dikerjakan.
+2. Identifikasi sumber masalah dan kemungkinan dampaknya terhadap runtime.
+3. Perbaiki berdasarkan kebutuhan dan logika program, bukan sekadar menghilangkan peringatan analyzer.
+4. Jangan mengganti perilaku program yang sudah benar hanya untuk menyesuaikan bentuk penulisan.
+5. Jangan membuat abstraksi, helper, konstanta, atau percabangan baru apabila tidak diperlukan.
+6. Pastikan perbaikan tidak menimbulkan masalah baru pada bagian lain.
+7. Jalankan `flutter analyze` setelah perubahan dan selesaikan seluruh temuan pada folder `lib/` dan `test/`.
+## Rekomendasi (Tidak Bersifat Wajib)
+Hal-hal berikut merupakan rekomendasi tambahan untuk meningkatkan kualitas penerapan aturan:
+- Pertimbangkan untuk menyediakan unit test pada `ParserUtil`, terutama untuk nilai null, format tidak valid, dan perbedaan tipe data dari database maupun jaringan.
+- Pertimbangkan untuk menguji operasi transaksi database ketika salah satu langkah insert, update, atau delete mengalami kegagalan.
+- Pertimbangkan untuk menyediakan mekanisme pencatatan error yang konsisten agar proses debugging lebih mudah dilakukan.
+Rekomendasi di atas tidak menambahkan kewajiban baru terhadap implementasi apabila belum diperlukan oleh kebutuhan proyek.
+
+
+// ============================================================
+// FILE: .agents/rules/global/optimasi_keamanan.md
+// ============================================================
+
+# Aturan Optimasi Keamanan
+## Tujuan
+Menetapkan standar penyimpanan dan perlindungan data agar informasi sensitif pengguna tetap aman, tidak terekspos melalui media yang tidak semestinya, serta dibersihkan ketika pengguna melakukan logout.
+## Ketentuan
+### 1. Penyimpanan Data Sensitif
+Seluruh data sensitif wajib disimpan menggunakan paket `flutter_secure_storage` yang memanfaatkan mekanisme penyimpanan aman pada masing-masing platform:
+- iOS: Keychain.
+- Android: Keystore.
+Data yang wajib menggunakan penyimpanan aman meliputi:
+- PIN dan hash PIN.
+- Salt.
+- Access token.
+- Refresh token.
+- Kredensial.
+- Kunci enkripsi.
+Dilarang menyimpan data sensitif tersebut menggunakan `SharedPreferences`.
+#### Contoh benar
+```dart
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+const storage = FlutterSecureStorage();
+await storage.write(key: 'access_token', value: token);
+```
+**Alasan:** Token disimpan pada secure storage, bukan SharedPreferences.
+#### Contoh salah
+```dart
+final prefs = await SharedPreferences.getInstance();
+await prefs.setString('access_token', token);
+```
+**Kesalahan:** Menyimpan token pada SharedPreferences.
+**Rujukan teknis:**
+- `pubspec.yaml` — `flutter_secure_storage: ^11.2.0`, `shared_preferences: ^2.5.6`.
+- `lib/fitur/kunci_aplikasi/service/kunci_aplikasi_service.dart`.
+```
+### 2. Penggunaan SharedPreferences
+`SharedPreferences` hanya boleh digunakan untuk menyimpan preferensi pengguna yang tidak bersifat sensitif.
+Contoh data yang diperbolehkan:
+- Preferensi tema.
+- Preferensi bahasa.
+- Pilihan UI.
+- Flag onboarding.
+Jangan menyimpan kredensial, token, kunci enkripsi, maupun informasi sensitif lainnya menggunakan `SharedPreferences`.
+#### Contoh benar
+```dart
+final prefs = await SharedPreferences.getInstance();
+await prefs.setBool('is_onboarding_selesai', true);
+```
+**Alasan:** Flag onboarding bukan data sensitif.
+#### Contoh salah
+```dart
+final prefs = await SharedPreferences.getInstance();
+await prefs.setString('refresh_token', refreshToken);
+```
+**Kesalahan:** Menyimpan refresh token pada SharedPreferences.
+**Rujukan teknis:**
+- `pubspec.yaml` — `shared_preferences: ^2.5.6`.
+```
+### 3. Perlindungan Data Sensitif
+Data sensitif tidak boleh terekspos melalui clipboard maupun screenshot.
+Ketentuan perlindungan:
+- Gunakan `enableInteractiveSelection: false` pada field yang menampilkan atau menerima data sensitif untuk mencegah pengguna menyeleksi dan menyalin teks tersebut.
+- Terapkan perlindungan screenshot pada layar yang menampilkan data sensitif agar informasi tersebut tidak dapat ditangkap melalui screenshot.
+### 4. Pembersihan Data Saat Logout
+Ketika pengguna melakukan logout, seluruh data sensitif wajib dihapus dari:
+- Secure storage.
+- Memory aplikasi.
+Pastikan tidak ada data sensitif milik sesi sebelumnya yang masih tersimpan atau dapat diakses setelah proses logout.
+
+
+// ============================================================
+// FILE: .agents/rules/global/optimasi_performa.md
+// ============================================================
+
+# Aturan Optimasi Performa
+## 1. Mempertahankan Posisi Scroll dan Identitas Item
+1. Ketika operasi apa pun dilakukan pada daftar, seperti menambah, menghapus, mengubah, atau memperbarui item, posisi scroll harus tetap dipertahankan.
+2. Jangan sampai daftar kembali ke posisi paling atas hanya karena operasi tersebut menyebabkan widget dibangun ulang (_rebuild_).
+3. Setiap item yang dirender dalam daftar wajib memiliki `Key` yang stabil dan unik.
+4. Gunakan `ValueKey`, `ObjectKey`, atau `UniqueKey` sesuai karakteristik dan kebutuhan identitas item.
+5. Key harus tetap konsisten untuk item yang sama selama item tersebut masih memiliki identitas yang sama. Jangan membuat key baru setiap kali widget dibangun ulang.
+#### Contoh benar
+```dart
+ListView.builder(
+  itemCount: daftar.length,
+  itemBuilder: (context, index) {
+    final item = daftar[index];
+    return ListTile(
+      key: ValueKey(item.id),
+      title: Text(item.nama),
+    );
+  },
+);
+```
+**Alasan:** `ValueKey(item.id)` stabil dan unik untuk setiap item.
+#### Contoh salah
+```dart
+ListView.builder(
+  itemCount: daftar.length,
+  itemBuilder: (context, index) {
+    final item = daftar[index];
+    return ListTile(
+      key: ValueKey(DateTime.now().millisecondsSinceEpoch),
+      title: Text(item.nama),
+    );
+  },
+);
+```
+**Kesalahan:** Key berubah setiap rebuild, sehingga posisi scroll dan identitas item tidak stabil.
+**Rujukan teknis:**
+- Flutter SDK — `ValueKey`, `ObjectKey`, `UniqueKey`.
+```
+## 2. Rekomendasi Optimasi Pekerjaan Berat
+1. Pekerjaan berat, seperti parsing JSON berukuran besar, sorting data dalam jumlah besar, dan komputasi intensif, direkomendasikan untuk dijalankan di luar UI thread menggunakan `compute()` atau `Isolate.run()`.
+2. Hindari menjalankan pekerjaan berat secara langsung di UI thread karena dapat menyebabkan antarmuka tidak responsif.
+3. Fungsi yang diberikan sebagai argumen kepada `compute()` harus berupa fungsi `top-level` atau `static`.
+
+
+// ============================================================
+// FILE: .agents/rules/global/optimasi_ui.md
+// ============================================================
+
+# Optimasi UI
+**Path:** `.agents/rules/global/optimasi_ui.md`
+## Tujuan
+File ini merupakan referensi utama untuk seluruh implementasi UI/UX pada proyek Flutter.
+Seluruh desain antarmuka harus mengacu pada ketentuan dalam file ini, khususnya mengenai layout, tipografi, ukuran, jarak, padding, dan margin. Tujuannya adalah menjaga konsistensi desain agar aplikasi memiliki tampilan yang profesional dan premium.
+## Aturan
+### 1. Referensi Desain
+1. Gunakan file ini sebagai referensi untuk menentukan:
+   - Layout.
+   - Jenis dan ukuran font.
+   - Ukuran komponen.
+   - Jarak antar-elemen.
+   - Padding.
+   - Margin.
+2. Seluruh implementasi UI/UX wajib mengacu pada standar yang ditetapkan dalam file ini.
+3. Terapkan standar desain tersebut pada seluruh file Dart agar tampilan aplikasi tetap konsisten.
+4. Dilarang menetapkan nilai ukuran, jarak, padding, dan margin secara sembarangan di dalam widget. Gunakan nilai yang telah ditentukan dalam referensi desain ini.
+### 2. Penggunaan Warna dan Tema
+1. Gunakan warna dari tema aplikasi untuk teks maupun komponen UI lainnya agar tampilannya dapat menyesuaikan dengan mode tema yang aktif.
+2. Penggunaan warna hardcode diperbolehkan apabila warna tersebut memang harus tetap sama pada seluruh mode tema.
+3. Nilai warna yang menggunakan format HEX atau RGBA tidak boleh diubah menjadi referensi `ColorScheme`.
+4. Jangan menggunakan warna hardcode untuk komponen yang seharusnya mengikuti perubahan tema aplikasi.
+### 3. Penanganan Text Overflow
+1. Antisipasi kemungkinan teks menjadi panjang dan menyebabkan overflow pada layout.
+2. Berikan penanganan khusus pada teks yang wajib tetap terlihat agar tidak menyebabkan overflow.
+3. Gunakan widget seperti `FittedBox` atau `Flexible` apabila sesuai dengan kebutuhan layout dan karakteristik teks.
+4. Jangan menerapkan `FittedBox` atau `Flexible` secara sembarangan pada seluruh teks. Gunakan hanya pada bagian yang memang membutuhkannya.
+### 4. Pengaturan Jarak Antar-Anak Widget
+1. Gunakan properti `spacing` pada `Row` dan `Column` untuk mengatur jarak antar-widget anak.
+2. Gunakan `SizedBox` hanya untuk kebutuhan jarak khusus yang tidak dapat ditangani menggunakan properti `spacing`.
+3. Hindari penggunaan `SizedBox` berulang hanya untuk mengatur jarak standar antar-widget anak.
+#### Contoh benar
+```dart
+Column(
+  spacing: 8,
+  children: const [
+    Text('Judul'),
+    Text('Deskripsi'),
+  ],
+);
+```
+**Alasan:** Jarak antar-anak diatur melalui properti `spacing`.
+#### Contoh salah
+```dart
+Column(
+  children: const [
+    Text('Judul'),
+    SizedBox(height: 8),
+    Text('Deskripsi'),
+    SizedBox(height: 8),
+    Text('Lainnya'),
+  ],
+);
+```
+**Kesalahan:** Menggunakan `SizedBox` berulang untuk jarak standar.
+**Rujukan teknis:**
+- Flutter SDK — `Row.spacing`, `Column.spacing`.
+```
+### 5. Pengaturan Tipografi
+1. Gunakan `Theme.of(context).textTheme` sebagai referensi utama untuk menentukan gaya teks.
+2. Jika diperlukan penyesuaian gaya teks, gunakan `copyWith()` berdasarkan gaya teks yang tersedia dalam tema.
+#### Contoh benar
+```dart
+final textTheme = Theme.of(context).textTheme;
+Text(
+  'Judul',
+  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+);
+```
+**Alasan:** Gaya teks dasar diambil dari tema, lalu disesuaikan dengan `copyWith`.
+#### Contoh salah
+```dart
+Text(
+  'Judul',
+  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+);
+```
+**Kesalahan:** Menentukan ukuran dan gaya teks secara manual tanpa acuan tema.
+**Rujukan teknis:**
+- Flutter SDK — `Theme.of(context).textTheme`, `TextStyle.copyWith`.
+```
+3. Penggunaan warna hardcode pada teks diperbolehkan apabila memang diperlukan untuk mempertahankan warna tertentu pada mode terang dan gelap.
+### 6. Dialog Konfirmasi
+Gunakan komponen yang tersedia dalam paket `adaptive_dialog` untuk membuat dialog konfirmasi.
+### 7. Proses Berat di Build
+1. Jangan menjalankan proses komputasi berat secara langsung di dalam method `build()`.
+2. Proses seperti sorting data dalam jumlah besar dan parsing data harus dipindahkan ke tempat yang sesuai, seperti Provider atau Isolate.
+3. Hindari pekerjaan berat di dalam `build()` agar proses rendering UI tidak terganggu.
+### 8. Penggunaan showModalBottomSheet
+1. Setiap penggunaan `showModalBottomSheet` wajib memperhatikan area aman layar menggunakan `SafeArea`.
+2. Jika konten Bottom Sheet berukuran panjang dan berpotensi melebihi tinggi layar, wajib menggunakan `isScrollControlled: true`.
+3. Pastikan konten yang panjang dapat ditampilkan dan digulir tanpa terpotong oleh batas layar.
+#### Contoh benar
+```dart
+showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  builder: (context) => SafeArea(
+    child: DraggableScrollableSheet(
+      expand: false,
+      builder: (context, scrollController) => ListView(
+        controller: scrollController,
+        children: const [Text('Konten panjang')],
+      ),
+    ),
+  ),
+);
+```
+**Alasan:** Bottom sheet panjang menggunakan `SafeArea` dan `isScrollControlled`.
+#### Contoh salah
+```dart
+showModalBottomSheet<void>(
+  context: context,
+  builder: (context) => Column(
+    children: const [Text('Konten panjang')],
+  ),
+);
+```
+**Kesalahan:** Konten panjang tidak dapat digulir dan tidak memperhatikan area aman.
+**Rujukan teknis:**
+- Flutter SDK — `showModalBottomSheet`, `SafeArea`, `isScrollControlled`.
+```
+## Rekomendasi
+1. Utamakan konsistensi desain pada seluruh halaman aplikasi.
+2. Pilih widget yang sesuai dengan kebutuhan layout dan karakteristik konten.
+3. Hindari penggunaan widget yang tidak diperlukan apabila tersedia solusi yang lebih sederhana.
+
+
+// ============================================================
+// FILE: .agents/rules/global/optimasi_ux.md
+// ============================================================
+
+<!-- Path: optimasi_ux.md -->
+# Aturan Optimasi UX/UI Flutter
+## Prinsip umum
+1. Sebelum membuat, mengubah, atau menganalisis tampilan UI, wajib membaca `optimasi_ui.md` sebagai referensi desain.
+2. Seluruh penerapan aturan UX/UI wajib mengikuti referensi desain yang sudah ditentukan.
+3. Jangan membuat nilai ukuran, padding, margin, atau spacing sendiri apabila nilai tersebut sudah tersedia di `optimasi_ui.md`.
+4. Jangan menyatakan pekerjaan selesai sebelum melakukan pemeriksaan terhadap aturan UX/UI yang berkaitan dengan pekerjaan tersebut.
+5. Terapkan aturan ini pada seluruh halaman dan widget yang dibuat, diubah, maupun diperiksa.
+---
+# Aturan UX
+## 1. Konfirmasi operasi penghapusan
+Setiap operasi penghapusan data wajib memberikan informasi kepada pengguna mengenai data yang akan dihapus dan menampilkan konfirmasi sebelum penghapusan dilakukan.
+Ketentuan:
+- Tampilkan informasi mengenai data atau objek yang akan dihapus.
+- Jelaskan konsekuensi penghapusan apabila diperlukan.
+- Sediakan pilihan untuk membatalkan dan melanjutkan penghapusan.
+- Jangan menjalankan operasi penghapusan sebelum pengguna memberikan konfirmasi.
+- Jangan menampilkan konfirmasi berulang apabila pengguna sudah memberikan konfirmasi untuk operasi yang sama.
+Contoh benar:
+- Menekan tombol hapus bahan bakar menampilkan dialog: "Apakah Anda yakin ingin menghapus data bahan bakar ini?"
+- Menyediakan tombol "Batal" dan "Hapus".
+- Penghapusan hanya dilakukan setelah pengguna menekan "Hapus".
+Contoh salah:
+- Data langsung dihapus setelah tombol hapus ditekan.
+- Dialog hanya menampilkan pesan "Apakah Anda yakin?" tanpa menjelaskan objek yang akan dihapus.
+- Operasi penghapusan berjalan sebelum pengguna memberikan konfirmasi.
+## 2. Bahasa yang ditampilkan kepada pengguna
+Seluruh teks yang tampil kepada pengguna wajib menggunakan bahasa yang formal, baku, dan sesuai dengan bahasa atau locale aplikasi.
+Ketentuan:
+- Gunakan bahasa yang mudah dipahami pengguna.
+- Hindari singkatan tidak umum, bahasa gaul, typo, dan kalimat yang ambigu.
+- Gunakan istilah yang konsisten pada seluruh halaman.
+- Pesan error harus menjelaskan masalah dengan bahasa yang dapat dipahami pengguna.
+- Jangan menentukan bahasa hanya berdasarkan perkiraan lokasi pengguna. Gunakan konfigurasi bahasa atau locale aplikasi.
+Contoh benar:
+- "Data bahan bakar berhasil disimpan."
+- "Koneksi internet tidak tersedia. Silakan periksa koneksi Anda."
+- "Apakah Anda yakin ingin menghapus data ini?"
+Contoh salah:
+- "Data udah kesimpan."
+- "Waduh, error nih!"
+- "Gagal karena sesuatu."
+## 3. Kejelasan tampilan
+Setiap tampilan wajib dirancang agar pengguna dapat memahami informasi dan tindakan yang tersedia tanpa harus menebak-nebak.
+Ketentuan:
+- Susun informasi berdasarkan tingkat kepentingannya.
+- Kelompokkan informasi yang saling berkaitan.
+- Hindari tampilan yang terlalu padat atau tidak terstruktur.
+- Gunakan istilah dan pola interaksi yang konsisten.
+- Setiap elemen yang memiliki fungsi harus mempunyai tujuan yang jelas.
+- Hindari menampilkan informasi yang tidak diperlukan untuk menyelesaikan tugas pengguna.
+Contoh benar:
+- Informasi saldo, total pemasukan, dan total pengeluaran dikelompokkan secara terstruktur.
+- Pengguna dapat membedakan informasi utama dan informasi tambahan.
+Contoh salah:
+- Seluruh informasi ditampilkan tanpa pengelompokan.
+- Tombol, label, dan nilai informasi disusun tanpa hierarki yang jelas.
+- Pengguna harus mencoba beberapa tombol terlebih dahulu untuk memahami fungsinya.
+## 4. Kejelasan tujuan tombol dan tindakan
+Setiap tombol atau elemen interaktif wajib menjelaskan tujuan tindakannya melalui label, ikon yang mudah dikenali, atau tooltip.
+Ketentuan:
+- Label tombol harus menggambarkan tindakan yang akan dilakukan.
+- Hindari label yang terlalu umum apabila tindakan sebenarnya dapat dijelaskan lebih spesifik.
+- Gunakan ikon sesuai fungsi yang sebenarnya.
+- Untuk ikon yang tidak memiliki label teks, wajib sediakan tooltip.
+- Jangan membuat tombol yang fungsi atau konsekuensinya tidak dapat dipahami pengguna.
+Contoh benar:
+- Tombol "Simpan Perubahan" untuk menyimpan perubahan.
+- Tombol "Hapus" untuk menghapus data.
+- Ikon pensil dengan tooltip "Ubah Data".
+Contoh salah:
+- Tombol "OK" untuk beberapa tindakan yang berbeda tanpa konteks.
+- Ikon tanpa label atau tooltip sehingga pengguna harus menebak fungsinya.
+- Tombol yang terlihat seperti tombol simpan tetapi ternyata menjalankan penghapusan.
+## 5. Kejelasan status operasi
+Pengguna tidak boleh dibiarkan menebak apakah suatu operasi sedang berjalan, sudah selesai, gagal, atau belum dijalankan.
+Ketentuan:
+- Tampilkan status ketika operasi membutuhkan waktu untuk diproses.
+- Pastikan pengguna mengetahui ketika proses dimulai.
+- Pastikan pengguna mengetahui ketika proses berhasil atau gagal.
+- Hindari tampilan yang tidak memberikan respons setelah pengguna melakukan tindakan.
+- Untuk proses yang membutuhkan waktu, tampilkan indikator pemrosesan yang sesuai.
+- Cegah pengguna menjalankan permintaan yang sama berulang kali ketika permintaan sebelumnya masih berjalan.
+Contoh benar:
+1. Pengguna menekan tombol simpan.
+2. Sistem menampilkan indikator loading.
+3. Tombol terkait dinonaktifkan sementara.
+4. Setelah berhasil, sistem memberikan informasi bahwa data berhasil disimpan.
+Contoh salah:
+1. Pengguna menekan tombol simpan.
+2. Tampilan tidak memberikan respons.
+3. Pengguna menekan tombol berkali-kali karena tidak mengetahui apakah proses sedang berjalan.
+## 6. Feedback sistem
+Sistem wajib memberikan feedback yang sesuai dengan keadaan operasi agar pengguna memperoleh kepastian mengenai hasil tindakannya.
+Jenis feedback:
+- **Info:** Memberikan informasi mengenai keadaan sistem atau proses.
+- **Sukses:** Memberitahukan bahwa operasi berhasil dilakukan.
+- **Warning:** Memberitahukan kondisi yang membutuhkan perhatian pengguna.
+- **Error:** Memberitahukan bahwa operasi gagal atau terjadi masalah.
+Ketentuan:
+- Gunakan jenis feedback sesuai keadaan sebenarnya.
+- Pesan harus menjelaskan apa yang terjadi.
+- Pesan sukses hanya boleh ditampilkan setelah operasi benar-benar berhasil.
+- Pesan error harus disertai informasi yang relevan dan, apabila memungkinkan, langkah yang dapat dilakukan pengguna.
+- Jangan menampilkan feedback yang menyesatkan.
+- Hindari menampilkan terlalu banyak notifikasi untuk satu kejadian yang sama.
+Contoh benar:
+- Info: "Sedang memuat data."
+- Sukses: "Data berhasil disimpan."
+- Warning: "Data ini belum memiliki kategori."
+- Error: "Data gagal disimpan. Silakan coba kembali."
+Contoh salah:
+- Menampilkan pesan sukses sebelum penyimpanan selesai.
+- Menampilkan pesan "Berhasil" meskipun operasi gagal.
+- Tidak memberikan informasi apa pun ketika operasi mengalami kegagalan.
+## 7. Proses background dan integritas data
+Proses yang hasilnya tidak perlu ditunggu pengguna sebaiknya dijalankan di background agar tidak menghambat interaksi pengguna.
+Namun, optimasi tersebut tidak boleh menyebabkan data rusak, tidak konsisten, hilang, atau mengalami perubahan yang tidak semestinya.
+Ketentuan:
+- Bedakan proses yang membutuhkan hasil langsung dengan proses yang dapat berjalan di background.
+- Jangan memblokir UI untuk pekerjaan yang tidak membutuhkan hasil langsung.
+- Operasi yang saling bergantung wajib mempertahankan urutan eksekusinya.
+- Pastikan proses penyimpanan dan perubahan data memiliki penanganan error yang sesuai.
+- Gunakan transaksi database untuk operasi yang membutuhkan konsistensi beberapa perubahan data.
+- Pastikan proses background tidak mengubah data secara sembarangan ketika halaman atau objek terkait sudah tidak berlaku.
+- Jangan menjalankan proses secara tidak terpantau sehingga kegagalannya tidak diketahui sistem.
+- Apabila proses background gagal, pastikan kegagalan tersebut ditangani dan dapat diketahui sesuai kebutuhan aplikasi.
+Contoh benar:
+- Pengguna membuka halaman sementara proses sinkronisasi data berjalan di background.
+- UI tetap dapat digunakan selama sinkronisasi tidak mengharuskan pengguna menunggu hasilnya.
+- Apabila sinkronisasi gagal, sistem tetap mencatat dan menangani kegagalan tersebut.
+Contoh salah:
+- Seluruh UI dikunci hanya untuk menjalankan proses yang tidak membutuhkan hasil langsung.
+- Beberapa perubahan database dijalankan secara terpisah tanpa menjaga konsistensi data.
+- Proses background mengalami kegagalan tetapi tidak ditangani.
+## 8. Optimasi rebuild
+Hindari rebuild widget yang tidak diperlukan. Usahakan hanya bagian UI yang terdampak perubahan state yang melakukan rebuild.
+Ketentuan:
+- Tempatkan pengelolaan state pada cakupan widget yang sesuai.
+- Hindari membuat widget besar melakukan rebuild ketika hanya sebagian kecil tampilannya berubah.
+- Pisahkan bagian UI yang memiliki kebutuhan perubahan state berbeda apabila memang diperlukan.
+- Gunakan mekanisme pembatasan rebuild sesuai pola pengelolaan state yang digunakan proyek.
+- Jangan melakukan optimasi berlebihan yang justru membuat struktur kode semakin rumit.
+- Utamakan optimasi berdasarkan kebutuhan dan dampak yang nyata.
+Contoh benar:
+- Perubahan jumlah barang hanya memperbarui bagian ringkasan jumlah barang yang membutuhkan nilai tersebut.
+- Widget lain yang tidak bergantung pada perubahan state tidak perlu ikut rebuild.
+Contoh salah:
+- Perubahan satu nilai menyebabkan seluruh halaman melakukan rebuild tanpa alasan.
+- Seluruh halaman bergantung pada satu state yang sebenarnya dapat dibatasi pada widget tertentu.
+## 9. Pencegahan memory leak dan pengelolaan resource
+Pastikan resource yang memiliki siklus hidup wajib dikelola dengan benar agar tidak menyebabkan memory leak atau penggunaan resource yang tidak diperlukan.
+Ketentuan:
+- Pastikan `TextEditingController`, `ScrollController`, `AnimationController`, `FocusNode`, dan resource sejenis yang dimiliki oleh widget di-dispose ketika tidak lagi digunakan.
+- Batalkan subscription, listener, timer, dan proses yang dapat dibatalkan ketika pemiliknya sudah tidak digunakan.
+- Tutup resource seperti stream atau koneksi apabila memang menjadi tanggung jawab objek tersebut.
+- Jangan melakukan dispose terhadap resource yang dimiliki dan dikelola oleh objek lain.
+- Pastikan lifecycle widget diperhatikan, khususnya ketika proses asynchronous berlangsung.
+- Hindari mempertahankan referensi atau listener yang sudah tidak diperlukan.
+Contoh benar:
+- Controller yang dibuat oleh `StatefulWidget` di-dispose pada `dispose()`.
+- Subscription dibatalkan ketika widget tidak lagi digunakan.
+Contoh salah:
+- Membuat `TextEditingController` tetapi tidak pernah melakukan dispose.
+- Listener terus aktif setelah halaman ditutup.
+- Melakukan dispose terhadap controller yang sebenarnya dimiliki oleh parent.
+## 10. Padding tepi layar
+Seluruh konten utama halaman wajib memiliki jarak yang sesuai dari tepi layar. Jangan sampai konten utama terlihat menempel langsung pada batas layar.
+**Aturan kepemilikan padding:**
+1. Padding tepi layar merupakan tanggung jawab container pada tingkat halaman atau parent yang menyusun konten halaman.
+2. Terapkan padding pada container yang menjadi batas utama konten halaman, bukan secara sembarangan pada setiap widget anak.
+3. Widget reusable/shared tidak boleh memasukkan padding tepi layar ke dalam dirinya sendiri. Tanggung jawab tersebut berada pada halaman yang menggunakan widget.
+4. Widget reusable tetap boleh mempunyai padding internal untuk kebutuhan desain komponennya sendiri, misalnya jarak isi di dalam Card. Padding internal ini tidak boleh dianggap sebagai pengganti padding tepi layar.
+5. Apabila sebuah halaman menggunakan beberapa widget reusable, parent halaman wajib memastikan seluruh widget tersebut berada di dalam batas padding tepi layar.
+6. Apabila parent sudah memberikan padding tepi layar, jangan menambahkan padding tepi layar yang sama lagi pada setiap anak sehingga menghasilkan padding ganda.
+7. Nilai padding wajib mengikuti `optimasi_ui.md`. Dilarang menentukan nilai sendiri tanpa dasar referensi desain.
+8. Untuk layout yang menggunakan `ListView`, `GridView`, `CustomScrollView`, atau `SingleChildScrollView`, pastikan konten pertama dan terakhir tetap mempunyai jarak yang sesuai dari tepi layar.
+9. Untuk list horizontal, perhatikan juga jarak item paling awal dan paling akhir terhadap tepi layar.
+10. Padding harus diterapkan pada lapisan layout yang benar agar tidak hilang, tertimpa, atau tidak berpengaruh terhadap konten yang ditampilkan.
+11. Pengecualian hanya diperbolehkan untuk elemen yang memang sengaja dirancang memenuhi lebar layar (edge-to-edge), seperti background atau gambar tertentu, sesuai kebutuhan desain. Konten teks dan elemen interaktif di dalamnya tetap harus memperhatikan jarak aman.
+**Prosedur pemeriksaan padding wajib dilakukan:**
+1. Identifikasi seluruh halaman yang dibuat, diubah, atau diperiksa.
+2. Identifikasi batas area konten utama setiap halaman.
+3. Telusuri struktur widget dari parent halaman sampai widget yang menampilkan konten.
+4. Pastikan parent yang bertanggung jawab sudah memberikan padding tepi layar.
+5. Periksa apakah ada widget utama yang masih menempel pada sisi kiri atau kanan layar.
+6. Apabila terdapat widget reusable, cari seluruh tempat widget tersebut digunakan.
+7. Periksa setiap halaman yang menggunakan widget reusable tersebut, bukan hanya file widget reusable-nya.
+8. Periksa penggunaan list, grid, row, column, dan scrollable layout untuk memastikan item pertama, terakhir, dan kelompok konten utama tidak menempel pada tepi layar.
+9. Pastikan tidak terdapat padding ganda atau padding internal yang keliru dianggap sebagai padding tepi layar.
+10. Periksa kembali hasil perubahan sebelum menyatakan pekerjaan selesai.
+**Kriteria kelulusan:**
+- Seluruh konten utama mempunyai jarak yang sesuai dari tepi layar.
+- Parent halaman bertanggung jawab memberikan padding tepi layar.
+- Widget reusable tidak mengambil alih tanggung jawab padding tepi layar.
+- Seluruh halaman pengguna widget reusable sudah diperiksa.
+- Nilai padding sesuai dengan `optimasi_ui.md`.
+- Tidak ada pelanggaran padding yang belum diselesaikan.
+Apabila salah satu kriteria tersebut belum terpenuhi, pekerjaan belum boleh dinyatakan selesai.
+Contoh benar:
+Struktur halaman:
+```text
+Scaffold
+└── SafeArea
+    └── Padding (mengikuti optimasi_ui.md)
+        └── ListView
+            ├── RingkasanWidget
+            ├── StatistikWidget
+            └── DaftarWidget
+```
+Widget reusable:
+```text
+RingkasanWidget
+└── Card
+    └── Padding internal untuk isi Card
+```
+Widget reusable digunakan oleh beberapa halaman:
+```text
+Halaman A
+└── Padding tepi layar
+    └── RingkasanWidget
+Halaman B
+└── Padding tepi layar
+    └── RingkasanWidget
+```
+Contoh salah:
+```text
+Scaffold
+└── SafeArea
+    └── ListView
+        ├── RingkasanWidget (menempel pada tepi layar)
+        ├── StatistikWidget (menempel pada tepi layar)
+        └── DaftarWidget (menempel pada tepi layar)
+```
+Contoh salah lainnya:
+- Widget reusable memiliki padding yang dianggap sebagai pengganti padding tepi layar untuk semua halaman.
+- AI hanya memeriksa file widget reusable tanpa memeriksa parent pada halaman yang menggunakannya.
+- Halaman A sudah memiliki padding, tetapi Halaman B menggunakan widget yang sama tanpa padding.
+- AI hanya memeriksa satu sisi layar dan mengabaikan sisi lainnya.
+- Padding di dalam Card dianggap sudah cukup untuk memenuhi aturan padding tepi layar.
+## 11. Konsistensi jarak dan spacing
+Seluruh jarak antarelemen wajib terlihat serasi, proporsional, dan konsisten berdasarkan referensi desain `optimasi_ui.md`.
+Ketentuan:
+- Gunakan nilai spacing yang telah ditetapkan dalam referensi desain.
+- Jangan menggunakan jarak yang terlalu sempit hingga elemen terlihat berhimpitan.
+- Jangan menggunakan jarak yang terlalu lebar hingga elemen terlihat tidak saling berkaitan.
+- Bedakan jarak berdasarkan hubungan antar elemen, kelompok konten, dan bagian halaman.
+- Gunakan prinsip konsistensi pada halaman yang mempunyai struktur serupa.
+- Jangan menambahkan nilai spacing sembarangan hanya untuk memperbaiki satu widget tanpa mempertimbangkan keseluruhan layout.
+Contoh benar:
+- Jarak antara label dan nilainya lebih dekat daripada jarak antara dua kelompok informasi yang berbeda.
+- Jarak antarbagian halaman mengikuti skala spacing pada referensi desain.
+Contoh salah:
+- Seluruh elemen menggunakan jarak yang sama tanpa mempertimbangkan hierarkinya.
+- Satu kelompok informasi mempunyai jarak terlalu lebar sedangkan kelompok lain terlalu rapat.
+- Menggunakan nilai padding dan margin acak yang tidak sesuai referensi desain.
+## 12. Loading dan penguncian aksi
+Setiap aksi asynchronous yang membutuhkan waktu pemrosesan wajib memberikan indikator loading agar pengguna mengetahui bahwa tindakan sedang berjalan.
+Gunakan paket `flutter_easyloading` untuk loading overlay sesuai pola implementasi proyek.
+Ketentuan:
+- Sebelum menggunakan API `flutter_easyloading`, baca contoh penggunaannya pada file `example.md` yang relevan.
+- Periksa implementasi dan konfigurasi `flutter_easyloading` yang sudah ada di proyek.
+- Ikuti pola penggunaan yang benar berdasarkan dokumentasi dan implementasi proyek.
+- Jangan membuat widget loading custom sebagai pengganti loading aksi yang seharusnya menggunakan `flutter_easyloading`.
+- Tampilkan loading ketika operasi dimulai.
+- Hentikan loading ketika operasi selesai, baik berhasil maupun gagal.
+- Pastikan loading tidak tertinggal ketika terjadi exception.
+- Cegah pengguna mengirim aksi yang sama berulang kali selama operasi sebelumnya masih berlangsung.
+- Kunci hanya bagian interaksi yang perlu dikunci. Jangan memblokir seluruh halaman jika hal tersebut tidak diperlukan.
+- Pastikan status akhir operasi tetap disampaikan melalui feedback sistem.
+- Jangan menggunakan loading overlay yang menghalangi seluruh UI untuk proses background yang memang tidak perlu ditunggu pengguna. Untuk proses tersebut, ikuti aturan nomor 7.
+Contoh benar:
+- Pengguna menekan tombol simpan.
+- `flutter_easyloading` menampilkan loading ketika penyimpanan berlangsung.
+- Tombol simpan tidak dapat ditekan kembali selama proses berlangsung.
+- Loading dihentikan setelah operasi selesai.
+- Sistem menampilkan feedback sesuai hasil penyimpanan.
+Contoh salah:
+- Pengguna menekan tombol simpan tetapi tidak mendapatkan indikator loading.
+- Membuat widget loading custom padahal proyek sudah menggunakan `flutter_easyloading`.
+- Loading tidak dihentikan setelah terjadi error.
+- Pengguna dapat menekan tombol simpan berkali-kali dan menghasilkan permintaan penyimpanan berulang.
+- Menampilkan loading overlay yang memblokir UI untuk pekerjaan background yang tidak membutuhkan hasil langsung.
+## 13. Standarisasi Toast feedback
+Seluruh Toast feedback wajib menggunakan utilitas `AppToast` yang sudah tersedia di proyek.
+Ketentuan:
+- Jangan menggunakan `Fluttertoast` secara langsung pada halaman atau widget.
+- Gunakan metode `AppToast` yang tersedia untuk menampilkan feedback.
+- Periksa implementasi `AppToast` sebelum menggunakannya.
+- Jangan mengarang nama metode yang belum tersedia.
+- Gunakan jenis Toast sesuai hasil operasi.
+Contoh benar:
+```dart
+AppToast.sukses(
+  context,
+  'Bahan bakar berhasil dihapus',
+);
+```
+Contoh salah:
+```dart
+Fluttertoast.showToast(
+  msg: 'Bahan bakar berhasil dihapus',
+);
+```
+Contoh salah lainnya:
+- Membuat utilitas Toast baru padahal `AppToast` sudah tersedia.
+- Menampilkan Toast sukses sebelum operasi benar-benar berhasil.
+## 14. SafeArea
+Gunakan `SafeArea` untuk konten yang berpotensi tertutup oleh notch, status bar, navigation bar, atau area sistem lainnya.
+Ketentuan:
+- Perhatikan area aman perangkat pada setiap halaman.
+- Pastikan konten utama tidak tertutup oleh elemen sistem.
+- Terapkan `SafeArea` pada lapisan layout yang tepat.
+- Hindari penggunaan `SafeArea` berulang yang menyebabkan jarak berlebihan.
+- Elemen yang memang dirancang edge-to-edge harus tetap memperhatikan posisi konten interaktif dan teks.
+Contoh benar:
+- Konten utama halaman dibungkus dengan `SafeArea` sehingga tidak tertutup status bar.
+Contoh salah:
+- Konten utama dimulai dari bagian paling atas layar dan tertutup status bar.
+- Menggunakan `SafeArea` berulang tanpa alasan sehingga konten mempunyai jarak berlebihan.
+## 15. Area sentuh dan interaksi
+Gunakan widget interaksi yang sesuai dengan perilaku dan desain aplikasi.
+Ketentuan:
+- Gunakan `InkWell` atau `InkResponse` untuk area sentuh yang membutuhkan efek ripple Material.
+- Gunakan `GestureDetector` apabila efek ripple memang tidak diperlukan.
+- Ikon yang tidak mempunyai label teks wajib mempunyai tooltip.
+- Touch target untuk elemen interaktif minimal berukuran 48 × 48 dp.
+- Pastikan area sentuh tidak terlalu kecil atau saling bertumpuk.
+- Jangan membuat area sentuh yang berbeda dari area yang secara visual terlihat dapat ditekan.
+Contoh benar:
+- Ikon hapus mempunyai area sentuh minimal 48 × 48 dp dan tooltip "Hapus".
+- Tombol menggunakan `InkWell` dengan efek ripple.
+Contoh salah:
+- Ikon hanya mempunyai area sentuh 20 × 20 dp.
+- Ikon tidak memiliki label atau tooltip.
+- Menggunakan `GestureDetector` padahal desain mengharuskan efek ripple Material.
+## 16. Modal dan Bottom Sheet
+Gunakan jenis modal sesuai tujuan interaksi.
+Ketentuan:
+- Gunakan `showModalBottomSheet` untuk filter, pengurutan (sort), dan pilihan sekunder.
+- Bottom sheet wajib memperhatikan `SafeArea`.
+- Gunakan `isScrollControlled: true` apabila konten bottom sheet panjang atau membutuhkan ruang lebih besar.
+- Pastikan konten yang panjang tetap dapat di-scroll dan tidak terpotong.
+- Gunakan `showModalActionSheet` dari paket `adaptive_dialog` untuk menu aksi sederhana.
+- Jangan menggunakan bottom sheet atau dialog untuk informasi yang sebenarnya lebih tepat ditampilkan langsung pada halaman.
+Contoh benar:
+- Filter daftar kendaraan ditampilkan menggunakan `showModalBottomSheet`.
+- Menu pilihan aksi sederhana ditampilkan menggunakan `showModalActionSheet`.
+Contoh salah:
+- Filter ditampilkan sebagai dialog kecil sehingga seluruh pilihan terpotong.
+- Bottom sheet dengan banyak konten tidak dapat di-scroll.
+- Menu aksi sederhana dibuat menggunakan layout modal yang rumit tanpa alasan.
+---
+# Aturan Tipografi
+## 17. Penggunaan Bold
+Gunakan ketebalan teks secara terarah untuk memperjelas informasi yang penting.
+Ketentuan:
+- Bedakan teks yang memang membutuhkan penekanan dengan teks biasa.
+- Gunakan bold untuk judul, informasi utama, nilai penting, atau elemen yang membutuhkan penekanan sesuai hierarki tampilan.
+- Jangan menggunakan bold pada seluruh teks.
+- Jangan membuat teks biasa menjadi terlalu dominan dibandingkan informasi utama.
+- Pertahankan konsistensi penggunaan ketebalan teks pada bagian yang memiliki fungsi serupa.
+Contoh benar:
+- Judul halaman menggunakan ketebalan yang lebih tegas daripada deskripsi.
+- Nilai total transaksi mempunyai penekanan lebih kuat daripada labelnya.
+Contoh salah:
+- Seluruh label, deskripsi, dan nilai menggunakan bold.
+- Informasi tambahan menggunakan ketebalan lebih dominan daripada informasi utama.
+- Teks penting tidak mempunyai penekanan yang membedakannya dari teks biasa.
+## 18. Hierarki Visual Label, Sub-Label, dan Nilai
+Pada tampilan yang menyajikan informasi berjenjang, setiap tingkat teks wajib mempunyai perbedaan gaya visual yang dapat dikenali.
+Ketentuan:
+- Label, sub-label, dan nilai wajib mempunyai perbedaan minimal satu properti gaya teks.
+- Perbedaan dapat berupa ukuran font, ketebalan, warna, atau kombinasi beberapa properti.
+- Tidak diperbolehkan dua tingkat informasi yang berbeda menggunakan gaya teks yang identik apabila keduanya mempunyai fungsi hierarki yang berbeda.
+- Jangan menentukan ukuran font secara sembarangan.
+- Gunakan `Theme.of(context).textTheme` sebagai dasar gaya teks.
+- Gunakan `copyWith()` apabila diperlukan untuk menyesuaikan ketebalan, warna, atau properti lainnya.
+- Pastikan hierarki tetap terlihat jelas pada tema terang dan gelap.
+Contoh benar:
+```dart
+final textTheme = Theme.of(context).textTheme;
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(
+      'Total Pengeluaran',
+      style: textTheme.bodySmall,
+    ),
+    Text(
+      'Pengeluaran bulan ini',
+      style: textTheme.bodyMedium?.copyWith(
+        color: Theme.of(context).colorScheme.secondary,
+      ),
+    ),
+    Text(
+      'Rp500.000',
+      style: textTheme.titleLarge?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+);
+```
+Contoh salah:
+```dart
+final style = Theme.of(context).textTheme.bodyMedium;
+Column(
+  children: [
+    Text('Total Pengeluaran', style: style),
+    Text('Pengeluaran bulan ini', style: style),
+    Text('Rp500.000', style: style),
+  ],
+);
+```
+Ketiga tingkat informasi menggunakan gaya teks yang sama sehingga hierarki visual tidak terlihat.
+---
+# Pemeriksaan Wajib Sebelum Menyelesaikan Pekerjaan
+Setiap pekerjaan yang membuat, mengubah, atau menganalisis UI wajib melewati pemeriksaan berikut:
+1. Periksa apakah seluruh tampilan mengikuti referensi `optimasi_ui.md`.
+2. Periksa apakah teks menggunakan bahasa formal dan baku.
+3. Periksa apakah tujuan setiap tombol dan tindakan sudah jelas.
+4. Periksa apakah operasi asynchronous memberikan status yang sesuai.
+5. Periksa apakah feedback sistem sesuai dengan hasil operasi sebenarnya.
+6. Periksa apakah proses background tidak merusak integritas data.
+7. Periksa apakah terdapat rebuild yang tidak diperlukan.
+8. Periksa apakah resource yang harus di-dispose sudah dikelola dengan benar.
+9. Periksa seluruh padding tepi layar, termasuk penggunaan widget reusable pada setiap halaman.
+10. Periksa apakah jarak dan spacing sudah sesuai dengan referensi desain.
+11. Periksa loading dan penguncian aksi.
+12. Periksa penggunaan `AppToast`.
+13. Periksa `SafeArea`.
+14. Periksa area sentuh dan tooltip.
+15. Periksa modal dan bottom sheet.
+16. Periksa penggunaan bold serta hierarki teks.
+## Ketentuan pelaporan
+Setelah pemeriksaan selesai, sampaikan:
+- Aturan yang sudah terpenuhi.
+- Pelanggaran yang ditemukan.
+- File dan lokasi kode yang mengalami pelanggaran.
+- Perbaikan yang sudah dilakukan.
+- Bagian yang belum dapat diverifikasi beserta alasannya.
+Khusus pemeriksaan padding tepi layar, wajib sebutkan:
+- Halaman yang diperiksa.
+- Widget reusable yang diperiksa.
+- Halaman lain yang menggunakan widget reusable tersebut.
+- Parent yang bertanggung jawab memberikan padding.
+- Status akhir setiap temuan.
+**Larangan:** Jangan menyatakan seluruh aturan sudah terpenuhi hanya karena file widget yang sedang dikerjakan sudah mempunyai padding. Pemeriksaan harus mencakup struktur parent dan seluruh halaman yang menggunakan widget tersebut.
+
+
+// ============================================================
+// FILE: .agents/rules/global/setup_prettier.md
+// ============================================================
+
+# Pengaturan dan Penggunaan Prettier
+## 1. Tujuan
+Gunakan Prettier sebagai formatter untuk menjaga konsistensi format file yang didukung, terutama Markdown, JSON, dan JSONC.
+Pengaturan Prettier harus mengikuti konfigurasi proyek dan tidak boleh diubah berdasarkan preferensi pribadi AI.
+## 2. File Konfigurasi Wajib
+Pastikan kedua file berikut tersedia di root proyek:
+1. `.prettierrc`
+2. `.prettierignore`
+Jangan membuat konfigurasi Prettier tambahan dengan nama berbeda yang berpotensi menimbulkan konflik.
+### A. File `.prettierrc`
+Apabila file belum tersedia, buat file tersebut.
+Apabila sudah tersedia, sesuaikan isinya dengan konfigurasi berikut:
+```json
+{
+  "trailingComma": "none",
+  "overrides": [
+    {
+      "files": ["*.json"],
+      "options": {
+        "parser": "json",
+        "trailingComma": "none"
+      }
+    },
+    {
+      "files": [
+        "*.jsonc",
+        "tsconfig*.json",
+        "jsconfig.json",
+        "devcontainer.json",
+        "language-configuration.json"
+      ],
+      "options": {
+        "parser": "jsonc",
+        "trailingComma": "none"
+      }
+    }
+  ]
+}
+```
+Ketentuan:
+- Pertahankan seluruh pengaturan tersebut.
+- Jangan mengubah nilai `trailingComma`.
+- Pastikan JSON menggunakan parser `json`.
+- Pastikan JSONC dan file konfigurasi yang tercantum menggunakan parser `jsonc`.
+- Jangan menambahkan pengaturan lain tanpa kebutuhan yang jelas dan persetujuan pengguna.
+### B. File `.prettierignore`
+Apabila file belum tersedia, buat file tersebut.
+Apabila sudah tersedia, periksa isinya terlebih dahulu. Tambahkan pola pengecualian yang belum tersedia tanpa menghapus aturan pengecualian lain yang masih relevan.
+Gunakan konfigurasi dasar berikut:
+```gitignore
+# Git dan dependensi JavaScript
+.git/
+node_modules/
+# Cache dan dependensi Flutter/Dart
+.dart_tool/
+.pub/
+.packages
+# Hasil build dan pengujian
+**/build/
+**/coverage/
+# File metadata hasil generate Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+# Kode Dart hasil generate
+**/*.g.dart
+**/*.freezed.dart
+# Hasil generate platform Android dan iOS
+**/.gradle/
+**/Pods/
+**/ephemeral/
+```
+Ketentuan:
+- Jangan mengabaikan seluruh folder `lib/`, `test/`, atau folder kode sumber lainnya.
+- Jangan mengabaikan seluruh file Markdown, JSON, atau JSONC.
+- Jangan membuat pola pengecualian yang terlalu luas sehingga file konfigurasi atau dokumentasi buatan pengguna ikut terabaikan.
+- Pertahankan pola pengecualian tambahan yang sudah dibuat pengguna.
+## 3. Aturan Penggunaan Prettier
+1. Gunakan Prettier hanya untuk jenis file yang didukung.
+2. Untuk file Markdown, JSON, dan JSONC, ikuti konfigurasi `.prettierrc`.
+3. Jangan menggunakan Prettier untuk memformat file Dart.
+4. Untuk seluruh file Dart, gunakan `dart format` sesuai SDK Dart yang digunakan proyek.
+5. Jangan mengubah isi, maksud, atau perilaku kode ketika hanya diminta melakukan pemformatan.
+6. Jangan mengubah pengaturan Prettier hanya agar hasil pemformatan sesuai preferensi pribadi AI.
+7. Jangan memformat file yang masuk dalam `.prettierignore`.
+8. Jangan memasang Prettier secara otomatis tanpa memeriksa apakah Prettier sudah tersedia.
+9. Jangan membuat atau mengubah `package.json` maupun file lock hanya untuk memasang Prettier tanpa persetujuan pengguna.
+## 4. Pemeriksaan Konfigurasi
+Sebelum menggunakan Prettier:
+1. Pastikan `.prettierrc` tersedia dan berisi konfigurasi yang ditentukan.
+2. Pastikan `.prettierignore` tersedia dan berisi pola pengecualian yang ditentukan.
+3. Pastikan Prettier tersedia di lingkungan proyek atau sistem.
+4. Pastikan jenis file yang akan diformat didukung oleh Prettier.
+Apabila Prettier tidak tersedia, laporkan kondisi tersebut. Jangan menganggap pemformatan berhasil.
+## 5. Pemeriksaan Hasil Pemformatan
+Setelah menjalankan Prettier:
+1. Pastikan proses pemformatan berhasil.
+2. Periksa hasil perubahan.
+3. Pastikan tidak ada file yang seharusnya diabaikan ikut berubah.
+4. Pastikan tidak ada perubahan isi yang tidak berkaitan dengan pemformatan.
+5. Laporkan file yang berhasil diformat dan file yang gagal diformat.
+## 6. Batasan Pekerjaan
+- Jangan menjalankan pemformatan seluruh proyek apabila pengguna hanya meminta pemformatan file tertentu.
+- Jangan mengubah file lain yang tidak berkaitan dengan tugas.
+- Jangan mengubah aturan format tanpa alasan yang jelas.
+- Jangan menyatakan pemeriksaan berhasil apabila belum benar-benar dijalankan.
+**Prinsip utama:** Gunakan Prettier untuk file yang didukung dan `dart format` untuk kode Dart. Seluruh pemformatan wajib mengikuti konfigurasi proyek.
+
+
+// ============================================================
+// FILE: .agents/rules/proyek/aturan_khusus.md
+// ============================================================
+
+## Penambahan Log Debug pada Variabel dan Parameter
+**Cakupan:**
+- Seluruh file Dart yang ditentukan pengguna untuk diberi log debug.
+- `lib/shared/utils/l.dart` — referensi implementasi `L` (jangan diubah).
+- `lib/app.dart` — lokasi `L.init(ref.container)` (menentukan apakah `L.*` atau `debugPrint()` yang digunakan).
+**Aturan wajib:**
+1. Gunakan sistem logging yang sudah tersedia (`L.i()`, `L.w()`, `L.e()` dari `lib/shared/utils/l.dart`); jangan membuat sistem logging baru.
+2. Tambahkan log pada setiap variabel dan parameter yang relevan, setelah variabel mendapatkan nilainya.
+3. Format log wajib singkat: nama variabel dan nilainya menggunakan interpolasi Dart, mis. `L.i('kopi=$kopi, susu=$susu')`.
+4. Untuk objek model (Freezed, API, database, repository), cukup tampilkan objek langsung: `L.i('model=$model')`; jangan uraikan properti satu per satu.
+5. Gabungkan variabel yang berkaitan dalam satu pemanggilan log apabila berada pada titik eksekusi yang sama.
+6. Jangan mencatat variabel sensitif (password, token, OTP, secret key, kredensial); laporkan variabel yang dikecualikan.
+7. Pilih `L.*` atau `debugPrint()` berdasarkan urutan inisialisasi `L.init()`: jika jalur eksekusi sudah melewati `L.init()`, gunakan `L.*`; jika belum, gunakan `debugPrint()` dengan pengecekan `kDebugMode`.
+8. Jangan mengubah logika bisnis, nilai variabel, tipe data, kondisi percabangan, atau menambah fitur saat menambahkan log.
+9. Jangan menambahkan log sebelum variabel mendapatkan nilai.
+10. Jangan menambahkan log yang tidak memberikan informasi nilai aktual.
+11. Jangan mengubah file di luar daftar target; jangan mengubah file generated (`.g.dart`, `.freezed.dart`).
+12. Jangan menambahkan `try-catch` baru hanya demi menambahkan log; pertahankan mekanisme penanganan error yang sudah ada. Pada `catch`, gunakan `L.e('gagal ...: $e $s')` dan sertakan stack trace apabila tersedia.
+13. Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali. Log pada `build()` dihindari apabila memungkinkan karena `build()` dapat dipanggil berulang dan menambah noise; prioritaskan log pada titik yang tidak berfrekuensi tinggi (initState, dispose, method helper, perhitungan).
+**Larangan:**
+- Jangan menggunakan `print()` sebagai pengganti `L.*`/`debugPrint()`.
+- Jangan membuat fungsi logging tambahan.
+- Jangan menambahkan package baru.
+- Jangan mencetak properti model satu per satu (gunakan `$model`).
+- Jangan mencetak data sensitif.
+- Jangan menambahkan log berulang tanpa perubahan nilai.
+- Jangan mengubah lokasi/mekanisme `L.init()`.
+**Alasan:**
+Enam commit terakhir (`f2859a0`, `6bae210`, `f55410a`, `c05f446`, `7b9e8d0`, `be04199`) menambahkan log debug secara bertahap pada `DummyHelper`, `DummyScreen`, `ImpianScreen`, `BiodataNotifier`, `ImpianNotifier`, `BiodataScreen`, `FormImpian`, `PengaturanScreen`, dan `DashboardScreen`. Pola yang diterapkan konsisten: format singkat `namaVar=nilai`, tampilan model langsung (`row=$row`, `biodata=$biodata`, `impian=$impian`, `biodataAsync=$biodataAsync`), gabungan variabel terkait dalam satu log (commit `7b9e8d0` memperluas log form impian dengan menggabungkan `_namaController.text`, `_jumlahController.text`, dan `_targetTanggal`; commit `be04199` menggabungkan seluruh variabel perhitungan pada dashboard), penggunaan `L.w` untuk kondisi peringatan (`konfirmasi bukan ok`, `jumlah <= 0`, `biodataAsync loading`), dan penggunaan `L.e` pada blok catch/error dengan stack trace (termasuk `${biodataAsync.error} ${biodataAsync.stackTrace}`). Commit `be04199` juga menunjukkan pola logging siklus hidup widget (`L.i('DashboardScreen initState')`, `L.i('DashboardScreen dispose')`) dan logging pada method helper yang menerima parameter (`L.i('icon=$icon, title=$title, subtitle=$subtitle')`). Log pada `initState` dan `dispose` diperbolehkan karena hanya dipanggil sekali; log pada `build()` dihindari apabila memungkinkan karena dapat dipanggil berulang dan menambah noise (sesuai saran pada `saran.md` dan aturan runtime). Command `.kilo/commands/tambah_log.md` (commit `f2859a0`) mendokumentasikan standar ini untuk penggunaan berulang. Commit `c05f446` juga merangkum ulang aturan proyek dan global agar lebih ringkas, menunjukkan preferensi aturan yang fokus dan tidak verbose.
+**Sumber evaluasi:**
+- Commit: `f2859a0f7b8f6ebeb0befefffa8047a9c3173c04`, `6bae21014ab8f156d70364ea40ff669573de1f37`, `f55410ae5d09de92cb53f1f284ab69051d6af46a`, `c05f4460a316c3bf33aaad30fc1d8a32f66b9c5b`, `7b9e8d054624b8941c1f44b11551fe9ea57a54a1`, `be04199e5b44537ee1052a3815f5af8518308148`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`, `lib/fitur/dummy/screens/dummy_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/impian/screens/form_impian.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `.kilo/commands/tambah_log.md`
+**Contoh benar:**
+```dart
+L.i('dummyImpian.length=${dummyImpian.length}, dummyBiodata.length=${dummyBiodata.length}');
+L.i('row=$row');
+L.i('biodata=$biodata');
+L.i('impian=$impian');
+L.i('konfirmasi=$konfirmasi');
+L.i('_namaController.text=${_namaController.text}, _jumlahController.text=${_jumlahController.text}, _targetTanggal=$_targetTanggal');
+L.i('listImpian.length=${listImpian.length}, totalJumlah=${impianState.totalJumlah}');
+L.i('DashboardScreen initState');
+L.i('DashboardScreen dispose');
+L.i('biodataAsync=$biodataAsync');
+L.w('konfirmasi bukan ok');
+L.w('jumlah <= 0');
+L.w('biodataAsync loading');
+L.e('Gagal memasukkan data dummy: $e $s');
+L.e('biodataAsync error: ${biodataAsync.error} ${biodataAsync.stackTrace}');
+L.i('tanggalBerhenti=$tanggalBerhenti, jumlahRokokPerHari=$jumlahRokokPerHari, hargaPerBungkus=$hargaPerBungkus, hariBerhenti=$hariBerhenti, rokokTidakDiHisap=$rokokTidakDiHisap, uangDihemat=$uangDihemat');
+L.i('icon=$icon, title=$title, subtitle=$subtitle');
+```
+**Contoh salah:**
+```dart
+L.i('tes'); // tidak memberikan informasi nilai variabel
+L.i('nama=${model.nama}, umur=${model.umur}'); // menguraikan properti model
+print('data=$data'); // menggunakan print() alih-alih L.*
+```
+## Penggunaan Biodata untuk Menghitung Saldo Terkumpul pada Impian
+**Cakupan:**
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`, `_buildSaldoTerkumpul`.
+- `lib/fitur/biodata/notifier/biodata_notifier.dart` — `biodataProvider`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan`.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardProgres`.
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState`.
+**Aturan wajib:**
+1. Impian screen wajib melakukan `ref.watch(biodataProvider)` untuk memperoleh data biodata yang digunakan menghitung saldo terkumpul.
+2. Saldo terkumpul merupakan uang yang dihemat dari tidak merokok, dihitung dari biodata: hari berhenti (dinormalisasi ke komponen tanggal, minimum 0), rokok tidak dihisap (`jumlahRokokPerHari * hariBerhenti`), dan uang dihemat (`(rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus`).
+3. Selama `biodataAsync` masih loading atau error, saldo terkumpul dianggap 0; jangan memanggil `requireValue` sebelum memastikan data tersedia.
+4. Perhitungan turunan (`hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) wajib didefinisikan sekali pada ekstensi `BiodataModelPerhitungan` di `lib/fitur/biodata/model/biodata_model.dart`, bukan diduplikasi inline di setiap layar. Setiap layar (dashboard, impian, badge) wajib menggunakan getter dari ekstensi (`biodata.hariBerhenti`, `biodata.rokokTidakDiHisap`, `biodata.uangDihemat`).
+5. Progress bar dan teks "Sisa" pada setiap item impian wajib berbasis saldo terkumpul (uang yang dihemat), bukan `totalJumlah` dari `ImpianState`.
+6. Perhitungan turunan wajib konsisten di seluruh layar; jangan menduplikasi formula dengan versi yang berbeda antara dashboard, impian, dan badge.
+7. Guard pembagian dengan nol wajib diterapkan pada getter `uangDihemat` (mis. `if (batangPerBungkus == 0) return 0;`).
+**Larangan:**
+- Jangan menggunakan `totalJumlah` dari `ImpianState` sebagai saldo terkumpul (saldo berasal dari biodata, bukan dari jumlah impian).
+- Jangan memanggil `biodataAsync.requireValue` tanpa memeriksa loading/error terlebih dahulu.
+- Jangan menghitung saldo terkumpul di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di ekstensi model).
+- Jangan menduplikasi formula perhitungan uang yang dihemat dengan versi yang berbeda antara dashboard, impian, dan badge.
+- Jangan membuat method `_hitungUangDihemat` (atau sejenis) inline di layar; gunakan getter dari ekstensi.
+**Alasan:**
+Commit `336a72f` mengubah impian screen agar menggunakan biodata sebagai sumber saldo terkumpul (uang yang dihemat dari tidak merokok), menggantikan `totalJumlah` dari `ImpianState`. Perubahan ini menyelaraskan impian dengan dashboard yang sudah menggunakan perhitungan yang sama. Penanganan loading/error biodata dengan nilai default 0 mencegah crash dan tampilan kosong sementara. Commit `19f43e5` mengekstrak perhitungan turunan ke ekstensi `BiodataModelPerhitungan` agar logika `hariBerhenti`, `rokokTidakDiHisap`, dan `uangDihemat` hanya ditulis sekali dan konsisten di dashboard, impian, dan badge (menghapus duplikasi `_hitungUangDihemat`). Perhitungan yang bergantung pada waktu saat ini tetap berada di getter ekstensi (memanggil `DateTime.now()`), bukan di provider, sesuai prinsip bahwa perhitungan sederhana yang bergantung pada waktu saat ini dapat dilakukan di lapisan model.
+**Sumber evaluasi:**
+- Commit: `336a72f3b67ea7361aea95ac36ae90d08b1e2c6c`, `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/biodata/notifier/biodata_notifier.dart`, `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
+**Contoh benar:**
+```dart
+// Ekstensi pada model (didefinisikan sekali).
+extension BiodataModelPerhitungan on BiodataModel {
+  int get hariBerhenti {
+    final tanggalBerhenti = tanggalMulaiBerhentiMerokok;
+    if (tanggalBerhenti == null) return 0;
+    final sekarang = DateTime.now();
+    final hariIniDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+    final tanggalBerhentiDate = DateTime(
+      tanggalBerhenti.year,
+      tanggalBerhenti.month,
+      tanggalBerhenti.day,
+    );
+    final hari = hariIniDate.difference(tanggalBerhentiDate).inDays;
+    return hari < 0 ? 0 : hari;
+  }
+  int get rokokTidakDiHisap => jumlahRokokPerHari * hariBerhenti;
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+// Penggunaan di layar.
+final biodataAsync = ref.watch(biodataProvider);
+BiodataModel? biodata;
+if (biodataAsync.isLoading) {
+  // saldo tetap 0 sementara
+} else if (biodataAsync.hasError) {
+  // saldo tetap 0 sementara
+} else {
+  biodata = biodataAsync.requireValue;
+}
+final uangDihemat = biodata?.uangDihemat ?? 0;
+```
+**Contoh salah:**
+```dart
+// Menggunakan totalJumlah sebagai saldo terkumpul (salah).
+_buildSaldoTerkumpul(impianState.totalJumlah);
+// Memanggil requireValue tanpa memeriksa loading/error (berisiko crash).
+final biodata = biodataAsync.requireValue;
+final uangDihemat = _hitungUangDihemat(biodata);
+// Duplikasi method inline di layar (salah, gunakan getter ekstensi).
+double _hitungUangDihemat(BiodataModel? biodata) { ... }
+// Formula berbeda antar layar (tidak konsisten).
+final uangDihemat = rokokTidakDiHisap * biodata.hargaRokokPerBungkus; // salah
+```
+## Type Promotion untuk Null Safety pada Biodata Screen
+**Cakupan:**
+- `lib/fitur/biodata/screens/biodata_screen.dart` — `_BiodataScreenState.build`, `_buildItem`.
+**Aturan wajib:**
+1. Field nullable dari objek model (misalnya `BiodataModel`) wajib disalin terlebih dahulu ke variabel lokal sebelum digunakan dalam kondisi null-check, agar type promotion berlaku.
+2. Setelah penyalinan, gunakan variabel lokal tersebut dalam percabangan `== null` dan pemanggilan fungsi, bukan akses properti objek dengan operator `!`.
+3. Jangan menggunakan operator `!` untuk memaksakan nilai nullable menjadi non-null apabila nilai tersebut dapat dipromosikan melalui variabel lokal.
+4. Urutan import wajib mengikuti urutan alfabetis berdasarkan path package.
+**Larangan:**
+- Jangan menggunakan `biodata.tanggalLahir!` atau `biodata.tanggalMulaiMerokok!` ketika nilai tersebut dapat disalin ke variabel lokal.
+- Jangan mengakses properti nullable secara langsung dengan operator `!` apabila type promotion dapat digunakan.
+- Jangan mengurutkan import secara sembarangan; ikuti urutan alfabetis.
+**Alasan:**
+Commit `1e7b71e` melakukan refactoring pada `biodata_screen.dart` untuk menghindari operator `!` dengan menyalin field nullable (`tanggalLahir`, `tanggalMulaiMerokok`, `tanggalMulaiBerhentiMerokok`) ke variabel lokal, sehingga type promotion berlaku dan operator `!` tidak diperlukan. Perubahan ini juga mengubah urutan import agar mengikuti urutan alfabetis (`biodata_notifier` sebelum `form_biodata`).
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/biodata/screens/biodata_screen.dart`
+**Contoh benar:**
+```dart
+final tanggalLahir = biodata?.tanggalLahir;
+final tanggalMulaiMerokok = biodata?.tanggalMulaiMerokok;
+final tanggalMulaiBerhentiMerokok = biodata?.tanggalMulaiBerhentiMerokok;
+_buildItem(
+  'Tanggal lahir',
+  tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(tanggalLahir),
+);
+```
+**Contoh salah:**
+```dart
+_buildItem(
+  'Tanggal lahir',
+  biodata.tanggalLahir == null
+      ? 'Belum dipilih'
+      : FormatTanggal.formatDasar(biodata.tanggalLahir!),
+);
+```
+## Penghapusan Biodata Lama pada Dummy Helper
+**Cakupan:**
+- `lib/fitur/dummy/helper/dummy_helper.dart` — method yang memasukkan data dummy biodata.
+**Aturan wajib:**
+1. Sebelum memasukkan data dummy biodata, hapus seluruh baris biodata yang sudah ada dalam database.
+2. Penghapusan dilakukan di dalam transaksi yang sama dengan proses insert data dummy, agar data dummy menjadi satu-satunya biodata yang terbaca aplikasi.
+3. Tambahkan komentar penjelasan pada kode yang melakukan penghapusan, agar alasan penghapusan (karena `ambilSatu` mengembalikan baris pertama) dapat dipahami.
+**Larangan:**
+- Jangan memasukkan data dummy biodata tanpa terlebih dahulu menghapus biodata yang ada, karena `ambilSatu` mengembalikan baris pertama dan data dummy mungkin tidak terbaca.
+- Jangan melakukan penghapusan di luar transaksi yang sama dengan proses insert.
+**Alasan:**
+Commit `1e7b71e` menambahkan `await txn.delete(NamaTabel.biodata)` pada `dummy_helper.dart` agar data dummy menjadi satu-satunya biodata yang terbaca aplikasi, karena `ambilSatu` mengembalikan baris pertama. Commit ini juga menambahkan komentar penjelasan pada kode penghapusan.
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/dummy/helper/dummy_helper.dart`
+**Contoh benar:**
+```dart
+// Hapus biodata yang ada agar data dummy menjadi satu-satunya biodata
+// yang terbaca aplikasi (ambilSatu mengembalikan baris pertama).
+await txn.delete(NamaTabel.biodata);
+for (final biodata in dummyBiodata) {
+  await txn.insert(
+    NamaTabel.biodata,
+    biodata.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+```
+**Contoh salah:**
+```dart
+// Memasukkan data dummy tanpa menghapus biodata yang ada.
+// ambilSatu mungkin mengembalikan biodata lama, bukan data dummy.
+for (final biodata in dummyBiodata) {
+  await txn.insert(
+    NamaTabel.biodata,
+    biodata.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+```
+## Pesan Konfirmasi yang Menjelaskan Konsekuensi pada Dummy Screen
+**Cakupan:**
+- `lib/fitur/dummy/screens/dummy_screen.dart` — `_DummyScreenState` (dialog konfirmasi).
+**Aturan wajib:**
+1. Pesan konfirmasi pada dialog "Masukkan Dummy" wajib menjelaskan konsekuensi bahwa biodata yang ada akan diganti dengan data dummy.
+2. Pesan harus menggunakan bahasa formal dan baku, serta jelas menyebutkan data yang akan terpengaruh.
+**Larangan:**
+- Jangan menggunakan pesan konfirmasi generik ("Apakah Anda yakin ingin memasukkan data dummy?") tanpa menjelaskan konsekuensi penggantian biodata.
+- Jangan membiarkan pengguna tidak mengetahui bahwa biodata lama akan diganti.
+**Alasan:**
+Commit `1e7b71e` mengubah pesan konfirmasi pada `dummy_screen.dart` dari "Apakah Anda yakin ingin memasukkan data dummy?" menjadi pesan yang menjelaskan bahwa "Biodata yang ada akan diganti dengan data dummy." Perubahan ini meningkatkan kejelasan UX agar pengguna mengetahui konsekuensi tindakan.
+**Sumber evaluasi:**
+- Commit: `1e7b71ed8fd91f0bcd0caafd9b380fcb3a7f73ec`
+- File: `lib/fitur/dummy/screens/dummy_screen.dart`
+**Contoh benar:**
+```dart
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Masukkan Dummy',
+  message:
+      'Apakah Anda yakin ingin memasukkan data dummy? '
+      'Biodata yang ada akan diganti dengan data dummy.',
+  okLabel: 'Masukkan',
+  cancelLabel: 'Batal',
+);
+```
+**Contoh salah:**
+```dart
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Masukkan Dummy',
+  message: 'Apakah Anda yakin ingin memasukkan data dummy?',
+  okLabel: 'Masukkan',
+  cancelLabel: 'Batal',
+);
+```
+## Migrasi Skema Database SQLite
+**Cakupan:**
+- `lib/shared/db/sqflite/sqflite.dart` — `AppDatabase`, `_versiDatabase`, `onCreate`, `onUpgrade`.
+- `lib/shared/konstanta/nama_tabel.dart` — `NamaTabel`.
+- `lib/shared/konstanta/nama_kolom.dart` — `NamaKolom`.
+**Aturan wajib:**
+1. Setiap perubahan skema wajib menaikkan konstanta `_versiDatabase` (increment satu per migrasi).
+2. Metode `onCreate` wajib membuat seluruh tabel yang dibutuhkan aplikasi, termasuk tabel baru, agar instalasi baru memiliki skema lengkap.
+3. Metode `onUpgrade` wajib menangani setiap versi lama secara kondisional menggunakan `if (oldVersion < N)` untuk setiap versi yang ditambahkan.
+4. Tabel baru pada versi tertentu wajib dibuat baik di `onCreate` maupun di `onUpgrade` (agar pengguna lama mendapatkan tabel baru).
+5. Nama tabel dan kolom baru wajib didefinisikan di `NamaTabel` dan `NamaKolom`, bukan string literal di kode database.
+6. Perubahan kolom pada tabel lama wajib menggunakan `ALTER TABLE ... ADD COLUMN` di `onUpgrade` dengan kondisi versi yang sesuai.
+**Larangan:**
+- Jangan menaikkan versi database tanpa memperbarui `onCreate` dan `onUpgrade`.
+- Jangan membuat tabel baru hanya di `onCreate` tanpa menangani `onUpgrade` (pengguna lama tidak akan mendapatkan tabel).
+- Jangan menggunakan string literal untuk nama tabel/kolom baru.
+- Jangan menghapus data pengguna saat migrasi kecuali memang diperlukan dan terdokumentasi.
+**Alasan:**
+Commit `3b67d309` menaikkan skema dari v4 ke v5 untuk menambah tabel `diary_craving`. Tabel baru dibuat di `onCreate` (instalasi baru) dan di `onUpgrade` dengan kondisi `oldVersion < 5` (pengguna lama). Pola ini memastikan seluruh pengguna, baru maupun lama, memiliki skema yang konsisten tanpa kehilangan data.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_tabel.dart`, `lib/shared/konstanta/nama_kolom.dart`
+**Contoh benar:**
+```dart
+static const int _versiDatabase = 5;
+// onCreate: buat semua tabel.
+await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(...)');
+// onUpgrade:
+if (oldVersion < 5) {
+  await db.execute('CREATE TABLE IF NOT EXISTS ${NamaTabel.diaryCraving}(...)');
+}
+```
+**Contoh salah:**
+```dart
+// Hanya membuat tabel di onCreate, lupa onUpgrade: pengguna lama tidak mendapatkan tabel.
+static const int _versiDatabase = 5;
+// onCreate: create table diary_craving
+// onUpgrade: (kosong / tidak menangani v5)
+```
+## Pola Notifier CRUD pada Database
+**Cakupan:**
+- `lib/fitur/impian/notifier/impian_notifier.dart` — `ImpianNotifier`.
+- `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart` — `DiaryCravingNotifier`.
+**Aturan wajib:**
+1. Notifier database wajib menggunakan `@Riverpod(keepAlive: true)` agar state tidak hilang saat tidak ada listener.
+2. Method `build()` wajib memanggil `_ambilSemua()` yang mengambil seluruh data dari database dan memetakan ke model.
+3. Setiap method CRUD (`tambah`, `ubah`, `hapus`) wajib:
+   a. Mencatat parameter/log awal dengan `L.i`.
+   b. Mengambil state lama melalui `await future`.
+   c. Menjalankan operasi database terlebih dahulu.
+   d. Memperbarui `state` dengan `AsyncValue.data(...)` setelah operasi database berhasil.
+   e. Mencatat keberhasilan dengan `L.s`.
+   f. Menangkap `Exception` dengan `on Exception catch (e, s)`, mencatat dengan `L.e`, lalu `rethrow`.
+4. Gunakan `SqfliteOp` sebagai lapisan akses database; jangan memanggil `openDatabase` langsung di notifier.
+5. Operasi batch (banyak data) wajib menggunakan `op.batch(...)` agar atomik dan efisien.
+**Larangan:**
+- Jangan memperbarui `state` sebelum operasi database selesai (kecuali mengikuti pola optimistic update pada aturan Riverpod #9).
+- Jangan menelan exception; wajib `rethrow` agar UI dapat menangani.
+- Jangan membuat instance database baru di notifier.
+**Alasan:**
+Pola ini konsisten antara `ImpianNotifier` dan `DiaryCravingNotifier`: state hanya diperbarui setelah operasi database berhasil, dengan penanganan error yang terstruktur. Hal ini mencegah state UI tidak sinkron dengan database ketika operasi gagal.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/notifier/diary_craving_notifier.dart`, `lib/fitur/impian/notifier/impian_notifier.dart`
+**Contoh benar:**
+```dart
+Future<void> tambah(DiaryCravingModel craving) async {
+  L.i('craving.id=${craving.id}');
+  try {
+    final dataLama = await future;
+    final op = const SqfliteOp();
+    await op.tambah(NamaTabel.diaryCraving, craving.toSqflite(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    state = AsyncValue.data(
+      DiaryCravingState(
+        listCraving: [craving, ...dataLama.listCraving],
+        jumlahCraving: dataLama.jumlahCraving + 1,
+      ),
+    );
+    L.s('Diary craving berhasil disimpan');
+  } on Exception catch (e, s) {
+    L.e('Gagal menyimpan diary craving: $e $s');
+    rethrow;
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Memperbarui state sebelum operasi database selesai.
+state = AsyncValue.data(DiaryCravingState(listCraving: [craving, ...list]));
+await op.tambah(NamaTabel.diaryCraving, craving.toSqflite()); // jika gagal, state sudah berubah
+```
+## Model dan State Freezed menggunakan `abstract class`
+**Cakupan:**
+- `lib/fitur/diary_craving/model/diary_craving_model.dart` — `DiaryCravingModel`.
+- `lib/fitur/diary_craving/state/diary_craving_state.dart` — `DiaryCravingState`.
+**Aturan wajib:**
+1. Model dan state yang dibuat dengan Freezed pada proyek ini wajib menggunakan `abstract class`, bukan `class` biasa.
+2. Model database wajib menyediakan factory `fromSqflite(Map<String, Object?> row)` dan method `toSqflite()` untuk konversi ke/dari SQLite.
+3. Parsing nilai dari database wajib menggunakan `ParserUtil`.
+4. Konversi tanggal ke UTC wajib dilakukan di `toSqflite()` (`toUtc().toIso8601String()`), dan konversi ke lokal wajib dilakukan di `fromSqflite()` (`parseDateTime(...)?.toLocal()`).
+**Larangan:**
+- Jangan membuat model/state Freezed dengan `class` biasa.
+- Jangan melakukan parsing `dynamic` dari database secara langsung tanpa `ParserUtil`.
+- Jangan menyimpan waktu lokal seolah-olah UTC.
+**Alasan:**
+Commit `3b67d309` membuat `DiaryCravingModel` dan `DiaryCravingState` dengan `abstract class` Freezed. Model menyediakan `fromSqflite`/`toSqflite` yang menggunakan `ParserUtil` dan konversi UTC, konsisten dengan aturan penyimpanan tanggal.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/model/diary_craving_model.dart`, `lib/fitur/diary_craving/state/diary_craving_state.dart`
+**Contoh benar:**
+```dart
+@freezed
+abstract class DiaryCravingModel with _$DiaryCravingModel {
+  const DiaryCravingModel._();
+  const factory DiaryCravingModel({...}) = _DiaryCravingModel;
+  factory DiaryCravingModel.fromSqflite(Map<String, Object?> row) {...}
+  Map<String, Object?> toSqflite() {...}
+}
+```
+**Contoh salah:**
+```dart
+@freezed
+class DiaryCravingModel with _$DiaryCravingModel { ... } // class biasa, bukan abstract
+```
+## Konfirmasi sebelum Menyimpan pada Form
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/form_diary_craving.dart` — `_FormDiaryCravingState._simpan`.
+**Aturan wajib:**
+1. Sebelum menyimpan data, tampilkan dialog konfirmasi (`showOkCancelAlertDialog`) yang menjelaskan tindakan yang akan dilakukan.
+2. Hanya jalankan penyimpanan jika pengguna menekan OK.
+3. Selama proses penyimpanan, aktifkan flag `_isLoading` dan tampilkan loading overlay (`EasyLoading`).
+4. Setelah selesai (berhasil/gagal), hentikan loading dan kembalikan flag.
+**Larangan:**
+- Jangan menyimpan data tanpa konfirmasi pengguna.
+- Jangan membiarkan proses penyimpanan berjalan tanpa indikator loading.
+**Alasan:**
+Commit `3b67d309` menambahkan dialog konfirmasi "Apakah Anda yakin ingin menyimpan catatan craving ini?" sebelum menyimpan, serta flag `_isLoading` dan `EasyLoading` selama proses. Pola ini konsisten dengan UX yang jelas.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/screens/form_diary_craving.dart`
+**Contoh benar:**
+```dart
+final konfirmasi = await showOkCancelAlertDialog(
+  context: context,
+  title: 'Simpan Craving',
+  message: 'Apakah Anda yakin ingin menyimpan catatan craving ini?',
+  okLabel: 'Simpan',
+  cancelLabel: 'Batal',
+);
+if (konfirmasi != OkCancelResult.ok) return;
+```
+**Contoh salah:**
+```dart
+// Menyimpan langsung tanpa konfirmasi.
+await ref.read(diaryCravingProvider.notifier).tambah(model);
+```
+## Empty State pada Daftar
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/diary_craving_screen.dart` — `_EmptyDiaryCraving`.
+**Aturan wajib:**
+1. Ketika daftar data kosong, tampilkan widget empty state yang informatif (ikon, judul, deskripsi singkat).
+2. Sertakan call-to-action (mis. tombol FAB) agar pengguna dapat menambah data.
+3. Empty state wajib dibungkus `SafeArea` dan memiliki padding tepi layar.
+**Larangan:**
+- Jangan menampilkan layar kosong tanpa informasi atau CTA.
+**Alasan:**
+Commit `3b67d309` menambahkan `_EmptyDiaryCraving` dengan ikon, judul "Belum ada catatan craving", deskripsi, dan FAB untuk menambah data. Pola ini meningkatkan UX.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`
+- File: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`
+**Contoh benar:**
+```dart
+class _EmptyDiaryCraving extends StatelessWidget {
+  const _EmptyDiaryCraving();
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(CupertinoIcons.book, size: 48),
+              Text('Belum ada catatan craving',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Tekan tombol + untuk mencatat craving pertama.',
+                  textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+**Contoh salah:**
+```dart
+// Menampilkan layar kosong tanpa informasi.
+if (list.isEmpty) return const Scaffold(body: SizedBox.shrink());
+## Penanganan State Asynchronous dan Data Kosong pada Layar
+**Cakupan:**
+- `lib/fitur/diary_craving/screens/diary_craving_screen.dart` — `_DiaryCravingScreenState.build`.
+- `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart` — `_PemulihanKesehatanScreenState.build`.
+**Aturan wajib:**
+1. Layar yang memuat data asynchronous wajib menangani status `isLoading` terlebih dahulu (tampilkan indikator loading).
+2. Setelah itu, tangani status `hasError` (tampilkan pesan error dan tombol retry yang memanggil `ref.refresh(provider)`).
+3. Setelah data tersedia (`requireValue`), tangani kondisi data kosong (empty state) dan kondisi data tidak lengkap (mis. biodata null, tanggal berhenti null) sebagai tampilan tersendiri dengan informasi dan call-to-action.
+4. Gunakan early return (guard clause) untuk setiap kondisi tersebut agar alur build tetap linear dan mudah dibaca.
+5. Gunakan `const SizedBox.shrink()` untuk widget kondisional yang disembunyikan (mis. kartu milestone ketika belum ada tanggal berhenti).
+6. Setelah `await`/operasi asynchronous, periksa `mounted` sebelum mengakses `context` atau memanggil `setState`.
+**Larangan:**
+- Jangan memanggil `requireValue` sebelum memastikan `isLoading` dan `hasError` sudah ditangani.
+- Jangan menampilkan layar kosong tanpa informasi atau CTA ketika data kosong.
+- Jangan menggabungkan penanganan loading, error, dan data kosong dalam satu blok yang sulit dibaca.
+**Alasan:**
+Pola ini konsisten pada `DiaryCravingScreen` (loading → error dengan retry → empty state dengan FAB) dan `PemulihanKesehatanScreen` (loading → error dengan retry → biodata null → belum berhenti → daftar milestone). Penanganan setiap status sebagai tampilan tersendiri memberikan kepastian kepada pengguna (UX) dan mencegah crash akibat `requireValue` pada data yang belum tersedia. Early return menjaga keterbacaan build method.
+**Sumber evaluasi:**
+- Commit: `3b67d3095dacc4e5c7ea78d7eb251809e3e9d981`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- File: `lib/fitur/diary_craving/screens/diary_craving_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+**Contoh benar:**
+```dart
+final dataAsync = ref.watch(provider);
+if (dataAsync.isLoading) {
+  return const Scaffold(body: Center(child: CircularProgressIndicator()));
+}
+if (dataAsync.hasError) {
+  return Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Gagal memuat data'),
+          OutlinedButton(
+            onPressed: () => ref.refresh(provider),
+            child: const Text('Coba lagi'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+final state = dataAsync.requireValue;
+if (state.list.isEmpty) {
+  return const Scaffold(body: _EmptyState());
+}
+return Scaffold(body: _Daftar(state.list));
+```
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final state = dataAsync.requireValue;
+return Scaffold(body: ListView(...));
+```
+## Normalisasi Tanggal untuk Perbandingan dan Perhitungan Berbasis Hari
+**Cakupan:**
+- `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart` — `_KalenderSmokeFreeScreenState.build`, `_GridKalender`, `_SelHari`.
+- `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart` — `_PemulihanKesehatanScreenState.build`, `_HeaderPemulihan`.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_DashboardScreenState._buildCardMilestone`.
+**Aturan wajib:**
+1. Sebelum membandingkan atau menghitung selisih hari antara dua tanggal, normalisasi nilai `DateTime` ke komponen tanggal saja (tahun, bulan, hari) dengan membuang komponen waktu.
+2. Gunakan `DateTime(tanggal.year, tanggal.month, tanggal.day)` untuk memperoleh representasi tanggal tanpa waktu.
+3. Saat menghitung selisih hari dengan `difference(...).inDays`, pastikan kedua operand sudah dinormalisasi agar hasil tidak terpengaruh oleh jam/menit/detik.
+4. Hasil perhitungan durasi atau jumlah hari yang dapat bernilai negatif wajib diklem (clamp) ke nol apabila nilai negatif tidak bermakna dalam konteks (mis. "hari smoke-free" tidak boleh negatif).
+5. Gunakan `isBefore`/`isAfter` pada nilai yang sudah dinormalisasi untuk menentukan rentang tanggal, agar batas hari konsisten.
+**Larangan:**
+- Jangan membandingkan `DateTime.now()` (yang menyertakan waktu) langsung dengan tanggal yang dinormalisasi tanpa penyesuaian.
+- Jangan membiarkan hasil perhitungan hari bernilai negatif pada konteks yang mensyaratkan nilai non-negatif.
+- Jangan menggunakan komponen waktu dalam penentuan status hari (smoke-free / belum) pada kalender.
+**Alasan:**
+`DateTime.now()` menyertakan komponen waktu (jam, menit, detik). Jika dibandingkan langsung dengan tanggal yang dinormalisasi (mis. tengah malam), hasil perhitungan hari dapat salah satu hari. Normalisasi memastikan perbandingan dan perhitungan berbasis hari akurat. Pengklaman nilai negatif ke nol mencegah tampilan atau logika yang tidak bermakna. Pola ini konsisten pada `KalenderSmokeFreeScreen` (normalisasi `hariIni` dan `tanggalBerhenti` sebelum menghitung total hari smoke-free dan menentukan status sel kalender), `PemulihanKesehatanScreen`/dashboard (klamping durasi negatif ke `Duration.zero`).
+**Sumber evaluasi:**
+- Commit: `6fd979fd9e8296bc7d9c40e9037870faef9c846a`, `02aa6b29b0669a4f5bf21651b09b43552f65d6f8`
+- File: `lib/fitur/kalender_smoke_free/screens/kalender_smoke_free_screen.dart`, `lib/fitur/pemulihan_kesehatan/screens/pemulihan_kesehatan_screen.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`
+**Contoh benar:**
+```dart
+final hariIniDate = DateTime(hariIni.year, hariIni.month, hariIni.day);
+final tanggalBerhentiDate = DateTime(
+  tanggalBerhenti.year,
+  tanggalBerhenti.month,
+  tanggalBerhenti.day,
+);
+final totalHari = hariIniDate.difference(tanggalBerhentiDate).inDays + 1;
+final totalAman = totalHari < 0 ? 0 : totalHari;
+// Klamping durasi negatif ke nol.
+final durasi = DateTime.now().difference(tanggalBerhenti);
+final aman = durasi.isNegative ? Duration.zero : durasi;
+```
+**Contoh salah:**
+```dart
+// Membandingkan DateTime.now() (dengan waktu) langsung dengan tanggal berhenti.
+final totalHari = DateTime.now().difference(tanggalBerhenti).inDays + 1;
+// Bisa salah satu hari karena komponen waktu.
+```
+## Penanganan Beberapa Provider Asynchronous pada Satu Layar
+**Cakupan:**
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState.build`.
+**Aturan wajib:**
+1. Ketika layar memuat lebih dari satu provider asynchronous, tangani status `isLoading` gabungan (tampilkan indikator loading jika salah satu masih loading).
+2. Tangani status `hasError` untuk setiap provider secara terpisah, dengan pesan error dan tombol retry yang memanggil `ref.refresh(provider)` yang sesuai.
+3. Panggil `requireValue` pada masing-masing provider hanya setelah status loading dan error-nya ditangani.
+4. Kondisi data tidak lengkap (mis. biodata null) tetap ditangani sebagai tampilan tersendiri dengan informasi dan call-to-action.
+**Larangan:**
+- Jangan memanggil `requireValue` pada provider yang masih loading atau error.
+- Jangan menggabungkan penanganan error beberapa provider menjadi satu blok yang tidak jelas provider mana yang gagal.
+**Alasan:**
+Commit `19f43e5` menambahkan `BadgeScreen` yang memuat `biodataProvider` dan `impianProvider` sekaligus. Loading ditangani secara gabungan (`biodataAsync.isLoading || impianAsync.isLoading`), sedangkan error ditangani terpisah dengan retry yang sesuai provider. Pola ini menjaga kejelasan sumber kegagalan dan mencegah crash akibat `requireValue` pada data yang belum tersedia.
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/badge/screens/badge_screen.dart`
+**Contoh benar:**
+```dart
+final biodataAsync = ref.watch(biodataProvider);
+final impianAsync = ref.watch(impianProvider);
+if (biodataAsync.isLoading || impianAsync.isLoading) {
+  return const Scaffold(body: Center(child: CircularProgressIndicator()));
+}
+if (biodataAsync.hasError) {
+  // retry biodataProvider
+}
+if (impianAsync.hasError) {
+  // retry impianProvider
+}
+final biodata = biodataAsync.requireValue;
+final impianState = impianAsync.requireValue;
+```
+**Contoh salah:**
+```dart
+// Memanggil requireValue tanpa menangani loading/error (berisiko crash).
+final biodata = biodataAsync.requireValue;
+final impianState = impianAsync.requireValue;
+```
+## Ekstraksi Perhitungan Turunan ke Ekstensi Model
+**Cakupan:**
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan`.
+- `lib/fitur/biodata/screens/form_biodata.dart` — form input yang menyimpan field sumber perhitungan.
+- `lib/fitur/dashboard/screens/dashboard_screen.dart` — `_buildCardProgres`.
+- `lib/fitur/impian/screens/impian_screen.dart` — `_ImpianScreenState`.
+- `lib/fitur/badge/screens/badge_screen.dart` — `_BadgeScreenState`.
+- `lib/fitur/badge/helper/badge_helper.dart` — `hitungBadge`.
+**Aturan wajib:**
+1. Perhitungan turunan yang digunakan lebih dari satu layar (mis. `hariBerhenti`, `rokokTidakDiHisap`, `uangDihemat`) wajib didefinisikan sekali pada ekstensi di atas model sumber (`BiodataModelPerhitungan`), bukan diduplikasi inline di setiap layar.
+2. Ekstensi wajib ditempatkan pada file model yang sama (`lib/fitur/biodata/model/biodata_model.dart`), setelah definisi class Freezed.
+3. Guard pembagian dengan nol wajib diterapkan pada getter yang melakukan pembagian (mis. `if (batangPerBungkus == 0) return 0;`).
+4. Perhitungan yang bergantung pada waktu saat ini (`DateTime.now()`) boleh dilakukan di getter ekstensi, dengan normalisasi tanggal sesuai aturan normalisasi tanggal.
+5. Helper fungsi murni yang menerima parameter primitif (mis. `hitungBadge`) wajib ditempatkan pada folder `helper/` fitur terkait dan tidak bergantung pada `BuildContext` atau provider.
+6. Layar wajib mengonsumsi getter/helper tersebut, bukan menghitung ulang secara inline.
+**Larangan:**
+- Jangan membuat method perhitungan inline (mis. `_hitungUangDihemat`) di layar yang menggandakan logika yang sudah ada di ekstensi/helper.
+- Jangan meletakkan perhitungan turunan di provider (perhitungan bergantung pada waktu saat ini dan lebih tepat di lapisan model).
+- Jangan membiarkan formula berbeda antar layar untuk besaran yang sama.
+**Alasan:**
+Commit `19f43e5` mengekstrak perhitungan turunan ke ekstensi `BiodataModelPerhitungan` dan helper `hitungBadge` agar logika hanya ditulis sekali dan konsisten di dashboard, impian, dan badge. Perubahan ini juga menghapus saran sebelumnya tentang duplikasi `_hitungUangDihemat`. Ekstensi pada model menjaga konsistensi dan memudahkan pengujian; helper murni di folder `helper/` menjaga pemisahan tanggung jawab. Guard pembagian dengan nol mencegah crash ketika `batangPerBungkus` bernilai 0.
+**Sumber evaluasi:**
+- Commit: `19f43e510b1478a43c5f0594efeef6f83b6c0299`
+- File: `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/badge/helper/badge_helper.dart`, `lib/fitur/dashboard/screens/dashboard_screen.dart`, `lib/fitur/impian/screens/impian_screen.dart`, `lib/fitur/badge/screens/badge_screen.dart`
+**Contoh benar:**
+```dart
+extension BiodataModelPerhitungan on BiodataModel {
+  double get uangDihemat {
+    if (batangPerBungkus == 0) return 0;
+    return (rokokTidakDiHisap / batangPerBungkus) * hargaRokokPerBungkus;
+  }
+}
+// Konsumsi di layar.
+final uangDihemat = biodata?.uangDihemat ?? 0;
+```
+**Contoh salah:**
+```dart
+// Duplikasi perhitungan inline di layar.
+double _hitungUangDihemat(BiodataModel? biodata) {
+  if (biodata == null) return 0;
+  ...
+}
+```
+## Standar Penggunaan `flutter_local_notifications` versi 22.3.3 pada Notifikasi Harian
+**Cakupan:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — `NotifikasiService`.
+- `lib/main.dart` — inisialisasi plugin sebelum `runApp`.
+- `lib/app.dart` — penjadwalan ulang saat aplikasi dibuka.
+- `lib/fitur/pengaturan/screens/pengaturan_screen.dart` — toggle, pemilih waktu, uji coba.
+- `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` — konfigurasi Android.
+**Catatan versi:** Aturan ini ditulis untuk `flutter_local_notifications` versi `22.3.3`. Jika versi package berubah, AI wajib memeriksa dokumentasi versi baru sebelum menerapkan konfigurasi lama.
+**Aturan wajib:**
+1. Periksa dukungan fitur berdasarkan platform dan versi plugin sebelum menggunakan API penjadwalan. Jangan mengasumsikan API yang sama tersedia di semua platform.
+2. Jangan menggunakan penjadwalan berulang (`matchDateTimeComponents`, `zonedSchedule` dengan pengulangan) pada Web, Linux, atau Windows dengan plugin versi 22.3.3, karena browser/desktop tidak mendukung notifikasi terjadwal atau berulang melalui plugin ini. macOS didukung untuk penjadwalan terjadwal melalui `zonedSchedule` (hapus macOS dari daftar platform yang melempar `UnsupportedError`).
+3. Lengkapi receiver dan izin Android untuk penjadwalan serta pemulihan setelah restart: tambahkan `RECEIVE_BOOT_COMPLETED` serta deklarasi `ScheduledNotificationReceiver` dan `ScheduledNotificationBootReceiver` sesuai dokumentasi plugin. Jangan menambahkan izin exact alarm karena implementasi menggunakan `AndroidScheduleMode.inexactAllowWhileIdle`.
+4. Aktifkan core library desugaring sesuai persyaratan plugin bila diperlukan: `isCoreLibraryDesugaringEnabled = true`, dependency `com.android.tools:desugar_jdk_libs:2.1.4`, dan verifikasi `compileSdk` minimal 35. AGP minimal 8.11.1.
+5. Jangan meminta izin notifikasi secara otomatis saat aplikasi baru dibuka (termasuk iOS `DarwinInitializationSettings` dengan `requestAlertPermission`/`requestSoundPermission`/`requestBadgePermission` default `true`). Minta izin ketika pengguna secara sadar mengaktifkan pengingat.
+6. Periksa hasil izin sebelum menyimpan status pengingat aktif. Jangan menyimpan status aktif jika izin sistem belum tersedia. Periksa kembali izin ketika aplikasi dibuka karena pengguna dapat mengubahnya melalui pengaturan sistem.
+7. Pastikan jadwal, `SharedPreferences`, dan tampilan tetap konsisten ketika operasi gagal: rollback state, tampilkan feedback kegagalan, dan jangan simpan status aktif jika penjadwalan gagal.
+8. Tangani kegagalan penjadwalan ulang ketika aplikasi dibuka: catat error melalui logger, jangan biarkan Future menjadi unhandled, dan pastikan kegagalan fitur notifikasi tidak mengganggu fitur utama aplikasi.
+9. Pisahkan ID notifikasi uji coba dari ID pengingat utama agar notifikasi uji coba tidak memperbarui atau menggantikan jadwal utama.
+10. Penanganan tap notifikasi wajib membedakan tiga kondisi lifecycle aplikasi: foreground (aplikasi aktif), background, dan terminated. Pada kondisi terminated, gunakan `getNotificationAppLaunchDetails()` untuk memperoleh notifikasi yang meluncurkan aplikasi dan lakukan navigasi setelah navigator siap. Jangan mengandalkan callback `onDidReceiveNotificationResponse` saja untuk kondisi terminated.
+11. Validasi payload notifikasi: parse `kategori` dan `id`; hanya proses kategori yang dikenal; jika payload null, tidak valid, atau kategori tidak dikenal, catat peringatan dan jangan lakukan navigasi yang tidak sesuai. ID yang tidak ditemukan atau tidak diperlukan oleh tujuan navigasi tidak boleh menyebabkan crash.
+12. Ketika izin sistem dicabut, batalkan jadwal yang tersimpan di sistem operasi (`_plugin.cancel`), perbarui preferensi (`setAktif(false)`), dan pastikan tidak ada jadwal lama tertinggal. Saat pengguna mengaktifkan kembali, minta izin terlebih dahulu dan buat jadwal baru. Jangan hanya mengubah SharedPreferences tanpa memeriksa kondisi jadwal pada sistem operasi.
+13. Konsistensi perubahan waktu pengingat: simpan nilai waktu lama sebelum perubahan; terapkan nilai baru hanya setelah penjadwalan atau penyimpanan berhasil; jika gagal, pulihkan nilai lama dan tampilkan pesan kegagalan; pastikan jadwal sistem operasi, preferensi, dan tampilan tetap konsisten. Jangan membiarkan kegagalan pada salah satu tahap meninggalkan kondisi data yang berbeda.
+14. Jangan melepas Future navigasi atau loading (`unawaited`) tanpa penanganan error. Bungkus `Nav.pushAndRemoveUntil(...)` serta `EasyLoading.show(...)` dan `EasyLoading.dismiss()` yang dilepas dengan `unawaited(...)` menggunakan `try/catch` atau `.catchError(...)` yang mencatat error melalui `L.e`, sesuai aturan global penanganan error Future yang dilepas.
+15. Gunakan tipe exception khusus (class yang mengimplementasikan `Exception`) untuk menandai kondisi error yang perlu dideteksi oleh pemanggil, alih-alih melempar `Exception` dengan pesan string lalu mendeteksinya melalui `e.toString().contains(...)`. Pemanggil wajib mendeteksi melalui `is` (type check). Contoh: `IzinNotifikasiTidakDiberikanException` menggantikan `Exception('Izin notifikasi tidak diberikan')` dan `e.toString().contains('Izin notifikasi tidak diberikan')`.
+**Larangan:**
+- Jangan meminta izin notifikasi Web saat aplikasi pertama dibuka; minta izin setelah pengguna mengaktifkan notifikasi. Jangan tampilkan pengaturan pengingat terjadwal pada platform yang tidak mendukung.
+- Jangan tangkap hanya `Exception`; tangani `UnsupportedError` secara eksplisit pada platform yang tidak mendukung.
+- Jangan gunakan ID yang sama untuk notifikasi uji coba dan pengingat utama.
+- Jangan menyatakan fitur notifikasi aktif tanpa memeriksa izin sistem terlebih dahulu.
+- Jangan mengandalkan callback tap biasa untuk menangani notifikasi yang meluncurkan aplikasi dari kondisi terminated.
+- Jangan memproses kategori notifikasi yang tidak dikenal tanpa pencatatan peringatan.
+- Jangan mengubah preferensi tanpa memastikan jadwal sistem operasi konsisten.
+- Jangan memanggil `EasyLoading.show()` atau `EasyLoading.dismiss()` tanpa `.catchError(...)` ketika dilepas dengan `unawaited()`.
+- Jangan mendeteksi error melalui `e.toString().contains(...)`; gunakan tipe exception khusus dan `is`.
+**Alasan:**
+Commit `774431d` menambahkan pengingat harian terjadwal dengan toggle dan pemilih waktu. `saran.md` (commit `0cb0e52`) mencatat temuan bahwa AndroidManifest belum menyertakan receiver dan izin pemulihan, core library desugaring belum aktif, Web tidak mendukung notifikasi terjadwal, izin iOS diminta terlalu awal, hasil izin tidak diperiksa sebelum menyimpan status aktif, waktu pengingat diperbarui sebelum penjadwalan selesai, `mounted` belum konsisten, Future `unawaited()` tidak menangani error, payload tap belum dinavigasi, zona waktu tetap `Asia/Jakarta`, dan ID uji coba sama dengan ID pengingat utama. Aturan ini mencegah pengulangan temuan tersebut.
+**Contoh benar:**
+```dart
+// Menangani tap notifikasi pada tiga kondisi lifecycle.
+final launchDetails = await _plugin.getNotificationAppLaunchDetails();
+if (launchDetails?.didNotificationLaunchApp ?? false) {
+  final response = launchDetails!.notificationResponse;
+  _navigasiBerdasarkanPayload(response?.payload);
+}
+// Validasi payload dengan kategori yang dikenal.
+String? kategori;
+String? id;
+if (payload != null) {
+  for (final part in payload.split('&')) {
+    final kv = part.split('=');
+    if (kv.length == 2) {
+      if (kv[0] == 'kategori') kategori = kv[1];
+      if (kv[0] == 'id') id = kv[1];
+    }
+  }
+}
+if (kategori == 'pengingat_harian') {
+  unawaited(Nav.pushAndRemoveUntil(context, const Home())
+      .catchError((Object e, StackTrace s) {
+    L.e('Gagal navigasi dari notifikasi: $e $s');
+  }));
+} else {
+  L.w('kategori notifikasi tidak dikenal: $kategori');
+}
+// Menampilkan loading dengan penanganan error (unawaited).
+unawaited(
+  EasyLoading.show(
+    status: 'Memproses...',
+    maskType: EasyLoadingMaskType.black,
+  ).catchError((Object e, StackTrace s) {
+    L.e('Gagal menampilkan loading: $e $s');
+  }),
+);
+// Menutup loading dengan penanganan error (unawaited).
+unawaited(
+  EasyLoading.dismiss().catchError((Object e, StackTrace s) {
+    L.e('Gagal menutup loading: $e $s');
+  }),
+);
+```
+**Contoh salah:**
+```dart
+// Mengandalkan callback tap biasa untuk kondisi terminated.
+static void _onTapNotifikasi(NotificationResponse response) {
+  Nav.pushAndRemoveUntil(context, const Home()); // tanpa penanganan error
+}
+// Memproses kategori tidak dikenal tanpa validasi.
+if (kategori != null) {
+  Nav.pushAndRemoveUntil(context, const HalamanLain()); // kategori tidak divalidasi
+}
+// Melepas EasyLoading tanpa penanganan error.
+unawaited(EasyLoading.show(status: 'Memproses...'));
+unawaited(EasyLoading.dismiss());
+```
+**Sumber evaluasi:**
+- Commit: `774431dbf61bb330d548785e8d47597c5bdcd123`, `0cb0e52f48f6d6f95f2bfc9e8b82a092bb5f9e4f`, `9dff35ade58c73784ce27927efad98b429ee97cb`, `a30b6b6e4377b55eadecb6b83b0e4c05faa985b5`, `2a5a357429d44d7302ce54d46b378fe2ce6a0cb6`, `9f3e88936232b3b837218db3ae22d9d835a1aa99`
+- File: `lib/shared/notifikasi/notifikasi_service.dart`, `lib/main.dart`, `lib/app.dart`, `lib/fitur/pengaturan/screens/pengaturan_screen.dart`, `android/app/src/main/AndroidManifest.xml`, `saran.md`
+## Zona Waktu Perangkat untuk Pengingat Harian
+**Cakupan:**
+- `lib/shared/notifikasi/notifikasi_service.dart` — inisialisasi layanan notifikasi dan penentuan zona waktu lokal.
+**Catatan versi:**
+Implementasi yang dievaluasi menggunakan:
+- `flutter_timezone` versi `5.1.1`.
+- `timezone` versi `0.11.2`.
+Jika versi package berubah, periksa kembali API, struktur nilai balik, serta dukungan platform pada versi yang benar-benar digunakan.
+**Aturan wajib:**
+1. Pengingat harian wajib mengikuti zona waktu lokal perangkat pengguna, bukan menggunakan `Asia/Jakarta` sebagai zona waktu utama secara permanen.
+2. Inisialisasi database zona waktu melalui `tz.initializeTimeZones()` sebelum melakukan pencarian dan penetapan lokasi zona waktu.
+3. Gunakan `FlutterTimezone.getLocalTimezone()` untuk memperoleh informasi zona waktu perangkat.
+4. Gunakan properti `identifier` dari hasil `TimezoneInfo` sebagai identitas zona waktu ketika mencari lokasi melalui `tz.getLocation(identifier)`.
+5. Setelah lokasi berhasil ditemukan, tetapkan dengan `tz.setLocalLocation(...)` sebelum membuat atau menjadwalkan waktu berbasis `TZDateTime`.
+6. Jangan menggunakan singkatan zona waktu seperti WIB, WITA, atau WIT sebagai identifier database zona waktu tanpa memastikan bahwa identifier tersebut benar-benar didukung. Utamakan identifier yang diberikan oleh package.
+7. `Asia/Jakarta` hanya digunakan sebagai fallback yang telah ditentukan proyek apabila deteksi zona waktu perangkat atau pencarian identifier tidak berhasil. Jangan menjadikannya zona waktu utama ketika zona perangkat berhasil dideteksi.
+8. Penanganan kegagalan harus mencakup tahapan penting:
+   - Inisialisasi database zona waktu.
+   - Pemanggilan API deteksi zona waktu perangkat.
+   - Pencarian lokasi berdasarkan identifier perangkat.
+   - Penetapan lokasi zona waktu.
+   - Pencarian dan penetapan lokasi fallback.
+9. Catat informasi identifier zona waktu yang berhasil dideteksi menggunakan sistem logging proyek. Jika terjadi fallback, catat penyebabnya menggunakan `L.w()` atau `L.e()` sesuai tingkat kesalahan.
+10. Pastikan lokasi zona waktu berhasil ditetapkan sebelum proses penjadwalan dilanjutkan. Jangan diam-diam melanjutkan penjadwalan menggunakan zona waktu yang belum berhasil ditentukan.
+11. Apabila fallback `Asia/Jakarta` juga gagal ditemukan atau ditetapkan, tangani sebagai kegagalan inisialisasi yang harus dilaporkan. Jangan menganggap inisialisasi berhasil ketika tidak ada zona waktu valid yang berhasil ditetapkan.
+12. Gunakan jenis exception dan mekanisme penanganan yang sesuai dengan API package aktual. Jangan mengandalkan `catch (Exception)` untuk menangani semua kemungkinan kegagalan apabila API terkait dapat menghasilkan jenis kesalahan lain yang perlu ditangani secara khusus.
+13. Jangan menggunakan penanganan error yang terlalu luas untuk menelan kesalahan fatal atau membuat aplikasi seolah-olah berhasil padahal zona waktu belum berhasil diinisialisasi.
+**Larangan:**
+- Jangan menetapkan `Asia/Jakarta` sebagai zona utama secara permanen tanpa mencoba mendeteksi zona waktu perangkat.
+- Jangan menggunakan singkatan zona waktu sebagai identifier IANA tanpa validasi.
+- Jangan melanjutkan penjadwalan jika lokasi zona waktu belum berhasil ditetapkan.
+- Jangan mengabaikan kegagalan deteksi atau pencarian zona waktu tanpa pencatatan.
+- Jangan membiarkan kegagalan fallback tidak ditangani.
+- Jangan menambah package lain untuk menyelesaikan kebutuhan yang sudah dapat dipenuhi oleh package yang digunakan, kecuali ada bukti teknis bahwa diperlukan.
+**Alasan:**
+Commit `19eece7` menambahkan dependensi `flutter_timezone` dan commit `d42422b` menerapkannya pada `NotifikasiService`. Package `timezone` menyediakan database lokasi zona waktu, sedangkan `flutter_timezone` digunakan untuk memperoleh zona waktu perangkat. Kombinasi ini membuat pengingat dapat mengikuti zona waktu lokal pengguna. Fallback `Asia/Jakarta` menjaga perilaku yang sudah digunakan proyek apabila deteksi atau pencarian zona waktu perangkat gagal.
+**Sumber evaluasi:**
+- Commit: `19eece75351cd8deee5a2a01cf65464a8e2a1bc1`, `d42422ba65a0f3c90b46a0736a197af572b62c33`.
+- File: `pubspec.yaml`, `pubspec.lock`, `lib/shared/notifikasi/notifikasi_service.dart`, `saran.md`.
+## Validasi dan Perhitungan Mode Berhenti Bertahap (Tapering)
+**Cakupan:**
+- `lib/fitur/biodata/enum/mode_berhenti.dart` — `ModeBerhenti`, `ModeBerhentiExtension`.
+- `lib/fitur/biodata/model/biodata_model.dart` — `BiodataModel`, ekstensi `BiodataModelPerhitungan` (`sedangTapering`, `targetRokokHariIni`).
+- `lib/fitur/biodata/screens/form_biodata.dart` — `_BiodataScreenState._simpan`, input mode tapering, penurunan per minggu, tanggal mulai penurunan.
+- `lib/fitur/biodata/screens/biodata_screen.dart` — tampilan mode berhenti, penurunan per minggu, target rokok per hari, tanggal mulai penurunan.
+- `lib/shared/db/sqflite/sqflite.dart` — migrasi skema v5 ke v6 (kolom baru pada tabel biodata).
+- `lib/shared/konstanta/nama_kolom.dart` — konstanta `modeBerhenti`, `penurunanPerMinggu`, `tanggalMulaiTapering`.
+**Aturan wajib:**
+1. `ModeBerhenti.seketika` menggunakan jumlah rokok per hari sebagai target, tanpa menerapkan penurunan bertahap.
+2. `ModeBerhenti.bertahap` wajib memiliki nilai `penurunanPerMinggu` berupa bilangan bulat positif.
+3. Input penurunan mingguan tidak boleh kosong, nol, atau negatif ketika mode bertahap aktif.
+4. Tanggal mulai tapering harus diinisialisasi ketika pengguna mengaktifkan mode bertahap dan dipastikan valid sebelum data disimpan.
+5. Jika tanggal mulai berada di masa depan, jumlah minggu yang telah berlalu dianggap nol sampai tanggal tersebut tercapai.
+6. Perhitungan jumlah minggu wajib memakai tanggal yang telah dinormalisasi, sesuai aturan normalisasi tanggal yang sudah tersedia.
+7. Target rokok dihitung dengan prinsip:
+   `target = jumlahRokokPerHari - (penurunanPerMinggu * mingguBerlalu)`
+8. Hasil target tidak boleh kurang dari nol.
+9. Nilai target pada mode seketika harus tetap sama dengan jumlah rokok per hari.
+10. Jangan menghitung ulang formula yang sama di setiap layar. Gunakan ekstensi `BiodataModelPerhitungan` pada `biodata_model.dart`.
+11. Setiap perubahan logika tapering wajib mempertahankan kompatibilitas pembacaan data lama (nilai fallback pada `fromSqflite`).
+12. Uji perhitungan pada batas tanggal dan kondisi penting, termasuk:
+    - Sebelum tanggal mulai.
+    - Hari pertama.
+    - Enam hari setelah tanggal mulai.
+    - Tujuh hari setelah tanggal mulai.
+    - Empat belas hari setelah tanggal mulai.
+    - Target mencapai nol.
+    - Mode seketika.
+**Larangan:**
+- Jangan menduplikasi formula target rokok di layar; gunakan getter `targetRokokHariIni` dari ekstensi.
+- Jangan menyimpan mode bertahap tanpa `penurunanPerMinggu` positif dan tanggal mulai yang valid.
+- Jangan membiarkan target bernilai negatif (klamping ke nol).
+- Jangan menghitung minggu berlalu dari tanggal yang belum dinormalisasi.
+- Jangan membuat aturan migrasi database baru yang menduplikasi aturan migrasi yang sudah tersedia (versi dinaikkan, tabel/kolom lengkap di `onCreate` dan `onUpgrade`, konstanta untuk nama kolom).
+**Alasan:**
+Commit `ceacc6a` menambahkan mode berhenti bertahap (tapering) pada biodata: enum `ModeBerhenti`, perluasan `BiodataModel` dengan `modeBerhenti`, `penurunanPerMinggu`, `tanggalMulaiTapering`, getter `sedangTapering` dan `targetRokokHariIni`, migrasi skema v5 ke v6, serta input dan tampilan pada form dan layar biodata. Perhitungan target menggunakan penurunan kumulatif per minggu sejak tanggal mulai, dengan klamping target ke rentang 0–`jumlahRokokPerHari`. Normalisasi tanggal mencegah hasil bergeser akibat komponen waktu. Kompatibilitas data lama dijaga melalui nilai fallback pada `fromSqflite` (`safeParseEnum` dengan default `seketika`, `parseInt` dengan default 0, `parseDateTime` yang mengembalikan null).
+**Contoh benar:**
+```dart
+// Ekstensi pada model (didefinisikan sekali).
+int get targetRokokHariIni {
+  if (!sedangTapering) return jumlahRokokPerHari;
+  final mulai = tanggalMulaiTapering ?? DateTime.now();
+  final sekarang = DateTime.now();
+  final mulaiDate = DateTime(mulai.year, mulai.month, mulai.day);
+  final sekarangDate = DateTime(sekarang.year, sekarang.month, sekarang.day);
+  final hariBerlalu = sekarangDate.difference(mulaiDate).inDays;
+  final mingguBerlalu = hariBerlalu < 0 ? 0 : hariBerlalu ~/ 7;
+  final penurunan = penurunanPerMinggu * mingguBerlalu;
+  final target = jumlahRokokPerHari - penurunan;
+  if (target < 0) return 0;
+  if (target > jumlahRokokPerHari) return jumlahRokokPerHari;
+  return target;
+}
+// Konsumsi di layar.
+final target = biodata.targetRokokHariIni;
+```
+**Contoh salah:**
+```dart
+// Menghitung ulang formula di layar (duplikasi).
+final target = biodata.jumlahRokokPerHari - biodata.penurunanPerMinggu * minggu;
+// Menggunakan tanggal tanpa normalisasi.
+final hariBerlalu = DateTime.now().difference(tanggalMulaiTapering!).inDays;
+// Menggunakan tanggalMulaiTapering! tanpa penyalinan ke variabel lokal (melanggar type promotion).
+FormatTanggal.formatDasar(biodata.tanggalMulaiTapering!);
+// Mengganti nilai parsing yang tidak valid dengan 0 tanpa validasi (menyembunyikan input tidak valid).
+penurunanPerMinggu: int.tryParse(_penurunanPerMingguController.text.trim()) ?? 0,
+```
+**Sumber evaluasi:**
+- Commit: `ceacc6a1c388b24b7647a37ccde411d6c85ee01c`.
+- File: `lib/fitur/biodata/enum/mode_berhenti.dart`, `lib/fitur/biodata/model/biodata_model.dart`, `lib/fitur/biodata/screens/biodata_screen.dart`, `lib/fitur/biodata/screens/form_biodata.dart`, `lib/shared/db/sqflite/sqflite.dart`, `lib/shared/konstanta/nama_kolom.dart`, `refrensi_apk.md`.
+
+
+// ============================================================
+// FILE: .agents/rules/proyek/aturan_proyek.md
+// ============================================================
+
+# Aturan Proyek
+**Path:** `.agents/rules/proyek/aturan_proyek.md`
+## Tujuan
+Folder `.agents/rules/proyek/` digunakan untuk menyimpan seluruh aturan khusus yang hanya berlaku pada proyek ini.
+File ini merupakan ringkasan yang menjelaskan alasan keberadaan folder tersebut, fungsi aturan di dalamnya, serta ketentuan penerapannya.
+## Aturan
+### 1. Kewajiban Mematuhi Aturan Proyek
+1. AI wajib membaca, memahami, dan mematuhi seluruh file aturan yang terdapat di dalam folder `.agents/rules/proyek/`.
+2. Seluruh aturan dalam folder tersebut wajib diterapkan pada setiap pekerjaan yang dilakukan di proyek ini.
+3. AI tidak boleh mengabaikan, menghapus, mengubah, atau mengesampingkan aturan proyek atas inisiatif sendiri.
+### 2. Prioritas Aturan Global dan Aturan Proyek
+1. Jika terdapat konflik antara aturan dalam `.agents/rules/global/` dan `.agents/rules/proyek/`, aturan dalam folder `.agents/rules/proyek/` wajib diprioritaskan.
+2. Seluruh aturan dalam folder `.agents/rules/proyek/` wajib dipertahankan dan dipatuhi, termasuk aturan yang bertentangan dengan aturan global.
+3. Aturan global yang tidak bertentangan dengan aturan proyek tetap berlaku dan wajib dipatuhi.
+4. Jika ditemukan konflik antara aturan global dan aturan proyek, AI wajib mengidentifikasi dan melaporkannya. Jangan mengubah atau mengabaikan aturan secara sepihak.
+### 3. Cakupan Penerapan
+1. Aturan dalam folder `.agents/rules/proyek/` hanya berlaku untuk proyek ini.
+2. Aturan tersebut tidak otomatis menjadi ketentuan bagi proyek Flutter atau Dart lainnya.
+## Aturan Khusus Proyek
+### 1. Target Platform
+1. Proyek ini dikembangkan sebagai aplikasi Android (APK) untuk tahap awal.
+2. Seluruh kode, implementasi, konfigurasi, dan penggunaan paket wajib kompatibel dengan Android.
+3. Jangan menerapkan implementasi yang tidak didukung atau tidak kompatibel dengan Android.
+### 2. Keterbatasan Pengujian
+1. Karena keterbatasan perangkat keras, saat ini pengujian aplikasi belum dapat dilakukan menggunakan emulator Android.
+2. Pengujian hanya dapat dilakukan melalui Web Server.
+3. AI wajib mempertimbangkan keterbatasan tersebut ketika menyusun implementasi, menjalankan pengujian, dan memverifikasi hasil pekerjaan.
+4. Ketidakmampuan menjalankan emulator bukan alasan untuk mengabaikan kompatibilitas Android.
+5. Pengujian melalui Web Server tidak boleh dianggap sebagai bukti bahwa seluruh implementasi sudah berjalan dengan benar di Android.
+## Perbedaan Aturan Global dan Aturan Proyek
+- **`.agents/rules/global/`**: berisi aturan umum yang berlaku untuk seluruh proyek Flutter dan Dart.
+- **`.agents/rules/proyek/`**: berisi aturan khusus yang hanya berlaku untuk proyek ini dan wajib diprioritaskan apabila terjadi konflik dengan aturan global.
 
 
 
@@ -23458,14 +14780,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.4"
-  android_file_picker:
-    dependency: transitive
-    description:
-      name: android_file_picker
-      sha256: "868183c959e754e915954d8074c20cfa4cfdb4684b35ecc08378437be1a542d8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.3"
   animations:
     dependency: transitive
     description:
@@ -23594,14 +14908,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
-  cross_file:
-    dependency: transitive
-    description:
-      name: cross_file
-      sha256: f141ea4f277af142a0356955707f6556f37b03947d39d55585981a06ca437bd6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.5+5"
   crypto:
     dependency: transitive
     description:
@@ -23610,14 +14916,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.8"
-  csv:
-    dependency: "direct main"
-    description:
-      name: csv
-      sha256: c6aa2679b2a18cb57652920f674488d89712efaf4d3fdf2e537215b35fc19d6c
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.0"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -23690,14 +14988,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  ffi_leak_tracker:
-    dependency: transitive
-    description:
-      name: ffi_leak_tracker
-      sha256: "4093d4ef9ca06ffe2786e73bfb25e22aa92112b9bb4ec941f11e3e6b61489a97"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.2"
   file:
     dependency: transitive
     description:
@@ -23706,46 +14996,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
-  file_picker:
-    dependency: "direct main"
-    description:
-      name: file_picker
-      sha256: c64036857780d7125f011d543f89eedcb5df61da473668bace4eee9ab875284d
-      url: "https://pub.dev"
-    source: hosted
-    version: "13.3.2"
-  file_picker_darwin:
-    dependency: transitive
-    description:
-      name: file_picker_darwin
-      sha256: daeb0219f6279c73eb9c63ae9a566beef04ae13d59b8feba0be2a7f3b258d3d4
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.2"
-  file_picker_linux:
-    dependency: transitive
-    description:
-      name: file_picker_linux
-      sha256: eb00de71b123e91d3c61f389a05b8cc90f9cbe7e4c88da30ebe2f0442b281b61
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
-  file_picker_platform_interface:
-    dependency: transitive
-    description:
-      name: file_picker_platform_interface
-      sha256: "336e7168306834a2b68e6168ed768e00d3fabeac23154d5793e277ca9f97cf20"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.0"
-  file_picker_web:
-    dependency: transitive
-    description:
-      name: file_picker_web
-      sha256: a2288008280aabe371aff029466b3405e60838e0a1d714767488c59b926c8b8c
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.0"
   fixnum:
     dependency: transitive
     description:
@@ -23950,14 +15200,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
-  jni_flutter:
-    dependency: transitive
-    description:
-      name: jni_flutter
-      sha256: "0dd33d67797560f66e961a6053882d4df54bd345bf063b8fe7ea133f7ad8b191"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4+1"
   jni_util:
     dependency: transitive
     description:
@@ -24110,30 +15352,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
-  path_provider:
-    dependency: "direct main"
-    description:
-      name: path_provider
-      sha256: a7f4874f987173da295a61c181b8ee71dab59b332a486b391babf26a1b884825
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.6"
-  path_provider_android:
-    dependency: transitive
-    description:
-      name: path_provider_android
-      sha256: "69cbd515a62b94d32a7944f086b2f82b4ac40a1d45bebfc00813a430ab2dabcd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.1"
-  path_provider_foundation:
-    dependency: transitive
-    description:
-      name: path_provider_foundation
-      sha256: "2a376b7d6392d80cd3705782d2caa734ca4727776db0b6ec36ef3f1855197699"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.6.0"
   path_provider_linux:
     dependency: transitive
     description:
@@ -24230,14 +15448,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  restart_app:
-    dependency: "direct main"
-    description:
-      name: restart_app
-      sha256: "398550c5c0438b15c6062c7cb7e5c234498584aa9ba1b28910e77d4ff43bfef6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.10.2"
   riverpod:
     dependency: transitive
     description:
@@ -24277,22 +15487,6 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
-  share_plus:
-    dependency: "direct main"
-    description:
-      name: share_plus
-      sha256: db40767f130189d53f3ae8a6393c217ff4a492da1baff718a9873679c0c00224
-      url: "https://pub.dev"
-    source: hosted
-    version: "13.3.1"
-  share_plus_platform_interface:
-    dependency: transitive
-    description:
-      name: share_plus_platform_interface
-      sha256: "365ef7379fc22507256adda3385152942ffce08935452bc972c2e52a0bebae41"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.2.0"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -24530,40 +15724,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  url_launcher_linux:
-    dependency: transitive
-    description:
-      name: url_launcher_linux
-      sha256: "10f86fef4c2c43563fa6c211ff9cf757adf4d3ab762c56bd430664a947d70cd0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.3"
-  url_launcher_platform_interface:
-    dependency: transitive
-    description:
-      name: url_launcher_platform_interface
-      sha256: "552f8a1e663569be95a8190206a38187b531910283c3e982193e4f2733f01029"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.2"
-  url_launcher_web:
-    dependency: transitive
-    description:
-      name: url_launcher_web
-      sha256: "85c81589622fbc87c1c683aaea164d3604a7777495a79d91e39ffcdec39ddb34"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.3"
-  url_launcher_windows:
-    dependency: transitive
-    description:
-      name: url_launcher_windows
-      sha256: "6c5ad3f22cd4c38e089b81963b3cd7bb83b111b2df5dce008bb066162f42e429"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.6"
   uuid:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: uuid
       sha256: "9b129329f58692f6e6578329498a8fe9fbe98f090beb764ffbb8ee2eadd01dcd"
@@ -24618,22 +15780,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  win32:
-    dependency: transitive
-    description:
-      name: win32
-      sha256: a0b93865d5644f11cf6a8c3f6db909f1ec168958b5805f6cc684adea957cd63d
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.4.0"
-  windows_file_picker:
-    dependency: transitive
-    description:
-      name: windows_file_picker
-      sha256: "18452aa293de3b6961c6d05b0e71b4be7bb90c67635abdd3aa5c4e75dd875072"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -24667,5 +15813,5 @@ sdks:
 // ============================================================
 // STATISTIK
 // ============================================================
-// Total file yang diproses : 123
-// Total baris kode        : 23686
+// Total file yang diproses : 67
+// Total baris kode        : 15280
