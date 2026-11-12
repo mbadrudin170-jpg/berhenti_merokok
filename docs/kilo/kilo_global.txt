@@ -1,34 +1,30 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
-  "model": "kilo/reflection/beam-free",
+  "model": "kilo/kilo-auto/free",
   "small_model": "kilo/kilo-auto/free",
   "subagent_model": "kilo/kilo-auto/free",
   "agent": {
     "code": {
-      "model": "kilo/kilo-auto/free",
+      "model": "kilo/baidu/ernie-5.5-flash-preview:free",
       "prompt": "kamu adalah pekerja saya",
-      "variant": "max"
+      "variant": "high"
     },
     "ask": {
       "model": "kilo/kilo-auto/free",
       "variant": "max"
     },
     "plan": {
-      "model": "kilo/kilo-auto/free",
-      "variant": "high"
+      "model": "kilo/kilo-auto/free"
     },
     "orchestrator": {
-      "model": "kilo/kilo-auto/free",
-      "variant": "high"
+      "model": "kilo/kilo-auto/free"
     },
     "debug": {
       "model": "kilo/kilo-auto/free",
-      "prompt": "kamu harus mengatasi masalah ini, agar mengikuti file dependensi nya supaya ketemu solusinya",
-      "variant": "high"
+      "prompt": "kamu harus mengatasi masalah ini, agar mengikuti file dependensi nya supaya ketemu solusinya"
     },
     "compaction": {
-      "model": "kilo/kilo-auto/free",
-      "variant": "high"
+      "model": "kilo/kilo-auto/free"
     }
   },
 
@@ -108,7 +104,9 @@
     "AGENTS.md",
     ".agents/rules/global/aturan_skill.md",
     ".agents/rules/global/format_PRD.md",
-    ".agents/rules/global/format_task.md"
+    ".agents/rules/global/format_hasil_diskusi.md",
+    ".agents/rules/global/format_task.md",
+    "SKILLS_INDEX.md"
   ],
   "auto_collapse_reasoning": true,
   "terminal_command_display": "collapsed",

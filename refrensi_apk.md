@@ -979,11 +979,8 @@ Catatan: fitur iOS-only pada 10 APK (lock screen, StandBy, Dynamic Island, Contr
 
 ##### C16. Pemulihan Tubuh per Organ (paru/jantung/sirkulasi/saraf/kulit)
 
-- **Aplikasi serupa:** [Breathe](https://github.com/imaswath/Breathe) — "Physiological Recovery: Displays real-time metrics on how the body is healing (Heart, Lungs, Blood, Nerves, Skin)." · [EasyQuit](https://play.google.com/store/apps/details?id=com.herzberg.easyquitsmoking) — health countdown timer. · [Kwit](https://apps.apple.com/gb/app/quit-smoking-for-good-kwit/id525441365) — health improvement timeline.
-- **Pola UI:** bar/ikon per organ dengan status pemulihan; label sederhana.
-- **Pola UX:** membuat "tubuh membaik" lebih intuitif daripada daftar milestone berbasis waktu; hindari kesan klaim medis.
-- **Pola layout:** kartu ringkasan per organ; detail di layar terpisah.
-- **Saran:** kelompokkan entri `pemulihan_kesehatan` per sistem organ (paru/jantung/sirkulasi/umum) dengan ikon; tambah disclaimer "ilustrasi umum, bukan kondisi medis Anda"; tanpa data baru.
+> **Sudah dibuat PRD:** seluruh isi bagian ini (aplikasi serupa, pola UI, pola UX, pola layout, saran) dipindahkan ke `prd/prd_pemulihan_tubuh_per_organ.md` pada bagian 2–5. Nomor baris asal bagian ini: **980–987**.
+
 - **Prioritas:** Rendah.
 
 ### D. Penguatan Temuan Sebelumnya (referensi baru dari 10 APK)
