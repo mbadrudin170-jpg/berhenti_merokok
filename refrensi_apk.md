@@ -14,6 +14,7 @@
 - **Semua 352 listing (termasuk 9 listing baru 2026-11-11) sudah dianalisa fitur-fiturnya** melalui perintah `riset_kompetitor.md` pada 11 November 2026.
 - **Analisis 10 listing tambahan (2026-11-11, probe curl HTTP 200 untuk semua):** Kwit (Play), Smoke Free (Play), QuitSave (Play), QuitDay (Galaxy Store — verifikasi ringan), Progress Tracker (Play), Unsmoke (Play), FreeAir Coach (Play), Smoke Tracker (Play), Counter App (App Store), ClearDay Tracker (App Store). Detail fitur di bawah bagian "Analisis Mendalam 10 APK (2026-11-11)".
 - **Analisis 10 APK batch 2 (2026-11-11, probe curl HTTP 200 + GitHub API (semua `fork: false`) + iTunes lookup `resultCount: 1` untuk Kwit):** EasyQuit (Play), Quit Tracker / despDev (Play), QUIT Smoking SOS (Play), Kwit (App Store, `id525441365`), Breathing Room (GitHub, Flutter + sqflite + Riverpod), Nonic (GitHub, Flutter), Quit-Smoke-App (GitHub, Flutter), SmartQuit / BreatheFree V2 (GitHub, Flutter + Riverpod), Quitease (GitHub, Flutter + GetX), Breathe (GitHub, React Native + Expo). Detail fitur di bawah bagian "Analisis Mendalam 10 APK (2026-11-11, Batch 2)".
+- **Analisis 10 APK (2026-11-12, probe curl HTTP 200 + iTunes lookup `resultCount: 1` untuk 4 App Store):** Defog (Play), Smoking Tracker (Play), Quit Smoking : Tracker & Timer (Play), Stosmok (Play), NicoQuit (Play), My QuitBuddy (App Store), ExSmoke (App Store), Smoke NoMo (App Store), smoke note quit (App Store), Puffless (GitHub). Detail fitur di bawah bagian "Analisis Mendalam 10 APK (2026-11-12)".
 
 ### Cara membaca dokumen ini
 
@@ -49,7 +50,7 @@ Peluang terbesar hasil riset terhadap **semua 352 listing** (termasuk 193 listin
 | Navigasi         | 4 tab: Dashboard, Biodata, Impian, Lainnya; lazy + IndexedStack (`lib/home.dart`)                                                                                                                      | Pertahankan; kompetitor juga membatasi destinasi utama                    |
 | Dashboard        | Counter, kartu SOS, uang dihemat, target, impian, milestone, badge (`lib/fitur/dashboard/...`)                                                                                                         | Audit kepadatan; 1 metrik dominan                                         |
 | Biodata/tapering | Dua mode; target harian dari penurunan per minggu; tidak terhubung ke konsumsi aktual                                                                                                                  | Peluang integrasi                                                         |
-| Konsumsi         | Model `jumlah`, `isSlip`, `catatan`; quick log +1; ringkasan harian                                                                                                                                    | Tidak terhubung ke counter/tapering                                       |
+| Konsumsi         | Model `jumlah`, `isSlip`, `catatan`, `pemicu`; quick log +1; ringkasan harian + `PuncakKonsumsiHelper` (distribusi jam/hari/pemicu, ringkasan teks)                                                  | Tidak terhubung ke counter/tapering; analisis puncak sudah ada            |
 | Impian           | CRUD, visual tabungan, sorting                                                                                                                                                                         | Sudah setara kompetitor                                                   |
 | SOS              | Napas 4-7-8, timer 3 menit, distraksi, hasil intervensi tersimpan di `sos_intervensi`; kartu "Rencana Darurat Saya" (if-then) di bawah kartu alasan                                                    | Hasil intervensi ikut diekspor ke cadangan                                |
 | Diary craving    | Pemicu, intensitas, `PolaCravingHelper` → jam teratas + pengingat pola                                                                                                                                 | Belum ada heatmap jam/trigger                                             |
@@ -238,14 +239,6 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 - **Saran:** tampilkan "bersumber WHO/CDC/NHS, perkiraan ilustratif"; jangan menaikkan angka personil; hindari istilah "menyembuhkan".
 - **Prioritas:** Rendah.
 
-#### B11. Konsumsi — Tambah Field Pemicu & Analisis Puncak ✅ **PRD Dibuat**
-
-- **Tujuan:** memahami kapan dan mengapa merokok paling banyak; basis untuk pengingat proaktif dan persiapan craving.
-- **Referensi:** [Quit Smoking - Smoke Tracker](https://play.google.com/store/apps/details?id=com.dailyapplabs.quitsmoke) (pemicu: stres, kopi, setelah makan, mengemudi, istirahat kerja, sosial; analisis puncak harian/mingguan/bulanan/tahunan) · [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (craving log dengan pemicu, laporan mingguan pemicu umum) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (identifikasi pemicu dan pola).
-- **Saran:** tambahkan kolom `pemicu` (nullable, enum/teks bebas) ke tabel `konsumsi_rokok`; buat `PuncakKonsumsiHelper` (jam/hari konsumsi tertinggi, distribusi pemicu); tampilkan ringkasan teks di layar Konsumsi/Analitik; tidak wajib grafik.
-- **Prioritas:** Sedang.
-- **PRD:** `prd/prd_konsumsi_pemicu_analisis_puncak.md`
-
 #### B12. Slip Handling — Preview Dampak + Field Pemicu Slip + Micro-goal
 
 - **Tujuan:** pengguna jujur melaporkan slip, paham dampak metrik, dan punya rencana kembali ke jalur.
@@ -334,9 +327,9 @@ Setiap pola menyertakan **aplikasi kompetitor yang punya fitur serupa dengan pro
 
 ---
 
-## D. Katalog Semua 352 Listing pada `apk_kompetitor.md`
+## D. Katalog Semua Listing pada `apk_kompetitor.md`
 
-Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositori dapat diakses & dibaca; **✗** = tidak terverifikasi (404/403/kosong); **Duplikat** = listing toko lain dari produk yang sama (bukan kompetitor baru). Kolom "Fitur terverifikasi" ringkas; detail bukan pengganti membaca sumber asli.
+Keterangan: **Platform** = Android / iOS / keduanya. **✓** = halaman/repositori dapat diakses & dibaca; **✗** = tidak terverifikasi (404/403/kosong); **Duplikat** = listing toko lain dari produk yang sama (bukan kompetitor baru). Kolom "Fitur terverifikasi" ringkas; detail bukan pengganti membaca sumber asli. Katalog mencakup 352 listing awal (D.1–D.7) + 7 listing yang ditambahkan pada 2026-11-12 (D.8).
 
 ### D.1 Google Play Store (66 listing: 59 halaman detail + 7 tautan pencarian, nomor 4–11, 24–32, 48–54, 55–73, 80–103)
 
@@ -748,6 +741,18 @@ Kolom **Kode** = HTTP status dari probe curl independen pada 2026-11-11 (user ag
 | D.7.2-97 | [Quit Smoking: Vape Counter AI](https://apps.apple.com/us/app/quit-smoking-vape-counter-ai/id6736829042)                           | Apple App Store           | Puff tracking dengan chart harian/mingguan/bulanan, personal goals/limits, daily tips, HealthKit integration, detailed reports/trends, AI craving alerts, quitting library (breathing/recipes/habits), premium subscription. Relevan dengan analytics vape dan HealthKit.                                                                                                                                                                                                                                                          | 200  |
 | D.7.2-98 | [Quit Smoking: ClearDay Tracker](https://apps.apple.com/jp/app/quit-smoking-clearday-tracker/id6761815015)                         | Apple App Store           | Widget-first (home/lock/StandBy/Dynamic Island), streak counter, savings, cigarettes avoided, time regained, health milestones (12h–1y+), 3-min craving timer (Craving Wave di lock screen), reward goals/piggy bank, gentle slip reset (keeps cumulative savings/count from first quit date), share cards, iCloud sync, no account/ads/tracking, tree-growing visual metaphor, check-in chain, daily recovery page (90 days), craving insights/patterns. Relevan dengan widget-first, slip-friendly, visual metaphor, share card. | 200  |
 | D.7.2-99 | [금연·금주 디데이 (Quit Day D-Day)](https://galaxystore.samsung.com/detail/com.siwooeo.quitday?cntyCd=KOR)                         | Samsung Galaxy Store      | Real-time D-Day counter, money saved, "I endured now" button untuk catat craving teratasi, NHS/CDC health timeline, stats & badges, restart counter tanpa reset highest progress, no account/login/cloud, all local data, light/dark theme, Korean-English. Relevan dengan counter, anti-shame restart, dan milestone.                                                                                                                                                                                                             | 200  |
+
+### D.8 Tambahan Riset (2026-11-12) — 7 listing
+
+| No.      | Aplikasi (link)                                                                                                      | Store             | Fitur terverifikasi (ringkas)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Status |
+| -------- | -------------------------------------------------------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| D.8-1    | [Defog: Quit Smoking](https://play.google.com/store/apps/details?id=app.defog)                                        | Google Play Store | Program terpandu 60 hari (pelajaran singkat, kuis, reflection prompt, latihan napas, misi harian), Craving SOS (napas/audio/catatan), log craving + pemicu + rutinitas, estimasi uang dihemat dari baseline belanja, login Google, langganan Defog Pro. Relevan dengan program harian, manajemen craving, dan penghematan.                                                                                                                                                                                                                                                                | 200    |
+| D.8-2    | [Smoking Tracker](https://play.google.com/store/apps/details?id=com.gasperpintar.smokingtracker)                     | Google Play Store | Catat tiap batang, statistik harian/mingguan/bulanan/tahunan, consumption analytics, smoking forecast, pelacakan smoke-free, dampak finansial, catatan, penyimpanan lokal, pencadangan Android, multi-bahasa. Duplikat F-Droid (`com.gasperpintar.smokingtracker`), IzzyOnDroid, dan GitHub (`pintargasper/SmokingTracker`). Relevan dengan pelacakan kebiasaan, statistik, dan offline-first.                                                                                                                                                                                         | 200    |
+| D.8-3    | [My QuitBuddy](https://apps.apple.com/au/app/my-quitbuddy/id527485761)                                                | Apple App Store   | Inisiatif Departemen Kesehatan Australia: mode Quit Now / Quit Later / Continue Quitting, tujuan + motivasi, nominasi teman/keluarga untuk dihubungi saat sulit, progres hari/jam/menit + uang dihemat, tip harian 30 hari pertama, "Danger Times" (pengingat jam rawan), distraksi + imagery menenangkan, pesan komunitas, panggil Quitline 13 7848. Relevan dengan manajemen craving, jaringan dukungan, dan pengingat.                                                                                                                                                          | 200    |
+| D.8-4    | [ExSmoke: Quit Smoking Tracker](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367)              | Apple App Store   | Tiga mode: Tracker (batas harian + rekomendasi waktu merokok berikutnya), Reduce (target berhenti + penurunan otomatis hingga 0), Quit (rokok dihindari, uang dihemat, linimasa kesehatan 15 tahun). Kalender bulanan kepatuhan batas, integrasi Apple Health (SPO2, VO2Max, resting heart rate, respiratory rate, tidur, energi), notifikasi pengingat log/batas dan pembaruan milestone. Relevan dengan tapering, kalender kepatuhan, dan penanda kesehatan.                                                                                                                          | 200    |
+| D.8-5    | [Smoke NoMo](https://apps.apple.com/us/app/smoke-nomo/id6736703511)                                                   | Apple App Store   | Penghitung hari bebas rokok, uang dihemat, milestone/pencapaian (trophy), target reward personal (masukkan harga barang → tampilkan lama menabung dari uang yang dihemat), disclaimer medis. Relevan dengan milestone, penghematan, dan target impian.                                                                                                                                                                                                                                                                                                                                      | 200    |
+| D.8-6    | [smoke note quit](https://apps.apple.com/us/app/smoke-note-quit/id6789921162)                                         | Apple App Store   | Penghitung waktu bebas rokok hingga detik, catatan jurnal pribadi kapan saja, widget Home Screen untuk memantau progres. Relevan dengan pelacakan progres smoke-free dan jurnal.                                                                                                                                                                                                                                                                                                                                                                                                           | 200    |
+| D.8-7    | [Puffless](https://github.com/RariSparklyy/smoking-tracker)                                                           | GitHub            | React Native + Expo: catat rokok sekali ketuk, statistik harian/mingguan/bulanan, visualisasi dampak finansial, riwayat lengkap, pengaturan (harga per batang, target harian, reset data), penyimpanan lokal AsyncStorage, navigasi tab/stack. Relevan dengan pelacakan kebiasaan, statistik, dan pembanding minimal.                                                                                                                                                                                                                                                                     | 200    |
 
 ---
 
@@ -1194,6 +1199,209 @@ Catatan: Qwit dan Lungo tersedia di App Store serta Google Play; fitur iOS-only 
 
 ---
 
+## Analisis Mendalam 10 APK (2026-11-12)
+
+**Lingkup:** 10 APK yang berstatus `Belum Dianalisa` pada `apk_kompetitor.md` — [Defog: Quit Smoking](https://play.google.com/store/apps/details?id=app.defog) (Play), [Smoking Tracker](https://play.google.com/store/apps/details?id=com.gasperpintar.smokingtracker) (Play), [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (Play), [Stosmok - Stop & Quit Smoking](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) (Play), [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) (Play), [My QuitBuddy](https://apps.apple.com/au/app/my-quitbuddy/id527485761) (App Store), [ExSmoke: Quit Smoking Tracker](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) (App Store), [Smoke NoMo](https://apps.apple.com/us/app/smoke-nomo/id6736703511) (App Store), [smoke note quit](https://apps.apple.com/us/app/smoke-note-quit/id6789921162) (App Store), [Puffless](https://github.com/RariSparklyy/smoking-tracker) (GitHub).
+
+**Metode & verifikasi (2026-11-12):** kesepuluh tautan di-probe `curl` (user agent Chrome, `-L`, `--max-time 20`) dan mengembalikan **HTTP 200**. Empat listing App Store dikonfirmasi `iTunes lookup` `resultCount: 1` (My QuitBuddy `id527485761`, ExSmoke `id6477424367`, Smoke NoMo `id6736703511`, smoke note quit `id6789921162`). Halaman Play Store dan README GitHub terbaca penuh via `webfetch`. Klaim angka unduhan/rating dan klaim kesehatan adalah klaim pengembang, bukan verifikasi. Fitur iOS-only (Apple Health, widget iOS) dicatat sebagai referensi pola, bukan rekomendasi implementasi Android.
+
+### A. Fitur Baru (dapat berjalan di mobile)
+
+#### Prioritas Tinggi
+
+##### A33. Rekomendasi "Waktu Merokok Berikutnya" Berbasis Batas Harian
+
+- **Tujuan fitur:** mengubah target tapering dari angka abstrak menjadi jadwal konkret; pengguna tahu kapan masih boleh merokok agar tetap dalam batas.
+- **Referensi:** [ExSmoke](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) — mode Tracker: "You select a daily smoke limit and the app will recommend times during the day when you can smoke to ensure you stick to the limit"; mode Reduce: "see the recommended next smoke time to stick to your daily limit".
+- **Saran:** hitung sisa jatah hari ini dari target harian (biodata tapering) dikurangi konsumsi aktual; bagi rata ke sisa jam bangun; tampilkan "Waktu berikutnya yang disarankan: 14:30 (sisa 3 batang)"; sediakan opsi notifikasi; jika jatah habis, tampilkan pesan netral lalu arahkan ke SOS.
+- **Prioritas:** Tinggi.
+
+##### A34. Analisis Kegagalan & Tips Pencegahan (Failure Analysis)
+
+- **Tujuan fitur:** mengubah slip dari kegagalan menjadi bahan belajar; menunjukkan pola dan pencegahan yang konkret.
+- **Referensi:** [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) — "Failure analysis with prevention tips"; "Most people succeed after 7-8 attempts. Your cumulative progress is never lost."
+- **Saran:** dari data slip (`isSlip`) + pemicu + jam, hasilkan ringkasan "slip terbanyak terjadi pada jam X dengan pemicu Y" dan 1–2 tips; tampilkan pada layar Konsumsi/Analitik; gunakan bahasa netral, bukan hukuman.
+- **Prioritas:** Tinggi.
+
+#### Prioritas Sedang
+
+##### A35. Program Terpandu Harian (Guided Day-by-Day Curriculum)
+
+- **Tujuan fitur:** memberi struktur harian sehingga pengguna tahu apa yang perlu dilakukan hari ini, bukan hanya melihat angka.
+- **Referensi:** [Defog](https://play.google.com/store/apps/details?id=app.defog) — "Follow a 60-day guided program with short lessons, daily check-ins, sound sessions, and practical activities"; "Return to previous program days and reflect on your journey."
+- **Saran:** modul harian berisi pelajaran singkat + misi + pilihan aktivitas (napas/audio); konten disimpan lokal; pengguna boleh kembali ke hari sebelumnya; jangan mengunci fitur lain; tandai sebagai program edukatif, bukan terapi.
+- **Prioritas:** Sedang.
+
+##### A36. Jurnal Bebas + Hitung Detik Smoke-Free
+
+- **Tujuan fitur:** memberi ruang mencatat di luar struktur craving (catatan harian/refleksi) serta memantau waktu bebas rokok hingga detik.
+- **Referensi:** [smoke note quit](https://apps.apple.com/us/app/smoke-note-quit/id6789921162) — "Track your smoke-free time down to the second, and write journal entries whenever you need to"; widget Home Screen.
+- **Saran:** tambahkan jurnal bebas (opsional) di luar diary craving; tampilkan hitungan detik pada layar progres, bukan hanya hari; widget menjadi bagian A1/A19.
+- **Prioritas:** Sedang.
+
+##### A37. Kontak Dukungan & "Danger Time" Terjadwal
+
+- **Tujuan fitur:** menyiapkan jaringan dukungan nyata dan mengingatkan pada jam rawan yang dipilih pengguna sendiri.
+- **Referensi:** [My QuitBuddy](https://apps.apple.com/au/app/my-quitbuddy/id527485761) — "Nominate friends or family who you can call in the tough times"; "You can nominate any Danger Times and My QuitBuddy will get in touch to keep you on track"; tombol Quitline.
+- **Saran:** simpan 1–3 kontak (nama + nomor) secara lokal; tampilkan tombol "Hubungi" (`tel:`) pada layar SOS; tambahkan daftar "jam rawan" manual sebagai pelengkap `PolaCravingHelper` (A13); jangan mengunggah kontak ke server.
+- **Prioritas:** Sedang.
+
+##### A38. Pemantauan Penanda Kesehatan (opsional, via Health Connect)
+
+- **Tujuan fitur:** menunjukkan perubahan penanda kesehatan (SpO2, denyut istirahat, VO2Max, tidur) seiring bertambahnya waktu bebas rokok.
+- **Referensi:** [ExSmoke](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) — integrasi Apple Health untuk SPO2, VO2Max, resting heart rate, respiratory rate, durasi tidur, dan energi.
+- **Saran:** padanan Android adalah Health Connect; membutuhkan izin runtime dan integrasi native; tempatkan pada prioritas rendah karena menambah kompleksitas dan izin; catat sebagai referensi pola, bukan rekomendasi utama.
+- **Prioritas:** Rendah.
+
+#### Prioritas Rendah
+
+##### A39. Kuis Edukasi Harian (Daily Quiz)
+
+- **Tujuan fitur:** edukasi ringan tentang nikotin dan kesehatan sekaligus menjaga retensi harian.
+- **Referensi:** [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) — "Kuis Harian: Uji pengetahuan Anda tentang fakta-fakta merokok dan manfaat kesehatan dari berhenti merokok... dapatkan XP."
+- **Saran:** bank soal lokal (20–30 soal), 1 soal per hari, XP tidak wajib; verifikasi konten ke sumber resmi (WHO/CDC/NHS) sebelum ditampilkan.
+- **Prioritas:** Rendah.
+
+### B. Optimasi Fitur yang Sudah Ada
+
+#### Prioritas Sedang
+
+##### B22. Tapering: Batas Harian Terlihat + Status Kepatuhan
+
+- **Tujuan optimasi:** pengguna melihat target hari ini dan apakah masih sesuai batas.
+- **Referensi:** [ExSmoke](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) (daily smoke limit + status dalam batas) · [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (streak + analisis kegagalan) · [Smoking Tracker](https://play.google.com/store/apps/details?id=com.gasperpintar.smokingtracker) (statistik harian/mingguan/bulanan/tahunan).
+- **Saran:** pada layar Konsumsi tampilkan "Batas hari ini: N batang · Terpakai: M · Sisa: K"; pada Dashboard tampilkan status ringkas; sambungkan ke `MetrikBerhentiHelper`.
+- **Prioritas:** Sedang.
+
+##### B23. Kalender Bulanan Kepatuhan Batas
+
+- **Tujuan optimasi:** memperluas kalender smoke-free menjadi kalender kepatuhan (hari dalam batas / hari bebas total / hari melebihi).
+- **Referensi:** [ExSmoke](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) — "Monthly Calendar View... monitor the days you've successfully stayed within your predetermined smoking limits or... remained completely cigarette-free."
+- **Saran:** tambahkan tiga status hari pada `kalender_smoke_free`; ambil warna dari `ColorScheme` (bukan warna hardcoded); sertakan legenda.
+- **Prioritas:** Sedang.
+
+##### B24. Efektivitas Intervensi SOS — Alat Mana yang Paling Membantu
+
+- **Tujuan optimasi:** menilai coping berdasarkan data pengguna sendiri, bukan asumsi.
+- **Referensi:** [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) — "Log a craving in two taps. The app then shows your hardest time of day, your biggest trigger, and which tool helps you most." · [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) — "Pilih strategi mengatasi dan saksikan daya tahan Anda tumbuh lebih kuat dari waktu ke waktu."
+- **Saran:** perluas `sos_intervensi` (kolom `hasil` sudah ada) menjadi peringkat alat: hitung jumlah pemakaian dan tingkat keberhasilan per `JenisIntervensiSos`; tampilkan "Alat paling membantu: Napas 4-7-8".
+- **Prioritas:** Sedang.
+
+##### B25. Notifikasi "Jam Rawan" Manual
+
+- **Tujuan optimasi:** mengingatkan sebelum jam rawan yang dipilih pengguna, melengkapi pengingat berbasis pola.
+- **Referensi:** [My QuitBuddy](https://apps.apple.com/au/app/my-quitbuddy/id527485761) (Danger Times) · [NoMore](https://play.google.com/store/apps/details?id=com.appfactory.breakfree) (30-minute heads-up, sudah tercatat pada A13).
+- **Saran:** tambahkan daftar jam rawan (multi-select) di Pengaturan; maksimal 3 notifikasi per hari; hormati jam tenang (B7).
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### B26. Statistik Konsumsi Multi-Period (Hari/Minggu/Bulan/Tahun)
+
+- **Tujuan optimasi:** membaca progres pada beberapa skala waktu.
+- **Referensi:** [Smoking Tracker](https://play.google.com/store/apps/details?id=com.gasperpintar.smokingtracker) — "daily, weekly, monthly and yearly statistics"; "Consumption analytics" · [Puffless](https://github.com/RariSparklyy/smoking-tracker) — statistik harian/mingguan/bulanan + ringkasan uang.
+- **Saran:** perluas ringkasan konsumsi menjadi toggle periode; angka diambil dari data yang ada; grafik bersifat opsional (butuh `fl_chart`).
+- **Prioritas:** Rendah.
+
+##### B27. Portabilitas Data Lintas Platform
+
+- **Tujuan optimasi:** memastikan cadangan JSON dapat dipindahkan antar-perangkat/platform tanpa kehilangan data.
+- **Referensi:** [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) — "you can also move it with a transfer file, including between iPhone and Android"; pencadangan bawaan Android.
+- **Saran:** beri label "Berkas Transfer" pada ekspor JSON yang sudah ada; dokumentasikan versi skema; uji impor dari versi lebih lama (migrasi v14).
+- **Prioritas:** Rendah.
+
+##### B28. Bahasa & Istilah Lokal
+
+- **Tujuan optimasi:** memastikan aplikasi benar-benar berbahasa Indonesia dan istilah kesehatan mudah dipahami.
+- **Referensi:** [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) (7 bahasa termasuk Indonesia) · [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) (Indonesia/Inggris).
+- **Saran:** proyek sudah memakai `Locale('id','ID')`; audit istilah asing pada label kesehatan; gunakan istilah umum dan cantumkan sumber WHO/CDC/NHS sesuai B10.
+- **Prioritas:** Rendah.
+
+### C. UI, UX & Layout — Pola dari 10 APK
+
+#### Prioritas Tinggi
+
+##### C22. Kartu "Batas Hari Ini" + Waktu Berikutnya pada Layar Utama
+
+- **Aplikasi serupa:** [ExSmoke](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) · [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke).
+- **Pola UI:** kartu ringkas "Batas hari ini 10 · Terpakai 6 · Sisa 4" + "Waktu berikutnya: 14:30"; status warna sesuai/melebihi.
+- **Pola UX:** keputusan tapering menjadi konkret; mengurangi kecemasan "apakah masih boleh merokok".
+- **Pola layout:** satu kartu di Dashboard di bawah counter; detail lengkap di layar Konsumsi.
+- **Kondisi proyek:** target tapering ada di biodata, tetapi belum terhubung ke konsumsi aktual (B2).
+- **Tujuan pola:** menjadikan tapering sebagai panduan harian, bukan sekadar angka.
+- **Prioritas:** Tinggi.
+
+#### Prioritas Sedang
+
+##### C23. Tombol SOS Menonjol & Selalu Terlihat
+
+- **Aplikasi serupa:** [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) ("Tap SOS, the orange button in the middle of the screen. It is always free.") · [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (tombol SOS).
+- **Pola UI:** satu tombol besar berwarna aksen hangat pada posisi tengah-bawah; label jelas; tidak tersembunyi di menu.
+- **Pola UX:** akses saat willpower rendah; satu ketuk.
+- **Pola layout:** FAB atau kartu SOS dominan; pastikan tidak tertutup keyboard/snackbar.
+- **Kondisi proyek:** kartu SOS sudah ada di Dashboard; audit posisi dan ukuran.
+- **Tujuan pola:** menurunkan friksi pada momen kritis.
+- **Prioritas:** Sedang.
+
+##### C24. Program Harian: Kartu "Hari ke-N" + Daftar Aktivitas
+
+- **Aplikasi serupa:** [Defog](https://play.google.com/store/apps/details?id=app.defog).
+- **Pola UI:** kartu progres program (Hari 12/60) + checklist aktivitas (pelajaran, check-in, napas, misi).
+- **Pola UX:** pengguna tahu langkah berikutnya; boleh kembali ke hari sebelumnya.
+- **Pola layout:** halaman Program terpisah; ringkasan hari ini di Dashboard.
+- **Kondisi proyek:** belum ada kurikulum; konten dapat disimpan lokal.
+- **Tujuan pola:** retensi jangka panjang + struktur.
+- **Prioritas:** Sedang.
+
+##### C25. Tiga Mode Berhenti sebagai Segmented Control
+
+- **Aplikasi serupa:** [ExSmoke](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) (Tracker / Reduce / Quit).
+- **Pola UI:** segmented control 3 pilihan di atas layar utama; kartu berubah sesuai mode (batas harian / rencana pengurangan / progres bebas).
+- **Pola UX:** ekspektasi jelas; pengguna tidak bingung mode mana yang aktif.
+- **Pola layout:** header tetap + konten mode; jangan duplikasi halaman.
+- **Kondisi proyek:** `ModeBerhenti` (seketika/bertahap) sudah ada; belum ada mode "Tracker" (hanya mencatat tanpa target).
+- **Tujuan pola:** menyesuaikan pengalaman dengan tahap pengguna.
+- **Prioritas:** Sedang.
+
+#### Prioritas Rendah
+
+##### C26. Tema & Aksen Kustom
+
+- **Aplikasi serupa:** [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (16 latar + 15 aksen) · [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) (tier Bronze→Platinum).
+- **Pola UI:** pemilih tema visual + warna aksen dengan pratinjau langsung.
+- **Pola UX:** personalisasi tanpa mengubah data.
+- **Pola layout:** halaman Pengaturan → Tampilan.
+- **Kondisi proyek:** `TemaVisualImpian` sudah ada; tema aplikasi terang/gelap/sistem.
+- **Tujuan pola:** rasa memiliki; retensi.
+- **Prioritas:** Rendah.
+
+##### C27. Peringkat Alat Coping pada Layar SOS
+
+- **Aplikasi serupa:** [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) · [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit).
+- **Pola UI:** daftar alat diurutkan berdasarkan efektivitas pribadi; label "Paling membantu".
+- **Pola UX:** pengguna memilih coping yang terbukti untuk dirinya.
+- **Pola layout:** kartu "Alat Anda" di atas daftar teknik.
+- **Kondisi proyek:** `sos_intervensi` menyimpan hasil; belum ada peringkat.
+- **Tujuan pola:** personalisasi coping berbasis data.
+- **Prioritas:** Rendah.
+
+### D. Penguatan Temuan Sebelumnya (referensi baru dari 10 APK)
+
+- **A1/A19/C5/C10 (widget):** [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) — 4 jenis widget (counter hari, milestone berikutnya, timer + statistik, kalender bulanan) · [smoke note quit](https://apps.apple.com/us/app/smoke-note-quit/id6789921162) — widget Home Screen hitung detik · [My QuitBuddy](https://apps.apple.com/au/app/my-quitbuddy/id527485761) — progres hari/jam/menit. Mengonfirmasi pola _widget-first_; Android gunakan AppWidget/Glance.
+- **A6/B5/C4/C9 (anti-shame & slip):** [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) ("It's OK to Fail"; "cumulative progress is never lost") · [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) ("One cigarette does not erase your progress"; total smoke-free kumulatif tidak pernah turun) · [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) (Streak Shield/Perisai Rentetan). Memperkuat A6/B5/C4.
+- **A15/A34/B6/B24/C8 (pemicu & analisis):** [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) (craving dua ketuk → jam tersulit, pemicu terbesar, alat terbaik) · [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) (pelacak keinginan + intensitas + pemicu + strategi) · [Defog](https://play.google.com/store/apps/details?id=app.defog) (catat craving, kenali pemicu, lacak rutinitas). Memperkuat A15/B6 dan A34.
+- **A3 (check-in harian):** [Defog](https://play.google.com/store/apps/details?id=app.defog) (daily check-ins) · [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) (daily check-in beberapa detik) · [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (morning check-in). Memperkuat A3.
+- **A9 (gamifikasi):** [NicoQuit](https://play.google.com/store/apps/details?id=com.nicoquit.nico_quit) (XP, level, tier, boss battle, misi harian/mingguan, achievement, streak shield) · [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) (40+ badge, tantangan mingguan, level, naga 6 tahap) · [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (tema + pencapaian). Memperkuat A9.
+- **A2/A18 (share card):** [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (kartu progres dapat dibagikan) · [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) (gambar progres dapat dibagikan). Memperkuat A2/A18.
+- **A16/A25 (CBT & grounding):** [Stosmok](https://play.google.com/store/apps/details?id=com.anggastudio.stosmok) (napas 4-7-8, "Distract me" 60 detik, "Remember why", jalan kaki 5 menit) · [Defog](https://play.google.com/store/apps/details?id=app.defog) (breathing exercises, sound sessions) · [Quit Smoking : Tracker & Timer](https://play.google.com/store/apps/details?id=com.h2m.util.quitsmoke) (pernapasan 4-7-8 + timer 3 menit). Memperkuat A16/A25.
+- **A29/B20 (impian & estimasi D-Day):** [Smoke NoMo](https://apps.apple.com/us/app/smoke-nomo/id6736703511) ("Set personalized rewards by entering the cost of something you want, and Smoke NoMo will show you how long it will take to earn it with the money saved") · [My QuitBuddy](https://apps.apple.com/au/app/my-quitbuddy/id527485761) (progres uang dihemat). Memperkuat A29/B20.
+- **A13/B7 (pengingat):** [My QuitBuddy](https://apps.apple.com/au/app/my-quitbuddy/id527485761) (Danger Times + tip 30 hari pertama) · [ExSmoke](https://apps.apple.com/us/app/exsmoke-quit-smoking-tracker/id6477424367) (push notification untuk log dan batas harian; pembaruan milestone kesehatan). Memperkuat A13/B7.
+- **A12 (NRT):** tidak ada temuan baru pada 10 APK batch ini.
+
+**Catatan:** ExSmoke (Apple Health) dan smoke note quit (widget iOS) adalah referensi pola iOS; padanan Android dicatat pada A38 dan A1/A19. Defog dan NicoQuit menggunakan langganan/in-app purchase serta (Defog) login Google — berbeda dari model gratis offline-first proyek. Puffless adalah aplikasi React Native sederhana (log satu ketuk + statistik) tanpa fitur baru yang berarti; nilainya sebagai pembanding minimal. Stosmok dan NicoQuit adalah aplikasi berbahasa Indonesia yang paling dekat dengan konteks pengguna proyek.
+
+---
+
 ## E. Prioritas Gabungan (untuk penyortiran pengguna)
 
 | Urutan | Rekomendasi                                                                                 | Jenis               | Nilai utama                                          | Ketergantungan utama                            |
@@ -1233,6 +1441,19 @@ Catatan: Qwit dan Lungo tersedia di App Store serta Google Play; fitur iOS-only 
 |     33 | Tampilan jalur/peta perjalanan untuk milestone (C13)                                        | UX                  | Pemulihan terasa sebagai perjalanan                  | Milestone WHO (ada) + toggle tampilan           |
 |     34 | Kuis onboarding ringan 2–3 pertanyaan (C15)                                                 | UX                  | Personalisasi sejak menit pertama                    | SharedPreferences; opsional                     |
 |     35 | Pemulihan tubuh per organ (paru/jantung/sirkulasi) (C16)                                    | UX                  | "Tubuh membaik" lebih intuitif                       | Konstanta milestone + UI; disclaimer wajib      |
+|     36 | Rekomendasi "waktu merokok berikutnya" berbasis batas harian (A33)                          | Fitur baru          | Tapering menjadi jadwal konkret                     | Target harian (biodata) + konsumsi aktual       |
+|     37 | Kartu "Batas hari ini" + waktu berikutnya di Dashboard (C22/B22)                            | UX                  | Kepatuhan tapering terlihat sekilas                 | Helper hitung sisa jatah                        |
+|     38 | Analisis kegagalan & tips pencegahan (A34)                                                  | Fitur baru          | Slip jadi bahan belajar, bukan hukuman              | Data `isSlip` + pemicu + jam                    |
+|     39 | Efektivitas intervensi SOS: alat paling membantu (B24/C27)                                  | Optimasi            | Coping personal berbasis data                       | `sos_intervensi` + peringkat alat               |
+|     40 | Program terpandu harian (A35/C24)                                                           | Fitur baru          | Struktur harian & retensi                           | Konten lokal + halaman Program                  |
+|     41 | Jurnal bebas + hitung detik smoke-free (A36)                                                | Fitur baru          | Refleksi di luar craving                            | Tabel jurnal ringan + timer detik               |
+|     42 | Kontak dukungan + jam rawan manual (A37/B25)                                                | Fitur baru/optimasi | Jaringan dukungan & pengingat tepat                 | Penyimpanan lokal + `tel:` + notifikasi         |
+|     43 | Kalender kepatuhan batas (3 status hari) (B23)                                              | Optimasi            | Visual kepatuhan tapering                           | Perluas `kalender_smoke_free`                   |
+|     44 | Statistik konsumsi multi-period (B26)                                                       | Optimasi            | Membaca progres multi-skala                         | Data ada; `fl_chart` opsional                   |
+|     45 | Tema & aksen kustom (C26)                                                                   | UX                  | Personalisasi & rasa memiliki                       | Perluas tema yang ada                           |
+|     46 | Kuis edukasi harian (A39)                                                                   | Fitur baru          | Edukasi ringan + retensi                            | Bank soal lokal terverifikasi                   |
+|     47 | Pemantauan penanda kesehatan via Health Connect (A38)                                       | Fitur baru          | Bukti perubahan tubuh                               | Izin runtime + integrasi native                 |
+|     48 | Portabilitas data lintas platform (B27)                                                     | Optimasi            | Pindah perangkat tanpa kehilangan data              | Ekspor JSON (ada) + uji migrasi                 |
 
 ---
 
@@ -1249,6 +1470,7 @@ Catatan: Qwit dan Lungo tersedia di App Store serta Google Play; fitur iOS-only 
 - **Analisis 10 APK (2026-11-11, tambahan):** Kwit, Smoke Free (portablepixels), QuitSave, QuitDay (Galaxy Store — verifikasi ringan), Progress Tracker, Unsmoke, FreeAir Coach, Smoke Tracker, Counter App (App Store, iTunes `resultCount: 1`), ClearDay Tracker (App Store, iTunes `resultCount: 1`). Halaman store 9 APK terbaca penuh via webfetch; Galaxy Store hanya judul halaman (tidak dijadikan dasar rekomendasi fitur). Detail di bagian "Analisis Mendalam 10 APK (2026-11-11)".
 - **Analisis 9 listing baru (2026-11-11):** 2 Google Play (Quit Smoking - Smoke Tracker, Quit Smoking: Progress Tracker), 5 Apple App Store (Quit Smoking - Counter App, Habit U, QST, Quit Smoking: Vape Counter AI, Quit Smoking: ClearDay Tracker), 1 Samsung Galaxy Store (금연·금주 디데이 / Quit Day D-Day). Semua diverifikasi HTTP 200 (Galaxy Store: verifikasi ringan) dan iTunes lookup `resultCount: 1` untuk 5 App Store. Temuan utama: ClearDay (widget-first + slip-friendly + visual metaphor), Progress Tracker (CBT exercises + slip log without erasing journey + weekly insights), Counter App (slip-friendly micro-goal + craving toolkit), Smoke Tracker (trigger/peak analysis offline-first).
 - **Analisis 10 APK batch 2 (2026-11-11):** EasyQuit (Play, 4.9★/106K reviews/1M+), Quit Tracker / despDev (Play, 4.6★/181K/5M+), QUIT Smoking SOS (Play, 10K+), Kwit (App Store `id525441365`, 4.7★/1.2K, klaim 4.5M+ pengguna), Breathing Room (GitHub, 0★, MIT, Flutter + Riverpod + sqflite), Nonic (GitHub, 1★, MIT), Quit-Smoke-App (GitHub, 100★, MIT), SmartQuit / BreatheFree V2 (GitHub, 0★, MIT), Quitease (GitHub, 1★, MIT), Breathe (GitHub, 0★, RN + Expo). Semua link di-probe curl HTTP 200; GitHub `fork: false` (metadata API 2026-11-11); Kwit dikonfirmasi iTunes `resultCount: 1`. Halaman store 3 APK Play terbaca penuh; README 6 repo GitHub terbaca penuh (termasuk `App_Blueprint.md` Breathing Room); tidak ada listing berstatus verifikasi ringan pada batch ini, sehingga seluruh 10 APK dijadikan dasar rekomendasi. Klaim "WHO-validated" (Kwit) dan "no data collected" (QUIT SOS) diperlakukan sebagai klaim pengembang, bukan verifikasi. Temuan utama: Breathing Room (dual-mode Coach Mode Staircase + `fl_chart` + Non-Smoker Path avatar), Nonic (risk score 0–100 + one-per-day check-in upsert), SmartQuit (Panic Button + set intervensi favorit + 5-4-3-2-1 grounding), Kwit (9-day preparation Prochaska + CBT, NRT tracker patch/gum/lozenge), EasyQuit (Slow Mode + treat countdown + trigger pie chart), QUIT SOS (10 teknik pernapasan + Quity AI — referensi prioritas rendah).
+- **Analisis 10 APK (2026-11-12):** Defog (Play, `app.defog`, 100+ unduhan), Smoking Tracker (Play, `com.gasperpintar.smokingtracker`, 500+), Quit Smoking : Tracker & Timer (Play, `com.h2m.util.quitsmoke`, 50K+), Stosmok (Play, `com.anggastudio.stosmok`, 10+), NicoQuit (Play, `com.nicoquit.nico_quit`, 10+), My QuitBuddy (App Store `id527485761`, 4.78★/510), ExSmoke (App Store `id6477424367`, 4.36★/14), Smoke NoMo (App Store `id6736703511`, 5.0★/3), smoke note quit (App Store `id6789921162`, belum ada rating), Puffless (GitHub, 0★). Sepuluh tautan di-probe curl **HTTP 200**; empat listing App Store dikonfirmasi `iTunes lookup` `resultCount: 1`. Halaman Play Store (5 APK) dan README GitHub (1 repo) terbaca penuh. Tidak ada listing berstatus verifikasi ringan pada batch ini. Klaim angka unduhan/rating dan klaim kesehatan adalah klaim pengembang. ExSmoke (Apple Health) dan smoke note quit (widget iOS) dicatat sebagai referensi pola iOS, bukan rekomendasi Android. Detail di bagian "Analisis Mendalam 10 APK (2026-11-12)".
 
 ---
 
@@ -1273,6 +1495,8 @@ Catatan: Qwit dan Lungo tersedia di App Store serta Google Play; fitur iOS-only 
 **Analisis Mendalam 10 APK (2026-11-11):** Kwit (Play, fr.kwit.android), Smoke Free - quit smoking now (Play, com.portablepixels.smokefree), QuitSave (Play, com.siwooeo.quitsmoke), QuitDay / 금연·금주 디데이 (Galaxy Store, com.siwooeo.quitday — IDN & KOR, verifikasi ringan), Quit Smoking: Progress Tracker (Play, com.inspectorstudios.quitsmokingprogresstracker), Unsmoke (Play, com.cpp.unsmoke), FreeAir Coach (Play, com.freeaircoach.app.twa), Quit Smoking - Smoke Tracker (Play, com.dailyapplabs.quitsmoke), Quit Smoking - Counter App (App Store id6746945120), Quit Smoking: ClearDay Tracker (App Store id6761815015). Pembaruan status menjadi `Sudah Dianalisa` per baris di `apk_kompetitor.md`.
 
 **Analisis Mendalam 10 APK (batch 2, 2026-11-11):** EasyQuit (Play, com.herzberg.easyquitsmoking), Quit Tracker (Play, com.despdev.quitsmoking / despDev), QUIT Smoking Cessation SOS (Play, com.quitapp.quitsmoking), Kwit (App Store, gb/app/quit-smoking-for-good-kwit/id525441365), Breathing Room (GitHub, anindya127/Breathing-Room — Flutter + Riverpod + sqflite), Nonic (GitHub, bllfoad/nonic — Flutter), Quit-Smoke-App (GitHub, trizin/Quit-Smoke-App — Flutter), SmartQuit / BreatheFree V2 (GitHub, ShreyNagda/smartquit — Flutter + Riverpod), Quitease (GitHub, MUmer24/Quitease-Firebase-Application — Flutter + GetX + Firebase), Breathe (GitHub, imaswath/Breathe — React Native + Expo). Pembaruan status menjadi `Sudah Dianalisa` per baris di `apk_kompetitor.md`.
+
+**Analisis Mendalam 10 APK (2026-11-12):** Defog: Quit Smoking (Play, app.defog), Smoking Tracker (Play, com.gasperpintar.smokingtracker; duplikat F-Droid/IzzyOnDroid/GitHub), Quit Smoking : Tracker & Timer (Play, com.h2m.util.quitsmoke), Stosmok - Stop & Quit Smoking (Play, com.anggastudio.stosmok), NicoQuit (Play, com.nicoquit.nico_quit), My QuitBuddy (App Store, au/app/my-quitbuddy/id527485761), ExSmoke: Quit Smoking Tracker (App Store, id6477424367), Smoke NoMo (App Store, id6736703511), smoke note quit (App Store, id6789921162), Puffless (GitHub, RariSparklyy/smoking-tracker). Sepuluh tautan di-probe curl HTTP 200; empat App Store dikonfirmasi iTunes `resultCount: 1`; halaman Play Store dan README GitHub terbaca penuh. Pembaruan status menjadi `Sudah Dianalisa` per baris di `apk_kompetitor.md`.
 
 _Dokumen diperbarui 11 November 2026 berdasarkan riset seluruh 352 listing di `apk_kompetitor.md` (awal 159 + Tambahan Riset 2026-11-10/11), dengan **probe curl independen seluruh 352 link pada 2026-11-11** (321×200, 25×403 anti-bot, 5×404, 1×410 berputar) dan iTunes lookup untuk dua App Store yang 404. Bagian D.7 menambahkan 193 listing yang sebelumnya tidak tercatat di dokumen ini. Galaxy Store: 5 link 200 (judul halaman saja → verifikasi ringan). Bagian C1 (usulan Dashboard Metrik Dominan) dihapus oleh pengguna bersamaan dengan penghapusan PRD `prd/dashboard_metrik_dominan.md`. Pada 11 November 2026 bagian A4 (Tool SOS Tambahan) dihapus oleh pengguna setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/sos_craving_tool_tambahan.md`; baris rekomendasi "Tool SOS tambahan" pada tabel E digugurkan dan urutan nomor di bawah posisi 9 digeser naik. Rekomendasi menunggu penyortiran dan keputusan pengguna. Per 11 November 2026 kode `lib/fitur/sos_craving/` telah diimplementasikan sesuai PRD tersebut (menu kartu teknik + 7 teknik); dokumen ini hanya mencatat riset, bukan status implementasi. Pada 11 November 2026 bagian A10 (Implementation Intentions / Jika–Maka) dihapus setelah fiturnya diimplementasikan, bersamaan dengan penghapusan PRD `prd/implementation_intention_craving.md`; baris rekomendasi "If-then plan (A10) & letters to future self (A11)" pada tabel E dipersempit menjadi "Letters to future self (A11)" dan urutan nomor digeser naik. Bagian B1 (bug ekspor cadangan: `konsumsi_rokok` + `sos_intervensi` tidak diekspor) turut dianggap selesai karena diperbaiki sekaligus dalam implementasi A10 (payload `buatCadanganJson()` kini menulis seluruh tabel termasuk `rencana_darurat`; `tabelCadangan` mencantumkan 7 tabel); bagian B1 dihapus dan baris rekomendasi terkait pada tabel E digugurkan dengan urutan nomor digeser naik. Pada 11 November 2026 bagian B8 (Backup — Impor/Ekspor CSV + Pratinjau) dihapus setelah Tahap 1 PRD-nya (Ekspor CSV per tabel + validasi + kompatibilitas JSON) diimplementasikan — Impor CSV, pratinjau cadangan, dan opsi merge/replace (Tahap 2/3) tidak diimplementasikan dan ikut dihapus bersama PRD; baris rekomendasi "Backup CSV + pratinjau (B8)" pada tabel E digugurkan dan urutan nomor di bawah posisi 10 digeser naik. Referensi fitur baru dari 193 listing tambahan (mis. FreeAir Coach, QuitBot, iCanQuitPlus, Clickotine, NichtraucherHelden/DiGA, Smoke Free/DiGA, Finito, Smoking Log, InnerSwitch, CLM CraveLess.Me, Recigar, Pouched Nicotine Pouch Tracker, Stopify, FreeAir Coach) ditambahkan pada bagian A/B/C; temuan terpenting = banyak aplikasi resmi pemerintah/klinis (NHS Quit Smoking, QuitGuide/NCI, Tabac info service, Pave NSW, HK Dept of Health, RespirApp) kini tercatat di katalog D.7 — layak ditinjau ulang sumber konten aplikasi sebelum menampilkan klaim kesehatan._
 

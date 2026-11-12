@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/model/konsumsi_rokok_model.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
 
   DateTime _tanggal = DateTime.now();
   bool _isSlip = false;
+  PemicuEnum? _pemicu;
   bool _isLoading = false;
 
   @override
@@ -37,6 +39,7 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
       _isSlip = konsumsi.isSlip;
       _jumlahController.text = konsumsi.jumlah.toString();
       _catatanController.text = konsumsi.catatan ?? '';
+      _pemicu = konsumsi.pemicu;
     }
   }
 
@@ -139,6 +142,7 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
         catatan: _catatanController.text.trim().isEmpty
             ? null
             : _catatanController.text.trim(),
+        pemicu: _pemicu,
         dibuat: widget.konsumsi?.dibuat ?? DateTime.now(),
       );
       L.i('model=$model');
@@ -220,6 +224,30 @@ class _FormKonsumsiRokokState extends ConsumerState<FormKonsumsiRokok> {
                   onChanged: (value) {
                     setState(() => _isSlip = value);
                     L.i('_isSlip=$_isSlip');
+                  },
+                ),
+                DropdownButtonFormField<PemicuEnum>(
+                  decoration: const InputDecoration(
+                    labelText: 'Pemicu',
+                    hintText: 'Pilih pemicu (opsional)',
+                    border: OutlineInputBorder(),
+                  ),
+                  value: _pemicu,
+                  items: PemicuEnum.values.map((pemicu) {
+                    return DropdownMenuItem<PemicuEnum>(
+                      value: pemicu,
+                      child: Row(
+                        children: [
+                          Icon(pemicu.icon, size: 20),
+                          const SizedBox(width: 8),
+                          Text(pemicu.label),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() => _pemicu = value);
+                    L.i('_pemicu=$value');
                   },
                 ),
                 InputTeks(

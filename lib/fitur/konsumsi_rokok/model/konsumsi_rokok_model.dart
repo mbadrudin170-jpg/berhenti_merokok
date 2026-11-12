@@ -1,3 +1,4 @@
+import 'package:berhenti_merokok/fitur/diary_craving/enum/pemicu_enum.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:share_global_saya/core_shared.dart';
@@ -14,6 +15,7 @@ abstract class KonsumsiRokokModel with _$KonsumsiRokokModel {
     required int jumlah,
     @Default(false) bool isSlip,
     String? catatan,
+    PemicuEnum? pemicu,
     required DateTime dibuat,
   }) = _KonsumsiRokokModel;
 
@@ -29,6 +31,10 @@ abstract class KonsumsiRokokModel with _$KonsumsiRokokModel {
       // isSlip non-nullable bool di Dart → pakai parseBool dengan defaultValue false saat DB null
       isSlip: ParserUtil.parseBool(row[NamaKolom.isSlip], defaultValue: false),
       catatan: ParserUtil.parseStringOrNull(row[NamaKolom.catatan]),
+      pemicu: ParserUtil.safeParseEnum(
+        PemicuEnum.values,
+        ParserUtil.parseStringOrNull(row[NamaKolom.pemicu]),
+      ),
       dibuat: (dibuatValue ?? DateTime.now()).toLocal(),
     );
   }
@@ -41,6 +47,7 @@ abstract class KonsumsiRokokModel with _$KonsumsiRokokModel {
       NamaKolom.jumlah: jumlah,
       NamaKolom.isSlip: isSlip ? 1 : 0,
       NamaKolom.catatan: catatan,
+      NamaKolom.pemicu: pemicu?.name,
       NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
     };
   }

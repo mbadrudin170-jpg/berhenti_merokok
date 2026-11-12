@@ -18,7 +18,8 @@ class AppDatabase {
   /// Versi skema database.
   // Versi 12: migrasi nilai enum snake_case lama ke lowerCamelCase.
   // Versi 13: tabel rencana_darurat (if-then plan).
-  static const int _versiDatabase = 13;
+  // Versi 14: tambah kolom pemicu (TEXT, nullable) pada tabel konsumsi_rokok.
+  static const int _versiDatabase = 14;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -313,6 +314,13 @@ class AppDatabase {
           ${NamaKolom.dibuat} TEXT NOT NULL
         )
       ''');
+    }
+    // v14: tambah kolom pemicu (TEXT, nullable) pada tabel konsumsi_rokok.
+    if (oldVersion < 14) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.konsumsiRokok} '
+        'ADD COLUMN ${NamaKolom.pemicu} TEXT',
+      );
     }
   }
 

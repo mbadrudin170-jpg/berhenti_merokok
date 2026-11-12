@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$KonsumsiRokokModel {
 
- String get id; DateTime get tanggal; int get jumlah; bool get isSlip; String? get catatan; DateTime get dibuat;
+ String get id; DateTime get tanggal; int get jumlah; bool get isSlip; String? get catatan; PemicuEnum? get pemicu; DateTime get dibuat;
 /// Create a copy of KonsumsiRokokModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $KonsumsiRokokModelCopyWith<KonsumsiRokokModel> get copyWith => _$KonsumsiRokokM
 @override
 bool operator ==(Object other) {
   final _this = this as KonsumsiRokokModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is KonsumsiRokokModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.jumlah, _this.jumlah) || other.jumlah == _this.jumlah)&&(identical(other.isSlip, _this.isSlip) || other.isSlip == _this.isSlip)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is KonsumsiRokokModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.tanggal, _this.tanggal) || other.tanggal == _this.tanggal)&&(identical(other.jumlah, _this.jumlah) || other.jumlah == _this.jumlah)&&(identical(other.isSlip, _this.isSlip) || other.isSlip == _this.isSlip)&&(identical(other.catatan, _this.catatan) || other.catatan == _this.catatan)&&(identical(other.pemicu, _this.pemicu) || other.pemicu == _this.pemicu)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
 }
 
 
 @override
 int get hashCode {
   final _this = this as KonsumsiRokokModel;
-  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.jumlah,_this.isSlip,_this.catatan,_this.dibuat);
+  return Object.hash(runtimeType,_this.id,_this.tanggal,_this.jumlah,_this.isSlip,_this.catatan,_this.pemicu,_this.dibuat);
 }
 
 @override
 String toString() {
   final _this = this as KonsumsiRokokModel;
-  return 'KonsumsiRokokModel(id: ${_this.id}, tanggal: ${_this.tanggal}, jumlah: ${_this.jumlah}, isSlip: ${_this.isSlip}, catatan: ${_this.catatan}, dibuat: ${_this.dibuat})';
+  return 'KonsumsiRokokModel(id: ${_this.id}, tanggal: ${_this.tanggal}, jumlah: ${_this.jumlah}, isSlip: ${_this.isSlip}, catatan: ${_this.catatan}, pemicu: ${_this.pemicu}, dibuat: ${_this.dibuat})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $KonsumsiRokokModelCopyWith<$Res>  {
   factory $KonsumsiRokokModelCopyWith(KonsumsiRokokModel value, $Res Function(KonsumsiRokokModel) _then) = _$KonsumsiRokokModelCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime tanggal, int jumlah, bool isSlip, String? catatan, DateTime dibuat
+ String id, DateTime tanggal, int jumlah, bool isSlip, String? catatan, PemicuEnum? pemicu, DateTime dibuat
 });
 
 
@@ -68,14 +68,15 @@ class _$KonsumsiRokokModelCopyWithImpl<$Res>
 
 /// Create a copy of KonsumsiRokokModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? jumlah = null,Object? isSlip = null,Object? catatan = freezed,Object? dibuat = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tanggal = null,Object? jumlah = null,Object? isSlip = null,Object? catatan = freezed,Object? pemicu = freezed,Object? dibuat = null,}) {
   return _then(KonsumsiRokokModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
 as DateTime,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
 as int,isSlip: null == isSlip ? _self.isSlip : isSlip // ignore: cast_nullable_to_non_nullable
 as bool,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as String?,pemicu: freezed == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
+as PemicuEnum?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  PemicuEnum? pemicu,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _KonsumsiRokokModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.pemicu,_that.dibuat);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  DateTime dibuat)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  PemicuEnum? pemicu,  DateTime dibuat)  $default,) {final _that = this;
 switch (_that) {
 case _KonsumsiRokokModel():
-return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.pemicu,_that.dibuat);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  DateTime dibuat)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime tanggal,  int jumlah,  bool isSlip,  String? catatan,  PemicuEnum? pemicu,  DateTime dibuat)?  $default,) {final _that = this;
 switch (_that) {
 case _KonsumsiRokokModel() when $default != null:
-return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.dibuat);case _:
+return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_that.pemicu,_that.dibuat);case _:
   return null;
 
 }
@@ -217,7 +218,7 @@ return $default(_that.id,_that.tanggal,_that.jumlah,_that.isSlip,_that.catatan,_
 
 
 class _KonsumsiRokokModel extends KonsumsiRokokModel {
-  const _KonsumsiRokokModel({required this.id, required this.tanggal, required this.jumlah, this.isSlip = false, this.catatan, required this.dibuat}): super._();
+  const _KonsumsiRokokModel({required this.id, required this.tanggal, required this.jumlah, this.isSlip = false, this.catatan, this.pemicu, required this.dibuat}): super._();
   
 
 @override final  String id;
@@ -225,6 +226,7 @@ class _KonsumsiRokokModel extends KonsumsiRokokModel {
 @override final  int jumlah;
 @override@JsonKey() final  bool isSlip;
 @override final  String? catatan;
+@override final  PemicuEnum? pemicu;
 @override final  DateTime dibuat;
 
 /// Create a copy of KonsumsiRokokModel
@@ -237,18 +239,18 @@ _$KonsumsiRokokModelCopyWith<_KonsumsiRokokModel> get copyWith => __$KonsumsiRok
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _KonsumsiRokokModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.jumlah, jumlah) || other.jumlah == jumlah)&&(identical(other.isSlip, isSlip) || other.isSlip == isSlip)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _KonsumsiRokokModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tanggal, tanggal) || other.tanggal == tanggal)&&(identical(other.jumlah, jumlah) || other.jumlah == jumlah)&&(identical(other.isSlip, isSlip) || other.isSlip == isSlip)&&(identical(other.catatan, catatan) || other.catatan == catatan)&&(identical(other.pemicu, pemicu) || other.pemicu == pemicu)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,tanggal,jumlah,isSlip,catatan,dibuat);
+    return Object.hash(runtimeType,id,tanggal,jumlah,isSlip,catatan,pemicu,dibuat);
 }
 
 @override
 String toString() {
-    return 'KonsumsiRokokModel(id: $id, tanggal: $tanggal, jumlah: $jumlah, isSlip: $isSlip, catatan: $catatan, dibuat: $dibuat)';
+    return 'KonsumsiRokokModel(id: $id, tanggal: $tanggal, jumlah: $jumlah, isSlip: $isSlip, catatan: $catatan, pemicu: $pemicu, dibuat: $dibuat)';
 }
 
 
@@ -259,7 +261,7 @@ abstract mixin class _$KonsumsiRokokModelCopyWith<$Res> implements $KonsumsiRoko
   factory _$KonsumsiRokokModelCopyWith(_KonsumsiRokokModel value, $Res Function(_KonsumsiRokokModel) _then) = __$KonsumsiRokokModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime tanggal, int jumlah, bool isSlip, String? catatan, DateTime dibuat
+ String id, DateTime tanggal, int jumlah, bool isSlip, String? catatan, PemicuEnum? pemicu, DateTime dibuat
 });
 
 
@@ -276,14 +278,15 @@ class __$KonsumsiRokokModelCopyWithImpl<$Res>
 
 /// Create a copy of KonsumsiRokokModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? jumlah = null,Object? isSlip = null,Object? catatan = freezed,Object? dibuat = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tanggal = null,Object? jumlah = null,Object? isSlip = null,Object? catatan = freezed,Object? pemicu = freezed,Object? dibuat = null,}) {
   return _then(_KonsumsiRokokModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,tanggal: null == tanggal ? _self.tanggal : tanggal // ignore: cast_nullable_to_non_nullable
 as DateTime,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
 as int,isSlip: null == isSlip ? _self.isSlip : isSlip // ignore: cast_nullable_to_non_nullable
 as bool,catatan: freezed == catatan ? _self.catatan : catatan // ignore: cast_nullable_to_non_nullable
-as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
+as String?,pemicu: freezed == pemicu ? _self.pemicu : pemicu // ignore: cast_nullable_to_non_nullable
+as PemicuEnum?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }

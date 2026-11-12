@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:berhenti_merokok/fitur/konsumsi_rokok/helper/puncak_konsumsi_helper.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/notifier/konsumsi_rokok_notifier.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/screens/daftar_entri_konsumsi_sheet.dart';
 import 'package:berhenti_merokok/fitur/konsumsi_rokok/state/konsumsi_rokok_state.dart';
@@ -79,7 +80,22 @@ class _KonsumsiRokokScreenState extends ConsumerState<KonsumsiRokokScreen> {
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: _DaftarKonsumsi(state: state),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 12,
+                children: [
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        PuncakKonsumsiHelper.ringkasanTeks(state.listKonsumsi),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ),
+                  _DaftarKonsumsi(state: state),
+                ],
+              ),
             ),
           );
         },
