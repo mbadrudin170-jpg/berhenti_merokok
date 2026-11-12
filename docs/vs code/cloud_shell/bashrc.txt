@@ -1,0 +1,24 @@
+
+# ==========================================
+# DEFAULT WORKSPACE
+# ==========================================
+
+WORKSPACE="$HOME/berhenti_merokok"
+
+if [ -d "$WORKSPACE" ]; then
+    cd "$WORKSPACE"
+fi
+
+add_path_front() {
+  case ":$PATH:" in
+    *:"$1":*) ;;
+    *) export PATH="$1:$PATH" ;;
+  esac
+}
+
+# export PATH="$PATH:/google/flutter/bin"
+# . "/home/muhamadbadrudin1000/.deno/env"
+
+add_path_front "$HOME/.local/bin"
+# add_path_front "/usr/bin"  # biasanya tidak perlu; aktifkan hanya jika ada alasan spesifik
+add_path_front "/google/devshell/editor/code-oss-for-cloud-shell/node_modules/@vscode/ripgrep-universal/bin/linux-x64"
