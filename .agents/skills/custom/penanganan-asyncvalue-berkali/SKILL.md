@@ -4,7 +4,8 @@ description: Panduan menangani beberapa AsyncValue dengan loading gabungan, erro
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "c9f96b2debb9e678513229c5a4a68a062e3a8afc"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "GPT-6"
 ---
 

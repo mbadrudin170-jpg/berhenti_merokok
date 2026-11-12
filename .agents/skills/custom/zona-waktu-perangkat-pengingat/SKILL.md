@@ -4,7 +4,8 @@ description: Panduan zona waktu perangkat untuk pengingat harian Flutter - detek
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "17d53cf0e771674ca50a2649a99fcb4f919a4a19"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

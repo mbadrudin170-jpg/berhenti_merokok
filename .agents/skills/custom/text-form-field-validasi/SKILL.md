@@ -4,7 +4,8 @@ description: Panduan penggunaan TextFormField, TextEditingController, Form, Glob
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "text_form_field.dart + form.dart"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

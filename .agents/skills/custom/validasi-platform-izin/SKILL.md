@@ -4,7 +4,8 @@ description: Panduan validasi dukungan platform dan izin runtime - cek dukungan 
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "774431dbf61bb330d548785e8d47597c5bdcd123"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

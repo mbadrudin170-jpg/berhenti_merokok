@@ -4,7 +4,8 @@ description: Panduan styling warna dan tema Flutter - wajib menggunakan withValu
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "ceb9536cc50304149be139dc8c5a36addb9c0774"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

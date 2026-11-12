@@ -1,10 +1,11 @@
 ---
 name: penamaan-konvensi
-description: Konvensi penamaan proyek Flutter - identifier bahasa Indonesia, nama file snake_case, variable camelCase, class PascalCase, konstanta SCREAMING_SNAKE_CASE, import package: hanya, dan nama tabel/kolom database snake_case.
+description: "Konvensi penamaan proyek Flutter - identifier bahasa Indonesia, nama file snake_case, variable camelCase, class PascalCase, konstanta SCREAMING_SNAKE_CASE, import package: hanya, dan nama tabel/kolom database snake_case."
 metadata:
   kategori: "custom"
   versi: "1.1.0"
-  commit-terakhir: "a5beae01b86a4d9753963380818bc437c2b4741a"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 

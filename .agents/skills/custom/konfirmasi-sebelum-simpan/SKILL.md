@@ -4,7 +4,8 @@ description: Panduan konfirmasi sebelum menyimpan pada form - tampilkan dialog k
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "3b67d3095dacc4e5c7ea78d7eb251809e3e9d981"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

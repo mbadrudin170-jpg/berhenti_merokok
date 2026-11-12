@@ -4,7 +4,8 @@ description: Panduan pembuatan dan pembaruan file SKILL.md di .agents/skills - m
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "85421c9fc058fc1af147fc29f7b2ab1721dec16b"
+  diperbarui: "Wed Nov 11 2026 23:30:00 WIB"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 
@@ -19,7 +20,7 @@ Mengatur cara **membuat** dan **memperbarui** file `SKILL.md` di `.agents/skills
 - Struktur: satu folder per skill berisi `SKILL.md`
 - Referensi format UI: `pola-ux/SKILL.md`, `pola-ui/SKILL.md`, `gaya/SKILL.md`, `tipografi/SKILL.md`, `spacing/SKILL.md`, `widget-custom/SKILL.md`
 - Referensi format non-UI: `bug-runtime/SKILL.md`
-- Front matter YAML: `name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.commit-terakhir`, `metadata.model` (opsional)
+- Front matter YAML: `name`, `description`, `metadata.kategori`, `metadata.versi`, `metadata.diperbarui`, `metadata.sumber-terakhir`, `metadata.model` (opsional)
 - Section wajib: Judul/Intro, `## Cakupan yang Di-Cover`, `## Aturan`, `## Larangan`, `## Contoh Benar`, `## Contoh Salah`, `## Sumber Evaluasi`
 - Sumber isi: riwayat commit (`git log`, `git show`, `git diff`)
 
@@ -29,7 +30,7 @@ Mengatur cara **membuat** dan **memperbarui** file `SKILL.md` di `.agents/skills
 2. Beri nama folder skill dalam **bahasa Indonesia**, **deskriptif**, dan **kebab-case**: hanya `a-z`, `0-9`, dan strip `-`; tidak diawali angka.
 3. Susun isi `SKILL.md` hanya dari **commit yang berkaitan** (commit yang menyentuh file/folder terkait topik skill) menggunakan `git log`, `git show <commit>`, atau `git diff <commit>`.
 4. Jika ada beberapa commit relevan dengan pola berbeda, pilih pola dari **commit terbaru yang relevan** kecuali pengguna menentukan lain.
-5. Cantumkan front matter YAML di paling atas (dibungkus `---`) dengan field wajib: `name` (sama dengan nama folder), `description` (sangat detail), `metadata.kategori`, `metadata.versi` (semver), dan `metadata.commit-terakhir` (hash rujukan atau `"belum-ada-commit"`). Jika `metadata.model` dicantumkan, isi dengan model AI yang sedang mengedit dan perbarui setiap kali skill diedit.
+5. Cantumkan front matter YAML di paling atas (dibungkus `---`) dengan field wajib: `name` (sama dengan nama folder), `description` (sangat detail), `metadata.kategori`, `metadata.versi` (semver), `metadata.diperbarui` (format `TZ=Asia/Jakarta date`), dan `metadata.sumber-terakhir` (hash commit atau perintah/hasil eksplisit pengguna). Jika `metadata.model` dicantumkan, isi dengan model AI yang sedang mengedit dan perbarui setiap kali skill diedit.
 6. Tulis `description` dan intro mencakup: kapan digunakan (trigger/use case), apa yang di-cover, apa yang harus dihindari, langkah kerja (workflow), dan referensi ke file terkait.
 7. Sertakan semua section wajib: Judul dan intro, `## Cakupan yang Di-Cover`, `## Aturan`, `## Larangan`, `## Contoh Benar`, `## Contoh Salah`, dan `## Sumber Evaluasi`. Contoh kode ditulis langsung di `SKILL.md` (tanpa folder `examples` terpisah).
 8. Gunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi. Gunakan backtick `` ` `` untuk nama class, properti, method, dan package.
@@ -56,7 +57,8 @@ description: Panduan konfigurasi MaterialApp dan WidgetsApp - tema (theme, darkT
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "85421c9fc058fc1af147fc29f7b2ab1721dec16b"
+  diperbarui: "Wed Nov 11 2026 23:30:00 WIB"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

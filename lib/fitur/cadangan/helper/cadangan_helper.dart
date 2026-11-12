@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:berhenti_merokok/shared/db/sqflite/sqflite_op.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:csv/csv.dart';
 import 'package:share_global_saya/core_shared.dart';
 
 /// Versi format berkas cadangan JSON.
@@ -74,25 +75,31 @@ class CadanganHelper {
     }
   }
 
-  /// Menulis cadangan ke [path]. Menghapus berkas parsial saat gagal.
-  static Future<void> tulisCadanganKeBerkas(String path, String json) async {
-    L.i('tulisCadanganKeBerkas path=$path');
+  /// Menulis [isi] ke [path] sebagai UTF-8. Menghapus berkas parsial saat
+  /// gagal.
+  static Future<void> _tulisBerkas(String path, String isi, String jenis) async {
+    L.i('tulis berkas $jenis path=$path');
     final file = File(path);
     try {
-      await file.writeAsString(json, flush: true);
-      L.s('Cadangan berhasil ditulis ke berkas');
+      await file.writeAsString(isi, flush: true);
+      L.s('Berkas $jenis berhasil ditulis');
     } on Exception catch (e, s) {
-      L.e('Gagal menulis cadangan ke berkas: $e $s');
+      L.e('Gagal menulis berkas $jenis: $e $s');
       try {
         if (await file.exists()) {
           await file.delete();
-          L.w('Berkas cadangan parsial dihapus');
+          L.w('Berkas $jenis parsial dihapus');
         }
       } on Exception catch (e2, s2) {
-        L.e('Gagal menghapus berkas cadangan parsial: $e2 $s2');
+        L.e('Gagal menghapus berkas $jenis parsial: $e2 $s2');
       }
       rethrow;
     }
+  }
+
+  /// Menulis cadangan ke [path]. Menghapus berkas parsial saat gagal.
+  static Future<void> tulisCadanganKeBerkas(String path, String json) {
+    return _tulisBerkas(path, json, 'cadangan');
   }
 
   /// Membaca dan memvalidasi berkas cadangan dari [path].
@@ -160,6 +167,146 @@ class CadanganHelper {
     }
     L.s('Payload cadangan valid');
     return decoded;
+  }
+
+  /// Mengambil daftar nama kolom [tabel] dari skema database, sesuai urutan
+  /// definisi tabel.
+  static Future<List<String>> kolomTabel(String tabel) async {
+    L.i('kolomTabel tabel=$tabel');
+    if (!tabelCadangan.contains(tabel)) {
+      L.w('Tabel tidak dikenal: $tabel');
+      throw ArgumentError.value(tabel, 'tabel', 'Tabel tidak terdaftar di tabelCadangan');
+    }
+    try {
+      final rows = await const SqfliteOp().queryRaw('PRAGMA table_info($tabel)');
+      final kolom = rows
+          .map((baris) => baris['name'] as String)
+          .toList(growable: false);
+      L.i('kolomTabel tabel=$tabel jumlahKolom=${kolom.length}');
+      return kolom;
+    } on Exception catch (e, s) {
+      L.e('Gagal mengambil kolom tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Mengonversi [rows] menjadi string CSV dengan [header] memakai paket
+  /// `csv` (`ListToCsvConverter`). Nilai null ditulis sebagai string kosong.
+  static String buatCsvDariBaris(
+    List<String> header,
+    List<Map<String, Object?>> rows,
+  ) {
+    L.i('buatCsvDariBaris header=${header.length} baris=${rows.length}');
+    final data = <List<dynamic>>[
+      header,
+      for (final baris in rows)
+        header
+            .map((kolom) => baris[kolom]?.toString() ?? '')
+            .toList(growable: false),
+    ];
+    return const ListToCsvConverter().convert(data);
+  }
+
+  /// Membuat string CSV untuk [tabel]: header nama kolom + seluruh baris.
+  static Future<String> buatCsvTabel(String tabel) async {
+    L.i('buatCsvTabel tabel=$tabel');
+    try {
+      final header = await kolomTabel(tabel);
+      final rows = await const SqfliteOp().ambilSemua(tabel);
+      L.i('buatCsvTabel tabel=$tabel baris=${rows.length}');
+      return buatCsvDariBaris(header, rows);
+    } on Exception catch (e, s) {
+      L.e('Gagal membuat CSV tabel $tabel: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Nama berkas CSV untuk [tabel] dengan pola `<nama_tabel>_<timestamp>.csv`.
+  static String namaBerkasCsv(String tabel, {int? timestamp}) {
+    final ts = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+    return '${tabel}_$ts.csv';
+  }
+
+  /// Memvalidasi [header] CSV terhadap kolom yang diizinkan untuk tabel
+  /// target. Mengembalikan `true` jika semua kolom dikenal dan header tidak
+  /// kosong.
+  static bool validasiHeaderCsv(
+    List<String> header,
+    List<String> kolomDiizinkan,
+  ) {
+    if (header.isEmpty) {
+      L.w('Header CSV kosong');
+      return false;
+    }
+    final valid = header.every(kolomDiizinkan.contains);
+    if (!valid) {
+      L.w('Header CSV memuat kolom tidak dikenal: $header');
+    }
+    return valid;
+  }
+
+  /// Memvalidasi setiap baris CSV memiliki jumlah kolom yang sama dengan
+  /// [header]. Mengembalikan `true` jika semua baris valid.
+  static bool validasiBarisCsv(
+    List<String> header,
+    List<List<dynamic>> baris,
+  ) {
+    if (header.isEmpty) {
+      L.w('Header CSV kosong, baris tidak dapat divalidasi');
+      return false;
+    }
+    final valid = baris.every((b) => b.length == header.length);
+    if (!valid) {
+      L.w('Ada baris CSV dengan jumlah kolom tidak sama dengan header');
+    }
+    return valid;
+  }
+
+  /// Memvalidasi teks CSV untuk [tabel] terhadap [kolomDiizinkan] dan
+  /// mengembalikan daftar baris data (tanpa header) yang sudah tervalidasi.
+  ///
+  /// Melempar [BerkasCadanganTidakValidException] jika berkas kosong, format
+  /// tidak valid, header tidak cocok, atau ada baris dengan jumlah kolom
+  /// yang tidak sama dengan header.
+  static List<List<dynamic>> validasiTeksCsv({
+    required String tabel,
+    required String teks,
+    required List<String> kolomDiizinkan,
+  }) {
+    L.i('validasiTeksCsv tabel=$tabel panjang=${teks.length}');
+    if (teks.trim().isEmpty) {
+      L.w('Berkas CSV tabel $tabel kosong');
+      throw const BerkasCadanganTidakValidException('Berkas CSV kosong');
+    }
+    final dinormalisasi = teks.replaceAll('\r\n', '\n');
+    final List<List<dynamic>> rows;
+    try {
+      rows = const CsvToListConverter(
+        eol: '\n',
+        shouldParseNumbers: false,
+      ).convert(dinormalisasi);
+    } on Exception catch (e, s) {
+      L.e('Gagal mem-parse CSV tabel $tabel: $e $s');
+      throw const BerkasCadanganTidakValidException('Format CSV tidak valid');
+    }
+    if (rows.isEmpty) {
+      L.w('Berkas CSV tabel $tabel tidak memiliki baris');
+      throw const BerkasCadanganTidakValidException('Berkas CSV kosong');
+    }
+    final header = rows.first.map((e) => e.toString()).toList();
+    if (!validasiHeaderCsv(header, kolomDiizinkan)) {
+      throw BerkasCadanganTidakValidException(
+        'Header CSV tabel $tabel tidak valid',
+      );
+    }
+    final baris = rows.skip(1).toList(growable: false);
+    if (!validasiBarisCsv(header, baris)) {
+      throw BerkasCadanganTidakValidException(
+        'Baris CSV tabel $tabel tidak valid',
+      );
+    }
+    L.s('CSV tabel $tabel valid (${baris.length} baris)');
+    return baris;
   }
 
   /// Memulihkan data dari [payload] yang sudah divalidasi secara atomik.

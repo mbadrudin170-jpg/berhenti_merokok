@@ -4,7 +4,8 @@ description: Indeks pola UI standar di Flutter - merujuk ke skill spesifik untuk
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "c7337d1519d495d0ccd022fb18d63f72d443866a"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

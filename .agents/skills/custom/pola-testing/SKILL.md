@@ -4,7 +4,8 @@ description: Pola testing standar - unit test pakai package:test, widget test pa
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "be04199e5b44537ee1052a3815f5af8518308148"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "kilo-auto/free"
 ---
 

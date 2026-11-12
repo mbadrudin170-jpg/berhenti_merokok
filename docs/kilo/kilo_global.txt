@@ -3,40 +3,33 @@
   "model": "kilo/reflection/beam-free",
   "small_model": "kilo/kilo-auto/free",
   "subagent_model": "kilo/kilo-auto/free",
-  "subagent_variant_overrides": {
-    "kilo/meituan/longcat-2.0-free": "thinking",
-    "kilo/stepfun/step-3.7-flash:free": "high",
-    "kilo/reflection/beam-free": "max",
-    "openrouter/thinkingmachines/inkling-small:free": "max",
-    "openrouter/thinkingmachines/inkling:free": "max",
-  },
   "agent": {
     "code": {
       "model": "kilo/kilo-auto/free",
       "prompt": "kamu adalah pekerja saya",
-      "variant": "max",
+      "variant": "max"
     },
     "ask": {
       "model": "kilo/kilo-auto/free",
-      "variant": "max",
+      "variant": "max"
     },
     "plan": {
       "model": "kilo/kilo-auto/free",
-      "variant": "high",
+      "variant": "high"
     },
     "orchestrator": {
       "model": "kilo/kilo-auto/free",
-      "variant": "high",
+      "variant": "high"
     },
     "debug": {
       "model": "kilo/kilo-auto/free",
       "prompt": "kamu harus mengatasi masalah ini, agar mengikuti file dependensi nya supaya ketemu solusinya",
-      "variant": "high",
+      "variant": "high"
     },
     "compaction": {
       "model": "kilo/kilo-auto/free",
-      "variant": "high",
-    },
+      "variant": "high"
+    }
   },
 
   "permission": {
@@ -59,7 +52,7 @@
       "pwd": "allow",
       "which *": "allow",
       "find *": "allow",
-      "cat *": "allow",
+      "cat *": "deny",
       "head *": "allow",
       "tail *": "allow",
       "rg *": "allow",
@@ -81,11 +74,13 @@
       "sort *": "allow",
       "sed *": "deny",
       "webfetch *": "allow",
-      "cp *": "allow",
+      "cp *": "ask",
       "python3 *": "deny",
       "flutter *": "allow",
       "dart *": "allow",
       "timeout *": "allow",
+      "date *": "allow",
+      "mkdir *": "allow"
     },
     "external_directory": {
       "/home/mbadrudin170/.pub-cache/*": "allow",
@@ -93,42 +88,27 @@
       "/google/flutter/*": "allow",
       "/home/mbadrudin170/.codeoss/extensions/kilocode.kilo-code-7.8.27-linux-x64/*": "allow",
       "/home/mbadrudin170/share_global_saya/lib/src/utils/*": "allow",
-      "/home/mbadrudin170/share_global_saya/*": "allow",
+      "/home/mbadrudin170/share_global_saya/*": "allow"
     },
     "read": {
       "*": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
-      "*.env.example": "allow",
+      "*.env.example": "allow"
     },
     "kilo_memory_recall": {
-      "*": "allow",
-    },
+      "*": "allow"
+    }
   },
   "web_search": true,
   "indexing": {
-    "enabled": false,
+    "enabled": false
   },
   "instructions": [
-    ".agents/rules/global/aturan_bersama.md",
-    ".agents/rules/global/aturan_build.md",
-    ".agents/rules/global/aturan_global.md",
-    ".agents/rules/global/aturan_lainnya.md",
-    ".agents/rules/global/aturan_notifikasi.md",
-    ".agents/rules/global/aturan_pemanfaatan_sdk_dan_paket.md",
-    ".agents/rules/global/aturan_riverpod.md",
-    ".agents/rules/global/aturan_testing.md",
-    ".agents/rules/global/format_task.md",
-    ".agents/rules/global/model_agent.md",
-    ".agents/rules/global/optimasi_boilerplate.md",
-    ".agents/rules/global/optimasi_bug_runtime.md",
-    ".agents/rules/global/optimasi_keamanan.md",
-    ".agents/rules/global/optimasi_performa.md",
-    ".agents/rules/global/optimasi_ui.md",
-    ".agents/rules/global/optimasi_ux.md",
-    ".agents/rules/global/setup_prettier.md",
-    ".agents/rules/proyek/aturan_khusus.md",
-    ".agents/rules/proyek/aturan_proyek.md",
+    "AGENTS.md",
+    ".agents/rules/global/aturan_skill.md",
+    ".agents/rules/global/format_PRD.md",
+    ".agents/rules/global/format_task.md"
   ],
   "auto_collapse_reasoning": true,
   "terminal_command_display": "collapsed",
@@ -139,15 +119,15 @@
     "continue_loop_on_deny": true,
     "multi_project_agent_manager": true,
     "codebase_search": false,
-    "mcp_timeout": 30000,
+    "mcp_timeout": 30000
   },
   "default_agent": "code",
   "commit_message": {
-    "prompt": "selalu menggunakan bahasa indonesia ya yang baku, harus sesuai dengan kode yang di diff",
+    "prompt": "selalu menggunakan bahasa indonesia ya yang baku, harus sesuai dengan kode yang di diff"
   },
   "compaction": {
     "auto": true,
-    "prune": true,
+    "prune": true
   },
   "watcher": {
     "ignore": [
@@ -178,8 +158,19 @@
       "**/*.aab",
       "**/*.ipa",
       ".fvm/**",
-      ".fvmrc",
-    ],
+      ".fvmrc"
+    ]
   },
   "reasoning_display": "headline",
+  "code_edit_display": "collapsed",
+  "mcp_tool_display": "collapsed",
+  "disabled_providers": [],
+  "provider": {},
+  "skills": {
+    "paths": [
+      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills/custom",
+      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills",
+      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills/bawaan"
+    ]
+  }
 }

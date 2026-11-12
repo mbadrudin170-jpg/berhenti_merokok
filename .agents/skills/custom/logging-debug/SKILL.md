@@ -4,7 +4,8 @@ description: Panduan menambahkan log debug pada variabel dan parameter menggunak
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  commit-terakhir: "fc8100ff6cd50280b6d7b4cd650c3a3314ca1d6f"
+  diperbarui: "Thu Nov 12 06:27:35 WIB 2026"
+  sumber-terakhir: "perintah pengguna: perbarui skill index"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---
 
