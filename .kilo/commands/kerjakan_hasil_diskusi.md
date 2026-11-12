@@ -1,8 +1,8 @@
 ---
-description: Menindaklanjuti hasil diskusi (hasil_diskusi/diskusi_N.md) menjadi rencana kerja terstruktur di task.md atau rekomendasi PRD.
+description: Menindaklanjuti hasil diskusi (prd/hasil_diskusi/diskusi_N.md) menjadi rencana kerja terstruktur di task.md atau rekomendasi PRD.
 ---
 
-1. **Input**: pengguna wajib menentukan file sumber `hasil_diskusi/diskusi_N.md` yang akan ditindaklanjuti (nomor/path). Jika belum ditentukan, minta pengguna memilih file diskusi terlebih dahulu.
+1. **Input**: pengguna wajib menentukan file sumber `prd/hasil_diskusi/diskusi_N.md` yang akan ditindaklanjuti (nomor/path). Jika belum ditentukan, minta pengguna memilih file diskusi terlebih dahulu.
 2. **Baca konteks wajib terlebih dahulu**:
    - `AGENTS.md` (root) dan patuhi aturannya.
    - Setelah itu, baca file diskusi sumber yang ditunjuk pengguna dan periksa `## Status` beserta isi relevannya.
