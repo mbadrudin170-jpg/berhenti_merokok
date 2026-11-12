@@ -98,7 +98,7 @@
   },
   "web_search": true,
   "indexing": {
-    "enabled": false
+    "enabled": true
   },
   "instructions": [
     "AGENTS.md",
