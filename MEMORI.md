@@ -6,7 +6,7 @@
 - **Versi**: 1.0.0+1
 - **Platform**: Flutter (Android, iOS, Web, Desktop)
 - **Status Implementasi**: Sedang Diimplementasikan
-- **Terakhir Diperbarui**: 2026-11-12 (verifikasi jumlah skill terdaftar pada daftar `available_skills`: 90 skill = 53 `custom` + 1 `kilo-config` bawaan Kilo + 36 `bawaan`; total 90 file `SKILL.md` di `.agents/skills` terverifikasi via `grep`)
+- **Terakhir Diperbarui**: 2026-11-12 (verifikasi jumlah skill: 86 file `SKILL.md` di `.agents/skills` = 53 `custom` + 33 `bawaan`; `available_skills` menampilkan 90 entri = 53 `custom` + 1 `kilo-config` bawaan Kilo + 36 `bawaan`, total 90)
 
 ## Struktur Utama Layar (Screen)
 Folder fitur ada di `lib/fitur/` (16 folder). Fitur utama:
@@ -73,7 +73,7 @@ Provider dihasilkan dari notifier ber-anotasi `@Riverpod` (deklarasi ada di `*.n
 
 ## Skills & Rules Utama yang Diaktifkan
 **Sumber kebenaran:** `SKILLS_INDEX.md` (indeks discovery di root proyek) dan `.agents/skills/**/SKILL.md`. `SKILLS_INDEX.md` berisi indeks lengkap seluruh skill (path, trigger, status diperbarui) dikelompokkan per kategori (`custom`, `bawaan`). Daftar di bawah hanya ringkasan skill yang paling sering dipakai — JANGAN anggap ini daftar lengkap; selalu cek `SKILLS_INDEX.md`.
-**Jumlah skill terdaftar pada `available_skills` (per 2026-11-12):** 90 total = 53 `custom` + 1 `kilo-config` (bawaan Kilo, `builtin`) + 36 `bawaan` (project-local); total ini cocok dengan 90 file `SKILL.md` di `.agents/skills`. `SKILLS_INDEX.md` mencantumkan 53 custom + 33 bawaan = 86 entri; selisih 4 adalah skill bawaan Kilo yang baru (`kilo-config`, `restart-app-integration` duplikat via index, `restart-app-ios-engine-restart` duplikat via index) dan folder `.agents/skills/bawaan` kini kosong (skill bawaan project-local berada langsung di root `.agents/skills`).
+**Jumlah skill terdaftar pada `available_skills` (per 2026-11-12):** 90 total = 53 `custom` + 1 `kilo-config` (bawaan Kilo, `builtin`) + 36 `bawaan` (project-local); total ini cocok dengan 90 file `SKILL.md` di `.agents/skills`. `SKILLS_INDEX.md` mencantumkan 53 custom + 33 bawaan = 86 entri; selisih 4 adalah skill bawaan Kilo yang baru (`kilo-config`, `restart-app-integration` duplikat via index, `restart-app-ios-engine-restart` duplikat via index) Semua skill fisik berada di dalam folder `bawaan/` atau `custom/`; TIDAK ada skill yang menggantung langsung di root `.agents/skills/`. Catatan: 33 skill `bawaan` tidak memiliki field `metadata.kategori` (front matter hanya `name` + `description`), sehingga kategori pada indeks ditentukan dari **folder fisik**, bukan `metadata.kategori`.
 - `memori-check` - WAJIB load pada SETIAP interaksi apa pun (AGENTS.md aturan 5 & 10). Skill ini mengatur PROSES (baca konteks → terapkan → perbarui bagian relevan), bukan daftar section; jadi TIDAK perlu diubah saat struktur `MEMORI.md` berubah.
 - `pencarian-teks-ripgrep` - Penggunaan `rg` untuk pencarian teks
 - `bug-runtime` - Pencegahan bug runtime
@@ -86,8 +86,8 @@ Provider dihasilkan dari notifier ber-anotasi `@Riverpod` (deklarasi ada di `*.n
 
 ## Lokasi Hasil Diskusi (PENTING)
 - Folder hasil diskusi berada di **`prd/hasil_diskusi/`** (BUKAN di root).
-- File yang ada saat ini: **(kosong)** — tidak ada file `diskusi_N.md`.
-- Nomor tertinggi dari file yang ada: **tidak ada**; diskusi berikutnya = `diskusi_1.md`.
+- File yang ada saat ini: **`diskusi_1.md`** (dibuat 2026-11-12, Draft).
+- Nomor tertinggi dari file yang ada: **1**; diskusi berikutnya = `diskusi_2.md`.
 - Aturan penomoran: nomor tertinggi + 1, gap tidak diisi (lihat `.kilo/commands/mode/mode_diskusi.md` bagian 3). Jika folder kosong → buat `diskusi_1.md`.
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 3, baris 16–22) sudah diperbaiki: path `hasil_diskusi/` → `prd/hasil_diskusi/`.
 - `.kilo/commands/mode/mode_diskusi.md` (bagian 4) sudah diselaraskan: dulu mensyaratkan "Bagian 1 sampai Bagian 21" (sisa templat lama), kini merujuk ke `format_PRD.md` sebagai satu-satunya sumber kebenaran tanpa hardcode jumlah/judul bagian.
@@ -101,12 +101,14 @@ Format: `No | Tanggal | Topik | Status PRD | Tindak Lanjut`
 | 1 | 2026-11-12 | Penekanan `AGENTS.md` agar agen wajib membaca & mematuhi file/aturan (poin 5, rules global spesifik, permission `kilo.jsonc`, skill relevan sebelum kerja) | Final (file PRD dihapus setelah implementasi) | Sudah diimplementasikan: `AGENTS.md` diperkuat (wording tegas, cakupan poin 5 + rules global spesifik `aturan_skill.md`/`format_PRD.md`/`format_task.md`, baca `~/.config/kilo/kilo.jsonc` permission sebelum bash/tindakan, cari & load skill relevan sebelum kerja; struktur poin dipertahankan) |
 | 4 | (lihat file) | Lihat isi `prd/hasil_diskusi/diskusi_4.md` | Final (file diskusi tidak tersedia di folder saat ini) | Belum ditindaklanjuti (berdasarkan catatan sebelumnya) |
 | 7 | (lihat file) | Pembuatan skill penggunaan `ripgrep` | Final (file diskusi sudah dihapus) | Selesai diimplementasikan (skill `pencarian-teks-ripgrep`) |
+| 8 | 2026-11-12 | Celah validasi pada `.kilo/commands/perbarui_skills_index.md` (skill tanpa kategori / di luar `bawaan`/`custom` tidak dilaporkan) | Draft (`prd/hasil_diskusi/diskusi_1.md`) | Perintah direvisi: kategori dari folder fisik, validasi 3 anomali, laporan wajib |
 
-Catatan: folder `prd/hasil_diskusi/` saat ini kosong (tidak ada file `diskusi_N.md`). `diskusi_1.md` dibuat, diimplementasikan, dan dihapus pada 2026-11-12; `diskusi_4.md` dan lainnya tidak tersedia sebagai file saat ini. Nomor diskusi berikutnya = tertinggi yang ada + 1; karena tidak ada file, berikutnya `diskusi_1.md`.
+Catatan: `prd/hasil_diskusi/` saat ini berisi **`diskusi_1.md`** (Draft, dibuat 2026-11-12) tentang perbaikan perintah `perbarui_skills_index.md`. Riwayat lama: `diskusi_1.md` (topik `AGENTS.md`) sebelumnya dibuat, diimplementasikan, dan dihapus pada 2026-11-12; `diskusi_4.md` dan lainnya tidak tersedia sebagai file saat ini. Nomor diskusi berikutnya = tertinggi yang ada + 1 (saat ini `diskusi_2.md`).
 
 ## Riwayat Perubahan (Changelog)
 | Tanggal | Perubahan |
 |---------|-----------|
+| 2026-11-12 | Mode Diskusi: dibuat `prd/hasil_diskusi/diskusi_1.md` (Draft) dan direvisi `.kilo/commands/perbarui_skills_index.md` untuk menutup celah validasi — kategori ditentukan dari folder fisik (`bawaan`/`custom`), ditambah deteksi 3 anomali (skill di luar kategori standar, `metadata.kategori` kosong, konflik folder vs kategori) dan kewajiban laporan anomali. `SKILLS_INDEX.md` tidak diubah isinya (sudah 33 bawaan + 53 custom). `MEMORI.md` dikoreksi (catatan usang "folder `bawaan` kosong" → benar: 33 bawaan + 53 custom di disk, semua terbungkus folder) dan diperbarui (lokasi & riwayat diskusi). |
 | 2026-11-12 | Verifikasi jumlah skill terdaftar pada `available_skills` (90 skill = 53 `custom` + 1 `kilo-config` bawaan Kilo + 36 `bawaan` project-local; total 90 file `SKILL.md` di `.agents/skills` terverifikasi via `grep`). `MEMORI.md` diperbarui (bagian `Status Proyek` dan `Skills & Rules Utama yang Diaktifkan`). |
 | 2026-11-12 | Implementasi `prd/hasil_diskusi/diskusi_1.md` (penekanan `AGENTS.md`): `AGENTS.md` diperkuat dengan wording tegas (WAJIB/DILARANG) sambil mempertahankan struktur poin — menegaskan cari & load skill relevan sebelum kerja, poin 5 sebagai konteks inti wajib (termasuk urutan/prioritas), rules global spesifik `aturan_skill.md`/`format_PRD.md`/`format_task.md` saat relevan, dan kewajiban baca `~/.config/kilo/kilo.jsonc` permission sebelum bash/tindakan (izin `deny` mutlak). PRD berstatus Sedang → Sudah Diimplementasikan lalu dihapus; tidak ada section terkait di `refrensi_apk.md` (dilewati). `MEMORI.md` diperbarui (lokasi/riwayat diskusi, status diskusi 1). |
 | 2026-11-12 | Pembuatan `prd/hasil_diskusi/diskusi_1.md` (Mode Diskusi, PRD usulan saja, Draft): topik penekanan `AGENTS.md` agar agen wajib membaca & mematuhi poin 5, rules global spesifik (`aturan_skill.md`, `format_PRD.md`, `format_task.md` saat relevan), permission `~/.config/kilo/kilo.jsonc` sebelum bash/tindakan, dan skill relevan sebelum kerja; gaya perkuat wording dengan struktur dipertahankan; `AGENTS.md` belum diubah. `MEMORI.md` diperbarui (lokasi & riwayat diskusi). |

@@ -168,7 +168,9 @@
   "provider": {},
   "skills": {
     "paths": [
-      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills"
+      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills/custom",
+      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills",
+      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills/bawaan"
     ]
   }
 }
