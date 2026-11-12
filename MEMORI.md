@@ -58,6 +58,7 @@
 ## Skills & Rules Utama yang Diaktifkan
 Dikutip dari `.agents/skills/`:
 - `memori-check` v1.2.0 - WAJIB load pada SETIAP interaksi apa pun di proyek ini (AGENTS.md aturan 5 & 10; bukan hanya task, juga pertanyaan/diskusi/review/penelusuran)
+- `pencarian-teks-ripgrep` - Penggunaan `rg` sebagai alat pencarian teks (preferensi atas `grep -rn`, cek `which rg`, pembagian tugas dengan `glob`/`ls`)
 - `bug-runtime` - Pencegahan bug runtime
 - `gaya` - Styling warna dan tema
 - `import-ordering` - Urutan import
@@ -67,8 +68,8 @@ Dikutip dari `.agents/skills/`:
 - `validasi-platform-izin` - Validasi platform & izin
 - `withvalues-opacity-warna` - Aturan opacity dengan withValues(alpha:)
 
-## Diskusi Terakhir (diskusi_6.md)
-Topik diskusi terakhir berkaitan dengan pembaruan file MEMORI.md dan memastikan setiap model selalu memperbarui isi file ini untuk konsistensi proyek.
+## Diskusi Terakhir (diskusi_7.md → sudah diimplementasikan, file PRD dihapus)
+PRD diskusi_7 (membuat skill penggunaan `ripgrep`) diimplementasikan: skill `.agents/skills/custom/pencarian-teks-ripgrep/SKILL.md` dibuat dari perintah eksplisit pengguna (tidak ada commit berkaitan yang memuat panduan `rg` lengkap; pengguna memilih sumber isi dari perintah eksplisit pengguna saja). `SKILLS_INDEX.md` ditambahkan entri 53 `custom/pencarian-teks-ripgrep`. `refrensi_apk.md` tidak memiliki section yang merujuk PRD tersebut sehingga langkah penghapusan dilewati.
 
 ## Catatan Teknis Penting
 1. **Database FFI Web**: Konfigurasi `sqfliteCommonFfiWeb` di `main.dart` baris 15-17

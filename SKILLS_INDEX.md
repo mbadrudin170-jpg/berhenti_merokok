@@ -265,6 +265,11 @@ Indeks skill untuk discovery berdasarkan trigger (kapan/untuk apa di-load).
 - Trigger : Pengingat harian Flutter - deteksi zona waktu lokal via flutter_timezone, inisialisasi tz database, fallback Asia/Jakarta jika deteksi gagal, dan handle error setiap tahap (inisialisasi DB, deteksi perangkat, pencarian lokasi, set lokasi)
 - Status : diperbarui : Thu Nov 12 06:27:35 WIB 2026
 
+53. custom/pencarian-teks-ripgrep
+
+- Trigger : Mencari teks di dalam file dengan ripgrep (`rg`) - preferensi `rg` atas `grep -rn`, cek ketersediaan dengan `which rg`, pembagian tugas dengan `glob` (file berdasarkan nama/pola path) dan `ls` (isi folder)
+- Status : diperbarui : Thu Nov 12 07:01:35 WIB 2026
+
 ## bawaan
 
 1. bawaan/adaptive_dialog-dialogs
