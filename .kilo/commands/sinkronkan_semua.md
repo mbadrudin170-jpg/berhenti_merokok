@@ -1,0 +1,1 @@
+sinkronkan semua file file aturan, skill, atau yang lainnya agar sesuai dengan pembaruan ini, agar tidak merujuk ke yang stale

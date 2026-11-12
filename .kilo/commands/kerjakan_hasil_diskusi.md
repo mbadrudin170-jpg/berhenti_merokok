@@ -23,7 +23,7 @@ description: Menindaklanjuti hasil diskusi (hasil_diskusi/diskusi_N.md) menjadi 
    - Set `Status` task baru sebagai `kerjakan` hanya bila siap dieksekusi; sertakan referensi aturan/file bermasalah bila relevan.
     - Kelompokkan berdasarkan himpunan file terdampak yang sama (sesuai aturan `format_task.md`).
     - Untuk **Implementasi langsung**, susun draf ringkas: daftar file terdampak, langkah teknis singkat, dan verifikasi yang dibutuhkan (mis. `dart format`, `dart analyze`, `flutter test`). Draf dipakai sebagai bahan serah terima ke sesi agent `code`, bukan dieksekusi di dalam command ini.
-8. **Konfirmasi sebelum menulis**: tampilkan ringkasan draf (item task/kelompok atau rekomendasi PRD) dan minta konfirmasi pengguna mengenai:
+8. **Konfirmasi sebelum menulis**: tampilkan ringkasan draf (item task/kelompok, rekomendasi PRD, atau draf serah terima implementasi langsung) dan minta konfirmasi pengguna mengenai:
    - file target yang akan diubah/dibuat (`task.md`, dan/atau rujukan PRD, dan/atau serah terima implementasi langsung ke sesi agent `code`),
    - isi draf yang disetujui.
    - Jangan mengubah berkas apa pun sebelum ada konfirmasi eksplisit.
