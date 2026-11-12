@@ -92,6 +92,7 @@ PRD diskusi_7 (membuat skill penggunaan `ripgrep`) diimplementasikan: skill `.ag
 - `MaterialApp` harus memiliki `home`, `routes`, `onGenerateRoute`, atau `builder` non-null
 - AGENTS.md aturan 5: `MEMORI.md` tercantum sebagai file wajib baca sebelum SETIAP interaksi apa pun di proyek ini (task, pertanyaan, diskusi, review, penelusuran)
 - AGENTS.md aturan 10: `MEMORI.md` wajib dibaca sebelum setiap interaksi; selalu perbarui isinya setelah task atau interaksi yang mengubah proyek (lihat skill `memori-check` di `.agents/skills/custom/memori-check/SKILL.md`)
+- AGENTS.md aturan 11: wajib baca konfigurasi global Kilo `~/.config/kilo/kilo.jsonc` (bagian `permission`) sebelum menjalankan perintah `bash` atau tindakan lain; izin `deny` bersifat mutlak dan dilarang dilewati/diakali; saat ini `deny` pada `bash`: `cat *`, `sed *`, `python3 *`; pada `read`: `*.env`, `*.env.*`; file `kilo.jsonc` adalah sumber kebenaran dan bisa berubah, jadi baca ulang setiap interaksi
 
 ## Referensi Commit Terkait
 - Commit terkait skill dan fitur dapat ditemukan melalui `git log` di repository ini
