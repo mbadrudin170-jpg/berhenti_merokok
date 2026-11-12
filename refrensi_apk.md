@@ -238,12 +238,13 @@ Fitur yang hanya berjalan di Apple Watch/iOS Live Activities dilewatkan. Semua r
 - **Saran:** tampilkan "bersumber WHO/CDC/NHS, perkiraan ilustratif"; jangan menaikkan angka personil; hindari istilah "menyembuhkan".
 - **Prioritas:** Rendah.
 
-#### B11. Konsumsi — Tambah Field Pemicu & Analisis Puncak
+#### B11. Konsumsi — Tambah Field Pemicu & Analisis Puncak ✅ **PRD Dibuat**
 
 - **Tujuan:** memahami kapan dan mengapa merokok paling banyak; basis untuk pengingat proaktif dan persiapan craving.
 - **Referensi:** [Quit Smoking - Smoke Tracker](https://play.google.com/store/apps/details?id=com.dailyapplabs.quitsmoke) (pemicu: stres, kopi, setelah makan, mengemudi, istirahat kerja, sosial; analisis puncak harian/mingguan/bulanan/tahunan) · [Quit Smoking: Progress Tracker](https://play.google.com/store/apps/details?id=com.inspectorstudios.quitsmokingprogresstracker) (craving log dengan pemicu, laporan mingguan pemicu umum) · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (identifikasi pemicu dan pola).
 - **Saran:** tambahkan kolom `pemicu` (nullable, enum/teks bebas) ke tabel `konsumsi_rokok`; buat `PuncakKonsumsiHelper` (jam/hari konsumsi tertinggi, distribusi pemicu); tampilkan ringkasan teks di layar Konsumsi/Analitik; tidak wajib grafik.
 - **Prioritas:** Sedang.
+- **PRD:** `prd/prd_konsumsi_pemicu_analisis_puncak.md`
 
 #### B12. Slip Handling — Preview Dampak + Field Pemicu Slip + Micro-goal
 
