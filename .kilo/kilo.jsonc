@@ -11,7 +11,8 @@
     },
     "ask": {
       "model": "kilo/kilo-auto/free",
-      "variant": "max"
+      "variant": "max",
+      "prompt": "{file:./prompts/ask.md}"
     },
     "plan": {
       "model": "kilo/kilo-auto/free"
@@ -21,7 +22,7 @@
     },
     "debug": {
       "model": "kilo/kilo-auto/free",
-      "prompt": "kamu harus mengatasi masalah ini, agar mengikuti file dependensi nya supaya ketemu solusinya"
+      "prompt": "{file:./prompts/debug.md}"
     },
     "compaction": {
       "model": "kilo/kilo-auto/free"
