@@ -1,6 +1,7 @@
 # Hasil Diskusi 2 — Pembuatan Prompt untuk Mode Ask dan Debug
 
 ## Status
+
 - Dokumen: Final
 - Implementasi: Belum Diimplementasikan
 - Tanggal: 2026-11-13
@@ -24,26 +25,32 @@ Referensi agent bawaan Kilo (dokumentasi kilo.ai/docs):
 ## Poin Diskusi
 
 ### 1. Cakupan pekerjaan
+
 - Tanya: Apa yang termasuk dalam cakupan pembuatan prompt ask dan debug?
 - Kesimpulan: Membuat dua berkas baru di `.kilo/prompts/` (`ask.md` dan `debug.md`) lalu wiring `agent.ask` dan `agent.debug` pada `.kilo/kilo.jsonc` memakai `{file:./prompts/ask.md}` dan `{file:./prompts/debug.md}`.
 
 ### 2. Basis isi `ask.md`
+
 - Tanya: Basis apa yang diinginkan untuk isi prompt ask?
 - Kesimpulan: Adaptasi `code.md` untuk konteks read-only — peran asisten tanya-jawab proyek, cara kerja (baca `MEMORI.md`/`AGENTS.md`, muat skill relevan, bahasa Indonesia baku, jawab berbasis konteks), larangan (edit/hapus file, perintah yang mengubah repo, mengarang), serta arahan ke mode `code`/`debug` bila pengguna memerlukan perubahan.
 
 ### 3. Basis isi `debug.md`
+
 - Tanya: Basis apa yang diinginkan untuk isi prompt debug?
 - Kesimpulan: Memperkuat teks prompt inline yang sudah ada (mempertahankan inti makna "ikuti file dependensi untuk menemukan akar masalah") menjadi struktur seperti `code.md`: peran, cara kerja, verifikasi, dan larangan.
 
 ### 4. Kelengkapan struktur `ask.md`
+
 - Tanya: Seberapa lengkap struktur ask.md?
 - Kesimpulan: Lengkap seperti `code.md` (Peran, Cara Kerja, Larangan).
 
 ### 5. Kelengkapan struktur `debug.md`
+
 - Tanya: Seberapa lengkap struktur debug.md?
 - Kesimpulan: Terstruktur seperti `code.md` plus teks inline lama sebagai inti "Cara Kerja".
 
 ### 6. Model dan variant agent
+
 - Tanya: Apakah model/variant `ask` dan `debug` ikut diubah?
 - Kesimpulan: Tetap. `ask` = `kilo/kilo-auto/free` variant `max`; `debug` = `kilo/kilo-auto/free` tanpa variant. Hanya wiring `prompt` yang diubah.
 
@@ -59,7 +66,7 @@ Draft isi berkas yang disepakati:
 
 `.kilo/prompts/ask.md`:
 
-````markdown
+```markdown
 # Peran
 
 Kamu asisten teknis read-only untuk proyek "berhenti_merokok". Tugasmu menjawab pertanyaan, menjelaskan kode, dan menginvestigasi proyek tanpa mengubah berkas.
@@ -77,11 +84,11 @@ Kamu asisten teknis read-only untuk proyek "berhenti_merokok". Tugasmu menjawab 
 - Mengubah, membuat, atau menghapus file apa pun.
 - Menjalankan perintah yang mengubah state repository atau sistem.
 - Mengarang informasi; nyatakan tidak diketahui bila data tidak tersedia.
-````
+```
 
 `.kilo/prompts/debug.md`:
 
-````markdown
+```markdown
 # Peran
 
 Kamu engineer Flutter senior yang menangani masalah/bug pada proyek "berhenti_merokok" secara sistematis.
@@ -100,7 +107,7 @@ Kamu engineer Flutter senior yang menangani masalah/bug pada proyek "berhenti_me
 - Menjalankan operasi destruktif (hapus paksa, `reset --hard`, `push --force`) tanpa konfirmasi pengguna.
 - Mengubah cakupan pekerjaan tanpa persetujuan pengguna.
 - Mengarang informasi; nyatakan tidak diketahui bila data tidak tersedia.
-````
+```
 
 Wiring `.kilo/kilo.jsonc` (bagian `agent`):
 
@@ -125,26 +132,28 @@ Wiring `.kilo/kilo.jsonc` (bagian `agent`):
 
 ## Tindak Lanjut
 
-| No | Tindakan | File Terdampak | Status |
-|----|----------|----------------|--------|
-| 1  | Buat `.kilo/prompts/ask.md` sesuai draft di atas | `.kilo/prompts/ask.md` | belum |
-| 2  | Buat `.kilo/prompts/debug.md` sesuai draft di atas | `.kilo/prompts/debug.md` | belum |
-| 3  | Wiring `agent.ask` dan `agent.debug` di `.kilo/kilo.jsonc` (ganti `prompt` inline debug dengan `{file:./prompts/debug.md}`) | `.kilo/kilo.jsonc` | belum |
-| 4  | Validasi config Kilo (`kilo debug config` / `kilo debug agent ask` / `kilo debug agent debug`) | — | belum |
-| 5  | Perbarui `MEMORI.md` setelah implementasi | `MEMORI.md` | belum |
+| No  | Tindakan                                                                                                                    | File Terdampak           | Status |
+| --- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ------ |
+| 1   | Buat `.kilo/prompts/ask.md` sesuai draft di atas                                                                            | `.kilo/prompts/ask.md`   | belum  |
+| 2   | Buat `.kilo/prompts/debug.md` sesuai draft di atas                                                                          | `.kilo/prompts/debug.md` | belum  |
+| 3   | Wiring `agent.ask` dan `agent.debug` di `.kilo/kilo.jsonc` (ganti `prompt` inline debug dengan `{file:./prompts/debug.md}`) | `.kilo/kilo.jsonc`       | belum  |
+| 4   | Validasi config Kilo (`kilo debug config` / `kilo debug agent ask` / `kilo debug agent debug`)                              | —                        | belum  |
+| 5   | Perbarui `MEMORI.md` setelah implementasi                                                                                   | `MEMORI.md`              | belum  |
 
 ## File Terdampak
 
-| Lokasi File | Status Perubahan | Deskripsi |
-|-------------|------------------|-----------|
-| `.kilo/prompts/ask.md` | Dibuat | Prompt kustom agent `ask` (adaptasi read-only dari `code.md`) |
-| `.kilo/prompts/debug.md` | Dibuat | Prompt kustom agent `debug` (struktur `code.md` + inti teks inline lama) |
-| `.kilo/kilo.jsonc` | Diubah | Wiring `prompt: "{file:./prompts/ask.md}"` (ask) dan `"{file:./prompts/debug.md}"` (debug); model/variant tetap |
+| Lokasi File              | Status Perubahan | Deskripsi                                                                                                       |
+| ------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| `.kilo/prompts/ask.md`   | Dibuat           | Prompt kustom agent `ask` (adaptasi read-only dari `code.md`)                                                   |
+| `.kilo/prompts/debug.md` | Dibuat           | Prompt kustom agent `debug` (struktur `code.md` + inti teks inline lama)                                        |
+| `.kilo/kilo.jsonc`       | Diubah           | Wiring `prompt: "{file:./prompts/ask.md}"` (ask) dan `"{file:./prompts/debug.md}"` (debug); model/variant tetap |
 
 ## Pertanyaan Terbuka
+
 - Belum ada
 
 ## Riwayat Perubahan
-| Tanggal | Perubahan |
-|---------|-----------|
+
+| Tanggal    | Perubahan                                                                                                                                                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 2026-11-13 | Berkas diskusi dibuat berdasarkan keputusan pengguna: cakupan 2 berkas + wiring, `ask.md` adaptasi read-only dari `code.md`, `debug.md` memperkuat teks inline lama, model/variant tetap, implementasi ditunda menunggu perintah pengguna. |
