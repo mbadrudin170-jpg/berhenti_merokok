@@ -52,7 +52,7 @@
       "pwd": "allow",
       "which *": "allow",
       "find *": "allow",
-      "cat *": "allow",
+      "cat *": "deny",
       "head *": "allow",
       "tail *": "allow",
       "rg *": "allow",
@@ -74,11 +74,13 @@
       "sort *": "allow",
       "sed *": "deny",
       "webfetch *": "allow",
-      "cp *": "allow",
+      "cp *": "ask",
       "python3 *": "deny",
       "flutter *": "allow",
       "dart *": "allow",
-      "timeout *": "allow"
+      "timeout *": "allow",
+      "date *": "allow",
+      "mkdir *": "allow"
     },
     "external_directory": {
       "/home/mbadrudin170/.pub-cache/*": "allow",
@@ -159,5 +161,14 @@
       ".fvmrc"
     ]
   },
-  "reasoning_display": "headline"
+  "reasoning_display": "headline",
+  "code_edit_display": "collapsed",
+  "mcp_tool_display": "collapsed",
+  "disabled_providers": [],
+  "provider": {},
+  "skills": {
+    "paths": [
+      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills"
+    ]
+  }
 }
