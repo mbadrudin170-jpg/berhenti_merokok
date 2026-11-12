@@ -19,7 +19,9 @@ class AppDatabase {
   // Versi 12: migrasi nilai enum snake_case lama ke lowerCamelCase.
   // Versi 13: tabel rencana_darurat (if-then plan).
   // Versi 14: tambah kolom pemicu (TEXT, nullable) pada tabel konsumsi_rokok.
-  static const int _versiDatabase = 14;
+  // Versi 15: perbaikan bug — instalasi baru (onCreate) versi 14 tidak menyertakan
+  // kolom pemicu; migrasi ini menambahkan kolom pemicu bila belum ada.
+  static const int _versiDatabase = 15;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -100,6 +102,7 @@ class AppDatabase {
         ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
         ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
         ${NamaKolom.catatan} TEXT,
+        ${NamaKolom.pemicu} TEXT,
         ${NamaKolom.dibuat} TEXT NOT NULL
       )
     ''');
@@ -321,6 +324,22 @@ class AppDatabase {
         'ALTER TABLE ${NamaTabel.konsumsiRokok} '
         'ADD COLUMN ${NamaKolom.pemicu} TEXT',
       );
+    }
+    // v15: perbaikan bug — database versi 14 yang dibuat melalui onCreate tidak
+    // menyertakan kolom pemicu (hanya migrasi v14 yang menambahkannya).
+    // Pemeriksaan PRAGMA table_info membuat migrasi ini aman untuk database
+    // yang sudah memiliki kolom pemicu (hasil upgrade v13 → v14).
+    if (oldVersion < 15) {
+      final info = await db.rawQuery(
+        'PRAGMA table_info(${NamaTabel.konsumsiRokok})',
+      );
+      final sudahAda = info.any((kolom) => kolom['name'] == NamaKolom.pemicu);
+      if (!sudahAda) {
+        await db.execute(
+          'ALTER TABLE ${NamaTabel.konsumsiRokok} '
+          'ADD COLUMN ${NamaKolom.pemicu} TEXT',
+        );
+      }
     }
   }
 
