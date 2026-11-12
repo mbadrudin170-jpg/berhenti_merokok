@@ -16,22 +16,24 @@
     "kilo-code.new.agentManager.previousTerminal",
     "kilo-code.new.agentManager.nextTerminal",
   ],
-  "google.cloud.project": "gen-lang-client-0295831453",
-  "google.cloud.region": "asia-south1",
+  "google.cloud.project": "service-514211",
   "jupyter.runStartupCommands": [
     "import bigframes",
     "%load_ext bigframes",
-    "bigframes.options.bigquery.project = \"gen-lang-client-0295831453\"",
+    "bigframes.options.bigquery.project = \"service-514211\"",
     "bigframes.options.bigquery.application_name = \"datacloud.code oss for cloud shell\"",
   ],
+  "kilo-code.new.agentWorkStyle": "skipped",
+
+  // Custom
+  "google.cloud.region": "asia-south1",
   "jupyter.jupyterLaunchTimeout": 300000,
   "git.confirmSync": false,
-  "kilo-code.new.agentWorkStyle": "skipped",
   "kilo-code.new.autoApprove.enabled": true,
 
   // Pengaturan custom
-  "git.autofetch": true,
-  "git.autofetchPeriod": 60,
+  "git.autofetch": false,
+  "git.autofetchPeriod": 180,
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.formatOnType": false,
@@ -117,5 +119,12 @@
     "https://raw.githubusercontent.com/microsoft/vscode/": true,
     "https://schemastore.azurewebsites.net/": true,
     "https://www.schemastore.org/": true,
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.dart_tool": true,
+    "**/build": true,
+    "**/.gradle": true,
+    "**/android/.gradle": true,
   },
 }
