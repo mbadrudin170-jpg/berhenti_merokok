@@ -795,9 +795,8 @@ Kolom **Kode** = HTTP status dari probe curl independen pada 2026-11-11 (user ag
 
 ##### B14. SOS — Penghitung "Craving Berhasil Dilalui" + Catatan Substitusi Personal
 
-- **Tujuan:** umpan balik positif langsung di layar SOS; memperkuat _self-efficacy_ pengguna saat melewati craving.
-- **Referensi:** [FreeAir Coach](https://play.google.com/store/apps/details?id=com.freeaircoach.app.twa) (SOS: satu pertanyaan kontekstual → aksi _grounding_ 60 detik + substitusi personal + pengingat "how many cravings you've already beaten") · [Quit Smoking - Counter App](https://apps.apple.com/bh/app/quit-smoking-counter/id6746945120) (one-tap log craving + timer 5 menit + quick actions: minum air / tulis catatan; craving hari ini & 7 hari terakhir).
-- **Saran:** hasil intervensi SOS sudah tersimpan di tabel `sos_intervensi`; tampilkan hitungan "craving berhasil dilalui: N" pada layar SOS; tambahkan field substitusi opsional pada catatan intervensi.
+**Status PRD:** Sudah dibuatkan PRD-nya — `prd/prd_sos_craving_berhasil_dilalui.md` (2026-11-13). Isi bagian ini dipindahkan ke PRD tersebut.
+
 - **Prioritas:** Rendah.
 
 ### C. UI, UX & Layout — Pola dari 10 APK
