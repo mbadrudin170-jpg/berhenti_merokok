@@ -10,5 +10,6 @@ abstract class SosIntervensiState with _$SosIntervensiState {
   const factory SosIntervensiState({
     @Default([]) List<SosIntervensiModel> listIntervensi,
     @Default(0) int jumlahIntervensi,
+    @Default(0) int jumlahBerhasil,
   }) = _SosIntervensiState;
 }

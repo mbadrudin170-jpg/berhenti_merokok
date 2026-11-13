@@ -21,7 +21,8 @@ class AppDatabase {
   // Versi 14: tambah kolom pemicu (TEXT, nullable) pada tabel konsumsi_rokok.
   // Versi 15: perbaikan bug — instalasi baru (onCreate) versi 14 tidak menyertakan
   // kolom pemicu; migrasi ini menambahkan kolom pemicu bila belum ada.
-  static const int _versiDatabase = 15;
+  // Versi 16: tambah kolom substitusi (TEXT, nullable) pada tabel sos_intervensi.
+  static const int _versiDatabase = 16;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -118,6 +119,7 @@ class AppDatabase {
         ${NamaKolom.detail} TEXT,
         ${NamaKolom.hasilIntervensi} TEXT,
         ${NamaKolom.diaryCravingId} TEXT,
+        ${NamaKolom.substitusi} TEXT,
         ${NamaKolom.dibuat} TEXT NOT NULL
       )
     ''');
@@ -339,6 +341,26 @@ class AppDatabase {
           'ALTER TABLE ${NamaTabel.konsumsiRokok} '
           'ADD COLUMN ${NamaKolom.pemicu} TEXT',
         );
+      }
+    }
+    // v16: tambah kolom substitusi (TEXT, nullable) pada tabel sos_intervensi.
+    if (oldVersion < 16) {
+      final tabelAda = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='${NamaTabel.sosIntervensi}'",
+      );
+      if (tabelAda.isNotEmpty) {
+        final info = await db.rawQuery(
+          'PRAGMA table_info(${NamaTabel.sosIntervensi})',
+        );
+        final sudahAda = info.any(
+          (kolom) => kolom['name'] == NamaKolom.substitusi,
+        );
+        if (!sudahAda) {
+          await db.execute(
+            'ALTER TABLE ${NamaTabel.sosIntervensi} '
+            'ADD COLUMN ${NamaKolom.substitusi} TEXT',
+          );
+        }
       }
     }
   }

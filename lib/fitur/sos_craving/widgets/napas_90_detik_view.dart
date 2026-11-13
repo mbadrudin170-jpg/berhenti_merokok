@@ -86,7 +86,9 @@ class _Napas90DetikViewState extends ConsumerState<Napas90DetikView> {
         ref: ref,
         jenisIntervensi: JenisIntervensiSos.napas90Detik,
       ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi napas 90 detik: $e $s');
+        L.e(
+          'Gagal menampilkan bottom sheet hasil intervensi napas 90 detik: $e $s',
+        );
         return null;
       }),
     );
@@ -166,9 +168,7 @@ class _Napas90DetikViewState extends ConsumerState<Napas90DetikView> {
                         _teksSisa,
                         style: textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontFeatures: const [
-                            FontFeature.tabularFigures(),
-                          ],
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                     ],

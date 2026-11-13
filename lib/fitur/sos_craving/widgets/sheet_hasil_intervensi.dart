@@ -15,11 +15,30 @@ import 'package:share_global_saya/core_shared.dart';
 /// Tampilkan setelah intervensi selesai. Opsi: Berkurang / Tetap / Belum selesai,
 /// plus aksi Lewati. Hasil dikembalikan sebagai [HasilIntervensiSos] atau null
 /// bila pengguna menekan Lewati / menutup sheet tanpa memilih.
-class SheetHasilIntervensi extends ConsumerWidget {
+class SheetHasilIntervensi extends ConsumerStatefulWidget {
   const SheetHasilIntervensi({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SheetHasilIntervensi> createState() =>
+      _SheetHasilIntervensiState();
+}
+
+class _SheetHasilIntervensiState extends ConsumerState<SheetHasilIntervensi> {
+  final TextEditingController _substitusiController = TextEditingController();
+
+  @override
+  void dispose() {
+    _substitusiController.dispose();
+    super.dispose();
+  }
+
+  String? get _substitusi {
+    final teks = _substitusiController.text.trim();
+    return teks.isEmpty ? null : teks;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final warnaSurface = Theme.of(context).colorScheme.surface;
 
@@ -37,7 +56,9 @@ class SheetHasilIntervensi extends ConsumerWidget {
           children: [
             Text(
               'Apakah dorongan merokok berkurang?',
-              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
@@ -52,22 +73,38 @@ class SheetHasilIntervensi extends ConsumerWidget {
             _TombolHasil(
               label: HasilIntervensiSos.berkurang.label,
               value: HasilIntervensiSos.berkurang,
-              onTap: () => Navigator.pop(context, HasilIntervensiSos.berkurang),
+              onTap: () => Navigator.pop(context, (
+                HasilIntervensiSos.berkurang,
+                _substitusi,
+              )),
             ),
             _TombolHasil(
               label: HasilIntervensiSos.tetap.label,
               value: HasilIntervensiSos.tetap,
-              onTap: () => Navigator.pop(context, HasilIntervensiSos.tetap),
+              onTap: () => Navigator.pop(context, (
+                HasilIntervensiSos.tetap,
+                _substitusi,
+              )),
             ),
             _TombolHasil(
               label: HasilIntervensiSos.belumSelesai.label,
               value: HasilIntervensiSos.belumSelesai,
-              onTap: () =>
-                  Navigator.pop(context, HasilIntervensiSos.belumSelesai),
+              onTap: () => Navigator.pop(context, (
+                HasilIntervensiSos.belumSelesai,
+                _substitusi,
+              )),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _substitusiController,
+              decoration: const InputDecoration(
+                labelText: 'Substitusi personal (opsional)',
+                hintText: 'mis. minum air, jalan sebentar',
+              ),
             ),
             const SizedBox(height: 8),
             OutlinedButton(
-              onPressed: () => Navigator.pop(context, null),
+              onPressed: () => Navigator.pop(context, (null, _substitusi)),
               child: const Text('Lewati'),
             ),
           ],
@@ -91,10 +128,7 @@ class _TombolHasil extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: onTap,
-      child: Text(label),
-    );
+    return FilledButton(onPressed: onTap, child: Text(label));
   }
 }
 
@@ -114,8 +148,10 @@ Future<String?> _ambilEntriDiaryTerbaruHariIni() async {
     // dengan cara tanggal disimpan di kolom `tanggal`.
     final awalLokal = DateTime(now.year, now.month, now.day);
     final awalUtc = awalLokal.toUtc().toIso8601String();
-    final akhirUtc =
-        awalLokal.add(const Duration(days: 1)).toUtc().toIso8601String();
+    final akhirUtc = awalLokal
+        .add(const Duration(days: 1))
+        .toUtc()
+        .toIso8601String();
     final rows = await op.ambil(
       NamaTabel.diaryCraving,
       where: '${NamaKolom.tanggal} >= ? AND ${NamaKolom.tanggal} < ?',
@@ -146,11 +182,14 @@ Future<HasilIntervensiSos?> tampilkanDanSimpanHasilIntervensi({
   required JenisIntervensiSos jenisIntervensi,
   String? detail,
 }) async {
-  final hasil = await showModalBottomSheet<HasilIntervensiSos>(
+  final hasil = await showModalBottomSheet<(HasilIntervensiSos?, String?)>(
     context: context,
     isScrollControlled: true,
     builder: (_) => const SheetHasilIntervensi(),
   );
+
+  final hasilDipilih = hasil?.$1;
+  final substitusi = hasil?.$2;
 
   SosIntervensiModel? modelDisimpan;
   try {
@@ -159,12 +198,13 @@ Future<HasilIntervensiSos?> tampilkanDanSimpanHasilIntervensi({
         .simpan(
           jenis: jenisIntervensi,
           detail: detail,
-          hasil: hasil,
+          hasil: hasilDipilih,
+          substitusi: substitusi,
         );
     if (context.mounted) {
       AppToast.sukses(
         context,
-        'Hasil intervensi tersimpan${hasil == null ? ' (dilewati)' : ''}',
+        'Hasil intervensi tersimpan${hasilDipilih == null ? ' (dilewati)' : ''}',
       );
     }
   } on Exception catch (e, s) {
@@ -172,7 +212,7 @@ Future<HasilIntervensiSos?> tampilkanDanSimpanHasilIntervensi({
     if (context.mounted) {
       AppToast.gagal(context, 'Gagal menyimpan hasil intervensi');
     }
-    return hasil;
+    return hasilDipilih;
   }
 
   // Tawarkan tautan ke diary craving bila ada entri hari ini dan model tersimpan.
@@ -210,5 +250,5 @@ Future<HasilIntervensiSos?> tampilkanDanSimpanHasilIntervensi({
     }
   }
 
-  return hasil;
+  return hasilDipilih;
 }

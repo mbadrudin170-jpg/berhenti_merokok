@@ -28,9 +28,13 @@ class SosIntervensiNotifier extends _$SosIntervensiNotifier {
       );
       final daftar = rows.map(SosIntervensiModel.fromSqflite).toList();
       L.i('daftar.length=${daftar.length}');
+      final berhasil = daftar
+          .where((e) => e.hasilIntervensi == HasilIntervensiSos.berkurang)
+          .length;
       return SosIntervensiState(
         listIntervensi: daftar,
         jumlahIntervensi: daftar.length,
+        jumlahBerhasil: berhasil,
       );
     } on Exception catch (e, s) {
       L.e('Gagal mengambil riwayat intervensi SOS: $e $s');
@@ -48,10 +52,13 @@ class SosIntervensiNotifier extends _$SosIntervensiNotifier {
     String? detail,
     HasilIntervensiSos? hasil,
     String? diaryCravingId,
+    String? substitusi,
   }) async {
     final id = const Uuid().v4();
     final dibuat = DateTime.now().toUtc();
-    L.i('id=$id, jenis=${jenis.name}, detail=$detail, hasil=${hasil?.name}, diaryCravingId=$diaryCravingId, dibuat=$dibuat');
+    L.i(
+      'id=$id, jenis=${jenis.name}, detail=$detail, hasil=${hasil?.name}, diaryCravingId=$diaryCravingId, substitusi=$substitusi, dibuat=$dibuat',
+    );
     try {
       final dataLama = await future;
       final model = SosIntervensiModel(
@@ -60,6 +67,7 @@ class SosIntervensiNotifier extends _$SosIntervensiNotifier {
         detail: detail,
         hasilIntervensi: hasil,
         diaryCravingId: diaryCravingId,
+        substitusi: substitusi,
         dibuat: dibuat,
       );
       final op = const SqfliteOp();
@@ -68,10 +76,15 @@ class SosIntervensiNotifier extends _$SosIntervensiNotifier {
         model.toSqflite(),
         conflictAlgorithm: ConflictAlgorithm.abort,
       );
+      final baruList = [model, ...dataLama.listIntervensi];
+      final berhasil = baruList
+          .where((e) => e.hasilIntervensi == HasilIntervensiSos.berkurang)
+          .length;
       state = AsyncValue.data(
         SosIntervensiState(
-          listIntervensi: [model, ...dataLama.listIntervensi],
+          listIntervensi: baruList,
           jumlahIntervensi: dataLama.jumlahIntervensi + 1,
+          jumlahBerhasil: berhasil,
         ),
       );
       L.s('Riwayat intervensi SOS berhasil disimpan');
@@ -103,10 +116,14 @@ class SosIntervensiNotifier extends _$SosIntervensiNotifier {
         }
         return e;
       }).toList();
+      final berhasil = baru
+          .where((e) => e.hasilIntervensi == HasilIntervensiSos.berkurang)
+          .length;
       state = AsyncValue.data(
         SosIntervensiState(
           listIntervensi: baru,
           jumlahIntervensi: baru.length,
+          jumlahBerhasil: berhasil,
         ),
       );
       L.s('Diary craving ID berhasil diperbarui');

@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-/// Daftar kolom wajib per tabel untuk skema versi terkini (v15).
+/// Daftar kolom wajib per tabel untuk skema versi terkini (v16).
 const Map<String, List<String>> _kolomWajib = {
   NamaTabel.biodata: [
     NamaKolom.id,
@@ -58,6 +58,7 @@ const Map<String, List<String>> _kolomWajib = {
     NamaKolom.detail,
     NamaKolom.hasilIntervensi,
     NamaKolom.diaryCravingId,
+    NamaKolom.substitusi,
     NamaKolom.dibuat,
   ],
   NamaTabel.rencanaDarurat: [
@@ -93,11 +94,11 @@ void main() {
     }
   });
 
-  group('Skema instalasi baru (onCreate v15)', () {
+  group('Skema instalasi baru (onCreate v16)', () {
     test('membuat seluruh tabel dengan kolom wajib', () async {
       final db = await AppDatabase.database;
 
-      expect(await db.getVersion(), 15);
+      expect(await db.getVersion(), 16);
 
       for (final entry in _kolomWajib.entries) {
         final info = await db.rawQuery('PRAGMA table_info(${entry.key})');
@@ -186,7 +187,7 @@ void main() {
         // Buka kembali melalui AppDatabase (versi 15) — memicu onUpgrade(14 → 15).
         db = await AppDatabase.database;
 
-        expect(await db.getVersion(), 15);
+        expect(await db.getVersion(), 16);
 
         final info = await db.rawQuery(
           'PRAGMA table_info(${NamaTabel.konsumsiRokok})',
@@ -223,6 +224,75 @@ void main() {
           whereArgs: ['baru-1'],
         );
         expect(barisBaru.single[NamaKolom.pemicu], 'kopi');
+      },
+    );
+  });
+
+  group('Migrasi v15 (instalasi lama tanpa substitusi) ke v16', () {
+    test(
+      'onUpgrade menambahkan kolom substitusi dan mempertahankan data lama',
+      () async {
+        final pathDb = await _pathDatabase();
+        var db = await databaseFactory.openDatabase(
+          pathDb,
+          options: OpenDatabaseOptions(
+            version: 15,
+            onCreate: (db, _) async {
+              await db.execute('''
+              CREATE TABLE ${NamaTabel.sosIntervensi}(
+                ${NamaKolom.id} TEXT PRIMARY KEY,
+                ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
+                ${NamaKolom.detail} TEXT,
+                ${NamaKolom.hasilIntervensi} TEXT,
+                ${NamaKolom.diaryCravingId} TEXT,
+                ${NamaKolom.dibuat} TEXT NOT NULL
+              )
+            ''');
+            },
+          ),
+        );
+        await db.insert(NamaTabel.sosIntervensi, {
+          NamaKolom.id: 'lama-1',
+          NamaKolom.jenisIntervensi: 'napas478',
+          NamaKolom.dibuat: '2026-11-13T00:00:00.000Z',
+        });
+        await db.close();
+
+        db = await AppDatabase.database;
+
+        expect(await db.getVersion(), 16);
+
+        final info = await db.rawQuery(
+          'PRAGMA table_info(${NamaTabel.sosIntervensi})',
+        );
+        final namaKolom = info.map((baris) => baris['name']).toSet();
+        expect(
+          namaKolom.contains(NamaKolom.substitusi),
+          isTrue,
+          reason: 'Kolom substitusi tidak ditambahkan oleh migrasi v16',
+        );
+
+        final barisLama = await db.query(
+          NamaTabel.sosIntervensi,
+          where: '${NamaKolom.id} = ?',
+          whereArgs: ['lama-1'],
+        );
+        expect(barisLama, hasLength(1));
+        expect(barisLama.single[NamaKolom.substitusi], isNull);
+
+        await db.insert(NamaTabel.sosIntervensi, {
+          NamaKolom.id: 'baru-1',
+          NamaKolom.jenisIntervensi: 'napas478',
+          NamaKolom.substitusi: 'minum air',
+          NamaKolom.dibuat: DateTime.now().toUtc().toIso8601String(),
+        });
+
+        final barisBaru = await db.query(
+          NamaTabel.sosIntervensi,
+          where: '${NamaKolom.id} = ?',
+          whereArgs: ['baru-1'],
+        );
+        expect(barisBaru.single[NamaKolom.substitusi], 'minum air');
       },
     );
   });

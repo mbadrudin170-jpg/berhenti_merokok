@@ -89,7 +89,9 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
         ref: ref,
         jenisIntervensi: JenisIntervensiSos.napasBox,
       ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi box breathing: $e $s');
+        L.e(
+          'Gagal menampilkan bottom sheet hasil intervensi box breathing: $e $s',
+        );
         return null;
       }),
     );
@@ -147,9 +149,7 @@ class _BoxBreathingViewState extends ConsumerState<BoxBreathingView> {
         children: [
           Text(
             'Box Breathing',
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
             'Tarik 4 detik, tahan 4 detik, hembuskan 4 detik, tahan 4 detik. '

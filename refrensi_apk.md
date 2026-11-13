@@ -793,12 +793,6 @@ Kolom **Kode** = HTTP status dari probe curl independen pada 2026-11-11 (user ag
 
 #### Prioritas Rendah
 
-##### B14. SOS — Penghitung "Craving Berhasil Dilalui" + Catatan Substitusi Personal
-
-**Status PRD:** Sudah dibuatkan PRD-nya — `prd/prd_sos_craving_berhasil_dilalui.md` (2026-11-13). Isi bagian ini dipindahkan ke PRD tersebut.
-
-- **Prioritas:** Rendah.
-
 ### C. UI, UX & Layout — Pola dari 10 APK
 
 #### Prioritas Sedang

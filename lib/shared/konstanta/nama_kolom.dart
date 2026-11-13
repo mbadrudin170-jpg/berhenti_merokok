@@ -100,4 +100,7 @@ class NamaKolom {
 
   /// Kolom referensi entri diary craving (FK logis, nullable).
   static const String diaryCravingId = 'diary_craving_id';
+
+  /// Kolom substitusi personal (opsional) pada catatan intervensi SOS.
+  static const String substitusi = 'substitusi';
 }

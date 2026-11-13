@@ -4,6 +4,7 @@ import 'package:berhenti_merokok/fitur/alasan_berhenti/notifier/alasan_berhenti_
 import 'package:berhenti_merokok/fitur/alasan_berhenti/screens/alasan_berhenti_screen.dart';
 import 'package:berhenti_merokok/fitur/rencana_darurat/widgets/kartu_rencana_darurat.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/enum/jenis_intervensi_sos_enum.dart';
+import 'package:berhenti_merokok/fitur/sos_craving/notifier/sos_intervensi_notifier.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/widgets/box_breathing_view.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/widgets/distraksi_view.dart';
 import 'package:berhenti_merokok/fitur/sos_craving/widgets/grounding_54321_view.dart';
@@ -33,8 +34,10 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
   /// Daftar kartu teknik sesuai urutan yang disepakati:
   /// Napas 4-7-8 → Timer Craving → Box Breathing → Napas 90 Detik →
   /// Grounding 5-4-3-2-1 → Distraksi → Urge Surfing.
-  static const List<({JenisIntervensiSos jenis, IconData ikon, String nama, String deskripsi})>
-      _kartuTeknik = [
+  static const List<
+    ({JenisIntervensiSos jenis, IconData ikon, String nama, String deskripsi})
+  >
+  _kartuTeknik = [
     (
       jenis: JenisIntervensiSos.napas478,
       ikon: Icons.air,
@@ -136,9 +139,7 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
                         children: [
                           Text(
                             'Belum ada alasan berhenti',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
+                            style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
@@ -208,6 +209,47 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
     );
   }
 
+  Widget _buildKartuPenghitungBerhasil() {
+    final jumlahBerhasil =
+        ref.watch(sosIntervensiProvider).asData?.value.jumlahBerhasil ?? 0;
+    L.i('jumlahBerhasil=$jumlahBerhasil');
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            spacing: 12,
+            children: [
+              Icon(
+                Icons.check_circle,
+                color: Theme.of(context).colorScheme.primary,
+                size: 32,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      '$jumlahBerhasil',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Craving berhasil dilalui: $jumlahBerhasil',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildKartuTeknik({
     required IconData ikon,
     required String nama,
@@ -259,6 +301,7 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
       children: [
         _buildKartuAlasanBerhenti(),
         const KartuRencanaDarurat(),
+        _buildKartuPenghitungBerhasil(),
         Expanded(
           child: GridView.count(
             crossAxisCount: 2,
@@ -326,9 +369,7 @@ class _SosCravingScreenState extends ConsumerState<SosCravingScreen> {
               ),
       ),
       body: SafeArea(
-        child: teknik == null
-            ? _buildMenuTeknik()
-            : _buildDetailTeknik(teknik),
+        child: teknik == null ? _buildMenuTeknik() : _buildDetailTeknik(teknik),
       ),
     );
   }

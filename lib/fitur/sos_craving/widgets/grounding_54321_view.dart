@@ -18,34 +18,40 @@ class Grounding54321View extends ConsumerStatefulWidget {
 class _Grounding54321ViewState extends ConsumerState<Grounding54321View> {
   int _langkah = 0; // 0..4
 
-  static const List<({String indra, String instruksi, IconData ikon})> _langkahList = [
+  static const List<({String indra, String instruksi, IconData ikon})>
+  _langkahList = [
     (
       indra: '5 hal yang kamu LIHAT',
-      instruksi: 'Sebutkan dalam hati 5 benda yang terlihat di sekitarmu '
+      instruksi:
+          'Sebutkan dalam hati 5 benda yang terlihat di sekitarmu '
           'saat ini, satu per satu.',
       ikon: Icons.visibility,
     ),
     (
       indra: '4 hal yang kamu SENTUH',
-      instruksi: 'Rasakan 4 benda yang bisa kamu sentuh: tekstur meja, '
+      instruksi:
+          'Rasakan 4 benda yang bisa kamu sentuh: tekstur meja, '
           'pakaian, atau kursi.',
       ikon: Icons.touch_app,
     ),
     (
       indra: '3 hal yang kamu DENGAR',
-      instruksi: 'Dengarkan 3 suara di sekitarmu: kendaraan, kipas angin, '
+      instruksi:
+          'Dengarkan 3 suara di sekitarmu: kendaraan, kipas angin, '
           'atau suara napasmu sendiri.',
       ikon: Icons.hearing,
     ),
     (
       indra: '2 hal yang kamu CIUM',
-      instruksi: 'Cium 2 aroma di sekitarmu: kopi, sabun, atau udara '
+      instruksi:
+          'Cium 2 aroma di sekitarmu: kopi, sabun, atau udara '
           'segar.',
       ikon: Icons.air,
     ),
     (
       indra: '1 hal yang kamu KECAP',
-      instruksi: 'Rasakan 1 rasa di mulutmu: sisa makanan, air, atau '
+      instruksi:
+          'Rasakan 1 rasa di mulutmu: sisa makanan, air, atau '
           'permen mint.',
       ikon: Icons.restaurant,
     ),
@@ -122,17 +128,11 @@ class _Grounding54321ViewState extends ConsumerState<Grounding54321View> {
           ),
           LinearProgressIndicator(value: progres.clamp(0.0, 1.0)),
           const SizedBox(height: 8),
-          Icon(
-            langkah.ikon,
-            size: 96,
-            color: colorScheme.primary,
-          ),
+          Icon(langkah.ikon, size: 96, color: colorScheme.primary),
           Text(
             langkah.indra,
             textAlign: TextAlign.center,
-            style: textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
             langkah.instruksi,

@@ -16,6 +16,7 @@ abstract class SosIntervensiModel with _$SosIntervensiModel {
     String? detail,
     HasilIntervensiSos? hasilIntervensi,
     String? diaryCravingId,
+    String? substitusi,
     required DateTime dibuat,
   }) = _SosIntervensiModel;
 
@@ -35,7 +36,10 @@ abstract class SosIntervensiModel with _$SosIntervensiModel {
         HasilIntervensiSos.values,
         ParserUtil.parseStringOrNull(row[NamaKolom.hasilIntervensi]),
       ),
-      diaryCravingId: ParserUtil.parseStringOrNull(row[NamaKolom.diaryCravingId]),
+      diaryCravingId: ParserUtil.parseStringOrNull(
+        row[NamaKolom.diaryCravingId],
+      ),
+      substitusi: ParserUtil.parseStringOrNull(row[NamaKolom.substitusi]),
       dibuat:
           ParserUtil.parseDateTime(row[NamaKolom.dibuat])?.toLocal() ??
           DateTime.now(),
@@ -50,6 +54,7 @@ abstract class SosIntervensiModel with _$SosIntervensiModel {
       NamaKolom.detail: detail,
       NamaKolom.hasilIntervensi: hasilIntervensi?.name,
       NamaKolom.diaryCravingId: diaryCravingId,
+      NamaKolom.substitusi: substitusi,
       NamaKolom.dibuat: dibuat.toUtc().toIso8601String(),
     };
   }

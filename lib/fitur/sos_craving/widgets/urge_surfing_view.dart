@@ -84,7 +84,9 @@ class _UrgeSurfingViewState extends ConsumerState<UrgeSurfingView> {
         jenisIntervensi: JenisIntervensiSos.urgeSurfing,
         detail: '$_menitTerpilih menit',
       ).catchError((Object e, StackTrace s) {
-        L.e('Gagal menampilkan bottom sheet hasil intervensi urge surfing: $e $s');
+        L.e(
+          'Gagal menampilkan bottom sheet hasil intervensi urge surfing: $e $s',
+        );
         return null;
       }),
     );
@@ -116,14 +118,16 @@ class _UrgeSurfingViewState extends ConsumerState<UrgeSurfingView> {
     if (berlalu < pertiga) {
       return (
         fase: 'Naik',
-        afirmasi: 'Craving sedang naik. Rasakan tanpa dilawan — '
+        afirmasi:
+            'Craving sedang naik. Rasakan tanpa dilawan — '
             'ini hanya gelombang, pasti berlalu.',
       );
     }
     if (berlalu < 2 * pertiga) {
       return (
         fase: 'Puncak',
-        afirmasi: 'Kamu di puncak gelombang. Tetap di sini, perhatikan '
+        afirmasi:
+            'Kamu di puncak gelombang. Tetap di sini, perhatikan '
             'sensasinya tanpa bereaksi.',
       );
     }
@@ -200,9 +204,7 @@ class _UrgeSurfingViewState extends ConsumerState<UrgeSurfingView> {
                         _teksWaktu,
                         style: textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontFeatures: const [
-                            FontFeature.tabularFigures(),
-                          ],
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                     ],

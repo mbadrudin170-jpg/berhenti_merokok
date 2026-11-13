@@ -5,13 +5,14 @@
   "subagent_model": "kilo/kilo-auto/free",
   "agent": {
     "code": {
-      "model": "kilo/baidu/ernie-5.5-flash-preview:free",
-      "prompt": "kamu adalah pekerja saya",
-      "variant": "high"
+      "model": "openrouter/thinkingmachines/inkling-2-small:free",
+      "prompt": "{file:./prompts/code.md}",
+      "variant": "max"
     },
     "ask": {
       "model": "kilo/kilo-auto/free",
-      "variant": "max"
+      "variant": "max",
+      "prompt": "{file:./prompts/ask.md}"
     },
     "plan": {
       "model": "kilo/kilo-auto/free"
@@ -21,7 +22,7 @@
     },
     "debug": {
       "model": "kilo/kilo-auto/free",
-      "prompt": "kamu harus mengatasi masalah ini, agar mengikuti file dependensi nya supaya ketemu solusinya"
+      "prompt": "{file:./prompts/debug.md}"
     },
     "compaction": {
       "model": "kilo/kilo-auto/free"
@@ -98,7 +99,7 @@
   },
   "web_search": true,
   "indexing": {
-    "enabled": false
+    "enabled": true
   },
   "instructions": [
     "AGENTS.md",
@@ -121,7 +122,7 @@
   },
   "default_agent": "code",
   "commit_message": {
-    "prompt": "selalu menggunakan bahasa indonesia ya yang baku, harus sesuai dengan kode yang di diff"
+    "prompt": "Buat pesan commit mengikuti format Conventional Commits berdasarkan diff perubahan yang di-stage. Aturan: (1) Format wajib `<type>(<scope>): <deskripsi>` dengan type salah satu dari feat, fix, docs, style, refactor, test, chore, perf, build, ci; scope opsional, diisi nama area/fitur yang jelas (mis. sqflite, biodata, command) bila ada. (2) Deskripsi menggunakan bahasa Indonesia baku, diawali huruf kecil, maksimal 72 karakter, bentuk imperatif, tanpa tanda titik di akhir. (3) Isi commit harus sesuai dengan diff yang di-stage; dilarang mengarang perubahan yang tidak ada di diff. (4) Jawab hanya dengan pesan commit: tanpa kata pengantar, tanpa penjelasan, tanpa backtick, dan tanpa tanda kutip. (5) Bila perubahan kompleks, tambahkan body setelah satu baris kosong; body juga bahasa Indonesia baku dan difokuskan pada alasan perubahan, bukan mengulang diff."
   },
   "compaction": {
     "auto": true,
@@ -166,9 +167,12 @@
   "provider": {},
   "skills": {
     "paths": [
-      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills/custom",
-      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills",
-      "/home/thefarmercompanyba/berhenti_merokok/.agents/skills/bawaan"
+      ".agents/skills/custom",
+      ".agents/skills",
+      ".agents/skills/bawaan"
     ]
+  },
+  "retention": {
+    "enabled": true
   }
 }

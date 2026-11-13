@@ -145,9 +145,7 @@ class _Napas478ViewState extends ConsumerState<Napas478View> {
         children: [
           Text(
             'Latihan Napas 4-7-8',
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
             'Tarik napas 4 detik, tahan 7 detik, hembuskan 8 detik. '

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SosIntervensiModel {
 
- String get id; JenisIntervensiSos get jenisIntervensi; String? get detail; HasilIntervensiSos? get hasilIntervensi; String? get diaryCravingId; DateTime get dibuat;
+ String get id; JenisIntervensiSos get jenisIntervensi; String? get detail; HasilIntervensiSos? get hasilIntervensi; String? get diaryCravingId; String? get substitusi; DateTime get dibuat;
 /// Create a copy of SosIntervensiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $SosIntervensiModelCopyWith<SosIntervensiModel> get copyWith => _$SosIntervensiM
 @override
 bool operator ==(Object other) {
   final _this = this as SosIntervensiModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SosIntervensiModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.jenisIntervensi, _this.jenisIntervensi) || other.jenisIntervensi == _this.jenisIntervensi)&&(identical(other.detail, _this.detail) || other.detail == _this.detail)&&(identical(other.hasilIntervensi, _this.hasilIntervensi) || other.hasilIntervensi == _this.hasilIntervensi)&&(identical(other.diaryCravingId, _this.diaryCravingId) || other.diaryCravingId == _this.diaryCravingId)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SosIntervensiModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.jenisIntervensi, _this.jenisIntervensi) || other.jenisIntervensi == _this.jenisIntervensi)&&(identical(other.detail, _this.detail) || other.detail == _this.detail)&&(identical(other.hasilIntervensi, _this.hasilIntervensi) || other.hasilIntervensi == _this.hasilIntervensi)&&(identical(other.diaryCravingId, _this.diaryCravingId) || other.diaryCravingId == _this.diaryCravingId)&&(identical(other.substitusi, _this.substitusi) || other.substitusi == _this.substitusi)&&(identical(other.dibuat, _this.dibuat) || other.dibuat == _this.dibuat));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SosIntervensiModel;
-  return Object.hash(runtimeType,_this.id,_this.jenisIntervensi,_this.detail,_this.hasilIntervensi,_this.diaryCravingId,_this.dibuat);
+  return Object.hash(runtimeType,_this.id,_this.jenisIntervensi,_this.detail,_this.hasilIntervensi,_this.diaryCravingId,_this.substitusi,_this.dibuat);
 }
 
 @override
 String toString() {
   final _this = this as SosIntervensiModel;
-  return 'SosIntervensiModel(id: ${_this.id}, jenisIntervensi: ${_this.jenisIntervensi}, detail: ${_this.detail}, hasilIntervensi: ${_this.hasilIntervensi}, diaryCravingId: ${_this.diaryCravingId}, dibuat: ${_this.dibuat})';
+  return 'SosIntervensiModel(id: ${_this.id}, jenisIntervensi: ${_this.jenisIntervensi}, detail: ${_this.detail}, hasilIntervensi: ${_this.hasilIntervensi}, diaryCravingId: ${_this.diaryCravingId}, substitusi: ${_this.substitusi}, dibuat: ${_this.dibuat})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $SosIntervensiModelCopyWith<$Res>  {
   factory $SosIntervensiModelCopyWith(SosIntervensiModel value, $Res Function(SosIntervensiModel) _then) = _$SosIntervensiModelCopyWithImpl;
 @useResult
 $Res call({
- String id, JenisIntervensiSos jenisIntervensi, String? detail, HasilIntervensiSos? hasilIntervensi, String? diaryCravingId, DateTime dibuat
+ String id, JenisIntervensiSos jenisIntervensi, String? detail, HasilIntervensiSos? hasilIntervensi, String? diaryCravingId, String? substitusi, DateTime dibuat
 });
 
 
@@ -68,13 +68,14 @@ class _$SosIntervensiModelCopyWithImpl<$Res>
 
 /// Create a copy of SosIntervensiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jenisIntervensi = null,Object? detail = freezed,Object? hasilIntervensi = freezed,Object? diaryCravingId = freezed,Object? dibuat = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jenisIntervensi = null,Object? detail = freezed,Object? hasilIntervensi = freezed,Object? diaryCravingId = freezed,Object? substitusi = freezed,Object? dibuat = null,}) {
   return _then(SosIntervensiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jenisIntervensi: null == jenisIntervensi ? _self.jenisIntervensi : jenisIntervensi // ignore: cast_nullable_to_non_nullable
 as JenisIntervensiSos,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
 as String?,hasilIntervensi: freezed == hasilIntervensi ? _self.hasilIntervensi : hasilIntervensi // ignore: cast_nullable_to_non_nullable
 as HasilIntervensiSos?,diaryCravingId: freezed == diaryCravingId ? _self.diaryCravingId : diaryCravingId // ignore: cast_nullable_to_non_nullable
+as String?,substitusi: freezed == substitusi ? _self.substitusi : substitusi // ignore: cast_nullable_to_non_nullable
 as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  String? substitusi,  DateTime dibuat)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SosIntervensiModel() when $default != null:
-return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.dibuat);case _:
+return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.substitusi,_that.dibuat);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervens
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  DateTime dibuat)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  String? substitusi,  DateTime dibuat)  $default,) {final _that = this;
 switch (_that) {
 case _SosIntervensiModel():
-return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.dibuat);case _:
+return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.substitusi,_that.dibuat);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervens
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  DateTime dibuat)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  JenisIntervensiSos jenisIntervensi,  String? detail,  HasilIntervensiSos? hasilIntervensi,  String? diaryCravingId,  String? substitusi,  DateTime dibuat)?  $default,) {final _that = this;
 switch (_that) {
 case _SosIntervensiModel() when $default != null:
-return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.dibuat);case _:
+return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervensi,_that.diaryCravingId,_that.substitusi,_that.dibuat);case _:
   return null;
 
 }
@@ -217,7 +218,7 @@ return $default(_that.id,_that.jenisIntervensi,_that.detail,_that.hasilIntervens
 
 
 class _SosIntervensiModel extends SosIntervensiModel {
-  const _SosIntervensiModel({required this.id, required this.jenisIntervensi, this.detail, this.hasilIntervensi, this.diaryCravingId, required this.dibuat}): super._();
+  const _SosIntervensiModel({required this.id, required this.jenisIntervensi, this.detail, this.hasilIntervensi, this.diaryCravingId, this.substitusi, required this.dibuat}): super._();
   
 
 @override final  String id;
@@ -225,6 +226,7 @@ class _SosIntervensiModel extends SosIntervensiModel {
 @override final  String? detail;
 @override final  HasilIntervensiSos? hasilIntervensi;
 @override final  String? diaryCravingId;
+@override final  String? substitusi;
 @override final  DateTime dibuat;
 
 /// Create a copy of SosIntervensiModel
@@ -237,18 +239,18 @@ _$SosIntervensiModelCopyWith<_SosIntervensiModel> get copyWith => __$SosInterven
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SosIntervensiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jenisIntervensi, jenisIntervensi) || other.jenisIntervensi == jenisIntervensi)&&(identical(other.detail, detail) || other.detail == detail)&&(identical(other.hasilIntervensi, hasilIntervensi) || other.hasilIntervensi == hasilIntervensi)&&(identical(other.diaryCravingId, diaryCravingId) || other.diaryCravingId == diaryCravingId)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SosIntervensiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jenisIntervensi, jenisIntervensi) || other.jenisIntervensi == jenisIntervensi)&&(identical(other.detail, detail) || other.detail == detail)&&(identical(other.hasilIntervensi, hasilIntervensi) || other.hasilIntervensi == hasilIntervensi)&&(identical(other.diaryCravingId, diaryCravingId) || other.diaryCravingId == diaryCravingId)&&(identical(other.substitusi, substitusi) || other.substitusi == substitusi)&&(identical(other.dibuat, dibuat) || other.dibuat == dibuat));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,jenisIntervensi,detail,hasilIntervensi,diaryCravingId,dibuat);
+    return Object.hash(runtimeType,id,jenisIntervensi,detail,hasilIntervensi,diaryCravingId,substitusi,dibuat);
 }
 
 @override
 String toString() {
-    return 'SosIntervensiModel(id: $id, jenisIntervensi: $jenisIntervensi, detail: $detail, hasilIntervensi: $hasilIntervensi, diaryCravingId: $diaryCravingId, dibuat: $dibuat)';
+    return 'SosIntervensiModel(id: $id, jenisIntervensi: $jenisIntervensi, detail: $detail, hasilIntervensi: $hasilIntervensi, diaryCravingId: $diaryCravingId, substitusi: $substitusi, dibuat: $dibuat)';
 }
 
 
@@ -259,7 +261,7 @@ abstract mixin class _$SosIntervensiModelCopyWith<$Res> implements $SosIntervens
   factory _$SosIntervensiModelCopyWith(_SosIntervensiModel value, $Res Function(_SosIntervensiModel) _then) = __$SosIntervensiModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, JenisIntervensiSos jenisIntervensi, String? detail, HasilIntervensiSos? hasilIntervensi, String? diaryCravingId, DateTime dibuat
+ String id, JenisIntervensiSos jenisIntervensi, String? detail, HasilIntervensiSos? hasilIntervensi, String? diaryCravingId, String? substitusi, DateTime dibuat
 });
 
 
@@ -276,13 +278,14 @@ class __$SosIntervensiModelCopyWithImpl<$Res>
 
 /// Create a copy of SosIntervensiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jenisIntervensi = null,Object? detail = freezed,Object? hasilIntervensi = freezed,Object? diaryCravingId = freezed,Object? dibuat = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jenisIntervensi = null,Object? detail = freezed,Object? hasilIntervensi = freezed,Object? diaryCravingId = freezed,Object? substitusi = freezed,Object? dibuat = null,}) {
   return _then(_SosIntervensiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jenisIntervensi: null == jenisIntervensi ? _self.jenisIntervensi : jenisIntervensi // ignore: cast_nullable_to_non_nullable
 as JenisIntervensiSos,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
 as String?,hasilIntervensi: freezed == hasilIntervensi ? _self.hasilIntervensi : hasilIntervensi // ignore: cast_nullable_to_non_nullable
 as HasilIntervensiSos?,diaryCravingId: freezed == diaryCravingId ? _self.diaryCravingId : diaryCravingId // ignore: cast_nullable_to_non_nullable
+as String?,substitusi: freezed == substitusi ? _self.substitusi : substitusi // ignore: cast_nullable_to_non_nullable
 as String?,dibuat: null == dibuat ? _self.dibuat : dibuat // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));

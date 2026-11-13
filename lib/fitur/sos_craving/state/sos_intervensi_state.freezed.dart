@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SosIntervensiState {
 
- List<SosIntervensiModel> get listIntervensi; int get jumlahIntervensi;
+ List<SosIntervensiModel> get listIntervensi; int get jumlahIntervensi; int get jumlahBerhasil;
 /// Create a copy of SosIntervensiState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $SosIntervensiStateCopyWith<SosIntervensiState> get copyWith => _$SosIntervensiS
 @override
 bool operator ==(Object other) {
   final _this = this as SosIntervensiState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SosIntervensiState&&const DeepCollectionEquality().equals(other.listIntervensi, _this.listIntervensi)&&(identical(other.jumlahIntervensi, _this.jumlahIntervensi) || other.jumlahIntervensi == _this.jumlahIntervensi));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SosIntervensiState&&const DeepCollectionEquality().equals(other.listIntervensi, _this.listIntervensi)&&(identical(other.jumlahIntervensi, _this.jumlahIntervensi) || other.jumlahIntervensi == _this.jumlahIntervensi)&&(identical(other.jumlahBerhasil, _this.jumlahBerhasil) || other.jumlahBerhasil == _this.jumlahBerhasil));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SosIntervensiState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listIntervensi),_this.jumlahIntervensi);
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.listIntervensi),_this.jumlahIntervensi,_this.jumlahBerhasil);
 }
 
 @override
 String toString() {
   final _this = this as SosIntervensiState;
-  return 'SosIntervensiState(listIntervensi: ${_this.listIntervensi}, jumlahIntervensi: ${_this.jumlahIntervensi})';
+  return 'SosIntervensiState(listIntervensi: ${_this.listIntervensi}, jumlahIntervensi: ${_this.jumlahIntervensi}, jumlahBerhasil: ${_this.jumlahBerhasil})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $SosIntervensiStateCopyWith<$Res>  {
   factory $SosIntervensiStateCopyWith(SosIntervensiState value, $Res Function(SosIntervensiState) _then) = _$SosIntervensiStateCopyWithImpl;
 @useResult
 $Res call({
- List<SosIntervensiModel> listIntervensi, int jumlahIntervensi
+ List<SosIntervensiModel> listIntervensi, int jumlahIntervensi, int jumlahBerhasil
 });
 
 
@@ -68,10 +68,11 @@ class _$SosIntervensiStateCopyWithImpl<$Res>
 
 /// Create a copy of SosIntervensiState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? listIntervensi = null,Object? jumlahIntervensi = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? listIntervensi = null,Object? jumlahIntervensi = null,Object? jumlahBerhasil = null,}) {
   return _then(SosIntervensiState(
 listIntervensi: null == listIntervensi ? _self.listIntervensi : listIntervensi // ignore: cast_nullable_to_non_nullable
 as List<SosIntervensiModel>,jumlahIntervensi: null == jumlahIntervensi ? _self.jumlahIntervensi : jumlahIntervensi // ignore: cast_nullable_to_non_nullable
+as int,jumlahBerhasil: null == jumlahBerhasil ? _self.jumlahBerhasil : jumlahBerhasil // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi,  int jumlahBerhasil)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SosIntervensiState() when $default != null:
-return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
+return $default(_that.listIntervensi,_that.jumlahIntervensi,_that.jumlahBerhasil);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi,  int jumlahBerhasil)  $default,) {final _that = this;
 switch (_that) {
 case _SosIntervensiState():
-return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
+return $default(_that.listIntervensi,_that.jumlahIntervensi,_that.jumlahBerhasil);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SosIntervensiModel> listIntervensi,  int jumlahIntervensi,  int jumlahBerhasil)?  $default,) {final _that = this;
 switch (_that) {
 case _SosIntervensiState() when $default != null:
-return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
+return $default(_that.listIntervensi,_that.jumlahIntervensi,_that.jumlahBerhasil);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.listIntervensi,_that.jumlahIntervensi);case _:
 
 
 class _SosIntervensiState extends SosIntervensiState {
-  const _SosIntervensiState({ List<SosIntervensiModel> listIntervensi = const [], this.jumlahIntervensi = 0}): _listIntervensi = listIntervensi,super._();
+  const _SosIntervensiState({ List<SosIntervensiModel> listIntervensi = const [], this.jumlahIntervensi = 0, this.jumlahBerhasil = 0}): _listIntervensi = listIntervensi,super._();
   
 
  final  List<SosIntervensiModel> _listIntervensi;
@@ -224,6 +225,7 @@ class _SosIntervensiState extends SosIntervensiState {
 }
 
 @override@JsonKey() final  int jumlahIntervensi;
+@override@JsonKey() final  int jumlahBerhasil;
 
 /// Create a copy of SosIntervensiState
 /// with the given fields replaced by the non-null parameter values.
@@ -235,18 +237,18 @@ _$SosIntervensiStateCopyWith<_SosIntervensiState> get copyWith => __$SosInterven
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SosIntervensiState&&const DeepCollectionEquality().equals(other.listIntervensi, _listIntervensi)&&(identical(other.jumlahIntervensi, jumlahIntervensi) || other.jumlahIntervensi == jumlahIntervensi));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SosIntervensiState&&const DeepCollectionEquality().equals(other.listIntervensi, _listIntervensi)&&(identical(other.jumlahIntervensi, jumlahIntervensi) || other.jumlahIntervensi == jumlahIntervensi)&&(identical(other.jumlahBerhasil, jumlahBerhasil) || other.jumlahBerhasil == jumlahBerhasil));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listIntervensi),jumlahIntervensi);
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_listIntervensi),jumlahIntervensi,jumlahBerhasil);
 }
 
 @override
 String toString() {
-    return 'SosIntervensiState(listIntervensi: $listIntervensi, jumlahIntervensi: $jumlahIntervensi)';
+    return 'SosIntervensiState(listIntervensi: $listIntervensi, jumlahIntervensi: $jumlahIntervensi, jumlahBerhasil: $jumlahBerhasil)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$SosIntervensiStateCopyWith<$Res> implements $SosIntervens
   factory _$SosIntervensiStateCopyWith(_SosIntervensiState value, $Res Function(_SosIntervensiState) _then) = __$SosIntervensiStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<SosIntervensiModel> listIntervensi, int jumlahIntervensi
+ List<SosIntervensiModel> listIntervensi, int jumlahIntervensi, int jumlahBerhasil
 });
 
 
@@ -274,10 +276,11 @@ class __$SosIntervensiStateCopyWithImpl<$Res>
 
 /// Create a copy of SosIntervensiState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? listIntervensi = null,Object? jumlahIntervensi = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? listIntervensi = null,Object? jumlahIntervensi = null,Object? jumlahBerhasil = null,}) {
   return _then(_SosIntervensiState(
 listIntervensi: null == listIntervensi ? _self._listIntervensi : listIntervensi // ignore: cast_nullable_to_non_nullable
 as List<SosIntervensiModel>,jumlahIntervensi: null == jumlahIntervensi ? _self.jumlahIntervensi : jumlahIntervensi // ignore: cast_nullable_to_non_nullable
+as int,jumlahBerhasil: null == jumlahBerhasil ? _self.jumlahBerhasil : jumlahBerhasil // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

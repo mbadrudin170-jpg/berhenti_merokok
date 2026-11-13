@@ -34,7 +34,7 @@ final class SosIntervensiNotifierProvider
 }
 
 String _$sosIntervensiNotifierHash() =>
-    r'3fb68a24710f1800b0f7a562f18d3e4da3b12c20';
+    r'409075a00222e749120b0efc01494c64b20d26ba';
 
 abstract class _$SosIntervensiNotifier
     extends $AsyncNotifier<SosIntervensiState> {
