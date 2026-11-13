@@ -36,7 +36,7 @@ alias r="flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080 --web-
 # ============================================
 # COMBINED COMMANDS
 # ============================================
-alias lr='gabung_example_teks && path_paket && generate_model_docs && build_core_shared && build_structure && build_snippets && build_lib_docs && build_rules_context && build_docs info.md'
+alias lr='path_paket && generate_model_docs && build_core_shared && build_structure && build_snippets && build_lib_docs && build_rules_context && build_docs info.md'
 alias killdev='pkill -f "dart language-server" 2>/dev/null || true; pkill -f "type=extensionHost" 2>/dev/null || true; pkill -f dartaotruntime 2>/dev/null || true; pkill -f GradleDaemon 2>/dev/null || true; pkill -f "org.eclipse.equinox.launcher" 2>/dev/null || true; pkill -f "flutter_tools.snapshot" 2>/dev/null || true'
 alias cleanall='killdev && full_clean'
 alias bersih='rm -rf ~/.gradle ~/.dartServer ~/.cache && df -h'

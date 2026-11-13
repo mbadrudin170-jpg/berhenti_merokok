@@ -3,9 +3,9 @@
 // ============================================================
 
 ```dart
-import 'package:flutter/foundation.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_kolom.dart';
 import 'package:berhenti_merokok/shared/konstanta/nama_tabel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -21,7 +21,12 @@ class AppDatabase {
   static const String _namaDatabase = 'berhenti_merokok.db';
 
   /// Versi skema database.
-  static const int _versiDatabase = 7;
+  // Versi 12: migrasi nilai enum snake_case lama ke lowerCamelCase.
+  // Versi 13: tabel rencana_darurat (if-then plan).
+  // Versi 14: tambah kolom pemicu (TEXT, nullable) pada tabel konsumsi_rokok.
+  // Versi 15: perbaikan bug — instalasi baru (onCreate) versi 14 tidak menyertakan
+  // kolom pemicu; migrasi ini menambahkan kolom pemicu bila belum ada.
+  static const int _versiDatabase = 15;
 
   /// Mengembalikan instance database, membuatnya jika belum tersedia.
   static Future<Database> get database async {
@@ -57,7 +62,8 @@ class AppDatabase {
         ${NamaKolom.tanggalMulaiBerhentiMerokok} TEXT,
         ${NamaKolom.modeBerhenti} TEXT,
         ${NamaKolom.penurunanPerMinggu} INTEGER,
-        ${NamaKolom.tanggalMulaiTapering} TEXT
+        ${NamaKolom.tanggalMulaiTapering} TEXT,
+        ${NamaKolom.targetSmokeFreeHari} INTEGER
       )
     ''');
 
@@ -78,6 +84,10 @@ class AppDatabase {
         ${NamaKolom.pemicu} TEXT NOT NULL,
         ${NamaKolom.intensitas} INTEGER,
         ${NamaKolom.catatan} TEXT,
+        ${NamaKolom.durasiMenit} INTEGER,
+        ${NamaKolom.mood} TEXT,
+        ${NamaKolom.strategi} TEXT,
+        ${NamaKolom.hasil} TEXT,
         ${NamaKolom.dibuat} TEXT
       )
     ''');
@@ -87,6 +97,42 @@ class AppDatabase {
         ${NamaKolom.id} TEXT PRIMARY KEY,
         ${NamaKolom.teks} TEXT NOT NULL,
         ${NamaKolom.dibuat} TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.tanggal} TEXT NOT NULL,
+        ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
+        ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
+        ${NamaKolom.catatan} TEXT,
+        ${NamaKolom.pemicu} TEXT,
+        ${NamaKolom.dibuat} TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
+      ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
+        ${NamaKolom.detail} TEXT,
+        ${NamaKolom.hasilIntervensi} TEXT,
+        ${NamaKolom.diaryCravingId} TEXT,
+        ${NamaKolom.dibuat} TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+        ${NamaKolom.id} TEXT PRIMARY KEY,
+        ${NamaKolom.jika} TEXT NOT NULL,
+        ${NamaKolom.maka} TEXT NOT NULL,
+        ${NamaKolom.dibuat} TEXT NOT NULL
       )
     ''');
   }
@@ -158,6 +204,148 @@ class AppDatabase {
         )
       ''');
     }
+    if (oldVersion < 8) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.biodata} '
+        'ADD COLUMN ${NamaKolom.targetSmokeFreeHari} INTEGER',
+      );
+    }
+    // v9: tabel konsumsi_rokok. Tabel sos_intervensi dibuat di cabang v11 (lihat bawah)
+    // agar setiap tabel didefinisikan tepat sekali pada kondisi versinya masing-masing.
+    if (oldVersion < 9) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.konsumsiRokok}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.tanggal} TEXT NOT NULL,
+          ${NamaKolom.jumlah} INTEGER NOT NULL DEFAULT 1,
+          ${NamaKolom.isSlip} INTEGER NOT NULL DEFAULT 0,
+          ${NamaKolom.catatan} TEXT,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_konsumsi_tanggal
+        ON ${NamaTabel.konsumsiRokok}(${NamaKolom.tanggal})
+      ''');
+    }
+    if (oldVersion < 10) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.diaryCraving} '
+        'ADD COLUMN ${NamaKolom.durasiMenit} INTEGER',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.diaryCraving} '
+        'ADD COLUMN ${NamaKolom.mood} TEXT',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.diaryCraving} '
+        'ADD COLUMN ${NamaKolom.strategi} TEXT',
+      );
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.diaryCraving} '
+        'ADD COLUMN ${NamaKolom.hasil} TEXT',
+      );
+    }
+    if (oldVersion < 11) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.sosIntervensi}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.jenisIntervensi} TEXT NOT NULL,
+          ${NamaKolom.detail} TEXT,
+          ${NamaKolom.hasilIntervensi} TEXT,
+          ${NamaKolom.diaryCravingId} TEXT,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
+    }
+    // v12: petakan nilai enum snake_case yang tersimpan ke lowerCamelCase.
+    // Tanpa migrasi ini nilai lama tidak terparse oleh safeParseEnum.
+    if (oldVersion < 12) {
+      const pemetaanCraving = <String, String>{
+        'napas_478': 'napas478',
+        'minum_air': 'minumAir',
+        'alih_aktivitas': 'alihAktivitas',
+        'tunda_5_menit': 'tunda5Menit',
+      };
+      const pemetaanHasil = <String, String>{
+        'berhasil_menahan': 'berhasilMenahan',
+        'tetap_merokok': 'tetapMerokok',
+        'belum_selesai': 'belumSelesai',
+      };
+      const pemetaanJenisIntervensi = <String, String>{
+        'napas_478': 'napas478',
+        'timer_3_menit': 'timer3Menit',
+        'napas_box': 'napasBox',
+        'napas_90_detik': 'napas90Detik',
+        'grounding_54321': 'grounding54321',
+        'urge_surfing': 'urgeSurfing',
+        'timer_craving': 'timerCraving',
+      };
+      for (final entry in pemetaanCraving.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.diaryCraving} '
+          'SET ${NamaKolom.strategi} = ? '
+          'WHERE ${NamaKolom.strategi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+      for (final entry in pemetaanHasil.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.diaryCraving} '
+          'SET ${NamaKolom.hasil} = ? '
+          'WHERE ${NamaKolom.hasil} = ?',
+          [entry.value, entry.key],
+        );
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.sosIntervensi} '
+          'SET ${NamaKolom.hasilIntervensi} = ? '
+          'WHERE ${NamaKolom.hasilIntervensi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+      for (final entry in pemetaanJenisIntervensi.entries) {
+        await db.rawUpdate(
+          'UPDATE ${NamaTabel.sosIntervensi} '
+          'SET ${NamaKolom.jenisIntervensi} = ? '
+          'WHERE ${NamaKolom.jenisIntervensi} = ?',
+          [entry.value, entry.key],
+        );
+      }
+    }
+    // v13: tabel rencana_darurat (if-then plan).
+    if (oldVersion < 13) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${NamaTabel.rencanaDarurat}(
+          ${NamaKolom.id} TEXT PRIMARY KEY,
+          ${NamaKolom.jika} TEXT NOT NULL,
+          ${NamaKolom.maka} TEXT NOT NULL,
+          ${NamaKolom.dibuat} TEXT NOT NULL
+        )
+      ''');
+    }
+    // v14: tambah kolom pemicu (TEXT, nullable) pada tabel konsumsi_rokok.
+    if (oldVersion < 14) {
+      await db.execute(
+        'ALTER TABLE ${NamaTabel.konsumsiRokok} '
+        'ADD COLUMN ${NamaKolom.pemicu} TEXT',
+      );
+    }
+    // v15: perbaikan bug — database versi 14 yang dibuat melalui onCreate tidak
+    // menyertakan kolom pemicu (hanya migrasi v14 yang menambahkannya).
+    // Pemeriksaan PRAGMA table_info membuat migrasi ini aman untuk database
+    // yang sudah memiliki kolom pemicu (hasil upgrade v13 → v14).
+    if (oldVersion < 15) {
+      final info = await db.rawQuery(
+        'PRAGMA table_info(${NamaTabel.konsumsiRokok})',
+      );
+      final sudahAda = info.any((kolom) => kolom['name'] == NamaKolom.pemicu);
+      if (!sudahAda) {
+        await db.execute(
+          'ALTER TABLE ${NamaTabel.konsumsiRokok} '
+          'ADD COLUMN ${NamaKolom.pemicu} TEXT',
+        );
+      }
+    }
   }
 
   /// Menutup database jika sedang terbuka.
@@ -169,6 +357,7 @@ class AppDatabase {
   }
 }
 ```
+
 
 // ============================================================
 // FILE: lib/shared/db/sqflite/sqflite_op.dart
@@ -427,6 +616,7 @@ class SqfliteOp {
 }
 ```
 
+
 // ============================================================
 // FILE: lib/shared/helper/shared_keys.dart
 // ============================================================
@@ -442,6 +632,9 @@ class SharedKeys {
   /// Kunci untuk menyimpan preferensi tema aplikasi.
   static const String tema = 'tema';
 
+  /// Kunci untuk menyimpan preferensi tema visual metafora impian.
+  static const String temaVisualImpian = 'tema_visual_impian';
+
   /// Kunci untuk menyimpan status aktif pengingat harian.
   static const String notifikasiHarian = 'notifikasi_harian';
 
@@ -450,25 +643,42 @@ class SharedKeys {
 
   /// Kunci untuk menyimpan menit pengingat harian.
   static const String notifikasiMenit = 'notifikasi_menit';
+
+  /// Kunci untuk menyimpan status aktif check-in pagi.
+  static const String notifikasiCheckinPagi = 'notifikasi_checkin_pagi';
+
+  /// Kunci untuk menyimpan jam check-in pagi.
+  static const String notifikasiCheckinPagiJam = 'notifikasi_checkin_pagi_jam';
+
+  /// Kunci untuk menyimpan menit check-in pagi.
+  static const String notifikasiCheckinPagiMenit = 'notifikasi_checkin_pagi_menit';
+
+  /// Kunci untuk menyimpan status aktif pengingat pola craving.
+  static const String notifikasiPolaCraving = 'notifikasi_pola_craving';
 }
 ```
+
 
 // ============================================================
 // FILE: lib/shared/konstanta/milestone_kesehatan.dart
 // ============================================================
 
 ```dart
+import 'package:berhenti_merokok/shared/konstanta/organ_pemulihan.dart';
+
 /// Data satu milestone pemulihan kesehatan berdasarkan durasi smoke-free.
 class MilestoneKesehatan {
   const MilestoneKesehatan({
     required this.target,
     required this.judul,
     required this.deskripsi,
+    required this.organ,
   });
 
   final Duration target;
   final String judul;
   final String deskripsi;
+  final OrganPemulihan organ;
 }
 
 /// Daftar milestone pemulihan kesehatan berdasarkan durasi smoke-free.
@@ -478,6 +688,7 @@ const List<MilestoneKesehatan> daftarMilestoneKesehatan = [
     judul: '20 Menit',
     deskripsi:
         'Tekanan darah dan denyut jantung mulai kembali ke tingkat normal.',
+    organ: OrganPemulihan.jantung,
   ),
   MilestoneKesehatan(
     target: Duration(hours: 8),
@@ -485,11 +696,13 @@ const List<MilestoneKesehatan> daftarMilestoneKesehatan = [
     deskripsi:
         'Kadar karbon monoksida dalam darah turun ke tingkat normal, '
         'oksigen dalam darah meningkat.',
+    organ: OrganPemulihan.sirkulasi,
   ),
   MilestoneKesehatan(
     target: Duration(hours: 24),
     judul: '24 Jam',
     deskripsi: 'Risiko serangan jantung mulai menurun.',
+    organ: OrganPemulihan.jantung,
   ),
   MilestoneKesehatan(
     target: Duration(hours: 48),
@@ -497,12 +710,14 @@ const List<MilestoneKesehatan> daftarMilestoneKesehatan = [
     deskripsi:
         'Ujung saraf mulai tumbuh kembali, indra pengecapan dan '
         'penciuman membaik.',
+    organ: OrganPemulihan.saraf,
   ),
   MilestoneKesehatan(
     target: Duration(hours: 72),
     judul: '72 Jam',
     deskripsi:
         'Bronkus rileks, kapasitas paru meningkat, energi tubuh bertambah.',
+    organ: OrganPemulihan.paru,
   ),
   MilestoneKesehatan(
     target: Duration(days: 14),
@@ -510,11 +725,13 @@ const List<MilestoneKesehatan> daftarMilestoneKesehatan = [
     deskripsi:
         'Sirkulasi darah membaik, fungsi paru meningkat, berjalan kaki '
         'menjadi lebih mudah.',
+    organ: OrganPemulihan.sirkulasi,
   ),
   MilestoneKesehatan(
     target: Duration(days: 90),
     judul: '3 Bulan',
     deskripsi: 'Batuk dan sesak napas berkurang, paru-paru mulai pulih.',
+    organ: OrganPemulihan.paru,
   ),
   MilestoneKesehatan(
     target: Duration(days: 270),
@@ -522,22 +739,26 @@ const List<MilestoneKesehatan> daftarMilestoneKesehatan = [
     deskripsi:
         'Paru-paru telah pulih secara signifikan, energi dan stamina '
         'meningkat.',
+    organ: OrganPemulihan.paru,
   ),
   MilestoneKesehatan(
     target: Duration(days: 365),
     judul: '1 Tahun',
     deskripsi:
         'Risiko penyakit jantung koroner turun setengah dibanding perokok.',
+    organ: OrganPemulihan.jantung,
   ),
   MilestoneKesehatan(
     target: Duration(days: 1825),
     judul: '5 Tahun',
     deskripsi: 'Risiko stroke setara dengan orang yang tidak merokok.',
+    organ: OrganPemulihan.sirkulasi,
   ),
   MilestoneKesehatan(
     target: Duration(days: 3650),
     judul: '10 Tahun',
     deskripsi: 'Risiko kanker paru turun setengah dibanding perokok aktif.',
+    organ: OrganPemulihan.paru,
   ),
   MilestoneKesehatan(
     target: Duration(days: 5475),
@@ -545,6 +766,7 @@ const List<MilestoneKesehatan> daftarMilestoneKesehatan = [
     deskripsi:
         'Risiko penyakit jantung koroner setara dengan orang yang tidak '
         'merokok.',
+    organ: OrganPemulihan.jantung,
   ),
 ];
 
@@ -557,6 +779,7 @@ MilestoneKesehatan? milestoneBerikutnya(Duration durasi) {
   return null;
 }
 ```
+
 
 // ============================================================
 // FILE: lib/shared/konstanta/nama_kolom.dart
@@ -601,6 +824,9 @@ class NamaKolom {
   /// Kolom tanggal mulai rencana penurunan (tapering).
   static const String tanggalMulaiTapering = 'tanggal_mulai_tapering';
 
+  /// Kolom target smoke-free (hari) pada biodata.
+  static const String targetSmokeFreeHari = 'target_smoke_free_hari';
+
   // Kolom tabel impian.
   /// Kolom target tanggal impian.
   static const String targetTanggal = 'target_tanggal';
@@ -624,10 +850,47 @@ class NamaKolom {
   /// Kolom catatan craving.
   static const String catatan = 'catatan';
 
+  /// Kolom durasi craving dalam menit.
+  static const String durasiMenit = 'durasi_menit';
+
+  /// Kolom suasana hati saat craving.
+  static const String mood = 'mood';
+
+  /// Kolom strategi yang dicoba saat craving.
+  static const String strategi = 'strategi';
+
+  /// Kolom hasil dari craving.
+  static const String hasil = 'hasil';
+
   /// Kolom teks alasan berhenti.
   static const String teks = 'teks';
+
+  // Kolom tabel rencana_darurat.
+  /// Kolom situasi pemicu (jika …) pada rencana darurat.
+  static const String jika = 'jika';
+
+  /// Kolom tindakan konkret (maka …) pada rencana darurat.
+  static const String maka = 'maka';
+
+  // Kolom tabel konsumsi_rokok.
+  /// Kolom flag slip/relapse konsumsi rokok.
+  static const String isSlip = 'is_slip';
+
+  // Kolom tabel sos_intervensi.
+  /// Kolom jenis intervensi SOS (napas478, timer3Menit, distraksi).
+  static const String jenisIntervensi = 'jenis_intervensi';
+
+  /// Kolom nama aktivitas distraksi yang dipilih (nullable).
+  static const String detail = 'detail';
+
+  /// Kolom hasil intervensi (berkurang, tetap, belumSelesai; nullable).
+  static const String hasilIntervensi = 'hasil_intervensi';
+
+  /// Kolom referensi entri diary craving (FK logis, nullable).
+  static const String diaryCravingId = 'diary_craving_id';
 }
 ```
+
 
 // ============================================================
 // FILE: lib/shared/konstanta/nama_tabel.dart
@@ -649,8 +912,59 @@ class NamaTabel {
 
   /// Tabel catatan alasan berhenti (reasons vault).
   static const String alasanBerhenti = 'alasan_berhenti';
+
+  /// Tabel pencatatan konsumsi rokok aktual.
+  static const String konsumsiRokok = 'konsumsi_rokok';
+
+  /// Tabel riwayat intervensi SOS Craving.
+  static const String sosIntervensi = 'sos_intervensi';
+
+  /// Tabel rencana darurat if-then (jika… maka…).
+  static const String rencanaDarurat = 'rencana_darurat';
 }
 ```
+
+
+// ============================================================
+// FILE: lib/shared/konstanta/organ_pemulihan.dart
+// ============================================================
+
+```dart
+import 'package:flutter/material.dart';
+
+/// Sistem organ yang dipulihkan setelah berhenti merokok.
+enum OrganPemulihan { jantung, paru, sirkulasi, saraf }
+
+/// Extension label dan ikon untuk [OrganPemulihan].
+extension OrganPemulihanExtension on OrganPemulihan {
+  String get label {
+    switch (this) {
+      case OrganPemulihan.jantung:
+        return 'Jantung';
+      case OrganPemulihan.paru:
+        return 'Paru-paru';
+      case OrganPemulihan.sirkulasi:
+        return 'Sirkulasi darah';
+      case OrganPemulihan.saraf:
+        return 'Saraf & indra';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case OrganPemulihan.jantung:
+        return Icons.monitor_heart_outlined;
+      case OrganPemulihan.paru:
+        return Icons.air;
+      case OrganPemulihan.sirkulasi:
+        return Icons.water_drop_outlined;
+      case OrganPemulihan.saraf:
+        return Icons.psychology_alt_outlined;
+    }
+  }
+}
+```
+
 
 // ============================================================
 // FILE: lib/shared/notifikasi/notifikasi_service.dart
@@ -689,6 +1003,12 @@ class NotifikasiService {
 
   /// ID notifikasi uji coba (terpisah dari pengingat utama).
   static const int _idUjiCoba = 1002;
+
+  /// ID notifikasi check-in pagi (terpisah dari pengingat harian).
+  static const int _idCheckinPagi = 1003;
+
+  /// ID notifikasi pengingat pola craving (terpisah dari pengingat harian).
+  static const int _idPolaCraving = 1004;
 
   /// GlobalKey navigator untuk navigasi saat notifikasi ditekan.
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -827,7 +1147,9 @@ class NotifikasiService {
     L.i('kategori=$kategori, id=$id');
 
     final context = navigator.context;
-    if (kategori == 'pengingat_harian') {
+    if (kategori == 'pengingat_harian' ||
+        kategori == 'checkin_pagi' ||
+        kategori == 'pola_craving') {
       unawaited(
         Nav.pushAndRemoveUntil(context, const Home()).catchError((
           Object e,
@@ -1013,6 +1335,189 @@ class NotifikasiService {
     }
   }
 
+  /// Menjadwalkan check-in pagi pada jam dan menit tertentu.
+  static Future<void> jadwalkanCheckinPagi({
+    required int jam,
+    required int menit,
+  }) async {
+    L.i('checkinPagi jam=$jam, menit=$menit');
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows) {
+      L.w('platform tidak mendukung penjadwalan terjadwal');
+      throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
+    }
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      jam,
+      menit,
+    );
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'checkin_pagi',
+        'Check-in Pagi',
+        channelDescription: 'Check-in pagi smoke-free',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+        icon: 'ic_launcher',
+      ),
+      iOS: DarwinNotificationDetails(),
+    );
+
+    try {
+      await _plugin.zonedSchedule(
+        id: _idCheckinPagi,
+        scheduledDate: scheduled,
+        notificationDetails: details,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        title: 'Check-in Pagi',
+        body: 'Selamat pagi! Jaga komitmen smoke-free Anda hari ini.',
+        payload: 'kategori=checkin_pagi&id=$_idCheckinPagi',
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+      final izinDiberikan = await _periksaIzinSistem();
+      if (!izinDiberikan) {
+        L.w('izin notifikasi tidak diberikan, batalkan check-in pagi');
+        await _plugin.cancel(id: _idCheckinPagi);
+        await setAktifCheckinPagi(false);
+        throw const IzinNotifikasiTidakDiberikanException();
+      }
+      final aktifLama = await aktifCheckinPagi();
+      final jamLama = await jamCheckinPagi();
+      final menitLama = await menitCheckinPagi();
+      try {
+        await setWaktuCheckinPagi(jam, menit);
+        await setAktifCheckinPagi(true);
+      } on Exception catch (e, s) {
+        L.e('Gagal menyimpan preferensi check-in pagi, rollback: $e $s');
+        try {
+          await setWaktuCheckinPagi(jamLama, menitLama);
+          await setAktifCheckinPagi(aktifLama);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal rollback preferensi check-in pagi: $e2 $s2');
+        }
+        try {
+          await _plugin.cancel(id: _idCheckinPagi);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal membatalkan jadwal check-in pagi saat rollback: $e2 $s2');
+        }
+        rethrow;
+      }
+      L.s('Check-in pagi dijadwalkan jam=$jam:$menit');
+    } on Exception catch (e, s) {
+      L.e('Gagal menjadwalkan check-in pagi: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Membatalkan check-in pagi.
+  static Future<void> batalkanCheckinPagi() async {
+    try {
+      await _plugin.cancel(id: _idCheckinPagi);
+      await setAktifCheckinPagi(false);
+      L.s('Check-in pagi dibatalkan');
+    } on Exception catch (e, s) {
+      L.e('Gagal membatalkan check-in pagi: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Menjadwalkan pengingat pola craving pada jam tertentu.
+  static Future<void> jadwalkanPolaCraving(int jam) async {
+    L.i('polaCraving jam=$jam');
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.windows) {
+      L.w('platform tidak mendukung penjadwalan terjadwal');
+      throw UnsupportedError('Platform tidak mendukung notifikasi terjadwal');
+    }
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      jam,
+      0,
+    );
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'pola_craving',
+        'Pengingat Pola Craving',
+        channelDescription: 'Pengingat berbasis pola jam craving',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+        icon: 'ic_launcher',
+      ),
+      iOS: DarwinNotificationDetails(),
+    );
+
+    try {
+      await _plugin.zonedSchedule(
+        id: _idPolaCraving,
+        scheduledDate: scheduled,
+        notificationDetails: details,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        title: 'Pengingat Pola Craving',
+        body: 'Ini biasanya jam Anda mengalami craving. Tetap semangat!',
+        payload: 'kategori=pola_craving&id=$_idPolaCraving',
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+      final izinDiberikan = await _periksaIzinSistem();
+      if (!izinDiberikan) {
+        L.w('izin notifikasi tidak diberikan, batalkan pola craving');
+        await _plugin.cancel(id: _idPolaCraving);
+        await setAktifPolaCraving(false);
+        throw const IzinNotifikasiTidakDiberikanException();
+      }
+      final aktifLama = await aktifPolaCraving();
+      try {
+        await setAktifPolaCraving(true);
+      } on Exception catch (e, s) {
+        L.e('Gagal menyimpan preferensi pola craving, rollback: $e $s');
+        try {
+          await setAktifPolaCraving(aktifLama);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal rollback preferensi pola craving: $e2 $s2');
+        }
+        try {
+          await _plugin.cancel(id: _idPolaCraving);
+        } on Exception catch (e2, s2) {
+          L.e('Gagal membatalkan jadwal pola craving saat rollback: $e2 $s2');
+        }
+        rethrow;
+      }
+      L.s('Pengingat pola craving dijadwalkan jam=$jam:00');
+    } on Exception catch (e, s) {
+      L.e('Gagal menjadwalkan pola craving: $e $s');
+      rethrow;
+    }
+  }
+
+  /// Membatalkan pengingat pola craving.
+  static Future<void> batalkanPolaCraving() async {
+    try {
+      await _plugin.cancel(id: _idPolaCraving);
+      await setAktifPolaCraving(false);
+      L.s('Pengingat pola craving dibatalkan');
+    } on Exception catch (e, s) {
+      L.e('Gagal membatalkan pola craving: $e $s');
+      rethrow;
+    }
+  }
+
   /// Menampilkan notifikasi langsung (untuk uji coba).
   static Future<void> tampilkanSekarang() async {
     const details = NotificationDetails(
@@ -1069,24 +1574,80 @@ class NotifikasiService {
     await prefs.setInt(SharedKeys.notifikasiMenit, menit);
   }
 
+  // --- Preferensi Check-in Pagi ---
+
+  static Future<bool> aktifCheckinPagi() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(SharedKeys.notifikasiCheckinPagi) ?? false;
+  }
+
+  static Future<void> setAktifCheckinPagi(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(SharedKeys.notifikasiCheckinPagi, value);
+  }
+
+  static Future<int> jamCheckinPagi() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(SharedKeys.notifikasiCheckinPagiJam) ?? 7;
+  }
+
+  static Future<int> menitCheckinPagi() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(SharedKeys.notifikasiCheckinPagiMenit) ?? 0;
+  }
+
+  static Future<void> setWaktuCheckinPagi(int jam, int menit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(SharedKeys.notifikasiCheckinPagiJam, jam);
+    await prefs.setInt(SharedKeys.notifikasiCheckinPagiMenit, menit);
+  }
+
+  // --- Preferensi Pola Craving ---
+
+  static Future<bool> aktifPolaCraving() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(SharedKeys.notifikasiPolaCraving) ?? false;
+  }
+
+  static Future<void> setAktifPolaCraving(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(SharedKeys.notifikasiPolaCraving, value);
+  }
+
   /// Jadwalkan ulang pengingat jika aktif (dipanggil saat app start).
   static Future<void> jadwalkanUlangJikaAktif() async {
     try {
+      // Pengingat harian existing.
       final isAktif = await aktif();
-      L.i('isAktif=$isAktif');
-      if (!isAktif) return;
-      // Periksa izin sistem; pengguna dapat mencabutnya melalui pengaturan.
-      final izinDiberikan = await _periksaIzinSistem();
-      if (!izinDiberikan) {
-        L.w('izin notifikasi tidak diberikan, nonaktifkan pengingat');
-        await setAktif(false);
-        return;
+      L.i('pengingatHarian isAktif=$isAktif');
+      if (isAktif) {
+        final izinDiberikan = await _periksaIzinSistem();
+        if (!izinDiberikan) {
+          L.w('izin notifikasi tidak diberikan, nonaktifkan pengingat harian');
+          await setAktif(false);
+        } else {
+          final j = await jam();
+          final m = await menit();
+          await jadwalkanPengingatHarian(jam: j, menit: m);
+        }
       }
-      final j = await jam();
-      final m = await menit();
-      await jadwalkanPengingatHarian(jam: j, menit: m);
+
+      // Check-in pagi.
+      final isCheckinPagiAktif = await aktifCheckinPagi();
+      L.i('checkinPagi isAktif=$isCheckinPagiAktif');
+      if (isCheckinPagiAktif) {
+        final izinDiberikan = await _periksaIzinSistem();
+        if (!izinDiberikan) {
+          L.w('izin notifikasi tidak diberikan, nonaktifkan check-in pagi');
+          await setAktifCheckinPagi(false);
+        } else {
+          final j = await jamCheckinPagi();
+          final m = await menitCheckinPagi();
+          await jadwalkanCheckinPagi(jam: j, menit: m);
+        }
+      }
     } on Exception catch (e, s) {
-      L.e('Gagal menjadwalkan ulang pengingat harian: $e $s');
+      L.e('Gagal menjadwalkan ulang pengingat harian/check-in pagi: $e $s');
     } on UnsupportedError catch (e, s) {
       L.e('Platform tidak mendukung penjadwalan ulang: $e $s');
     }
@@ -1116,3 +1677,86 @@ class NotifikasiService {
   }
 }
 ```
+
+
+// ============================================================
+// FILE: lib/shared/widget/empty_state_view.dart
+// ============================================================
+
+```dart
+import 'package:flutter/material.dart';
+
+/// Komponen empty state bersama: ikon + judul + deskripsi + CTA opsional.
+///
+/// Dipakai pada kondisi "belum ada data" di layar daftar maupun layar
+/// non-daftar agar pola tampilan konsisten. Widget bersifat pure (tidak
+/// membaca provider); pemanggil yang menyediakan teks dan aksi.
+class EmptyStateView extends StatelessWidget {
+  const EmptyStateView({
+    super.key,
+    required this.ikon,
+    required this.judul,
+    required this.deskripsi,
+    this.ctaLabel,
+    this.onCta,
+  }) : assert(
+         (ctaLabel == null) == (onCta == null),
+         'ctaLabel dan onCta harus diisi berpasangan atau keduanya null',
+       );
+
+  final IconData ikon;
+  final String judul;
+  final String deskripsi;
+
+  /// Label tombol CTA. Wajib berpasangan dengan [onCta].
+  final String? ctaLabel;
+
+  /// Aksi tombol CTA, misalnya navigasi ke form tambah atau pemulihan data.
+  final VoidCallback? onCta;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              Icon(
+                ikon,
+                size: 48,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              Text(
+                judul,
+                textAlign: TextAlign.center,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                deskripsi,
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              if (ctaLabel != null && onCta != null)
+                OutlinedButton(
+                  onPressed: onCta,
+                  child: Text(ctaLabel!),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+
