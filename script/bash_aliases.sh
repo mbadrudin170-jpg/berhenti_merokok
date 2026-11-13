@@ -93,6 +93,7 @@ alias topmem='ps aux --sort=-%mem | head -15'
 alias topcpu='ps aux --sort=-%cpu | head -15'
 alias cekram='ps aux --sort=-%mem | head -10'
 alias bersihram='killdev && sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches" && free -h'
+alias cekcpu='echo "=== Jumlah Core ===" && nproc && echo "=== Arsitektur & Model CPU ===" && lscpu && echo "=== Penggunaan CPU (snapshot) ===" && top -bn1 | head -5 && echo "=== Load Average ===" && uptime && echo "=== Detail per Core ===" && cat /proc/cpuinfo'
 
 # ============================================
 # CHECK LARGEST FILES & DIRS
