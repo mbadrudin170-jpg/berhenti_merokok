@@ -1,1 +1,4 @@
 # Keluhan
+
+1. ketika saya menjalankan commands `.kilo/commands/kerjakan_hasil_diskusi.md` kenapa si ai tidak langsung mengerjakan malahan cuma membuat prompt untuk di berikan ke AI lain di sesi baru
+2.The question tool was called with invalid arguments: ["questions"][0]["question"]: is missing and is required ["questions"][0]["options"]: is missing and is required ["questions"][1]["question"]: is missing and is required ["questions"][1]["options"]: is missing and is required ["questions"][2]["question"]: is missing and is required ["questions"][2]["options"]: is missing and is required. Please rewrite the input so it satisfies the expected schema. kenapa muncul begini.
