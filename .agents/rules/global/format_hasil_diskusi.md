@@ -56,7 +56,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
    - `## Rekomendasi` — daftar saran/tindakan yang dianjurkan, diberi kode `R-1`, `R-2`, dan seterusnya.
    - `## Tindak Lanjut` — tabel dengan kolom `No`, `Tindakan`, `File Terdampak`, `Status`.
    - `## File Terdampak` — tabel dengan kolom `Lokasi File`, `Status Perubahan`, `Deskripsi`.
-   - `## Pertanyaan Terbuka` — hal yang masih menunggu jawaban/keputusan; tulis `Belum ada` bila tidak ada.
+   - `## Pertanyaan Terbuka` — hal yang masih menunggu jawaban/keputusan; tulis `Belum ada` bila tidak ada. **WAJIB diperbarui setiap kali status atau isi berkas berubah**: pertanyaan yang sudah terjawab WAJIB dihapus dari daftar dan dicatat sebagai jejak di `## Riwayat Perubahan` (mis. "Pertanyaan terbuka ditutup: <ringkasan pertanyaan> — <jawaban singkat> (<tanggal>)").
    - `## Riwayat Perubahan` — tabel dengan kolom `Tanggal`, `Perubahan`.
 3. **Jumlah dan judul bagian DILARANG diubah** tanpa pembaruan aturan ini. Bila format perlu diperluas, ubah aturan ini terlebih dahulu.
 4. Seluruh isi **WAJIB** menggunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi.
@@ -77,6 +77,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 
 1. Bagian yang belum dibahas, belum diputuskan, atau belum tersedia datanya **WAJIB** diisi keterangan eksplisit, mis. `Belum dibahas` atau `Belum diketahui`.
 2. **DILARANG** menebak, mengisi contoh fiktif, atau mengosongkan bagian tanpa keterangan.
+3. Bagian `## Pertanyaan Terbuka` **WAJIB** diperbarui setiap kali status atau isi berkas berubah: pertanyaan yang sudah terjawab WAJIB dihapus dari daftar, dan dicatat sebagai jejak di `## Riwayat Perubahan` (mis. "Pertanyaan terbuka ditutup: <ringkasan pertanyaan> — <jawaban singkat> (<tanggal>)"). Bila tidak ada pertanyaan terbuka, tulis `Belum ada`.
 
 ## 8. Aturan Pencatatan di `MEMORI.md` dan `memori/riwayat_perubahan.md`
 
