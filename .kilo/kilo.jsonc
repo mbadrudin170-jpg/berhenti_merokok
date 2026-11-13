@@ -5,7 +5,7 @@
   "subagent_model": "kilo/kilo-auto/free",
   "agent": {
     "code": {
-      "model": "kilo/reflection/beam-free",
+      "model": "openrouter/thinkingmachines/inkling-2-small:free",
       "prompt": "{file:./prompts/code.md}",
       "variant": "max"
     },
