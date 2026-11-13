@@ -8,7 +8,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 
 - **Berkas yang diatur**: berkas hasil diskusi `diskusi_N.md` pada folder `hasil_diskusi/` di root proyek.
 - **Mode terkait**: `.kilo/commands/mode/mode_diskusi.md` (aturan pelaksanaan mode diskusi) dan `.kilo/commands/kerjakan_hasil_diskusi.md` (tindak lanjut hasil diskusi).
-- **Dokumen lain**: `MEMORI.md` (bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`).
+- **Dokumen lain**: `MEMORI.md` (bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`) serta `memori/riwayat_perubahan.md` (riwayat perubahan proyek).
 
 ## 3. Perbedaan dengan Format PRD
 
@@ -78,13 +78,13 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 1. Bagian yang belum dibahas, belum diputuskan, atau belum tersedia datanya **WAJIB** diisi keterangan eksplisit, mis. `Belum dibahas` atau `Belum diketahui`.
 2. **DILARANG** menebak, mengisi contoh fiktif, atau mengosongkan bagian tanpa keterangan.
 
-## 8. Aturan Pencatatan di `MEMORI.md`
+## 8. Aturan Pencatatan di `MEMORI.md` dan `memori/riwayat_perubahan.md`
 
 1. Setelah berkas hasil diskusi dibuat, diperbarui, atau dihapus, **WAJIB** perbarui `MEMORI.md` pada bagian yang relevan, sekurang-kurangnya:
    - `Lokasi Hasil Diskusi` — lokasi folder, daftar berkas, dan nomor tertinggi.
    - `Riwayat Diskusi` — topik, status PRD, dan tindak lanjut.
-   - `Riwayat Perubahan` — ringkasan perubahan berkas.
-2. **DILARANG** membiarkan `MEMORI.md` memuat nomor tertinggi atau daftar berkas yang sudah usang.
+2. Tambahkan entri riwayat perubahan pada `memori/riwayat_perubahan.md` — ringkasan perubahan berkas (sebagai pengganti bagian `Riwayat Perubahan` yang sebelumnya berada di `MEMORI.md`).
+3. **DILARANG** membiarkan `MEMORI.md` memuat nomor tertinggi atau daftar berkas yang sudah usang.
 
 ## 9. Larangan
 
@@ -149,4 +149,4 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 - [ ] Bagian yang belum dibahas diberi keterangan eksplisit.
 - [ ] Tidak memakai struktur PRD.
 - [ ] Bahasa Indonesia dan tidak ada informasi yang dikarang.
-- [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`.
+- [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta `memori/riwayat_perubahan.md` diperbarui (riwayat perubahan).

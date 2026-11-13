@@ -34,7 +34,7 @@ Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendoku
 5. Seluruh isi WAJIB didasarkan pada hasil diskusi dan informasi proyek yang diketahui. DILARANG mengarang informasi.
 6. Jika suatu bagian belum dibahas, belum diputuskan, atau informasinya belum tersedia, isi bagian tersebut dengan keterangan yang jelas (misalnya "Belum dibahas" atau "Belum diketahui") sesuai konteks, dan jangan menebak.
 7. Keputusan, tindak lanjut, dan poin penting dari diskusi WAJIB tercermin pada bagian `## Keputusan` dan `## Tindak Lanjut` agar hasil diskusi dapat ditindaklanjuti oleh `kerjakan_hasil_diskusi.md`.
-8. Setelah berkas dibuat, diperbarui, atau dihapus, WAJIB perbarui `MEMORI.md` pada bagian `Lokasi Hasil Diskusi`, `Riwayat Diskusi`, dan `Riwayat Perubahan`.
+8. Setelah berkas dibuat, diperbarui, atau dihapus, WAJIB perbarui `MEMORI.md` pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta tambahkan entri pada `memori/riwayat_perubahan.md`.
 
 ## 5. Aturan Penggunaan Tool `question`
 
