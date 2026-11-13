@@ -97,6 +97,8 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 - **DILARANG** memakai struktur PRD (bagian "Konteks penggunaan", "Aturan pengisian", atau 6 bagian PRD) untuk berkas hasil diskusi.
 - **DILARANG** mengubah teks judul `## Status`, `## Keputusan`, atau `## Tindak Lanjut`.
 - **DILARANG** menggunakan bahasa selain Indonesia, kecuali mengutip istilah teknis atau konten asing yang relevan.
+- **DILARANG** mencantumkan informasi yang bukan pertanyaan (mis. catatan status/implementasi) pada `## Pertanyaan Terbuka`.
+- **DILARANG** membiarkan pertanyaan yang sudah terjawab tetap tercantum pada `## Pertanyaan Terbuka`; pertanyaan terjawab WAJIB dihapus dan dicatat sebagai jejak di `## Riwayat Perubahan`.
 
 ## 10. Kerangka Berkas
 
@@ -149,6 +151,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 - [ ] `Dokumen` dan `Implementasi` pada `## Status` terisi dan konsisten dengan isi.
 - [ ] Keputusan diberi kode `K-N` dan rekomendasi diberi kode `R-N`.
 - [ ] Bagian yang belum dibahas diberi keterangan eksplisit.
+- [ ] `## Pertanyaan Terbuka` diperbarui: pertanyaan terjawab dihapus dan dicatat sebagai jejak di `## Riwayat Perubahan`; bila tidak ada, berisi `Belum ada`.
 - [ ] Tidak memakai struktur PRD.
 - [ ] Bahasa Indonesia dan tidak ada informasi yang dikarang.
 - [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta `memori/riwayat_perubahan.md` diperbarui (riwayat perubahan) — sinkronisasi dicatat/ditandai pada `memori/sesi/sesi_N.md` (status `Sudah Sinkron`); awal sesi melakukan catch-up sync (`memori/sesi/*.md` `Belum Sinkron` dipindai; yatim/kosong ditandai `Sudah Sinkron` + catatan eksplisit; ambigu dilaporkan ke pengguna); berkas sesi tidak boleh dihapus.

@@ -327,7 +327,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
    - `## Rekomendasi` — daftar saran/tindakan yang dianjurkan, diberi kode `R-1`, `R-2`, dan seterusnya.
    - `## Tindak Lanjut` — tabel dengan kolom `No`, `Tindakan`, `File Terdampak`, `Status`.
    - `## File Terdampak` — tabel dengan kolom `Lokasi File`, `Status Perubahan`, `Deskripsi`.
-   - `## Pertanyaan Terbuka` — hal yang masih menunggu jawaban/keputusan; tulis `Belum ada` bila tidak ada.
+   - `## Pertanyaan Terbuka` — hal yang masih menunggu jawaban/keputusan; tulis `Belum ada` bila tidak ada. **WAJIB diperbarui setiap kali status atau isi berkas berubah**: pertanyaan yang sudah terjawab WAJIB dihapus dari daftar dan dicatat sebagai jejak di `## Riwayat Perubahan` (mis. "Pertanyaan terbuka ditutup: <ringkasan pertanyaan> — <jawaban singkat> (<tanggal>)").
    - `## Riwayat Perubahan` — tabel dengan kolom `Tanggal`, `Perubahan`.
 3. **Jumlah dan judul bagian DILARANG diubah** tanpa pembaruan aturan ini. Bila format perlu diperluas, ubah aturan ini terlebih dahulu.
 4. Seluruh isi **WAJIB** menggunakan bahasa Indonesia, gaya teknis ringkas, tanpa pengalaman konversasi.
@@ -344,6 +344,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 ## 7. Aturan Bagian yang Belum Dibahas
 1. Bagian yang belum dibahas, belum diputuskan, atau belum tersedia datanya **WAJIB** diisi keterangan eksplisit, mis. `Belum dibahas` atau `Belum diketahui`.
 2. **DILARANG** menebak, mengisi contoh fiktif, atau mengosongkan bagian tanpa keterangan.
+3. Bagian `## Pertanyaan Terbuka` **WAJIB** diperbarui setiap kali status atau isi berkas berubah: pertanyaan yang sudah terjawab WAJIB dihapus dari daftar, dan dicatat sebagai jejak di `## Riwayat Perubahan` (mis. "Pertanyaan terbuka ditutup: <ringkasan pertanyaan> — <jawaban singkat> (<tanggal>)"). Bila tidak ada pertanyaan terbuka, tulis `Belum ada`.
 ## 8. Aturan Pencatatan di `MEMORI.md` dan `memori/riwayat_perubahan.md`
 1. Setelah berkas hasil diskusi dibuat, diperbarui, atau dihapus, **WAJIB** perbarui `MEMORI.md` pada bagian yang relevan, sekurang-kurangnya:
    - `Lokasi Hasil Diskusi` — lokasi folder, daftar berkas, dan nomor tertinggi.
@@ -359,6 +360,8 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 - **DILARANG** memakai struktur PRD (bagian "Konteks penggunaan", "Aturan pengisian", atau 6 bagian PRD) untuk berkas hasil diskusi.
 - **DILARANG** mengubah teks judul `## Status`, `## Keputusan`, atau `## Tindak Lanjut`.
 - **DILARANG** menggunakan bahasa selain Indonesia, kecuali mengutip istilah teknis atau konten asing yang relevan.
+- **DILARANG** mencantumkan informasi yang bukan pertanyaan (mis. catatan status/implementasi) pada `## Pertanyaan Terbuka`.
+- **DILARANG** membiarkan pertanyaan yang sudah terjawab tetap tercantum pada `## Pertanyaan Terbuka`; pertanyaan terjawab WAJIB dihapus dan dicatat sebagai jejak di `## Riwayat Perubahan`.
 ## 10. Kerangka Berkas
 ```markdown
 # Hasil Diskusi <N> — <judul topik>
@@ -398,6 +401,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 - [ ] `Dokumen` dan `Implementasi` pada `## Status` terisi dan konsisten dengan isi.
 - [ ] Keputusan diberi kode `K-N` dan rekomendasi diberi kode `R-N`.
 - [ ] Bagian yang belum dibahas diberi keterangan eksplisit.
+- [ ] `## Pertanyaan Terbuka` diperbarui: pertanyaan terjawab dihapus dan dicatat sebagai jejak di `## Riwayat Perubahan`; bila tidak ada, berisi `Belum ada`.
 - [ ] Tidak memakai struktur PRD.
 - [ ] Bahasa Indonesia dan tidak ada informasi yang dikarang.
 - [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta `memori/riwayat_perubahan.md` diperbarui (riwayat perubahan) — sinkronisasi dicatat/ditandai pada `memori/sesi/sesi_N.md` (status `Sudah Sinkron`); awal sesi melakukan catch-up sync (`memori/sesi/*.md` `Belum Sinkron` dipindai; yatim/kosong ditandai `Sudah Sinkron` + catatan eksplisit; ambigu dilaporkan ke pengguna); berkas sesi tidak boleh dihapus.

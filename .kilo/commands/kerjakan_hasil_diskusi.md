@@ -31,10 +31,12 @@ description: Menindaklanjuti hasil diskusi (hasil_diskusi/diskusi_N.md) menjadi 
 9. **Tulis hasil yang disetujui**:
    - Perbarui/buat entri di `task.md` sesuai draf yang disetujui dan `format_task.md` (jangan menghapus atau mengubah task lain tanpa alasan yang disepakati).
     - Jika disepakati membuat/memperbarui PRD, ikuti `format_PRD.md` dan batasi perubahan pada file PRD yang relevan.
-    - Jika disepakati **Implementasi langsung**, eksekusi kode di sesi ini setelah konfirmasi eksplisit pengguna; ikuti skill/rules yang relevan sesuai area (mis. `notifier-crud-database`, `gaya`, dst.); jangan ubah kode sebelum konfirmasi; jalankan verifikasi (`dart format`, `dart analyze`, `flutter test` bila relevan).
+     - Jika disepakati **Implementasi langsung**, eksekusi kode di sesi ini setelah konfirmasi eksplisit pengguna; ikuti skill/rules yang relevan sesuai area (mis. `notifier-crud-database`, `gaya`, dst.); jangan ubah kode sebelum konfirmasi; jalankan verifikasi (`dart format`, `dart analyze`, `flutter test` bila relevan).
     - **Dilarang** mengubah kode sumber implementasi (`.dart` atau file kode lain) sebelum konfirmasi eksplisit pengguna (§8).
+    - Jika tindak lanjut ini menjawab salah satu pertanyaan pada `## Pertanyaan Terbuka` berkas diskusi sumber, perbarui berkas diskusi sumber: hapus pertanyaan yang sudah terjawab dari daftar dan catat jejaknya di `## Riwayat Perubahan` (mis. "Pertanyaan terbuka ditutup: <ringkasan> — <jawaban singkat> (<tanggal>)"); bila tidak ada pertanyaan terbuka tersisa, tulis `Belum ada`.
 10. **Kriteria selesai**:
     - Sumber diskusi terbaca, status tervalidasi `Final`, dan tindak lanjutnya terpetakan.
-    - Draf/usulan ditampilkan dan status konfirmasi jelas.
+     - Draf/usulan ditampilkan dan status konfirmasi jelas.
+    - Bagian `## Pertanyaan Terbuka` pada berkas diskusi sumber diperbarui sesuai hasil tindak lanjut (pertanyaan terjawab dihapus + jejak di `## Riwayat Perubahan`); bila tidak ada, berisi `Belum ada`.
      - Jika disetujui, `task.md`/PRD yang relevan diperbarui sesuai format dan siap ditindaklanjuti oleh `kerjakan_task.md` atau alur PRD, atau perubahan untuk Implementasi langsung tereksekusi di sesi ini dengan verifikasi (`dart format`, `dart analyze`, `flutter test` bila relevan) lulus.
 11. **Bahasa**: selalu gunakan bahasa Indonesia saat berinteraksi dengan pengguna.

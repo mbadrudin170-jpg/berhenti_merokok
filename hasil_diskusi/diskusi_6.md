@@ -32,6 +32,7 @@ Bagian `## Pertanyaan Terbuka` pada berkas hasil diskusi sering dibiarkan basi: 
 - R-4: Tambahkan butir pada `mode_diskusi.md` §4 (Struktur dan Isi File Hasil Diskusi).
 - R-5: Tambahkan langkah pada `kerjakan_hasil_diskusi.md` §9–§10 (Tulis hasil yang disetujui / Kriteria selesai).
 - R-6: Samakan salinan `AGENTS.md` dan mirror `gpt/` dengan sumber aturan.
+- R-7: Tambahkan butir pada `format_hasil_diskusi.md` §9 (Larangan) — larangan mencantumkan non-pertanyaan pada `## Pertanyaan Terbuka`, dan larangan membiarkan pertanyaan terjawab tetap tercantum.
 
 ## Tindak Lanjut
 | No | Tindakan | File Terdampak | Status |
@@ -60,3 +61,4 @@ Belum ada
 | Tanggal | Perubahan |
 |---------|-----------|
 | 2026-11-13 | Berkas dibuat (Final) — kewajiban pembaruan `## Pertanyaan Terbuka` |
+| 2026-11-13 | Cakupan aturan diperluas ke §9 (Larangan): dua butir baru — DILARANG mencantumkan non-pertanyaan pada `## Pertanyaan Terbuka`, dan DILARANG membiarkan pertanyaan terjawab tetap tercantum (wajib dihapus + jejak di `## Riwayat Perubahan`). Salinan `AGENTS.md` disamakan. |
