@@ -9,3 +9,4 @@
 9. komentar : tambahkan komentar ke kode yang diedit/ditambahkan jelaskan alasannya kenapa diedit/ditambah. harus deskriptif dan tidak panjang juga.
 10. dilewati : setiap `task` yang diubah status menjadi `dilewati` beri penjelasan kenapa sebuah task statusnya diubah ke dilewati.
 11. flutter analyze : setelah itu jalankan flutter analyze harus bersih dari linter.
+12. kelompok kosong : setiap kali file task.md diedit (termasuk saat menandai task `selesai` atau `dilewati`), periksa seluruh kelompok; jika sebuah kelompok tidak memuat satu pun `#### Task N` di bawah `## Tinggi`, `## Sedang`, atau `## Rendah` — termasuk kelompok yang hanya berisi `Tidak ada temuan.` atau heading kosong — maka kelompok tersebut wajib dihapus dari task.md.
