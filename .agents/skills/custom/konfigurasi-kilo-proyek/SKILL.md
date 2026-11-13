@@ -1,10 +1,10 @@
 ---
 name: konfigurasi-kilo-proyek
-description: "Trigger: saat membuat atau mengubah konfigurasi Kilo proyek atau command Kilo | Panduan prosedur & larangan konfigurasi `.kilo/kilo.jsonc` proyek (bukan snapshot isi config), plus tutorial pembuatan commands Kilo: lokasi & struktur rekursif, frontmatter & nama command, variabel template, subcommand & fallback, dan konvensi proyek; sumber kebenaran adalah config proyek, bukan config global; rujuk dokumen resmi Kilo dan commit terkait."
+description: "Trigger: saat membuat atau mengubah konfigurasi Kilo proyek atau command Kilo | Panduan prosedur & larangan konfigurasi `.kilo/kilo.jsonc` proyek (bukan snapshot isi config): baca `permission` sebelum `bash` (AGENTS.md aturan 11), deny mutlak, perbarui `MEMORI.md` setelah ubah config, jangan commit config tanpa perintah pengguna; plus tutorial pembuatan commands Kilo (lokasi & struktur rekursif, frontmatter, variabel template, subcommand & fallback, konvensi proyek); rujukan `.kilo/kilo.jsonc`, `.kilo/commands/`, dan dokumen resmi Kilo."
 metadata:
   kategori: "custom"
   versi: "1.0.0"
-  diperbarui: "Fri Nov 13 2026 10:12:13 WIB"
+  diperbarui: "Fri Nov 13 2026 10:18:12 WIB"
   sumber-terakhir: "26362be"
   model: "openrouter/thinkingmachines/inkling-2-small:free"
 ---

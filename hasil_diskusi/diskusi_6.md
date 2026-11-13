@@ -2,7 +2,7 @@
 
 ## Status
 - Dokumen: Final
-- Implementasi: Belum Diimplementasikan
+- Implementasi: Sudah Diimplementasikan
 - Tanggal: 2026-11-13
 - Topik: Pembuatan skill custom `konfigurasi-kilo-proyek` berisi prosedur & larangan konfigurasi Kilo khusus proyek (bukan snapshot isi config), digabung dengan section tutorial pembuatan commands Kilo
 
@@ -201,9 +201,9 @@ Daftar lengkap 40 URL (persis seperti pada `.kilo/commands/optimalkan_kilo.md`):
 ## Tindak Lanjut
 | No | Tindakan | File Terdampak | Status |
 |----|----------|----------------|--------|
-| 1  | Buat `.agents/skills/custom/konfigurasi-kilo-proyek/SKILL.md` — prosedur config Kilo proyek **ditambah** section tutorial pembuatan commands Kilo (5 cakupan: lokasi & struktur, frontmatter & nama command, variabel template, subcommand & fallback, konvensi proyek) **ditambah** rujukan ke 92 URL dokumen resmi Kilo (K-8 + K-9 + K-10, deduplikasi); isi detail disepakati saat eksekusi | `.agents/skills/custom/konfigurasi-kilo-proyek/SKILL.md` | belum (bentuk keluaran = implementasi langsung/serah terima ke sesi agent `code` terpisah, disepakati 2026-11-13; front matter mencantumkan `metadata.model`; eksekusi menunggu perintah eksplisit pengguna) |
-| 2  | Daftarkan skill ke `SKILLS_INDEX.md` via `.kilo/commands/perbarui_skills_index.md` | `SKILLS_INDEX.md` | belum |
-| 3  | Perbarui `MEMORI.md` (jumlah skill, lokasi & riwayat diskusi, riwayat perubahan) | `MEMORI.md` | belum |
+| 1  | Buat `.agents/skills/custom/konfigurasi-kilo-proyek/SKILL.md` — prosedur config Kilo proyek **ditambah** section tutorial pembuatan commands Kilo (5 cakupan: lokasi & struktur, frontmatter & nama command, variabel template, subcommand & fallback, konvensi proyek) **ditambah** rujukan ke 92 URL dokumen resmi Kilo (K-8 + K-9 + K-10, deduplikasi); isi detail disepakati saat eksekusi | `.agents/skills/custom/konfigurasi-kilo-proyek/SKILL.md` | selesai (dibuat 2026-11-13; front matter mencantumkan `metadata.model`; sumber `26362be`; 92 URL seluruhnya terverifikasi dapat diakses) |
+| 2  | Daftarkan skill ke `SKILLS_INDEX.md` via `.kilo/commands/perbarui_skills_index.md` | `SKILLS_INDEX.md` | selesai (2026-11-13; entri `custom` ke-15; pemindaian 88 `SKILL.md`; tidak ada anomali serius/fatal) |
+| 3  | Perbarui `MEMORI.md` (jumlah skill, lokasi & riwayat diskusi, riwayat perubahan) | `MEMORI.md` | selesai (2026-11-13; `memori/riwayat_perubahan.md` juga ditambahkan entri) |
 | 4  | Keputusan temuan `external_directory` usang & `kilo_memory_recall` allow | `.kilo/kilo.jsonc` | belum (perlu keputusan pengguna) |
 | 5  | Catat perubahan pada `memori/riwayat_perubahan.md` | `memori/riwayat_perubahan.md` | selesai (sesi ini) |
 
@@ -211,13 +211,13 @@ Daftar lengkap 40 URL (persis seperti pada `.kilo/commands/optimalkan_kilo.md`):
 | Lokasi File | Status Perubahan | Deskripsi |
 |-------------|------------------|-----------|
 | `hasil_diskusi/diskusi_6.md` | Dibuat | Dokumentasi hasil diskusi ini |
-| `.agents/skills/custom/konfigurasi-kilo-proyek/SKILL.md` | Dibuat (nanti) | Skill prosedur config Kilo proyek; menunggu perintah pengguna |
-| `SKILLS_INDEX.md` | Diubah (nanti) | Registrasi skill baru; menunggu pembuatan skill |
+| `.agents/skills/custom/konfigurasi-kilo-proyek/SKILL.md` | Dibuat | Skill prosedur config Kilo proyek + tutorial commands; dibuat 2026-11-13 |
+| `SKILLS_INDEX.md` | Diubah | Registrasi skill baru (entri `custom` ke-15); 2026-11-13 |
 | `MEMORI.md` | Diubah | Lokasi & riwayat diskusi, riwayat perubahan, catatan nomor tertinggi |
 | `memori/riwayat_perubahan.md` | Diubah | Entri riwayat diskusi ini |
 
 ## Pertanyaan Terbuka
-- Detail isi skill (daftar prosedur/larangan final dan kedalaman dokumentasi section tutorial commands, termasuk apakah `metadata.model` dicantumkan) belum disepakati; disepakati pada sesi pembuatan sesuai `aturan_skill.md` §7 dan §8.
+- Detail isi skill (daftar prosedur/larangan final dan kedalaman dokumentasi section tutorial commands) disepakati saat eksekusi 2026-11-13; skill sudah dibuat; `metadata.model` dicantumkan (`openrouter/thinkingmachines/inkling-2-small:free`).
 - Apakah temuan `external_directory` (`/home/mbadrudin170/...`) dan `kilo_memory_recall: "*": "allow"` akan diperbaiki? Menunggu keputusan pengguna.
 
 ## Riwayat Perubahan
@@ -229,3 +229,4 @@ Daftar lengkap 40 URL (persis seperti pada `.kilo/commands/optimalkan_kilo.md`):
 | 2026-11-13 | Keputusan via tool `question`: daftar 40 URL dari `.kilo/commands/optimalkan_kilo.md` baris 95–149 digabung dengan rujukan K-8 secara deduplikasi — total 43 URL unik (tumpang tindih: `custom-instructions`, `agent-permissions`, `workflows`, `skills`). K-9 ditambahkan; Poin Diskusi 9 ditambahkan (daftar lengkap 40 URL + catatan bahwa 36 URL baru belum diverifikasi aksesnya); tindak lanjut No. 1 diperluas |
 | 2026-11-13 | Keputusan via tool `question`: 49 URL tambahan yang relevan dengan konfigurasi Kilo dan bukan duplikat ditambahkan (sumber indeks resmi `https://kilo.ai/docs/llms.txt`; dinormalkan ke `https://kilo.ai/docs/...`; kelompok A Getting Started 15, B Automate 20, C Customize 1, D Contributing 12, E Agents/Model 1). K-10 ditambahkan (total rujukan skill kini 92 URL unik: 43 + 49); Poin Diskusi 10 ditambahkan; tindak lanjut No. 1 diperluas. 49 URL K-10 belum diverifikasi aksesnya satu-satu |
 | 2026-11-13 | Tindak lanjut via `kerjakan_hasil_diskusi`: sumber `diskusi_6.md` tervalidasi Final. Keputusan via tool `question`: bentuk keluaran = Implementasi langsung (draf serah terima ke sesi agent `code` terpisah; command tidak mengeksekusi), front matter skill mencantumkan `metadata.model`, temuan `external_directory` usang & `kilo_memory_recall` `allow` penuh dibiarkan dan hanya dicatat (tidak diubah). Belum ada berkas yang dibuat/diubah selain dokumentasi ini |
+| 2026-11-13 | Eksekusi tindak lanjut paket TL-1/TL-2/TL-3: skill `.agents/skills/custom/konfigurasi-kilo-proyek/SKILL.md` dibuat (prosedur & larangan config Kilo proyek + tutorial pembuatan commands Kilo; front matter `metadata.model: "openrouter/thinkingmachines/inkling-2-small:free"`; `sumber-terakhir: "26362be"`); 36 URL K-9 dan seluruh 49 URL K-10 diverifikasi dapat diakses saat pembuatan (seluruhnya OK; K-8 sudah diverifikasi sebelumnya) — seluruh 92 URL unik terverifikasi; `SKILLS_INDEX.md` diregistrasi via proses `perbarui_skills_index.md` (entri `custom` ke-15; pemindaian 88 `SKILL.md`; tidak ada anomali); `MEMORI.md` dan `memori/riwayat_perubahan.md` diperbarui; status `## Status` Implementasi → `Sudah Diimplementasikan`; Tindak Lanjut No. 1–3 → `selesai`. Catatan: berkas contoh yang disebut pada Poin Diskusi 7 (`contoh_menu.md`, `contoh_menu_satu.md`, `contoh_menu_dua.md`, `.kilo/shared/contoh_bersama.md`) tidak ditemukan di repository (tidak pernah ter-commit); tutorial pada skill merujuk berkas nyata. TL-4 (temuan `external_directory` usang & `kilo_memory_recall` `allow`) dibiarkan dan menunggu keputusan pengguna; `.kilo/kilo.jsonc` tidak diubah |

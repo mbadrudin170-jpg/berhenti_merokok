@@ -1,5 +1,5 @@
 ---
-description: Menindaklanjuti hasil diskusi (hasil_diskusi/diskusi_N.md) menjadi rencana kerja terstruktur di task.md, rekomendasi PRD, atau implementasi langsung atas konfirmasi pengguna.
+description: Menindaklanjuti hasil diskusi (hasil_diskusi/diskusi_N.md) menjadi rencana kerja terstruktur di task.md, rekomendasi PRD, atau eksekusi langsung di sesi ini atas konfirmasi pengguna.
 ---
 
 1. **Input**: pengguna wajib menentukan file sumber `hasil_diskusi/diskusi_N.md` yang akan ditindaklanjuti (nomor/path). Jika belum ditentukan, minta pengguna memilih file diskusi terlebih dahulu.
@@ -16,24 +16,25 @@ description: Menindaklanjuti hasil diskusi (hasil_diskusi/diskusi_N.md) menjadi 
    - Tentukan bentuk keluaran per item:
      - **task.md**: untuk pekerjaan implementasi/perbaikan yang terpetakan ke file terdampak dan langkah teknis.
      - **PRD**: jika cakupan adalah fitur/produk besar yang butuh spesifikasi sesuai `format_PRD.md` (sarankan pembuatan/pembaruan PRD, jangan langsung menulis PRD tanpa konfirmasi).
-      - **Implementasi langsung**: untuk tindak lanjut kecil/terukur yang bisa langsung dikerjakan atas konfirmasi pengguna (tanpa `task.md`/PRD). Command ini tidak mengeksekusi kode; keluaran berupa draf ringkas (file terdampak, langkah, verifikasi) yang diserahkan ke sesi agent `code` terpisah atas perintah eksplisit pengguna.
+      - **Implementasi langsung**: untuk tindak lanjut kecil/terukur yang bisa langsung dikerjakan atas konfirmasi pengguna (tanpa `task.md`/PRD). Ditindaklanjuti dengan eksekusi kode di sesi ini oleh agent saat itu, setelah konfirmasi eksplisit pengguna; draf ringkas (file terdampak, langkah, verifikasi) disusun lebih dulu sebagai bahan konfirmasi.
       - **Tidak dapat dieksekusi**: jika butuh informasi/keputusan tambahan, catat sebagai pertanyaan/klarifikasi.
 7. **Susun draf usulan terstruktur** (belum ditulis ke berkas target, kecuali disetujui):
    - Untuk `task.md`, susun draf mengikuti `format_task.md` secara ketat: `# Kelompok N`, `## file terdampak`, prioritas (`## Tinggi`/`## Rendah`/sesuai konteks), dan setiap task berisi `Status`, `Masalah`, `Solusi`, `aturan dilanggar`, `file bermasalah`, `prompt`.
    - Set `Status` task baru sebagai `kerjakan` hanya bila siap dieksekusi; sertakan referensi aturan/file bermasalah bila relevan.
     - Kelompokkan berdasarkan himpunan file terdampak yang sama (sesuai aturan `format_task.md`).
-    - Untuk **Implementasi langsung**, susun draf ringkas: daftar file terdampak, langkah teknis singkat, dan verifikasi yang dibutuhkan (mis. `dart format`, `dart analyze`, `flutter test`). Draf dipakai sebagai bahan serah terima ke sesi agent `code`, bukan dieksekusi di dalam command ini.
-8. **Konfirmasi sebelum menulis**: tampilkan ringkasan draf (item task/kelompok, rekomendasi PRD, atau draf serah terima implementasi langsung) dan minta konfirmasi pengguna mengenai:
-   - file target yang akan diubah/dibuat (`task.md`, dan/atau rujukan PRD, dan/atau serah terima implementasi langsung ke sesi agent `code`),
+    - Untuk **Implementasi langsung**, susun draf ringkas: daftar file terdampak, langkah teknis singkat, dan verifikasi yang dibutuhkan (mis. `dart format`, `dart analyze`, `flutter test`). Draf dipakai sebagai bahan konfirmasi sebelum eksekusi di sesi ini; kode tidak diubah sebelum pengguna menyetujui draf tersebut.
+8. **Konfirmasi sebelum menulis**: tampilkan ringkasan draf (item task/kelompok, rekomendasi PRD, atau draf rencana eksekusi langsung) dan minta konfirmasi pengguna mengenai:
+   - file target yang akan diubah/dibuat (`task.md`, dan/atau rujukan PRD, dan/atau file yang akan dieksekusi langsung di sesi ini),
    - isi draf yang disetujui.
+   - Untuk **Implementasi langsung**, konfirmasi mencakup persetujuan mengeksekusi kode di sesi ini beserta daftar file terdampak dan rencana verifikasi.
    - Jangan mengubah berkas apa pun sebelum ada konfirmasi eksplisit.
 9. **Tulis hasil yang disetujui**:
    - Perbarui/buat entri di `task.md` sesuai draf yang disetujui dan `format_task.md` (jangan menghapus atau mengubah task lain tanpa alasan yang disepakati).
     - Jika disepakati membuat/memperbarui PRD, ikuti `format_PRD.md` dan batasi perubahan pada file PRD yang relevan.
-    - Jika disepakati **Implementasi langsung**, jangan tulis kode di dalam command ini; serahkan draf serah terima (file terdampak, langkah, verifikasi) dan arahkan pengguna membuka sesi agent `code` terpisah atas perintah eksplisitnya.
-    - **Dilarang** mengubah kode sumber implementasi (`.dart` atau file kode lain) dalam command ini; command ini hanya menghasilkan rencana kerja terstruktur.
+    - Jika disepakati **Implementasi langsung**, eksekusi kode di sesi ini setelah konfirmasi eksplisit pengguna; ikuti skill/rules yang relevan sesuai area (mis. `notifier-crud-database`, `gaya`, dst.); jangan ubah kode sebelum konfirmasi; jalankan verifikasi (`dart format`, `dart analyze`, `flutter test` bila relevan).
+    - **Dilarang** mengubah kode sumber implementasi (`.dart` atau file kode lain) sebelum konfirmasi eksplisit pengguna (§8).
 10. **Kriteria selesai**:
     - Sumber diskusi terbaca, status tervalidasi `Final`, dan tindak lanjutnya terpetakan.
     - Draf/usulan ditampilkan dan status konfirmasi jelas.
-     - Jika disetujui, `task.md`/PRD yang relevan diperbarui sesuai format dan siap ditindaklanjuti oleh `kerjakan_task.md` atau alur PRD, atau draf serah terima implementasi langsung disampaikan untuk dieksekusi di sesi agent `code` terpisah.
+     - Jika disetujui, `task.md`/PRD yang relevan diperbarui sesuai format dan siap ditindaklanjuti oleh `kerjakan_task.md` atau alur PRD, atau perubahan untuk Implementasi langsung tereksekusi di sesi ini dengan verifikasi (`dart format`, `dart analyze`, `flutter test` bila relevan) lulus.
 11. **Bahasa**: selalu gunakan bahasa Indonesia saat berinteraksi dengan pengguna.
