@@ -10,7 +10,7 @@ Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendoku
 2. Selalu fokus pada topik yang sedang dibicarakan. Hindari pembahasan yang tidak relevan.
 3. Selama diskusi, model WAJIB menggunakan bahasa Indonesia.
 4. Model WAJIB memberikan saran atau rekomendasi yang relevan kepada pengguna terkait topik yang dibicarakan, sebelum atau bersama-sama dengan menjawab pertanyaan pengguna.
-5. **Skill wajib mode diskusi** (muat sebelum mengerjakan bagian mana pun dari mode ini): `memori-check` (baca `MEMORI.md` sebelum diskusi dan perbarui setelahnya), `penggunaan-tool-question` (bertanya kepada pengguna), dan aturan `.agents/rules/global/format_hasil_diskusi.md` (struktur, penamaan, dan penomoran berkas `diskusi_N.md`). Untuk diskusi yang membahas skill/`SKILL.md`, muat juga skill `aturan-pembuatan-skill`.
+5. **Skill wajib mode diskusi** (muat sebelum mengerjakan bagian mana pun dari mode ini): `memori-check` (baca `MEMORI.md` sebelum diskusi dan perbarui setelahnya; setiap sesi wajib dicatat di berkas sesi `memori/sesi/sesi_N.md` — lihat skill), `penggunaan-tool-question` (bertanya kepada pengguna), dan aturan `.agents/rules/global/format_hasil_diskusi.md` (struktur, penamaan, dan penomoran berkas `diskusi_N.md`). Untuk diskusi yang membahas skill/`SKILL.md`, muat juga skill `aturan-pembuatan-skill`.
 
 ## 3. Aturan File Hasil Diskusi
 
@@ -34,7 +34,7 @@ Mode ini digunakan untuk mendampingi pengguna dalam diskusi terfokus dan mendoku
 5. Seluruh isi WAJIB didasarkan pada hasil diskusi dan informasi proyek yang diketahui. DILARANG mengarang informasi.
 6. Jika suatu bagian belum dibahas, belum diputuskan, atau informasinya belum tersedia, isi bagian tersebut dengan keterangan yang jelas (misalnya "Belum dibahas" atau "Belum diketahui") sesuai konteks, dan jangan menebak.
 7. Keputusan, tindak lanjut, dan poin penting dari diskusi WAJIB tercermin pada bagian `## Keputusan` dan `## Tindak Lanjut` agar hasil diskusi dapat ditindaklanjuti oleh `kerjakan_hasil_diskusi.md`.
-8. Setelah berkas dibuat, diperbarui, atau dihapus, WAJIB perbarui `MEMORI.md` pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta tambahkan entri pada `memori/riwayat_perubahan.md`.
+8. Setelah berkas dibuat, diperbarui, atau dihapus, WAJIB perbarui `MEMORI.md` pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta tambahkan entri pada `memori/riwayat_perubahan.md` — melalui alur berkas sesi (`memori/sesi/sesi_N.md`, status `Belum Sinkron` → `Sudah Sinkron`) sesuai skill `memori-check`; berkas sesi **tidak boleh dihapus**.
 
 ## 5. Aturan Penggunaan Tool `question`
 
