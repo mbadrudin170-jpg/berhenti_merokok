@@ -8,7 +8,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 
 - **Berkas yang diatur**: berkas hasil diskusi `diskusi_N.md` pada folder `hasil_diskusi/` di root proyek.
 - **Mode terkait**: `.kilo/commands/mode/mode_diskusi.md` (aturan pelaksanaan mode diskusi) dan `.kilo/commands/kerjakan_hasil_diskusi.md` (tindak lanjut hasil diskusi).
-- **Dokumen lain**: `MEMORI.md` (bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`) serta `memori/riwayat_perubahan.md` (riwayat perubahan proyek); sinkronisasi dicatat pada `memori/sesi/sesi_N.md` (lihat skill `memori-check`).
+- **Dokumen lain**: `MEMORI.md` (bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`) serta `memori/riwayat_perubahan.md` (riwayat perubahan proyek); sinkronisasi dicatat pada `memori/sesi/sesi_N.md` (lihat skill `memori-check`); pada awal sesi AI juga wajib melakukan catch-up sync (memindai `memori/sesi/*.md` `Belum Sinkron` dari sesi sebelumnya) sebelum membuat berkas sesi baru.
 
 ## 3. Perbedaan dengan Format PRD
 
@@ -85,7 +85,7 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
    - `Riwayat Diskusi` — topik, status PRD, dan tindak lanjut.
 2. Tambahkan entri riwayat perubahan pada `memori/riwayat_perubahan.md` — ringkasan perubahan berkas (sebagai pengganti bagian `Riwayat Perubahan` yang sebelumnya berada di `MEMORI.md`).
 3. **DILARANG** membiarkan `MEMORI.md` memuat nomor tertinggi atau daftar berkas yang sudah usang.
-4. Sinkronisasi `MEMORI.md` wajib dilakukan melalui alur berkas sesi (`memori/sesi/sesi_N.md`, status `Belum Sinkron` → `Sudah Sinkron`) sesuai skill `memori-check`: catat sesi ke berkas sesi sebelum/selama pembaruan, lalu tandai `Sudah Sinkron` setelah `MEMORI.md` dan `memori/riwayat_perubahan.md` diperbarui. Berkas `sesi_N.md` **tidak boleh dihapus** (diarsipkan permanen).
+4. Sinkronisasi `MEMORI.md` wajib dilakukan melalui alur berkas sesi (`memori/sesi/sesi_N.md`, status `Belum Sinkron` → `Sudah Sinkron`) sesuai skill `memori-check`: catat sesi ke berkas sesi sebelum/selama pembaruan, lalu tandai `Sudah Sinkron` setelah `MEMORI.md` dan `memori/riwayat_perubahan.md` diperbarui. Berkas `sesi_N.md` **tidak boleh dihapus** (diarsipkan permanen). Pada setiap **awal sesi**, setelah membaca `MEMORI.md` dan sebelum membuat berkas sesi baru, AI wajib melakukan **catch-up sync**: pindai berkas `memori/sesi/*.md` ber-status `Belum Sinkron` milik sesi sebelumnya; yatim/kosong tanpa perubahan nyata → ditandai `Sudah Sinkron` dengan catatan eksplisit "tidak ada perubahan untuk disinkronkan"; berisi perubahan nyata → disinkronkan dengan prosedur yang sama seperti akhir sesi (`MEMORI.md` + `memori/riwayat_perubahan.md` → isi `## Sinkronisasi ke MEMORI.md` → `Sudah Sinkron`); berkas sesi yang sedang aktif di sesi ini tidak ditandai; bila ambigu → dilaporkan ke pengguna, jangan diputuskan sendiri. Pemindaian dibatasi pada berkas `Belum Sinkron` saja; alur akhir sesi tetap dipertahankan (catch-up hanya jaring pengaman).
 
 ## 9. Larangan
 
@@ -150,4 +150,4 @@ Aturan ini menetapkan format, lokasi, penamaan, status, dan kewajiban pencatatan
 - [ ] Bagian yang belum dibahas diberi keterangan eksplisit.
 - [ ] Tidak memakai struktur PRD.
 - [ ] Bahasa Indonesia dan tidak ada informasi yang dikarang.
-- [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta `memori/riwayat_perubahan.md` diperbarui (riwayat perubahan) — sinkronisasi dicatat/ditandai pada `memori/sesi/sesi_N.md` (status `Sudah Sinkron`); berkas sesi tidak boleh dihapus.
+- [ ] `MEMORI.md` diperbarui pada bagian `Lokasi Hasil Diskusi` dan `Riwayat Diskusi`, serta `memori/riwayat_perubahan.md` diperbarui (riwayat perubahan) — sinkronisasi dicatat/ditandai pada `memori/sesi/sesi_N.md` (status `Sudah Sinkron`); awal sesi melakukan catch-up sync (`memori/sesi/*.md` `Belum Sinkron` dipindai; yatim/kosong ditandai `Sudah Sinkron` + catatan eksplisit; ambigu dilaporkan ke pengguna); berkas sesi tidak boleh dihapus.
