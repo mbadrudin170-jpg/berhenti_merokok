@@ -118,7 +118,7 @@
     "continue_loop_on_deny": true,
     "multi_project_agent_manager": true,
     "codebase_search": false,
-    "mcp_timeout": 30000
+    "mcp_timeout": 60000
   },
   "default_agent": "code",
   "commit_message": {
